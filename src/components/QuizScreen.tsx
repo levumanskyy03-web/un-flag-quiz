@@ -1,0 +1,95 @@
+import { STRINGS, type Lang } from '../i18n/strings'
+import { countryName, type Question, type QuizMode } from '../lib/quiz'
+import { Flag } from './Flag'
+
+interface QuizScreenProps {
+  lang: Lang
+  mode: QuizMode
+  question: Question
+  index: number
+  total: number
+  selectedIso: string | null
+  onSelect: (iso: string) => void
+  onNext: () => void
+  onBack: () => void
+}
+
+export function QuizScreen({
+  lang,
+  mode,
+  question,
+  index,
+  total,
+  selectedIso,
+  onSelect,
+  onNext,
+  onBack,
+}: QuizScreenProps) {
+  const t = STRINGS[lang]
+  const answered = selectedIso !== null
+  const isLast = index === total - 1
+  const correctName = countryName(question.country, lang)
+
+  return (
+    <div className="screen quiz-screen">
+      <header className="quiz-header">
+        <button type="button" className="btn-ghost" onClick={onBack}>
+          {t.back}
+        </button>
+        <div className="progress-copy">{t.questionOf(index + 1, total)}</div>
+      </header>
+
+      <div className="progress-track" aria-hidden="true">
+        <div className="progress-bar" style={{ width: `${((index + 1) / total) * 100}%` }} />
+      </div>
+
+      <section className="card question-card">
+        {mode === 'flagToName' ? (
+          <Flag iso={question.country.iso} name={correctName} size="hero" />
+        ) : (
+          <h2 className="prompt-name">{correctName}</h2>
+        )}
+      </section>
+
+      <div className={`options ${mode === 'nameToFlag' ? 'options-flags' : 'options-names'}`}>
+        {question.options.map((option) => {
+          const name = countryName(option, lang)
+          const isCorrectOption = option.iso === question.country.iso
+          const isSelected = option.iso === selectedIso
+          const stateClass = answered
+            ? isCorrectOption
+              ? 'is-correct'
+              : isSelected
+                ? 'is-wrong'
+                : 'is-muted'
+            : ''
+
+          return (
+            <button
+              key={option.iso}
+              type="button"
+              className={`option ${stateClass}`}
+              disabled={answered}
+              onClick={() => onSelect(option.iso)}
+            >
+              {mode === 'nameToFlag' ? (
+                <>
+                  <Flag iso={option.iso} name={name} size="option" />
+                  {answered && <span className="option-caption">{name}</span>}
+                </>
+              ) : (
+                name
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      {answered && (
+        <button type="button" className="btn-primary" onClick={onNext}>
+          {isLast ? t.seeResults : t.next}
+        </button>
+      )}
+    </div>
+  )
+}
