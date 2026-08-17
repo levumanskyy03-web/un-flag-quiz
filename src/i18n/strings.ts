@@ -38,6 +38,8 @@ type Strings = {
   playAgain: string
   noMistakes: string
   back: string
+  timedOut: string
+  totalTime: (clock: string) => string
 }
 
 export const STRINGS: Record<Lang, Strings> = {
@@ -74,6 +76,8 @@ export const STRINGS: Record<Lang, Strings> = {
     playAgain: 'Ещё раз',
     noMistakes: 'Без ошибок — так держать',
     back: 'Назад',
+    timedOut: 'Время вышло',
+    totalTime: (clock) => `Время: ${clock}`,
   },
   en: {
     title: 'UN Flags',
@@ -108,6 +112,8 @@ export const STRINGS: Record<Lang, Strings> = {
     playAgain: 'Play again',
     noMistakes: 'No mistakes — well done',
     back: 'Back',
+    timedOut: 'Time is up',
+    totalTime: (clock) => `Time: ${clock}`,
   },
 }
 

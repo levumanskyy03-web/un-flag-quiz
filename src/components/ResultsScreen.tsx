@@ -1,15 +1,16 @@
 import { STRINGS, type Lang } from '../i18n/strings'
-import { countryName, isCorrect, type QuizMode, type RoundAnswer } from '../lib/quiz'
+import { countryName, formatClock, isCorrect, type QuizMode, type RoundAnswer } from '../lib/quiz'
 import { Flag } from './Flag'
 
 interface ResultsScreenProps {
   lang: Lang
   mode: QuizMode
   answers: RoundAnswer[]
+  roundMs: number
   onAgain: () => void
 }
 
-export function ResultsScreen({ lang, mode, answers, onAgain }: ResultsScreenProps) {
+export function ResultsScreen({ lang, mode, answers, roundMs, onAgain }: ResultsScreenProps) {
   const t = STRINGS[lang]
   const correctCount = answers.filter(isCorrect).length
   const total = answers.length
@@ -24,6 +25,7 @@ export function ResultsScreen({ lang, mode, answers, onAgain }: ResultsScreenPro
         <p className="score-kicker">{t.results}</p>
         <p className="score-value">{t.score(correctCount, total)}</p>
         <p className="score-percent">{percent}%</p>
+        <p className="score-time">{t.totalTime(formatClock(roundMs))}</p>
         <p className="score-headline">{headline}</p>
       </section>
 
@@ -36,17 +38,19 @@ export function ResultsScreen({ lang, mode, answers, onAgain }: ResultsScreenPro
             {mistakes.map((answer) => {
               const correct = answer.question.country
               const chosen =
-                answer.question.options.find((option) => option.iso === answer.selectedIso) ??
-                correct
+                answer.selectedIso === null
+                  ? null
+                  : answer.question.options.find((option) => option.iso === answer.selectedIso) ??
+                    correct
               return (
-                <li key={`${correct.iso}-${answer.selectedIso}`} className="mistake-row">
+                <li key={`${correct.iso}-${answer.selectedIso ?? 'timeout'}`} className="mistake-row">
                   {mode === 'flagToName' && (
                     <Flag iso={correct.iso} name={countryName(correct, lang)} size="thumb" />
                   )}
                   <div className="mistake-copy">
                     <p>
                       <span className="mistake-label">{t.yourAnswer}</span>
-                      {countryName(chosen, lang)}
+                      {chosen ? countryName(chosen, lang) : t.timedOut}
                     </p>
                     <p>
                       <span className="mistake-label">{t.correctAnswer}</span>

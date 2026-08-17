@@ -222,6 +222,39 @@ img {
   justify-content: space-between;
 }
 
+.quiz-timers {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.question-clock {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.question-clock.is-urgent {
+  color: var(--bad);
+}
+
+.round-clock,
+.score-time {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-time {
+  margin-top: 6px;
+  font-size: 1.15rem;
+  color: var(--accent);
+}
+
 .progress-track {
   height: 8px;
   background: #dbe6f2;
@@ -233,6 +266,14 @@ img {
   height: 100%;
   background: var(--accent);
   transition: width 0.2s ease;
+}
+
+.timer-bar {
+  transition: width 50ms linear;
+}
+
+.timer-bar.is-urgent {
+  background: var(--bad);
 }
 
 .question-card {

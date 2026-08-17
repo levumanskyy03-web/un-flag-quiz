@@ -4,6 +4,7 @@ export type QuizMode = 'flagToName' | 'nameToFlag'
 export type RegionFilter = Region | 'all'
 
 export const QUESTIONS_PER_ROUND = 10
+export const QUESTION_TIME_MS = 10_000
 
 export interface Question {
   country: Country
@@ -12,11 +13,18 @@ export interface Question {
 
 export interface RoundAnswer {
   question: Question
-  selectedIso: string
+  selectedIso: string | null
 }
 
 export function isCorrect(answer: RoundAnswer): boolean {
   return answer.selectedIso === answer.question.country.iso
+}
+
+export function formatClock(ms: number): string {
+  const totalSec = Math.max(0, Math.floor(ms / 1000))
+  const minutes = Math.floor(totalSec / 60)
+  const seconds = totalSec % 60
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
 }
 
 export function countryName(country: Country, lang: 'ru' | 'en'): string {

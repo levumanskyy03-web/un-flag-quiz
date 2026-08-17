@@ -1,5 +1,5 @@
 import { STRINGS, type Lang } from '../i18n/strings'
-import { countryName, type Question, type QuizMode } from '../lib/quiz'
+import { QUESTION_TIME_MS, countryName, formatClock, type Question, type QuizMode } from '../lib/quiz'
 import { Flag } from './Flag'
 
 interface QuizScreenProps {
@@ -9,6 +9,9 @@ interface QuizScreenProps {
   index: number
   total: number
   selectedIso: string | null
+  timedOut: boolean
+  remainingMs: number
+  roundMs: number
   onSelect: (iso: string) => void
   onNext: () => void
   onBack: () => void
@@ -21,14 +24,20 @@ export function QuizScreen({
   index,
   total,
   selectedIso,
+  timedOut,
+  remainingMs,
+  roundMs,
   onSelect,
   onNext,
   onBack,
 }: QuizScreenProps) {
   const t = STRINGS[lang]
-  const answered = selectedIso !== null
+  const answered = selectedIso !== null || timedOut
   const isLast = index === total - 1
   const correctName = countryName(question.country, lang)
+  const secondsLeft = Math.ceil(remainingMs / 1000)
+  const urgent = !answered && remainingMs <= 3000
+  const timerWidth = `${Math.max(0, (remainingMs / QUESTION_TIME_MS) * 100)}%`
 
   return (
     <div className="screen quiz-screen">
@@ -38,6 +47,20 @@ export function QuizScreen({
         </button>
         <div className="progress-copy">{t.questionOf(index + 1, total)}</div>
       </header>
+
+      <div className="quiz-timers">
+        <div className={`question-clock ${urgent || timedOut ? 'is-urgent' : ''}`}>
+          {timedOut ? t.timedOut : secondsLeft}
+        </div>
+        <div className="round-clock">{t.totalTime(formatClock(roundMs))}</div>
+      </div>
+
+      <div className="progress-track timer-track" aria-hidden="true">
+        <div
+          className={`progress-bar timer-bar ${urgent ? 'is-urgent' : ''}`}
+          style={{ width: timerWidth }}
+        />
+      </div>
 
       <div className="progress-track" aria-hidden="true">
         <div className="progress-bar" style={{ width: `${((index + 1) / total) * 100}%` }} />
