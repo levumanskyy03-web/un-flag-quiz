@@ -23,8 +23,8 @@ export function countryName(country: Country, lang: 'ru' | 'en'): string {
   return lang === 'ru' ? country.nameRu : country.nameEn
 }
 
-export function flagUrl(iso: string, width = 320): string {
-  return `https://flagcdn.com/w${width}/${iso}.png`
+export function flagUrl(iso: string): string {
+  return `https://flagcdn.com/${iso}.svg`
 }
 
 export function getPool(region: RegionFilter, difficulty: Difficulty): Country[] {

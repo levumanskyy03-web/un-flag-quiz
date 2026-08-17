@@ -3,12 +3,6 @@ import { flagUrl } from "../lib/quiz";
 
 type FlagSize = "hero" | "option" | "thumb";
 
-const WIDTH: Record<FlagSize, number> = {
-  hero: 640,
-  option: 320,
-  thumb: 80,
-};
-
 interface FlagProps {
   iso: string;
   name: string;
@@ -16,14 +10,13 @@ interface FlagProps {
 }
 
 export function Flag({ iso, name, size }: FlagProps) {
-  const width = WIDTH[size];
   return (
     <span className={`flag flag-${size}`}>
       <Image
-        src={flagUrl(iso, width)}
+        src={flagUrl(iso)}
         alt={name}
-        width={width}
-        height={Math.round(width * 0.67)}
+        fill
+        unoptimized
         sizes={
           size === "hero"
             ? "(max-width: 420px) 100vw, 420px"
@@ -32,6 +25,7 @@ export function Flag({ iso, name, size }: FlagProps) {
               : "(max-width: 640px) 100vw, 50vw"
         }
         priority={size === "hero"}
+        className="flag-img"
       />
     </span>
   );
