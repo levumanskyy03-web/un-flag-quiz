@@ -13,7 +13,6 @@ interface QuizScreenProps {
   remainingMs: number
   roundMs: number
   onSelect: (iso: string) => void
-  onNext: () => void
   onBack: () => void
 }
 
@@ -28,12 +27,10 @@ export function QuizScreen({
   remainingMs,
   roundMs,
   onSelect,
-  onNext,
   onBack,
 }: QuizScreenProps) {
   const t = STRINGS[lang]
   const answered = selectedIso !== null || timedOut
-  const isLast = index === total - 1
   const correctName = countryName(question.country, lang)
   const secondsLeft = Math.ceil(remainingMs / 1000)
   const urgent = !answered && remainingMs <= 3000
@@ -107,12 +104,6 @@ export function QuizScreen({
           )
         })}
       </div>
-
-      {answered && (
-        <button type="button" className="btn-primary" onClick={onNext}>
-          {isLast ? t.seeResults : t.next}
-        </button>
-      )}
     </div>
   )
 }

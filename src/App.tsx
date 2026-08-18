@@ -6,6 +6,7 @@ import { QuizScreen } from "./components/QuizScreen";
 import { ResultsScreen } from "./components/ResultsScreen";
 import { STRINGS, type Lang } from "./i18n/strings";
 import {
+  ANSWER_PAUSE_MS,
   QUESTION_TIME_MS,
   createRound,
   getPool,
@@ -87,6 +88,25 @@ export default function App() {
     return () => window.clearInterval(id);
   }, [answered, index, questions, screen]);
 
+  useEffect(() => {
+    if (screen !== "quiz" || !answered) return;
+    const last = index >= questions.length - 1;
+    const id = window.setTimeout(() => {
+      if (last) {
+        if (roundStartRef.current !== null) {
+          setRoundMs(Date.now() - roundStartRef.current);
+        }
+        setScreen("results");
+        return;
+      }
+      setIndex((prev) => prev + 1);
+      setSelectedIso(null);
+      setTimedOut(false);
+      setRemainingMs(QUESTION_TIME_MS);
+    }, ANSWER_PAUSE_MS);
+    return () => window.clearTimeout(id);
+  }, [answered, index, questions.length, screen]);
+
   function handleSettingsChange(next: QuizSettings) {
     if (next.lang !== quizSettings.lang) {
       localStorage.setItem(LANG_KEY, next.lang);
@@ -121,20 +141,6 @@ export default function App() {
     setAnswers((prev) => [...prev, { question, selectedIso: iso }]);
   }
 
-  function goNext() {
-    if (index >= questions.length - 1) {
-      if (roundStartRef.current !== null) {
-        setRoundMs(Date.now() - roundStartRef.current);
-      }
-      setScreen("results");
-      return;
-    }
-    setIndex((prev) => prev + 1);
-    setSelectedIso(null);
-    setTimedOut(false);
-    setRemainingMs(QUESTION_TIME_MS);
-  }
-
   function goHome() {
     roundStartRef.current = null;
     setScreen("home");
@@ -161,7 +167,6 @@ export default function App() {
           remainingMs={remainingMs}
           roundMs={roundMs}
           onSelect={selectAnswer}
-          onNext={goNext}
           onBack={goHome}
         />
       )}

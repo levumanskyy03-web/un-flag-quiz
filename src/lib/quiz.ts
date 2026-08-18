@@ -5,6 +5,7 @@ export type RegionFilter = Region | 'all'
 
 export const QUESTIONS_PER_ROUND = 10
 export const QUESTION_TIME_MS = 10_000
+export const ANSWER_PAUSE_MS = 900
 
 export interface Question {
   country: Country
@@ -32,6 +33,7 @@ export function countryName(country: Country, lang: 'ru' | 'en'): string {
 }
 
 export function flagUrl(iso: string): string {
+  if (iso === 'af') return '/flags/af.svg'
   return `https://flagcdn.com/${iso}.svg`
 }
 
