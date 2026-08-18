@@ -222,6 +222,27 @@ img {
   justify-content: space-between;
 }
 
+.lives {
+  display: flex;
+  gap: 6px;
+}
+
+.life {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--bad);
+}
+
+.life.is-on {
+  background: var(--bad);
+}
+
+.life.is-off {
+  background: transparent;
+  opacity: 0.35;
+}
+
 .quiz-timers {
   display: flex;
   align-items: baseline;

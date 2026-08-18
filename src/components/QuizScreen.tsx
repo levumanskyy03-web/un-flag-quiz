@@ -1,5 +1,5 @@
 import { STRINGS, type Lang } from '../i18n/strings'
-import { QUESTION_TIME_MS, countryName, formatClock, type Question, type QuizMode } from '../lib/quiz'
+import { MAX_LIVES, QUESTION_TIME_MS, countryName, formatClock, type Question, type QuizMode } from '../lib/quiz'
 import { Flag } from './Flag'
 
 interface QuizScreenProps {
@@ -12,6 +12,7 @@ interface QuizScreenProps {
   timedOut: boolean
   remainingMs: number
   roundMs: number
+  livesLeft: number
   onSelect: (iso: string) => void
   onBack: () => void
 }
@@ -26,6 +27,7 @@ export function QuizScreen({
   timedOut,
   remainingMs,
   roundMs,
+  livesLeft,
   onSelect,
   onBack,
 }: QuizScreenProps) {
@@ -43,6 +45,15 @@ export function QuizScreen({
           {t.back}
         </button>
         <div className="progress-copy">{t.questionOf(index + 1, total)}</div>
+        <div className="lives" aria-label={t.lives}>
+          {Array.from({ length: MAX_LIVES }, (_, i) => (
+            <span
+              key={i}
+              className={`life ${i < livesLeft ? 'is-on' : 'is-off'}`}
+              aria-hidden="true"
+            />
+          ))}
+        </div>
       </header>
 
       <div className="quiz-timers">
@@ -57,10 +68,6 @@ export function QuizScreen({
           className={`progress-bar timer-bar ${urgent ? 'is-urgent' : ''}`}
           style={{ width: timerWidth }}
         />
-      </div>
-
-      <div className="progress-track" aria-hidden="true">
-        <div className="progress-bar" style={{ width: `${((index + 1) / total) * 100}%` }} />
       </div>
 
       <section className="card question-card">

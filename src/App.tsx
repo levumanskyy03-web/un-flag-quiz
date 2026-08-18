@@ -7,9 +7,11 @@ import { ResultsScreen } from "./components/ResultsScreen";
 import { STRINGS, type Lang } from "./i18n/strings";
 import {
   ANSWER_PAUSE_MS,
+  MAX_LIVES,
   QUESTION_TIME_MS,
   createRound,
   getPool,
+  isCorrect,
   type Question,
   type RoundAnswer,
 } from "./lib/quiz";
@@ -51,6 +53,8 @@ export default function App() {
     lang: lang ?? storedLang,
   };
   const answered = selectedIso !== null || timedOut;
+  const mistakes = answers.filter((answer) => !isCorrect(answer)).length;
+  const livesLeft = Math.max(0, MAX_LIVES - mistakes);
 
   useEffect(() => {
     document.documentElement.lang = quizSettings.lang;
@@ -91,8 +95,9 @@ export default function App() {
   useEffect(() => {
     if (screen !== "quiz" || !answered) return;
     const last = index >= questions.length - 1;
+    const roundOver = timedOut || mistakes >= MAX_LIVES || last;
     const id = window.setTimeout(() => {
-      if (last) {
+      if (roundOver) {
         if (roundStartRef.current !== null) {
           setRoundMs(Date.now() - roundStartRef.current);
         }
@@ -105,7 +110,7 @@ export default function App() {
       setRemainingMs(QUESTION_TIME_MS);
     }, ANSWER_PAUSE_MS);
     return () => window.clearTimeout(id);
-  }, [answered, index, questions.length, screen]);
+  }, [answered, index, mistakes, questions.length, screen, timedOut]);
 
   function handleSettingsChange(next: QuizSettings) {
     if (next.lang !== quizSettings.lang) {
@@ -166,6 +171,7 @@ export default function App() {
           timedOut={timedOut}
           remainingMs={remainingMs}
           roundMs={roundMs}
+          livesLeft={livesLeft}
           onSelect={selectAnswer}
           onBack={goHome}
         />
@@ -176,6 +182,7 @@ export default function App() {
           mode={quizSettings.mode}
           answers={answers}
           roundMs={roundMs}
+          endedBy={timedOut ? "timeout" : mistakes >= MAX_LIVES ? "lives" : "complete"}
           onAgain={goHome}
         />
       )}

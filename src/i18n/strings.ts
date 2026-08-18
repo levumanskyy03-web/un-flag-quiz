@@ -40,6 +40,9 @@ type Strings = {
   back: string
   timedOut: string
   totalTime: (clock: string) => string
+  lives: string
+  roundEndedTime: string
+  roundEndedLives: string
 }
 
 export const STRINGS: Record<Lang, Strings> = {
@@ -78,6 +81,9 @@ export const STRINGS: Record<Lang, Strings> = {
     back: 'Назад',
     timedOut: 'Время вышло',
     totalTime: (clock) => `Время: ${clock}`,
+    lives: 'Жизни',
+    roundEndedTime: 'Время вышло — раунд окончен',
+    roundEndedLives: 'Три ошибки — раунд окончен',
   },
   en: {
     title: 'UN Flags',
@@ -114,6 +120,9 @@ export const STRINGS: Record<Lang, Strings> = {
     back: 'Back',
     timedOut: 'Time is up',
     totalTime: (clock) => `Time: ${clock}`,
+    lives: 'Lives',
+    roundEndedTime: 'Time is up — round over',
+    roundEndedLives: 'Three mistakes — round over',
   },
 }
 

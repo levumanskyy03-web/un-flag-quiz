@@ -6,6 +6,7 @@ export type RegionFilter = Region | 'all'
 export const QUESTIONS_PER_ROUND = 10
 export const QUESTION_TIME_MS = 10_000
 export const ANSWER_PAUSE_MS = 900
+export const MAX_LIVES = 3
 
 export interface Question {
   country: Country

@@ -2,22 +2,35 @@ import { STRINGS, type Lang } from '../i18n/strings'
 import { countryName, formatClock, isCorrect, type QuizMode, type RoundAnswer } from '../lib/quiz'
 import { Flag } from './Flag'
 
+export type RoundEnd = 'complete' | 'timeout' | 'lives'
+
 interface ResultsScreenProps {
   lang: Lang
   mode: QuizMode
   answers: RoundAnswer[]
   roundMs: number
+  endedBy: RoundEnd
   onAgain: () => void
 }
 
-export function ResultsScreen({ lang, mode, answers, roundMs, onAgain }: ResultsScreenProps) {
+export function ResultsScreen({ lang, mode, answers, roundMs, endedBy, onAgain }: ResultsScreenProps) {
   const t = STRINGS[lang]
   const correctCount = answers.filter(isCorrect).length
   const total = answers.length
   const percent = total === 0 ? 0 : Math.round((correctCount / total) * 100)
   const mistakes = answers.filter((answer) => !isCorrect(answer))
   const headline =
-    percent === 100 ? t.perfect : percent >= 80 ? t.great : percent >= 50 ? t.good : t.keepGoing
+    endedBy === 'timeout'
+      ? t.roundEndedTime
+      : endedBy === 'lives'
+        ? t.roundEndedLives
+        : percent === 100
+          ? t.perfect
+          : percent >= 80
+            ? t.great
+            : percent >= 50
+              ? t.good
+              : t.keepGoing
 
   return (
     <div className="screen results-screen">
