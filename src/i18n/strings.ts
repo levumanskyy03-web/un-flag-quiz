@@ -1,9 +1,9 @@
-import type { Difficulty, Region } from '../data/countries'
-import type { QuizMode, RegionFilter } from '../lib/quiz'
+import { REGIONS } from '../data/countries'
+import { isAllRegions, parseRegions, type QuizDifficulty, type QuizMode, type RegionFilter } from '../lib/quiz'
+
+export { REGIONS }
 
 export type Lang = 'ru' | 'en'
-
-export const REGIONS: Region[] = ['africa', 'americas', 'asia', 'europe', 'oceania']
 
 type Strings = {
   title: string
@@ -21,6 +21,9 @@ type Strings = {
   difficulty: string
   easy: string
   hard: string
+  hardcore: string
+  hardcoreHint: string
+  roundSize: string
   start: string
   poolCount: (n: number) => string
   questionOf: (i: number, total: number) => string
@@ -43,6 +46,17 @@ type Strings = {
   lives: string
   roundEndedTime: string
   roundEndedLives: string
+  roundEndedHardcore: string
+  avgTime: (seconds: string) => string
+  slowestCountry: (name: string, seconds: string) => string
+  history: string
+  clearHistory: string
+  savedOnDevice: string
+  bests: string
+  clearBests: string
+  newBest: string
+  bestOfSetup: (score: string, clock: string) => string
+  credit: string
 }
 
 export const STRINGS: Record<Lang, Strings> = {
@@ -62,6 +76,9 @@ export const STRINGS: Record<Lang, Strings> = {
     difficulty: 'Сложность',
     easy: 'Проще',
     hard: 'Сложнее',
+    hardcore: 'Хардкор',
+    hardcoreHint: 'Без права на ошибку',
+    roundSize: 'Стран в блоке',
     start: 'Начать',
     poolCount: (n) => `${n} ${pluralRu(n, 'страна', 'страны', 'стран')} в пуле`,
     questionOf: (i, total) => `Вопрос ${i} из ${total}`,
@@ -84,6 +101,17 @@ export const STRINGS: Record<Lang, Strings> = {
     lives: 'Жизни',
     roundEndedTime: 'Время вышло — раунд окончен',
     roundEndedLives: 'Три ошибки — раунд окончен',
+    roundEndedHardcore: 'Одна ошибка — раунд окончен',
+    avgTime: (seconds) => `Среднее на страну: ${seconds} с`,
+    slowestCountry: (name, seconds) => `Дольше всего: ${name} · ${seconds} с`,
+    history: 'Недавние раунды',
+    clearHistory: 'Очистить',
+    savedOnDevice: 'Сохранено на этом устройстве',
+    bests: 'Лучшие результаты',
+    clearBests: 'Сбросить рекорды',
+    newBest: 'Новый рекорд этой настройки',
+    bestOfSetup: (score, clock) => `Рекорд этой настройки: ${score} · ${clock}`,
+    credit: 'Создано Львом Уманским',
   },
   en: {
     title: 'UN Flags',
@@ -101,6 +129,9 @@ export const STRINGS: Record<Lang, Strings> = {
     difficulty: 'Difficulty',
     easy: 'Easier',
     hard: 'Harder',
+    hardcore: 'Hardcore',
+    hardcoreHint: 'No mistakes allowed',
+    roundSize: 'Flags in the round',
     start: 'Start',
     poolCount: (n) => `${n} ${n === 1 ? 'country' : 'countries'} in the pool`,
     questionOf: (i, total) => `Question ${i} of ${total}`,
@@ -123,16 +154,29 @@ export const STRINGS: Record<Lang, Strings> = {
     lives: 'Lives',
     roundEndedTime: 'Time is up — round over',
     roundEndedLives: 'Three mistakes — round over',
+    roundEndedHardcore: 'One mistake — round over',
+    avgTime: (seconds) => `Average per flag: ${seconds}s`,
+    slowestCountry: (name, seconds) => `Slowest: ${name} · ${seconds}s`,
+    history: 'Recent rounds',
+    clearHistory: 'Clear',
+    savedOnDevice: 'Saved on this device',
+    bests: 'Best scores',
+    clearBests: 'Reset records',
+    newBest: 'New best for this setup',
+    bestOfSetup: (score, clock) => `Best for this setup: ${score} · ${clock}`,
+    credit: 'Created by Lev Umansky',
   },
 }
 
 export function regionLabel(region: RegionFilter, lang: Lang): string {
   const t = STRINGS[lang]
-  if (region === 'all') return t.allRegions
-  return t[region]
+  if (isAllRegions(region)) return t.allRegions
+  return parseRegions(region)
+    .map((item) => t[item])
+    .join(' · ')
 }
 
-export function difficultyLabel(difficulty: Difficulty, lang: Lang): string {
+export function difficultyLabel(difficulty: QuizDifficulty, lang: Lang): string {
   return STRINGS[lang][difficulty]
 }
 

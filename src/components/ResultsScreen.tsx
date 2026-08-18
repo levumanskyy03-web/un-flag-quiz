@@ -1,30 +1,56 @@
 import { STRINGS, type Lang } from '../i18n/strings'
-import { countryName, formatClock, isCorrect, type QuizMode, type RoundAnswer } from '../lib/quiz'
+import {
+  averageTimeMs,
+  countryName,
+  formatClock,
+  formatSeconds,
+  isCorrect,
+  slowestAnswer,
+  type QuizDifficulty,
+  type QuizMode,
+  type RoundAnswer,
+  type RoundEnd,
+} from '../lib/quiz'
 import { Flag } from './Flag'
-
-export type RoundEnd = 'complete' | 'timeout' | 'lives'
 
 interface ResultsScreenProps {
   lang: Lang
   mode: QuizMode
+  difficulty: QuizDifficulty
   answers: RoundAnswer[]
   roundMs: number
   endedBy: RoundEnd
+  isNewBest: boolean
   onAgain: () => void
 }
 
-export function ResultsScreen({ lang, mode, answers, roundMs, endedBy, onAgain }: ResultsScreenProps) {
+export function ResultsScreen({
+  lang,
+  mode,
+  difficulty,
+  answers,
+  roundMs,
+  endedBy,
+  isNewBest,
+  onAgain,
+}: ResultsScreenProps) {
   const t = STRINGS[lang]
   const correctCount = answers.filter(isCorrect).length
   const total = answers.length
   const percent = total === 0 ? 0 : Math.round((correctCount / total) * 100)
   const mistakes = answers.filter((answer) => !isCorrect(answer))
+  const success = endedBy === 'complete'
+  const perfect = success && percent === 100
+  const avgSeconds = formatSeconds(averageTimeMs(answers), lang)
+  const slowest = perfect ? slowestAnswer(answers) : null
   const headline =
     endedBy === 'timeout'
       ? t.roundEndedTime
       : endedBy === 'lives'
-        ? t.roundEndedLives
-        : percent === 100
+        ? difficulty === 'hardcore'
+          ? t.roundEndedHardcore
+          : t.roundEndedLives
+        : perfect
           ? t.perfect
           : percent >= 80
             ? t.great
@@ -33,13 +59,20 @@ export function ResultsScreen({ lang, mode, answers, roundMs, endedBy, onAgain }
               : t.keepGoing
 
   return (
-    <div className="screen results-screen">
-      <section className="card score-card">
+    <div className={`screen results-screen ${success ? 'is-success' : 'is-fail'}`}>
+      <section className={`card score-card ${success ? 'is-success' : 'is-fail'}`}>
         <p className="score-kicker">{t.results}</p>
         <p className="score-value">{t.score(correctCount, total)}</p>
         <p className="score-percent">{percent}%</p>
         <p className="score-time">{t.totalTime(formatClock(roundMs))}</p>
+        {success && <p className="score-avg">{t.avgTime(avgSeconds)}</p>}
+        {slowest && (
+          <p className="score-slowest">
+            {t.slowestCountry(countryName(slowest.question.country, lang), formatSeconds(slowest.timeMs, lang))}
+          </p>
+        )}
         <p className="score-headline">{headline}</p>
+        <p className="saved-note">{isNewBest ? t.newBest : t.savedOnDevice}</p>
       </section>
 
       {mistakes.length === 0 ? (

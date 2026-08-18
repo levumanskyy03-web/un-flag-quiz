@@ -1,4 +1,5 @@
 export type Region = 'africa' | 'americas' | 'asia' | 'europe' | 'oceania'
+export const REGIONS: Region[] = ['africa', 'americas', 'asia', 'europe', 'oceania']
 export type Difficulty = 'easy' | 'hard'
 
 export interface Country {

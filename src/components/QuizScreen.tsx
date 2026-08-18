@@ -1,5 +1,5 @@
 import { STRINGS, type Lang } from '../i18n/strings'
-import { MAX_LIVES, QUESTION_TIME_MS, countryName, formatClock, type Question, type QuizMode } from '../lib/quiz'
+import { QUESTION_TIME_MS, countryName, formatClock, type Question, type QuizMode } from '../lib/quiz'
 import { Flag } from './Flag'
 
 interface QuizScreenProps {
@@ -13,6 +13,7 @@ interface QuizScreenProps {
   remainingMs: number
   roundMs: number
   livesLeft: number
+  maxLives: number
   onSelect: (iso: string) => void
   onBack: () => void
 }
@@ -28,6 +29,7 @@ export function QuizScreen({
   remainingMs,
   roundMs,
   livesLeft,
+  maxLives,
   onSelect,
   onBack,
 }: QuizScreenProps) {
@@ -46,7 +48,7 @@ export function QuizScreen({
         </button>
         <div className="progress-copy">{t.questionOf(index + 1, total)}</div>
         <div className="lives" aria-label={t.lives}>
-          {Array.from({ length: MAX_LIVES }, (_, i) => (
+          {Array.from({ length: maxLives }, (_, i) => (
             <span
               key={i}
               className={`life ${i < livesLeft ? 'is-on' : 'is-off'}`}
