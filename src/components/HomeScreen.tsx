@@ -9,6 +9,7 @@ import {
   getPool,
   isRegionSelected,
   toggleRegion,
+  type PlayPath,
   type QuizDifficulty,
   type QuizMode,
   type RegionFilter,
@@ -22,6 +23,9 @@ export interface QuizSettings {
   region: RegionFilter
   difficulty: QuizDifficulty
   roundSize: RoundSize
+  path: PlayPath
+  level: number
+  levelHardcore: boolean
 }
 
 interface HomeScreenProps {
@@ -30,6 +34,7 @@ interface HomeScreenProps {
   bests: RoundRecord[]
   onChange: (settings: QuizSettings) => void
   onStart: () => void
+  onOpenLevels: () => void
   onClearHistory: () => void
   onClearBests: () => void
 }
@@ -40,6 +45,7 @@ export function HomeScreen({
   bests,
   onChange,
   onStart,
+  onOpenLevels,
   onClearHistory,
   onClearBests,
 }: HomeScreenProps) {
@@ -48,7 +54,6 @@ export function HomeScreen({
   const regions: Array<Region | 'all'> = ['all', ...REGIONS]
   const modes: QuizMode[] = ['flagToName', 'nameToFlag']
   const difficulties = PLAY_DIFFICULTIES
-
   const currentBest = findBest(bests, settings)
 
   return (
@@ -64,18 +69,21 @@ export function HomeScreen({
 
       <section className="card settings-card">
         <h2>{t.mode}</h2>
-        <div className="choice-grid">
+        <div className="choice-grid is-3">
           {modes.map((mode) => (
             <button
               key={mode}
               type="button"
               className={`choice ${settings.mode === mode ? 'is-active' : ''}`}
               aria-pressed={settings.mode === mode}
-              onClick={() => onChange({ ...settings, mode })}
+              onClick={() => onChange({ ...settings, path: 'pool', mode })}
             >
               {modeLabel(mode, settings.lang)}
             </button>
           ))}
+          <button type="button" className="choice" onClick={onOpenLevels}>
+            {t.levels}
+          </button>
         </div>
 
         <h2>{t.region}</h2>
@@ -91,6 +99,7 @@ export function HomeScreen({
                 const nextPool = getPool(nextRegion, settings.difficulty).length
                 onChange({
                   ...settings,
+                  path: 'pool',
                   region: nextRegion,
                   roundSize: fitRoundSize(settings.roundSize, nextPool),
                 })
@@ -113,7 +122,9 @@ export function HomeScreen({
                 const nextPool = getPool(settings.region, difficulty).length
                 onChange({
                   ...settings,
+                  path: 'pool',
                   difficulty,
+                  levelHardcore: difficulty === 'hardcore',
                   roundSize: fitRoundSize(settings.roundSize, nextPool),
                 })
               }}
@@ -133,7 +144,7 @@ export function HomeScreen({
               className={`choice ${settings.roundSize === roundSize ? 'is-active' : ''}`}
               aria-pressed={settings.roundSize === roundSize}
               disabled={poolSize > 0 && roundSize > poolSize}
-              onClick={() => onChange({ ...settings, roundSize })}
+              onClick={() => onChange({ ...settings, path: 'pool', roundSize })}
             >
               {roundSize}
             </button>

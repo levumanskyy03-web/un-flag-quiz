@@ -1,6 +1,7 @@
 import { STRINGS, type Lang } from '../i18n/strings'
 import { QUESTION_TIME_MS, countryName, formatClock, type Question, type QuizMode } from '../lib/quiz'
 import { Flag } from './Flag'
+import { Lives } from './Lives'
 
 interface QuizScreenProps {
   lang: Lang
@@ -47,15 +48,12 @@ export function QuizScreen({
           {t.back}
         </button>
         <div className="progress-copy">{t.questionOf(index + 1, total)}</div>
-        <div className="lives" aria-label={t.lives}>
-          {Array.from({ length: maxLives }, (_, i) => (
-            <span
-              key={i}
-              className={`life ${i < livesLeft ? 'is-on' : 'is-off'}`}
-              aria-hidden="true"
-            />
-          ))}
-        </div>
+        <Lives
+          filled={livesLeft}
+          total={maxLives}
+          gold={maxLives === 3 && livesLeft === 3}
+          label={t.lives}
+        />
       </header>
 
       <div className="quiz-timers">

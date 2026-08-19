@@ -6,7 +6,6 @@ import {
   formatSeconds,
   isCorrect,
   slowestAnswer,
-  type QuizDifficulty,
   type QuizMode,
   type RoundAnswer,
   type RoundEnd,
@@ -16,23 +15,25 @@ import { Flag } from './Flag'
 interface ResultsScreenProps {
   lang: Lang
   mode: QuizMode
-  difficulty: QuizDifficulty
+  hardcore: boolean
   answers: RoundAnswer[]
   roundMs: number
   endedBy: RoundEnd
   isNewBest: boolean
   onAgain: () => void
+  onMenu: () => void
 }
 
 export function ResultsScreen({
   lang,
   mode,
-  difficulty,
+  hardcore,
   answers,
   roundMs,
   endedBy,
   isNewBest,
   onAgain,
+  onMenu,
 }: ResultsScreenProps) {
   const t = STRINGS[lang]
   const correctCount = answers.filter(isCorrect).length
@@ -47,7 +48,7 @@ export function ResultsScreen({
     endedBy === 'timeout'
       ? t.roundEndedTime
       : endedBy === 'lives'
-        ? difficulty === 'hardcore'
+        ? hardcore
           ? t.roundEndedHardcore
           : t.roundEndedLives
         : perfect
@@ -110,9 +111,14 @@ export function ResultsScreen({
         </section>
       )}
 
-      <button type="button" className="btn-primary" onClick={onAgain}>
-        {t.playAgain}
-      </button>
+      <div className="results-actions">
+        <button type="button" className="btn-primary" onClick={onAgain}>
+          {t.playAgain}
+        </button>
+        <button type="button" className="btn-secondary" onClick={onMenu}>
+          {t.backToMenu}
+        </button>
+      </div>
     </div>
   )
 }

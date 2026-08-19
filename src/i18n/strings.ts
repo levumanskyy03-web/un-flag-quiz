@@ -23,6 +23,8 @@ type Strings = {
   hard: string
   hardcore: string
   hardcoreHint: string
+  levels: string
+  livesLeft: (n: number) => string
   roundSize: string
   start: string
   poolCount: (n: number) => string
@@ -39,6 +41,7 @@ type Strings = {
   yourAnswer: string
   correctAnswer: string
   playAgain: string
+  backToMenu: string
   noMistakes: string
   back: string
   timedOut: string
@@ -78,6 +81,8 @@ export const STRINGS: Record<Lang, Strings> = {
     hard: 'Сложнее',
     hardcore: 'Хардкор',
     hardcoreHint: 'Без права на ошибку',
+    levels: 'Уровни',
+    livesLeft: (n) => `${n} ${pluralRu(n, 'жизнь', 'жизни', 'жизней')}`,
     roundSize: 'Стран в блоке',
     start: 'Начать',
     poolCount: (n) => `${n} ${pluralRu(n, 'страна', 'страны', 'стран')} в пуле`,
@@ -94,6 +99,7 @@ export const STRINGS: Record<Lang, Strings> = {
     yourAnswer: 'Ваш ответ',
     correctAnswer: 'Правильно',
     playAgain: 'Ещё раз',
+    backToMenu: 'Вернуться в меню',
     noMistakes: 'Без ошибок — так держать',
     back: 'Назад',
     timedOut: 'Время вышло',
@@ -131,6 +137,8 @@ export const STRINGS: Record<Lang, Strings> = {
     hard: 'Harder',
     hardcore: 'Hardcore',
     hardcoreHint: 'No mistakes allowed',
+    levels: 'Levels',
+    livesLeft: (n) => `${n} ${n === 1 ? 'life' : 'lives'}`,
     roundSize: 'Flags in the round',
     start: 'Start',
     poolCount: (n) => `${n} ${n === 1 ? 'country' : 'countries'} in the pool`,
@@ -147,6 +155,7 @@ export const STRINGS: Record<Lang, Strings> = {
     yourAnswer: 'Your answer',
     correctAnswer: 'Correct',
     playAgain: 'Play again',
+    backToMenu: 'Back to menu',
     noMistakes: 'No mistakes — well done',
     back: 'Back',
     timedOut: 'Time is up',

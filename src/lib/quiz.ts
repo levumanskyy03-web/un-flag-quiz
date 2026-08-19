@@ -1,6 +1,8 @@
 import { COUNTRIES, REGIONS, type Country, type Difficulty, type Region } from '../data/countries'
+import { LEVEL_ISOS, isLevelNumber } from '../data/levels'
 
 export type QuizMode = 'flagToName' | 'nameToFlag'
+export type PlayPath = 'pool' | 'levels'
 export type RegionFilter = string
 export type RoundEnd = 'complete' | 'timeout' | 'lives'
 export type QuizDifficulty = 'easy' | 'hard' | 'hardcore'
@@ -70,6 +72,11 @@ export function maxLives(difficulty: QuizDifficulty): number {
   return difficulty === 'hardcore' ? 1 : MAX_LIVES
 }
 
+export function livesFor(path: PlayPath, difficulty: QuizDifficulty, levelHardcore: boolean): number {
+  if (path === 'levels') return levelHardcore ? 1 : MAX_LIVES
+  return maxLives(difficulty)
+}
+
 export function countryDifficultyOf(difficulty: QuizDifficulty): Difficulty {
   return difficulty === 'hardcore' ? 'hard' : difficulty
 }
@@ -126,6 +133,12 @@ export function getPool(region: RegionFilter, difficulty: QuizDifficulty): Count
   return COUNTRIES.filter(
     (country) => regions.includes(country.region) && country.difficulty === poolDifficulty,
   )
+}
+
+export function getLevelPool(level: number): Country[] {
+  if (!isLevelNumber(level)) return []
+  const wanted = new Set(LEVEL_ISOS[level - 1])
+  return COUNTRIES.filter((country) => wanted.has(country.iso))
 }
 
 export function createRound(

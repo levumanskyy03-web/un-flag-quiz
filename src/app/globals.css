@@ -10,6 +10,10 @@
   --ok: #178a5a;
   --ok-bg: #e5f6ee;
   --ok-border: #8fd0b0;
+  --gold: #9a7209;
+  --gold-hover: #7e5c07;
+  --gold-bg: #f8f0d2;
+  --gold-border: #e0c36a;
   --bad: #c63b3b;
   --bad-bg: #fdecec;
   --bad-border: #f0a3a3;
@@ -45,6 +49,12 @@ html[data-result="success"] body {
   background:
     radial-gradient(circle at top left, #c7ead8, transparent 42%),
     #e8f6ee;
+}
+
+html[data-result="gold"] body {
+  background:
+    radial-gradient(circle at top left, #f3e4a8, transparent 42%),
+    #f7f1d8;
 }
 
 html[data-result="fail"] body {
@@ -173,6 +183,7 @@ img {
 .choice,
 .option,
 .btn-primary,
+.btn-secondary,
 .btn-ghost {
   border: 1px solid var(--border);
   background: var(--card);
@@ -212,6 +223,79 @@ img {
   font-size: 0.92rem;
 }
 
+.choice-grid.is-levels {
+  margin-top: 12px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.levels-title {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: -0.03em;
+  text-align: center;
+}
+
+.levels-header-spacer {
+  width: 72px;
+  flex-shrink: 0;
+}
+
+.levels-screen .quiz-header .btn-ghost {
+  width: 72px;
+}
+
+.levels-screen .settings-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.levels-screen .setting-hint {
+  margin: -4px 0 0;
+}
+
+.levels-screen .choice-grid.is-levels {
+  margin-top: 0;
+}
+
+.level-choice {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-height: 58px;
+  padding: 6px 4px;
+  font-size: 0.95rem;
+}
+
+.level-number {
+  font-weight: 800;
+}
+
+.level-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.choice.level-choice.is-cleared,
+.choice.level-choice.is-cleared.is-active {
+  background: var(--ok-bg);
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.choice.level-choice.is-gold,
+.choice.level-choice.is-gold.is-active {
+  background: var(--gold-bg);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
 .setting-hint {
   margin: -14px 0 22px;
   font-size: 0.88rem;
@@ -221,7 +305,8 @@ img {
 .choice,
 .chip,
 .option,
-.btn-primary {
+.btn-primary,
+.btn-secondary {
   min-height: 48px;
 }
 
@@ -255,6 +340,24 @@ img {
   opacity: 0.5;
 }
 
+.btn-secondary {
+  width: 100%;
+  background: var(--card);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.btn-secondary:hover {
+  background: var(--accent-soft);
+}
+
+.results-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .app.is-success .btn-primary {
   background: var(--ok);
   border-color: var(--ok);
@@ -262,6 +365,16 @@ img {
 
 .app.is-success .btn-primary:hover:not(:disabled) {
   background: #14734c;
+}
+
+.app.is-gold .btn-primary {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+}
+
+.app.is-gold .btn-primary:hover:not(:disabled) {
+  background: var(--gold-hover);
 }
 
 .app.is-fail .btn-primary {
@@ -275,9 +388,17 @@ img {
 
 .app.is-success .lang-toggle button.is-active,
 .app.is-success .chip.is-active,
-.app.is-success .choice.is-active {
+.app.is-success .choice.is-active:not(.is-gold):not(.is-cleared) {
   background: var(--ok);
   border-color: var(--ok);
+}
+
+.app.is-gold .lang-toggle button.is-active,
+.app.is-gold .chip.is-active,
+.app.is-gold .choice.is-active:not(.is-gold):not(.is-cleared) {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
 }
 
 .app.is-fail .lang-toggle button.is-active,
@@ -302,23 +423,27 @@ img {
 
 .lives {
   display: flex;
-  gap: 6px;
+  gap: 1px;
+  align-items: center;
+  line-height: 1;
 }
 
 .life {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 2px solid var(--bad);
+  color: var(--bad);
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
-.life.is-on {
-  background: var(--bad);
+.lives-sm .life {
+  font-size: 0.7rem;
+}
+
+.lives.is-gold .life.is-on {
+  color: var(--gold);
 }
 
 .life.is-off {
-  background: transparent;
-  opacity: 0.35;
+  opacity: 0.22;
 }
 
 .quiz-timers {
@@ -380,6 +505,17 @@ img {
 .score-card.is-fail .score-percent,
 .score-card.is-fail .score-time {
   color: var(--bad);
+}
+
+.app.is-gold .score-card {
+  background: var(--gold-bg);
+  border-color: var(--gold-border);
+}
+
+.app.is-gold .score-percent,
+.app.is-gold .score-time,
+.app.is-gold .current-best {
+  color: var(--gold);
 }
 
 .progress-track {

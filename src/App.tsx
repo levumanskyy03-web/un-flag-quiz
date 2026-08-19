@@ -2,25 +2,28 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { HomeScreen, type QuizSettings } from "./components/HomeScreen";
+import { LevelsScreen } from "./components/LevelsScreen";
 import { QuizScreen } from "./components/QuizScreen";
 import { ResultsScreen } from "./components/ResultsScreen";
 import { STRINGS, type Lang } from "./i18n/strings";
 import { clearBests, clearHistory, loadBests, loadHistory, saveRound, type RoundRecord } from "./lib/history";
+import { loadLevelClears, saveLevelClear, type LevelClear } from "./lib/levelProgress";
 import {
   ANSWER_PAUSE_MS,
   QUESTION_TIME_MS,
   createRound,
+  getLevelPool,
   getPool,
   isCorrect,
-  maxLives,
+  livesFor,
   type Question,
   type RoundAnswer,
 } from "./lib/quiz";
 
 const LANG_KEY = "un-flag-quiz-lang";
 
-type Screen = "home" | "quiz" | "results";
-type ResultTone = "success" | "fail";
+type Screen = "home" | "levels" | "quiz" | "results";
+type ResultTone = "success" | "fail" | "gold";
 
 function subscribeLang(onChange: () => void) {
   window.addEventListener("storage", onChange);
@@ -40,6 +43,9 @@ export default function App() {
     region: "all",
     difficulty: "easy",
     roundSize: 10,
+    path: "pool",
+    level: 1,
+    levelHardcore: false,
   });
   const [screen, setScreen] = useState<Screen>("home");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -51,6 +57,7 @@ export default function App() {
   const [roundMs, setRoundMs] = useState(0);
   const [history, setHistory] = useState<RoundRecord[]>([]);
   const [bests, setBests] = useState<RoundRecord[]>([]);
+  const [levelClears, setLevelClears] = useState<LevelClear[]>([]);
   const [isNewBest, setIsNewBest] = useState(false);
   const [resultTone, setResultTone] = useState<ResultTone | null>(null);
   const roundStartRef = useRef<number | null>(null);
@@ -62,7 +69,7 @@ export default function App() {
     lang: lang ?? storedLang,
   };
   const answered = selectedIso !== null || timedOut;
-  const livesLimit = maxLives(quizSettings.difficulty);
+  const livesLimit = livesFor(quizSettings.path, quizSettings.difficulty, quizSettings.levelHardcore);
   const mistakes = answers.filter((answer) => !isCorrect(answer)).length;
   const livesLeft = Math.max(0, livesLimit - mistakes);
   const endedBy = timedOut ? "timeout" : mistakes >= livesLimit ? "lives" : "complete";
@@ -83,6 +90,7 @@ export default function App() {
   useEffect(() => {
     setHistory(loadHistory());
     setBests(loadBests());
+    setLevelClears(loadLevelClears());
   }, []);
 
   useEffect(() => {
@@ -130,22 +138,38 @@ export default function App() {
         }
         if (!savedRoundRef.current && answers.length > 0) {
           savedRoundRef.current = true;
-          const saved = saveRound({
-            at: Date.now(),
-            correct: answers.filter(isCorrect).length,
-            total: answers.length,
-            roundMs: finishedMs,
-            mode: quizSettings.mode,
-            region: quizSettings.region,
-            difficulty: quizSettings.difficulty,
-            roundSize: questions.length,
-            endedBy,
-          });
-          setHistory(saved.history);
-          setBests(saved.bests);
-          setIsNewBest(saved.isNewBest);
+          if (quizSettings.path === "levels") {
+            if (endedBy === "complete") {
+              setLevelClears(
+                saveLevelClear({
+                  level: quizSettings.level,
+                  mode: quizSettings.mode,
+                  hardcore: quizSettings.levelHardcore,
+                  livesLeft,
+                  roundMs: finishedMs,
+                  at: Date.now(),
+                }),
+              );
+            }
+          } else {
+            const saved = saveRound({
+              at: Date.now(),
+              correct: answers.filter(isCorrect).length,
+              total: answers.length,
+              roundMs: finishedMs,
+              mode: quizSettings.mode,
+              region: quizSettings.region,
+              difficulty: quizSettings.difficulty,
+              roundSize: questions.length,
+              endedBy,
+            });
+            setHistory(saved.history);
+            setBests(saved.bests);
+            setIsNewBest(saved.isNewBest);
+          }
         }
-        setResultTone(endedBy === "complete" ? "success" : "fail");
+        const gold = endedBy === "complete" && quizSettings.path === "levels" && quizSettings.levelHardcore;
+        setResultTone(endedBy !== "complete" ? "fail" : gold ? "gold" : "success");
         setScreen("results");
         return;
       }
@@ -164,8 +188,11 @@ export default function App() {
     mistakes,
     questions.length,
     quizSettings.difficulty,
+    quizSettings.level,
+    quizSettings.levelHardcore,
     quizSettings.mode,
-    quizSettings.region,
+    quizSettings.path,
+    livesLeft,
     screen,
     timedOut,
   ]);
@@ -186,12 +213,14 @@ export default function App() {
       region: next.region,
       difficulty: next.difficulty,
       roundSize: next.roundSize,
+      path: next.path,
+      level: next.level,
+      levelHardcore: next.levelHardcore,
     });
   }
 
-  function startRound() {
-    const pool = getPool(quizSettings.region, quizSettings.difficulty);
-    const round = createRound(pool, quizSettings.roundSize);
+  function beginRound(pool: ReturnType<typeof getPool>, size: number, path: QuizSettings["path"], level: number) {
+    const round = createRound(pool, size);
     if (round.length === 0) return;
     roundStartRef.current = Date.now();
     questionStartRef.current = Date.now();
@@ -205,7 +234,28 @@ export default function App() {
     setAnswers([]);
     setRemainingMs(QUESTION_TIME_MS);
     setRoundMs(0);
+    setSettings((prev) => ({ ...prev, path, level }));
     setScreen("quiz");
+  }
+
+  function startRound() {
+    const pool = getPool(quizSettings.region, quizSettings.difficulty);
+    beginRound(pool, quizSettings.roundSize, "pool", quizSettings.level);
+  }
+
+  function playLevel(level: number) {
+    const pool = getLevelPool(level);
+    beginRound(pool, pool.length, "levels", level);
+  }
+
+  function openLevels() {
+    setSettings((prev) => ({ ...prev, path: "levels" }));
+    setScreen("levels");
+  }
+
+  function leaveLevels() {
+    setSettings((prev) => ({ ...prev, path: "pool" }));
+    setScreen("home");
   }
 
   function selectAnswer(iso: string) {
@@ -215,9 +265,17 @@ export default function App() {
     setAnswers((prev) => [...prev, { question, selectedIso: iso, timeMs: questionTimeMs() }]);
   }
 
-  function goHome() {
+  function playAgain() {
+    if (quizSettings.path === "levels") {
+      playLevel(quizSettings.level);
+      return;
+    }
+    startRound();
+  }
+
+  function goBackFromPlay() {
     roundStartRef.current = null;
-    setScreen("home");
+    setScreen(quizSettings.path === "levels" ? "levels" : "home");
   }
 
   function handleClearHistory() {
@@ -237,8 +295,18 @@ export default function App() {
           bests={bests}
           onChange={handleSettingsChange}
           onStart={startRound}
+          onOpenLevels={openLevels}
           onClearHistory={handleClearHistory}
           onClearBests={handleClearBests}
+        />
+      )}
+      {screen === "levels" && (
+        <LevelsScreen
+          settings={quizSettings}
+          levelClears={levelClears}
+          onChange={handleSettingsChange}
+          onPlay={playLevel}
+          onBack={leaveLevels}
         />
       )}
       {screen === "quiz" && questions[index] && (
@@ -255,19 +323,24 @@ export default function App() {
           livesLeft={livesLeft}
           maxLives={livesLimit}
           onSelect={selectAnswer}
-          onBack={goHome}
+          onBack={goBackFromPlay}
         />
       )}
       {screen === "results" && (
         <ResultsScreen
           lang={quizSettings.lang}
           mode={quizSettings.mode}
-          difficulty={quizSettings.difficulty}
+          hardcore={
+            quizSettings.path === "levels"
+              ? quizSettings.levelHardcore
+              : quizSettings.difficulty === "hardcore"
+          }
           answers={answers}
           roundMs={roundMs}
           endedBy={endedBy}
           isNewBest={isNewBest}
-          onAgain={goHome}
+          onAgain={playAgain}
+          onMenu={goBackFromPlay}
         />
       )}
       <p className="credit">{STRINGS[quizSettings.lang].credit}</p>
