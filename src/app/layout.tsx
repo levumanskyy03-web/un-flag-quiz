@@ -9,8 +9,8 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Флаги ООН",
-  description: "Викторина по флагам стран — членов ООН",
+  title: "Паспорт страны",
+  description: "193 страны. Без сокращений.",
   icons: {
     icon: "/favicon.svg",
   },

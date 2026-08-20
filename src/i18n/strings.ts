@@ -27,7 +27,6 @@ type Strings = {
   livesLeft: (n: number) => string
   roundSize: string
   start: string
-  poolCount: (n: number) => string
   questionOf: (i: number, total: number) => string
   next: string
   seeResults: string
@@ -41,12 +40,15 @@ type Strings = {
   yourAnswer: string
   correctAnswer: string
   playAgain: string
+  nextLevel: string
   backToMenu: string
   noMistakes: string
   back: string
   timedOut: string
   totalTime: (clock: string) => string
   lives: string
+  finalLevel: string
+  finalLevelHint: string
   roundEndedTime: string
   roundEndedLives: string
   roundEndedHardcore: string
@@ -59,13 +61,20 @@ type Strings = {
   clearBests: string
   newBest: string
   bestOfSetup: (score: string, clock: string) => string
+  playerName: string
+  playerNameHint: string
+  playerNameShort: string
+  leaderboard: string
+  leaderboardEmpty: string
+  leaderboardOffline: string
+  leaderboardProgress: (cleared: number, total: number) => string
   credit: string
 }
 
 export const STRINGS: Record<Lang, Strings> = {
   ru: {
-    title: 'Флаги ООН',
-    subtitle: 'Викторина по флагам стран — членов ООН',
+    title: 'Паспорт страны',
+    subtitle: '193 страны. Без сокращений.',
     mode: 'Режим',
     flagToName: 'Флаг → страна',
     nameToFlag: 'Страна → флаг',
@@ -85,7 +94,6 @@ export const STRINGS: Record<Lang, Strings> = {
     livesLeft: (n) => `${n} ${pluralRu(n, 'жизнь', 'жизни', 'жизней')}`,
     roundSize: 'Стран в блоке',
     start: 'Начать',
-    poolCount: (n) => `${n} ${pluralRu(n, 'страна', 'страны', 'стран')} в пуле`,
     questionOf: (i, total) => `Вопрос ${i} из ${total}`,
     next: 'Далее',
     seeResults: 'К итогам',
@@ -99,12 +107,15 @@ export const STRINGS: Record<Lang, Strings> = {
     yourAnswer: 'Ваш ответ',
     correctAnswer: 'Правильно',
     playAgain: 'Ещё раз',
+    nextLevel: 'Следующий уровень',
     backToMenu: 'Вернуться в меню',
     noMistakes: 'Без ошибок — так держать',
     back: 'Назад',
     timedOut: 'Время вышло',
     totalTime: (clock) => `Время: ${clock}`,
     lives: 'Жизни',
+    finalLevel: 'Уровень 20',
+    finalLevelHint: 'Все 193 страны',
     roundEndedTime: 'Время вышло — раунд окончен',
     roundEndedLives: 'Три ошибки — раунд окончен',
     roundEndedHardcore: 'Одна ошибка — раунд окончен',
@@ -117,11 +128,18 @@ export const STRINGS: Record<Lang, Strings> = {
     clearBests: 'Сбросить рекорды',
     newBest: 'Новый рекорд этой настройки',
     bestOfSetup: (score, clock) => `Рекорд этой настройки: ${score} · ${clock}`,
+    playerName: 'Имя в таблице',
+    playerNameHint: 'Как вас записать',
+    playerNameShort: 'Минимум два символа',
+    leaderboard: 'Лидеры',
+    leaderboardEmpty: 'Пока пусто — пройдите уровень с именем',
+    leaderboardOffline: 'Общая таблица пока недоступна',
+    leaderboardProgress: (cleared, total) => `${cleared}/${total}`,
     credit: 'Создано Львом Уманским',
   },
   en: {
-    title: 'UN Flags',
-    subtitle: 'A quiz of United Nations member flags',
+    title: 'Country Passport',
+    subtitle: '193 countries. No shortcuts.',
     mode: 'Mode',
     flagToName: 'Flag → country',
     nameToFlag: 'Country → flag',
@@ -141,7 +159,6 @@ export const STRINGS: Record<Lang, Strings> = {
     livesLeft: (n) => `${n} ${n === 1 ? 'life' : 'lives'}`,
     roundSize: 'Flags in the round',
     start: 'Start',
-    poolCount: (n) => `${n} ${n === 1 ? 'country' : 'countries'} in the pool`,
     questionOf: (i, total) => `Question ${i} of ${total}`,
     next: 'Next',
     seeResults: 'See results',
@@ -155,12 +172,15 @@ export const STRINGS: Record<Lang, Strings> = {
     yourAnswer: 'Your answer',
     correctAnswer: 'Correct',
     playAgain: 'Play again',
+    nextLevel: 'Next level',
     backToMenu: 'Back to menu',
     noMistakes: 'No mistakes — well done',
     back: 'Back',
     timedOut: 'Time is up',
     totalTime: (clock) => `Time: ${clock}`,
     lives: 'Lives',
+    finalLevel: 'Level 20',
+    finalLevelHint: 'All 193 countries',
     roundEndedTime: 'Time is up — round over',
     roundEndedLives: 'Three mistakes — round over',
     roundEndedHardcore: 'One mistake — round over',
@@ -173,6 +193,13 @@ export const STRINGS: Record<Lang, Strings> = {
     clearBests: 'Reset records',
     newBest: 'New best for this setup',
     bestOfSetup: (score, clock) => `Best for this setup: ${score} · ${clock}`,
+    playerName: 'Leaderboard name',
+    playerNameHint: 'How you appear',
+    playerNameShort: 'At least two characters',
+    leaderboard: 'Leaders',
+    leaderboardEmpty: 'Empty for now — clear a level with a name',
+    leaderboardOffline: 'The shared board is unavailable',
+    leaderboardProgress: (cleared, total) => `${cleared}/${total}`,
     credit: 'Created by Lev Umansky',
   },
 }

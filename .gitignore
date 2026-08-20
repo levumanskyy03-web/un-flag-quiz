@@ -34,6 +34,7 @@ yarn-error.log*
 
 # env files
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -51,3 +52,7 @@ next-env.d.ts
 *.njsproj
 *.sln
 *.sw?
+
+# local leaderboard fallback
+.data
+

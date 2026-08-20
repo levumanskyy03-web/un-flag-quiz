@@ -1,23 +1,39 @@
+import { CAMPAIGN_LEVELS, FINAL_LEVEL, isFinalLevel } from '../data/levels'
 import type { QuizMode } from './quiz'
 
 export const LEVELS_KEY = 'un-flag-quiz-levels'
+const LEVELS_WIPE_KEY = 'un-flag-quiz-levels-wipe-1'
 
 export interface LevelClear {
   level: number
   mode: QuizMode
   hardcore: boolean
+  livesLimit?: number
   livesLeft: number
   roundMs: number
   at: number
 }
 
+function livesKey(clear: Pick<LevelClear, 'hardcore' | 'livesLimit'>): number {
+  const limit = clear.livesLimit
+  if (limit !== undefined && limit > 0) return limit
+  return clear.hardcore ? 1 : 3
+}
+
 export function loadLevelClears(): LevelClear[] {
-  return readClears() ?? []
+  wipeLegacyClears()
+  const loaded = readClears() ?? []
+  const next = keepConsecutive(loaded)
+  if (typeof window !== 'undefined' && JSON.stringify(next) !== JSON.stringify(loaded)) {
+    localStorage.setItem(LEVELS_KEY, JSON.stringify(next))
+  }
+  return next
 }
 
 export function saveLevelClear(clear: LevelClear): LevelClear[] {
   const previous = loadLevelClears()
-  const current = findLevelClear(previous, clear.level, clear.mode)
+  if (!isLevelUnlocked(previous, clear.level, clear.mode)) return previous
+  const current = findLevelClear(previous, clear.level, clear.mode, livesKey(clear))
   const next =
     current && !isBetterClear(clear, current)
       ? previous
@@ -30,12 +46,53 @@ export function findLevelClear(
   clears: LevelClear[],
   level: number,
   mode: QuizMode,
+  livesLimit?: number,
 ): LevelClear | undefined {
-  return clears.find((item) => item.level === level && item.mode === mode)
+  const matches = clears.filter((item) => item.level === level && item.mode === mode)
+  if (livesLimit !== undefined) {
+    return matches.find((item) => livesKey(item) === livesLimit)
+  }
+  return matches.find((item) => item.hardcore) ?? matches[0]
+}
+
+export function isLevelUnlocked(clears: LevelClear[], level: number, mode: QuizMode): boolean {
+  if (level <= 1) return true
+  if (isFinalLevel(level)) {
+    return findLevelClear(clears, CAMPAIGN_LEVELS, mode) !== undefined
+  }
+  return findLevelClear(clears, level - 1, mode) !== undefined
+}
+
+function wipeLegacyClears() {
+  if (typeof window === 'undefined') return
+  if (localStorage.getItem(LEVELS_WIPE_KEY) === '1') return
+  localStorage.removeItem('un-flag-quiz-levels')
+  localStorage.removeItem('un-flag-quiz-levels-v2')
+  localStorage.setItem(LEVELS_WIPE_KEY, '1')
+}
+
+function keepConsecutive(clears: LevelClear[]): LevelClear[] {
+  const kept: LevelClear[] = []
+  const modes: QuizMode[] = ['flagToName', 'nameToFlag']
+  for (const mode of modes) {
+    const chain: LevelClear[] = []
+    for (let level = 1; level <= CAMPAIGN_LEVELS; level++) {
+      const hits = clears.filter((item) => item.level === level && item.mode === mode)
+      if (hits.length === 0) break
+      chain.push(...hits)
+    }
+    if (chain.some((item) => item.level === CAMPAIGN_LEVELS)) {
+      chain.push(...clears.filter((item) => item.level === FINAL_LEVEL && item.mode === mode))
+    }
+    kept.push(...chain)
+  }
+  return kept
 }
 
 function sameSlot(a: LevelClear, b: LevelClear): boolean {
-  return a.level === b.level && a.mode === b.mode
+  if (a.level !== b.level || a.mode !== b.mode) return false
+  if (isFinalLevel(a.level) || isFinalLevel(b.level)) return livesKey(a) === livesKey(b)
+  return true
 }
 
 function isBetterClear(candidate: LevelClear, current: LevelClear): boolean {
@@ -70,6 +127,7 @@ function isLevelClear(value: unknown): value is LevelClear {
     typeof record.level === 'number' &&
     isQuizMode(record.mode) &&
     typeof record.hardcore === 'boolean' &&
+    (record.livesLimit === undefined || typeof record.livesLimit === 'number') &&
     typeof record.livesLeft === 'number' &&
     typeof record.roundMs === 'number' &&
     typeof record.at === 'number'

@@ -21,6 +21,7 @@ interface ResultsScreenProps {
   endedBy: RoundEnd
   isNewBest: boolean
   onAgain: () => void
+  onNextLevel?: () => void
   onMenu: () => void
 }
 
@@ -33,6 +34,7 @@ export function ResultsScreen({
   endedBy,
   isNewBest,
   onAgain,
+  onNextLevel,
   onMenu,
 }: ResultsScreenProps) {
   const t = STRINGS[lang]
@@ -112,7 +114,12 @@ export function ResultsScreen({
       )}
 
       <div className="results-actions">
-        <button type="button" className="btn-primary" onClick={onAgain}>
+        {success && onNextLevel && (
+          <button type="button" className="btn-primary" onClick={onNextLevel}>
+            {t.nextLevel}
+          </button>
+        )}
+        <button type="button" className={success && onNextLevel ? 'btn-secondary' : 'btn-primary'} onClick={onAgain}>
           {t.playAgain}
         </button>
         <button type="button" className="btn-secondary" onClick={onMenu}>

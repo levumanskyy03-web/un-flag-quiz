@@ -20,9 +20,17 @@ export const LEVEL_ISOS: string[][] = [
   ['td', 'nr', 'tv', 'pw', 'mh', 'fm', 'kn', 'lc', 'vc', 'ag', 'li', 'sm', 'gw'],
 ]
 
-export const LEVEL_COUNT = LEVEL_ISOS.length
-export const LEVEL_NUMBERS = LEVEL_ISOS.map((_, index) => index + 1)
+export const CAMPAIGN_LEVELS = LEVEL_ISOS.length
+export const FINAL_LEVEL = CAMPAIGN_LEVELS + 1
+export const LEVEL_COUNT = FINAL_LEVEL
+export const LEVEL_NUMBERS = Array.from({ length: LEVEL_COUNT }, (_, index) => index + 1)
+export const FINAL_LIVES = [20, 10, 3, 1] as const
+export type FinalLives = (typeof FINAL_LIVES)[number]
 
 export function isLevelNumber(value: number): boolean {
   return Number.isInteger(value) && value >= 1 && value <= LEVEL_COUNT
+}
+
+export function isFinalLevel(level: number): boolean {
+  return level === FINAL_LEVEL
 }

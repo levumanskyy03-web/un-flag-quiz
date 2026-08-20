@@ -48,12 +48,24 @@ export function QuizScreen({
           {t.back}
         </button>
         <div className="progress-copy">{t.questionOf(index + 1, total)}</div>
-        <Lives
-          filled={livesLeft}
-          total={maxLives}
-          gold={maxLives === 3 && livesLeft === 3}
-          label={t.lives}
-        />
+        {maxLives <= 3 ? (
+          <Lives
+            filled={livesLeft}
+            total={maxLives}
+            gold={maxLives >= 3 && livesLeft === maxLives}
+            label={t.lives}
+          />
+        ) : (
+          <span
+            className={`lives-compact${livesLeft === maxLives ? ' is-gold' : ''}`}
+            aria-label={t.lives}
+          >
+            <span className="life is-on" aria-hidden="true">
+              ♥
+            </span>
+            {livesLeft}
+          </span>
+        )}
       </header>
 
       <div className="quiz-timers">

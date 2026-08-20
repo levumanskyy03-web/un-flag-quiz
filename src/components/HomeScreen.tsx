@@ -26,6 +26,7 @@ export interface QuizSettings {
   path: PlayPath
   level: number
   levelHardcore: boolean
+  levelLives: number
 }
 
 interface HomeScreenProps {
@@ -152,7 +153,6 @@ export function HomeScreen({
         </div>
       </section>
 
-      <p className="pool-meta">{t.poolCount(poolSize)}</p>
       {currentBest && (
         <p className="current-best">
           {t.bestOfSetup(t.score(currentBest.correct, currentBest.total), formatClock(currentBest.roundMs))}

@@ -114,7 +114,6 @@ img {
 }
 
 .subtitle,
-.pool-meta,
 .progress-copy,
 .score-kicker,
 .no-mistakes,
@@ -258,6 +257,116 @@ img {
   margin-top: 0;
 }
 
+.final-level-copy {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+.final-lives-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.final-lives-choice {
+  min-height: 58px;
+}
+
+.lives-compact {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--bad);
+}
+
+.lives-compact.is-gold {
+  color: var(--gold);
+}
+
+.player-name {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.player-name input {
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.player-name input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.leaderboard-empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+.leaderboard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 2rem 1fr auto;
+  gap: 10px;
+  align-items: baseline;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.leaderboard-row:first-child {
+  border-top: 0;
+  padding-top: 2px;
+}
+
+.leaderboard-row.is-you {
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.leaderboard-rank,
+.leaderboard-score {
+  font-variant-numeric: tabular-nums;
+}
+
+.leaderboard-rank {
+  color: var(--muted);
+}
+
+.leaderboard-score {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.leaderboard-row.is-you .leaderboard-rank,
+.leaderboard-row.is-you .leaderboard-score {
+  color: var(--accent);
+}
+
 .level-choice {
   display: flex;
   flex-direction: column;
@@ -266,6 +375,12 @@ img {
   min-height: 58px;
   padding: 6px 4px;
   font-size: 0.95rem;
+}
+
+.level-choice.is-locked,
+.level-choice:disabled {
+  opacity: 0.38;
+  pointer-events: none;
 }
 
 .level-number {

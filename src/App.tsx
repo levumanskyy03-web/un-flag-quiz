@@ -2,12 +2,15 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { HomeScreen, type QuizSettings } from "./components/HomeScreen";
+import { Level20Screen } from "./components/Level20Screen";
 import { LevelsScreen } from "./components/LevelsScreen";
 import { QuizScreen } from "./components/QuizScreen";
 import { ResultsScreen } from "./components/ResultsScreen";
+import { FINAL_LEVEL, LEVEL_COUNT, isFinalLevel } from "./data/levels";
 import { STRINGS, type Lang } from "./i18n/strings";
 import { clearBests, clearHistory, loadBests, loadHistory, saveRound, type RoundRecord } from "./lib/history";
-import { loadLevelClears, saveLevelClear, type LevelClear } from "./lib/levelProgress";
+import { loadLevelClears, saveLevelClear, isLevelUnlocked, type LevelClear } from "./lib/levelProgress";
+import { submitCampaign } from "./lib/leaderboard";
 import {
   ANSWER_PAUSE_MS,
   QUESTION_TIME_MS,
@@ -22,7 +25,7 @@ import {
 
 const LANG_KEY = "un-flag-quiz-lang";
 
-type Screen = "home" | "levels" | "quiz" | "results";
+type Screen = "home" | "levels" | "level20" | "quiz" | "results";
 type ResultTone = "success" | "fail" | "gold";
 
 function subscribeLang(onChange: () => void) {
@@ -46,6 +49,7 @@ export default function App() {
     path: "pool",
     level: 1,
     levelHardcore: false,
+    levelLives: 3,
   });
   const [screen, setScreen] = useState<Screen>("home");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -69,7 +73,13 @@ export default function App() {
     lang: lang ?? storedLang,
   };
   const answered = selectedIso !== null || timedOut;
-  const livesLimit = livesFor(quizSettings.path, quizSettings.difficulty, quizSettings.levelHardcore);
+  const livesLimit = livesFor(
+    quizSettings.path,
+    quizSettings.difficulty,
+    quizSettings.levelHardcore,
+    quizSettings.level,
+    quizSettings.levelLives,
+  );
   const mistakes = answers.filter((answer) => !isCorrect(answer)).length;
   const livesLeft = Math.max(0, livesLimit - mistakes);
   const endedBy = timedOut ? "timeout" : mistakes >= livesLimit ? "lives" : "complete";
@@ -140,16 +150,17 @@ export default function App() {
           savedRoundRef.current = true;
           if (quizSettings.path === "levels") {
             if (endedBy === "complete") {
-              setLevelClears(
-                saveLevelClear({
-                  level: quizSettings.level,
-                  mode: quizSettings.mode,
-                  hardcore: quizSettings.levelHardcore,
-                  livesLeft,
-                  roundMs: finishedMs,
-                  at: Date.now(),
-                }),
-              );
+              const nextClears = saveLevelClear({
+                level: quizSettings.level,
+                mode: quizSettings.mode,
+                hardcore: quizSettings.levelHardcore,
+                livesLimit: livesLimit,
+                livesLeft,
+                roundMs: finishedMs,
+                at: Date.now(),
+              });
+              setLevelClears(nextClears);
+              void submitCampaign(nextClears, quizSettings.mode);
             }
           } else {
             const saved = saveRound({
@@ -190,6 +201,7 @@ export default function App() {
     quizSettings.difficulty,
     quizSettings.level,
     quizSettings.levelHardcore,
+    quizSettings.levelLives,
     quizSettings.mode,
     quizSettings.path,
     livesLeft,
@@ -216,10 +228,17 @@ export default function App() {
       path: next.path,
       level: next.level,
       levelHardcore: next.levelHardcore,
+      levelLives: next.levelLives,
     });
   }
 
-  function beginRound(pool: ReturnType<typeof getPool>, size: number, path: QuizSettings["path"], level: number) {
+  function beginRound(
+    pool: ReturnType<typeof getPool>,
+    size: number,
+    path: QuizSettings["path"],
+    level: number,
+    extras?: Pick<QuizSettings, "levelHardcore" | "levelLives">,
+  ) {
     const round = createRound(pool, size);
     if (round.length === 0) return;
     roundStartRef.current = Date.now();
@@ -234,7 +253,7 @@ export default function App() {
     setAnswers([]);
     setRemainingMs(QUESTION_TIME_MS);
     setRoundMs(0);
-    setSettings((prev) => ({ ...prev, path, level }));
+    setSettings((prev) => ({ ...prev, path, level, ...extras }));
     setScreen("quiz");
   }
 
@@ -244,8 +263,26 @@ export default function App() {
   }
 
   function playLevel(level: number) {
+    if (!isLevelUnlocked(levelClears, level, quizSettings.mode)) return;
+    if (isFinalLevel(level)) {
+      setSettings((prev) => ({ ...prev, path: "levels", level: FINAL_LEVEL }));
+      setScreen("level20");
+      return;
+    }
     const pool = getLevelPool(level);
-    beginRound(pool, pool.length, "levels", level);
+    beginRound(pool, pool.length, "levels", level, {
+      levelHardcore: quizSettings.levelHardcore,
+      levelLives: quizSettings.levelHardcore ? 1 : 3,
+    });
+  }
+
+  function playFinalLevel(lives: number) {
+    if (!isLevelUnlocked(levelClears, FINAL_LEVEL, quizSettings.mode)) return;
+    const pool = getLevelPool(FINAL_LEVEL);
+    beginRound(pool, pool.length, "levels", FINAL_LEVEL, {
+      levelHardcore: lives === 1,
+      levelLives: lives,
+    });
   }
 
   function openLevels() {
@@ -266,6 +303,10 @@ export default function App() {
   }
 
   function playAgain() {
+    if (quizSettings.path === "levels" && isFinalLevel(quizSettings.level)) {
+      playFinalLevel(quizSettings.levelLives);
+      return;
+    }
     if (quizSettings.path === "levels") {
       playLevel(quizSettings.level);
       return;
@@ -273,8 +314,20 @@ export default function App() {
     startRound();
   }
 
+  function playNextLevel() {
+    playLevel(quizSettings.level + 1);
+  }
+
   function goBackFromPlay() {
     roundStartRef.current = null;
+    if (
+      quizSettings.path === "levels" &&
+      isFinalLevel(quizSettings.level) &&
+      isLevelUnlocked(levelClears, FINAL_LEVEL, quizSettings.mode)
+    ) {
+      setScreen("level20");
+      return;
+    }
     setScreen(quizSettings.path === "levels" ? "levels" : "home");
   }
 
@@ -309,6 +362,14 @@ export default function App() {
           onBack={leaveLevels}
         />
       )}
+      {screen === "level20" && (
+        <Level20Screen
+          settings={quizSettings}
+          levelClears={levelClears}
+          onPlay={playFinalLevel}
+          onBack={() => setScreen("levels")}
+        />
+      )}
       {screen === "quiz" && questions[index] && (
         <QuizScreen
           lang={quizSettings.lang}
@@ -340,6 +401,13 @@ export default function App() {
           endedBy={endedBy}
           isNewBest={isNewBest}
           onAgain={playAgain}
+          onNextLevel={
+            endedBy === "complete" &&
+            quizSettings.path === "levels" &&
+            quizSettings.level < LEVEL_COUNT
+              ? playNextLevel
+              : undefined
+          }
           onMenu={goBackFromPlay}
         />
       )}
