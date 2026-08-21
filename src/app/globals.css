@@ -105,6 +105,83 @@ img {
   gap: 8px;
 }
 
+.home-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-top .lang-toggle {
+  align-self: center;
+}
+
+.account-chip {
+  min-height: 36px;
+  max-width: min(52vw, 220px);
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-chip:hover,
+.account-chip:focus-visible {
+  border-color: var(--accent);
+}
+
+.levels-screen .settings-card > .account-chip {
+  align-self: flex-start;
+}
+
+.account-sheet {
+  align-items: stretch;
+  text-align: left;
+}
+
+.account-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.account-sheet-head h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.account-form .btn-primary,
+.account-sheet .btn-secondary {
+  width: 100%;
+}
+
+.account-signed-in {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.account-error {
+  margin: 0;
+  color: var(--bad);
+  font-weight: 700;
+}
+
 .home-header h1,
 .prompt-name,
 .score-value {
@@ -214,6 +291,29 @@ img {
 
 .choice-grid.is-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.choice-grid.is-modes .choice {
+  font-size: 0.88rem;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.home-screen .choice-grid.is-modes {
+  margin-bottom: 22px;
+}
+
+.choice-grid.is-paths {
+  margin-bottom: 22px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--accent-soft);
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+}
+
+.choice-grid.is-paths .choice {
+  background: var(--card);
 }
 
 .choice-grid.is-3 .choice {
@@ -430,6 +530,12 @@ img {
   padding: 12px 14px;
   font-weight: 600;
   text-align: center;
+}
+
+.option-fact {
+  white-space: normal;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
 }
 
 .chip {
@@ -668,6 +774,46 @@ img {
   padding: 8px 0;
 }
 
+.neighbors-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.neighbors-prompt-label {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-align: center;
+}
+
+.neighbors-prompt-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.neighbors-prompt-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 10px 6px 6px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  font-weight: 700;
+}
+
 .flag {
   display: grid;
   place-items: center;
@@ -897,6 +1043,10 @@ img {
 
 .mistake-copy p {
   margin: 0;
+}
+
+.mistake-country {
+  font-weight: 800;
 }
 
 .mistake-label {

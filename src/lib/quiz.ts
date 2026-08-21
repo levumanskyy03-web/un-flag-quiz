@@ -1,7 +1,29 @@
 import { COUNTRIES, REGIONS, type Country, type Difficulty, type Region } from '../data/countries'
 import { LEVEL_ISOS, isFinalLevel, isLevelNumber } from '../data/levels'
+import { canAskNeighbors } from '../data/neighbors'
 
-export type QuizMode = 'flagToName' | 'nameToFlag'
+export const QUIZ_MODES = [
+  'flagToName',
+  'nameToFlag',
+  'nameToCapital',
+  'nameToCurrency',
+  'nameToPopulation',
+  'neighborsToName',
+] as const
+export type QuizMode = (typeof QUIZ_MODES)[number]
+export const LEVEL_MODES: QuizMode[] = QUIZ_MODES.filter((mode) => mode !== 'neighborsToName')
+
+export function isQuizMode(value: unknown): value is QuizMode {
+  return typeof value === 'string' && (QUIZ_MODES as readonly string[]).includes(value)
+}
+
+export function isFactMode(mode: QuizMode): boolean {
+  return mode === 'nameToCapital' || mode === 'nameToCurrency' || mode === 'nameToPopulation'
+}
+
+export function hasLevels(mode: QuizMode): boolean {
+  return mode !== 'neighborsToName'
+}
 export type PlayPath = 'pool' | 'levels' | 'learn'
 export type LearnFrom = 'region' | 'level'
 export type RegionFilter = string
@@ -66,8 +88,13 @@ export function fitRoundSize(size: number, poolSize: number): RoundSize {
   return options.reduce((best, n) => (Math.abs(n - size) < Math.abs(best - size) ? n : best))
 }
 export const QUESTION_TIME_MS = 10_000
+export const NEIGHBORS_QUESTION_TIME_MS = 30_000
 export const ANSWER_PAUSE_MS = 900
 export const MAX_LIVES = 3
+
+export function questionLimitMs(mode: QuizMode): number {
+  return mode === 'neighborsToName' ? NEIGHBORS_QUESTION_TIME_MS : QUESTION_TIME_MS
+}
 
 export function maxLives(difficulty: QuizDifficulty): number {
   return difficulty === 'hardcore' ? 1 : MAX_LIVES
@@ -168,15 +195,23 @@ export function getLearnPool(learnFrom: LearnFrom, region: RegionFilter, level: 
   return learnFrom === 'level' ? getLevelPool(level) : getRegionPool(region)
 }
 
+export function poolForMode(pool: Country[], mode: QuizMode): Country[] {
+  if (mode !== 'neighborsToName') return pool
+  const eligible = pool.filter((country) => canAskNeighbors(country.iso))
+  if (eligible.length >= 4) return eligible
+  return COUNTRIES.filter((country) => canAskNeighbors(country.iso))
+}
+
 export function createRound(
   pool: Country[],
   count = QUESTIONS_PER_ROUND,
+  uniqueKey: (country: Country) => string = (country) => country.iso,
 ): Question[] {
   const targets = shuffle(pool).slice(0, Math.min(count, pool.length))
 
   return targets.map((country) => ({
     country,
-    options: shuffle([country, ...pickDistractors(country, pool, 3)]),
+    options: shuffle([country, ...pickDistractors(country, pool, 3, uniqueKey)]),
   }))
 }
 
@@ -184,15 +219,20 @@ function pickDistractors(
   correct: Country,
   pool: Country[],
   n: number,
+  uniqueKey: (country: Country) => string,
 ): Country[] {
-  const picked = new Set([correct.iso])
+  const pickedIso = new Set([correct.iso])
+  const pickedKey = new Set([uniqueKey(correct)])
   const distractors: Country[] = []
 
   const addFrom = (list: Country[]) => {
     for (const country of shuffle(list)) {
       if (distractors.length >= n) return
-      if (picked.has(country.iso)) continue
-      picked.add(country.iso)
+      if (pickedIso.has(country.iso)) continue
+      const key = uniqueKey(country)
+      if (pickedKey.has(key)) continue
+      pickedIso.add(country.iso)
+      pickedKey.add(key)
       distractors.push(country)
     }
   }

@@ -5,11 +5,13 @@ import {
   formatClock,
   formatSeconds,
   isCorrect,
+  isFactMode,
   slowestAnswer,
   type QuizMode,
   type RoundAnswer,
   type RoundEnd,
 } from '../lib/quiz'
+import { optionLabel } from '../lib/quizAnswers'
 import { Flag } from './Flag'
 
 interface ResultsScreenProps {
@@ -97,17 +99,20 @@ export function ResultsScreen({
                     correct
               return (
                 <li key={`${correct.iso}-${answer.selectedIso ?? 'timeout'}`} className="mistake-row">
-                  {mode === 'flagToName' && (
+                  {(mode === 'flagToName' || mode === 'neighborsToName' || isFactMode(mode)) && (
                     <Flag iso={correct.iso} name={countryName(correct, lang)} size="thumb" />
                   )}
                   <div className="mistake-copy">
+                    {isFactMode(mode) ? (
+                      <p className="mistake-country">{countryName(correct, lang)}</p>
+                    ) : null}
                     <p>
                       <span className="mistake-label">{t.yourAnswer}</span>
-                      {chosen ? countryName(chosen, lang) : t.timedOut}
+                      {chosen ? optionLabel(chosen, mode, lang) : t.timedOut}
                     </p>
                     <p>
                       <span className="mistake-label">{t.correctAnswer}</span>
-                      {countryName(correct, lang)}
+                      {optionLabel(correct, mode, lang)}
                     </p>
                   </div>
                 </li>

@@ -1,5 +1,5 @@
 import { CAMPAIGN_LEVELS, FINAL_LEVEL, isFinalLevel } from '../data/levels'
-import type { QuizMode } from './quiz'
+import { QUIZ_MODES, isQuizMode, type QuizMode } from './quiz'
 
 export const LEVELS_KEY = 'un-flag-quiz-levels'
 const LEVELS_WIPE_KEY = 'un-flag-quiz-levels-wipe-1'
@@ -73,8 +73,7 @@ function wipeLegacyClears() {
 
 function keepConsecutive(clears: LevelClear[]): LevelClear[] {
   const kept: LevelClear[] = []
-  const modes: QuizMode[] = ['flagToName', 'nameToFlag']
-  for (const mode of modes) {
+  for (const mode of QUIZ_MODES) {
     const chain: LevelClear[] = []
     for (let level = 1; level <= CAMPAIGN_LEVELS; level++) {
       const hits = clears.filter((item) => item.level === level && item.mode === mode)
@@ -114,10 +113,6 @@ function readClears(): LevelClear[] | null {
   } catch {
     return []
   }
-}
-
-function isQuizMode(value: unknown): value is QuizMode {
-  return value === 'flagToName' || value === 'nameToFlag'
 }
 
 function isLevelClear(value: unknown): value is LevelClear {

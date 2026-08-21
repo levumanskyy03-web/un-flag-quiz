@@ -13,6 +13,7 @@ import { STRINGS, type Lang } from "./i18n/strings";
 import { clearBests, clearHistory, loadBests, loadHistory, saveRound, type RoundRecord } from "./lib/history";
 import { loadLevelClears, saveLevelClear, isLevelUnlocked, type LevelClear } from "./lib/levelProgress";
 import { submitCampaign } from "./lib/leaderboard";
+import { answerKey } from "./lib/quizAnswers";
 import {
   ANSWER_PAUSE_MS,
   QUESTION_TIME_MS,
@@ -22,6 +23,8 @@ import {
   getPool,
   isCorrect,
   livesFor,
+  poolForMode,
+  questionLimitMs,
   type Question,
   type RoundAnswer,
 } from "./lib/quiz";
@@ -122,8 +125,9 @@ export default function App() {
     if (screen !== "quiz" || answered || isLearn) return;
     const started = Date.now();
     questionStartRef.current = started;
+    const limitMs = questionLimitMs(quizSettings.mode);
     const id = window.setInterval(() => {
-      const left = QUESTION_TIME_MS - (Date.now() - started);
+      const left = limitMs - (Date.now() - started);
       if (left <= 0) {
         window.clearInterval(id);
         setRemainingMs(0);
@@ -132,14 +136,14 @@ export default function App() {
           if (prev.length > index) return prev;
           const question = questions[index];
           if (!question) return prev;
-          return [...prev, { question, selectedIso: null, timeMs: QUESTION_TIME_MS }];
+          return [...prev, { question, selectedIso: null, timeMs: limitMs }];
         });
         return;
       }
       setRemainingMs(left);
     }, 50);
     return () => window.clearInterval(id);
-  }, [answered, index, isLearn, questions, screen]);
+  }, [answered, index, isLearn, questions, quizSettings.mode, screen]);
 
   useEffect(() => {
     if (screen !== "quiz" || !answered || isLearn) return;
@@ -193,7 +197,7 @@ export default function App() {
       setIndex((prev) => prev + 1);
       setSelectedIso(null);
       setTimedOut(false);
-      setRemainingMs(QUESTION_TIME_MS);
+      setRemainingMs(questionLimitMs(quizSettings.mode));
     }, ANSWER_PAUSE_MS);
     return () => window.clearTimeout(id);
   }, [
@@ -220,7 +224,7 @@ export default function App() {
     const started = questionStartRef.current;
     if (started === null) return 0;
     const elapsed = Math.max(0, Date.now() - started);
-    return isLearn ? elapsed : Math.min(QUESTION_TIME_MS, elapsed);
+    return isLearn ? elapsed : Math.min(questionLimitMs(quizSettings.mode), elapsed);
   }
 
   function handleSettingsChange(next: QuizSettings) {
@@ -249,7 +253,11 @@ export default function App() {
     level: number,
     extras?: Pick<QuizSettings, "levelHardcore" | "levelLives">,
   ) {
-    const round = createRound(pool, size);
+    const round = createRound(
+      poolForMode(pool, quizSettings.mode),
+      size,
+      (country) => answerKey(country, quizSettings.mode),
+    );
     if (round.length === 0) return;
     roundStartRef.current = Date.now();
     questionStartRef.current = Date.now();
@@ -261,7 +269,7 @@ export default function App() {
     setSelectedIso(null);
     setTimedOut(false);
     setAnswers([]);
-    setRemainingMs(QUESTION_TIME_MS);
+    setRemainingMs(questionLimitMs(quizSettings.mode));
     setRoundMs(0);
     setSettings((prev) => ({ ...prev, path, level, ...extras }));
     setScreen("quiz");
@@ -300,7 +308,11 @@ export default function App() {
   }
 
   function openLevels() {
-    setSettings((prev) => ({ ...prev, path: "levels" }));
+    setSettings((prev) => ({
+      ...prev,
+      path: "levels",
+      mode: prev.mode === "neighborsToName" ? "flagToName" : prev.mode,
+    }));
     setScreen("levels");
   }
 
@@ -321,6 +333,7 @@ export default function App() {
       learnFrom: "level",
       level,
       levelLearn: true,
+      mode: prev.mode === "neighborsToName" ? "flagToName" : prev.mode,
     }));
     setScreen("learn");
   }

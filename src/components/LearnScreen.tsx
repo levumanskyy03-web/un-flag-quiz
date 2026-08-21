@@ -3,12 +3,13 @@ import { COUNTRIES, type Region } from '../data/countries'
 import { isFinalLevel } from '../data/levels'
 import { REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
 import {
+  QUIZ_MODES,
+  LEVEL_MODES,
   countryName,
   getLearnPool,
   isRegionSelected,
   sortCountriesByName,
   toggleRegion,
-  type QuizMode,
 } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
 import { Flag } from './Flag'
@@ -27,10 +28,9 @@ export function LearnScreen({ settings, onChange, onBack, onPractice }: LearnScr
   const pool = getLearnPool(settings.learnFrom, settings.region, settings.level)
   const countries =
     settings.learnFrom === 'level' ? pool : sortCountriesByName(pool, settings.lang)
+  const modes = settings.learnFrom === 'level' ? LEVEL_MODES : QUIZ_MODES
   const regions: Array<Region | 'all'> = ['all', ...REGIONS]
-  const modes: QuizMode[] = ['flagToName', 'nameToFlag']
   const [openIso, setOpenIso] = useState<string | null>(null)
-  const canOpenPassport = settings.learnFrom === 'region'
   const openCountry = COUNTRIES.find((country) => country.iso === openIso)
   const title =
     settings.learnFrom === 'level'
@@ -84,7 +84,7 @@ export function LearnScreen({ settings, onChange, onBack, onPractice }: LearnScr
         </div>
       )}
 
-      <div className="choice-grid">
+      <div className="choice-grid is-modes">
         {modes.map((mode) => (
           <button
             key={mode}
@@ -98,24 +98,11 @@ export function LearnScreen({ settings, onChange, onBack, onPractice }: LearnScr
         ))}
       </div>
 
-      {canOpenPassport && <p className="learn-copy">{t.tapPassport}</p>}
+      <p className="learn-copy">{t.tapPassport}</p>
 
       <section className="learn-grid">
         {countries.map((country) => {
           const name = countryName(country, settings.lang)
-          const body = (
-            <>
-              <Flag iso={country.iso} name={name} size="card" />
-              <p className="learn-card-name">{name}</p>
-            </>
-          )
-          if (!canOpenPassport) {
-            return (
-              <article key={country.iso} className="learn-card">
-                {body}
-              </article>
-            )
-          }
           return (
             <button
               key={country.iso}
@@ -123,7 +110,8 @@ export function LearnScreen({ settings, onChange, onBack, onPractice }: LearnScr
               className="learn-card is-passport"
               onClick={() => setOpenIso(country.iso)}
             >
-              {body}
+              <Flag iso={country.iso} name={name} size="card" />
+              <p className="learn-card-name">{name}</p>
             </button>
           )
         })}
@@ -133,7 +121,7 @@ export function LearnScreen({ settings, onChange, onBack, onPractice }: LearnScr
         {t.checkYourself}
       </button>
 
-      {canOpenPassport && openCountry && (
+      {openCountry && (
         <PassportModal
           country={openCountry}
           lang={settings.lang}

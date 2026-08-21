@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { COUNTRIES, type Country } from '../data/countries'
+import { foundedYear } from '../data/founded'
 import { landNeighbors } from '../data/neighbors'
 import {
   formatPopulation,
@@ -25,6 +26,7 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
   const t = STRINGS[lang]
   const passport = getPassport(country.iso)
   const name = countryName(country, lang)
+  const founded = foundedYear(country.iso)
   const neighbors = landNeighbors(country.iso)
     .map((iso) => COUNTRIES.find((item) => item.iso === iso))
     .filter((item): item is Country => item !== undefined)
@@ -90,6 +92,12 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
             <dt>{t.currency}</dt>
             <dd>{passportCurrency(passport, lang)}</dd>
           </div>
+          {founded !== undefined ? (
+            <div>
+              <dt>{t.founded}</dt>
+              <dd>{founded}</dd>
+            </div>
+          ) : null}
         </dl>
         {territoryNote ? null : (
           <section className="passport-neighbors">

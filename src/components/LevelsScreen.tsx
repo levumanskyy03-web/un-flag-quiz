@@ -5,16 +5,16 @@ import { LEVEL_COUNT, LEVEL_NUMBERS, isFinalLevel } from '../data/levels'
 import { STRINGS, modeLabel } from '../i18n/strings'
 import type { LevelClear } from '../lib/levelProgress'
 import { findLevelClear, isLevelUnlocked } from '../lib/levelProgress'
+import { fetchAccount } from '../lib/account'
 import {
-  NAME_MIN,
   fetchLeaderboard,
   loadPlayer,
-  savePlayerName,
   submitCampaign,
   type LeaderboardEntry,
 } from '../lib/leaderboard'
-import { MAX_LIVES, formatClock, type QuizMode } from '../lib/quiz'
+import { MAX_LIVES, LEVEL_MODES, formatClock } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
+import { AccountButton } from './AccountButton'
 import { Lives } from './Lives'
 
 interface LevelsScreenProps {
@@ -27,12 +27,18 @@ interface LevelsScreenProps {
 
 export function LevelsScreen({ settings, levelClears, onChange, onPlay, onBack }: LevelsScreenProps) {
   const t = STRINGS[settings.lang]
-  const [playerName, setPlayerName] = useState('')
+  const [signedIn, setSignedIn] = useState(false)
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [boardReady, setBoardReady] = useState(true)
 
   useEffect(() => {
-    setPlayerName(loadPlayer().name)
+    let cancelled = false
+    fetchAccount().then((user) => {
+      if (!cancelled) setSignedIn(Boolean(user))
+    })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   function reloadBoard() {
@@ -78,33 +84,21 @@ export function LevelsScreen({ settings, levelClears, onChange, onPlay, onBack }
       </header>
 
       <section className="card settings-card">
-        <label className="player-name">
-          <span>{t.playerName}</span>
-          <input
-            type="text"
-            maxLength={24}
-            autoComplete="nickname"
-            placeholder={t.playerNameHint}
-            value={playerName}
-            onChange={(event) => {
-              const next = event.target.value
-              setPlayerName(next)
-              savePlayerName(next)
-            }}
-            onBlur={() => {
-              const player = savePlayerName(playerName)
-              if (player.name.length >= NAME_MIN) {
-                void submitCampaign(levelClears, settings.mode).then(reloadBoard)
-              }
-            }}
-          />
-        </label>
-        {playerName.trim().length > 0 && playerName.trim().length < NAME_MIN && (
-          <p className="setting-hint">{t.playerNameShort}</p>
-        )}
+        <AccountButton
+          lang={settings.lang}
+          onAuth={(user) => {
+            setSignedIn(Boolean(user))
+            if (user) {
+              void submitCampaign(levelClears, settings.mode).then(reloadBoard)
+              return
+            }
+            reloadBoard()
+          }}
+        />
+        {!signedIn ? <p className="setting-hint">{t.accountNeeded}</p> : null}
 
-        <div className="choice-grid">
-          {(['flagToName', 'nameToFlag'] as QuizMode[]).map((mode) => (
+        <div className="choice-grid is-modes">
+          {LEVEL_MODES.map((mode) => (
             <button
               key={mode}
               type="button"

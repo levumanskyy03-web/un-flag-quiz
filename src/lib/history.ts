@@ -1,5 +1,4 @@
-import type { QuizDifficulty, QuizMode, RegionFilter, RoundEnd } from './quiz'
-import { isRegionFilter } from './quiz'
+import { isQuizMode, isRegionFilter, type QuizDifficulty, type QuizMode, type RegionFilter, type RoundEnd } from './quiz'
 
 export const HISTORY_KEY = 'un-flag-quiz-history'
 export const BESTS_KEY = 'un-flag-quiz-bests'
@@ -135,7 +134,7 @@ function isRoundRecord(value: unknown): value is RoundRecord {
     typeof record.correct === 'number' &&
     typeof record.total === 'number' &&
     typeof record.roundMs === 'number' &&
-    (record.mode === 'flagToName' || record.mode === 'nameToFlag') &&
+    isQuizMode(record.mode) &&
     isRegionFilter(record.region) &&
     (record.difficulty === 'easy' || record.difficulty === 'hard' || record.difficulty === 'hardcore') &&
     typeof record.roundSize === 'number' &&

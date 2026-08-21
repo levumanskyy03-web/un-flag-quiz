@@ -11,6 +11,12 @@ type Strings = {
   mode: string
   flagToName: string
   nameToFlag: string
+  nameToCapital: string
+  nameToCurrency: string
+  nameToPopulation: string
+  neighborsToName: string
+  whoseNeighbors: string
+  founded: string
   region: string
   allRegions: string
   africa: string
@@ -26,6 +32,7 @@ type Strings = {
   levels: string
   learn: string
   map: string
+  explore: string
   mapHint: string
   mapSearch: string
   mapLoading: string
@@ -84,6 +91,20 @@ type Strings = {
   playerName: string
   playerNameHint: string
   playerNameShort: string
+  account: string
+  signIn: string
+  signUp: string
+  signOut: string
+  password: string
+  passwordRepeat: string
+  passwordHint: string
+  accountSignedIn: string
+  accountNeeded: string
+  authInvalid: string
+  authNameTaken: string
+  authBadCredentials: string
+  authPasswordMismatch: string
+  authOffline: string
   leaderboard: string
   leaderboardEmpty: string
   leaderboardOffline: string
@@ -106,6 +127,12 @@ export const STRINGS: Record<Lang, Strings> = {
     mode: 'Режим',
     flagToName: 'Флаг → страна',
     nameToFlag: 'Страна → флаг',
+    nameToCapital: 'Страна → столица',
+    nameToCurrency: 'Страна → валюта',
+    nameToPopulation: 'Страна → население',
+    neighborsToName: 'Соседи → страна',
+    whoseNeighbors: 'Чьи это сухопутные соседи?',
+    founded: 'Основание',
     region: 'Регион',
     allRegions: 'Все регионы',
     africa: 'Африка',
@@ -121,6 +148,7 @@ export const STRINGS: Record<Lang, Strings> = {
     levels: 'Уровни',
     learn: 'Обучение',
     map: 'Карта',
+    explore: 'Разделы',
     mapHint: 'Нажмите страну — откроется паспорт',
     mapSearch: 'Найти страну',
     mapLoading: 'Загрузка карты…',
@@ -179,8 +207,22 @@ export const STRINGS: Record<Lang, Strings> = {
     playerName: 'Имя в таблице',
     playerNameHint: 'Как вас записать',
     playerNameShort: 'Минимум два символа',
+    account: 'Аккаунт',
+    signIn: 'Войти',
+    signUp: 'Регистрация',
+    signOut: 'Выйти',
+    password: 'Пароль',
+    passwordRepeat: 'Повторите пароль',
+    passwordHint: 'Пароль — минимум 6 символов',
+    accountSignedIn: 'Таблица лидеров пишет этот аккаунт',
+    accountNeeded: 'Войдите, чтобы попасть в таблицу лидеров',
+    authInvalid: 'Проверьте имя и пароль',
+    authNameTaken: 'Это имя уже занято',
+    authBadCredentials: 'Неверное имя или пароль',
+    authPasswordMismatch: 'Пароли не совпадают',
+    authOffline: 'Аккаунты пока недоступны',
     leaderboard: 'Лидеры',
-    leaderboardEmpty: 'Пока пусто — пройдите уровень с именем',
+    leaderboardEmpty: 'Пока пусто — войдите и пройдите уровень',
     leaderboardOffline: 'Общая таблица пока недоступна',
     leaderboardProgress: (cleared, total) => `${cleared}/${total}`,
     tapPassport: 'Нажмите страну — откроется паспорт',
@@ -199,6 +241,12 @@ export const STRINGS: Record<Lang, Strings> = {
     mode: 'Mode',
     flagToName: 'Flag → country',
     nameToFlag: 'Country → flag',
+    nameToCapital: 'Country → capital',
+    nameToCurrency: 'Country → currency',
+    nameToPopulation: 'Country → population',
+    neighborsToName: 'Neighbors → country',
+    whoseNeighbors: 'Whose land neighbors are these?',
+    founded: 'Founded',
     region: 'Region',
     allRegions: 'All regions',
     africa: 'Africa',
@@ -214,6 +262,7 @@ export const STRINGS: Record<Lang, Strings> = {
     levels: 'Levels',
     learn: 'Learn',
     map: 'Map',
+    explore: 'Explore',
     mapHint: 'Tap a country to open its passport',
     mapSearch: 'Find a country',
     mapLoading: 'Loading the map…',
@@ -272,8 +321,22 @@ export const STRINGS: Record<Lang, Strings> = {
     playerName: 'Leaderboard name',
     playerNameHint: 'How you appear',
     playerNameShort: 'At least two characters',
+    account: 'Account',
+    signIn: 'Sign in',
+    signUp: 'Register',
+    signOut: 'Sign out',
+    password: 'Password',
+    passwordRepeat: 'Repeat password',
+    passwordHint: 'Password — at least 6 characters',
+    accountSignedIn: 'The leaderboard uses this account',
+    accountNeeded: 'Sign in to appear on the leaderboard',
+    authInvalid: 'Check the name and password',
+    authNameTaken: 'That name is taken',
+    authBadCredentials: 'Wrong name or password',
+    authPasswordMismatch: 'Passwords do not match',
+    authOffline: 'Accounts are unavailable right now',
     leaderboard: 'Leaders',
-    leaderboardEmpty: 'Empty for now — clear a level with a name',
+    leaderboardEmpty: 'Empty for now — sign in and clear a level',
     leaderboardOffline: 'The shared board is unavailable',
     leaderboardProgress: (cleared, total) => `${cleared}/${total}`,
     tapPassport: 'Tap a country to open its passport',

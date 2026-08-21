@@ -6,6 +6,8 @@ export const PLAYER_KEY = 'un-flag-quiz-player'
 export const LEADERBOARD_LIMIT = 20
 export const NAME_MIN = 2
 export const NAME_MAX = 24
+export const PASSWORD_MIN = 6
+export const PASSWORD_MAX = 72
 
 export interface Player {
   id: string
@@ -80,11 +82,15 @@ export function loadPlayer(): Player {
   }
 }
 
+export function savePlayer(player: Player): Player {
+  const next = { id: player.id, name: sanitizeName(player.name) }
+  localStorage.setItem(PLAYER_KEY, JSON.stringify(next))
+  return next
+}
+
 export function savePlayerName(raw: string): Player {
   const current = loadPlayer()
-  const player = { id: current.id, name: sanitizeName(raw) }
-  localStorage.setItem(PLAYER_KEY, JSON.stringify(player))
-  return player
+  return savePlayer({ id: current.id, name: raw })
 }
 
 export async function fetchLeaderboard(

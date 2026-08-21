@@ -197,3 +197,21 @@ export const LAND_NEIGHBORS: Record<string, string[]> = {
 export function landNeighbors(iso: string): string[] {
   return LAND_NEIGHBORS[iso] ?? []
 }
+
+export function neighborKey(iso: string): string {
+  return [...landNeighbors(iso)].sort().join(',')
+}
+
+const NEIGHBOR_KEY_COUNTS = (() => {
+  const counts = new Map<string, number>()
+  for (const iso of Object.keys(LAND_NEIGHBORS)) {
+    const key = neighborKey(iso)
+    counts.set(key, (counts.get(key) ?? 0) + 1)
+  }
+  return counts
+})()
+
+export function canAskNeighbors(iso: string): boolean {
+  const key = neighborKey(iso)
+  return key.length > 0 && NEIGHBOR_KEY_COUNTS.get(key) === 1
+}

@@ -1,5 +1,15 @@
 import { STRINGS, type Lang } from '../i18n/strings'
-import { QUESTION_TIME_MS, countryName, formatClock, type Question, type QuizMode } from '../lib/quiz'
+import { COUNTRIES, type Country } from '../data/countries'
+import { landNeighbors } from '../data/neighbors'
+import {
+  countryName,
+  formatClock,
+  isFactMode,
+  questionLimitMs,
+  type Question,
+  type QuizMode,
+} from '../lib/quiz'
+import { optionLabel } from '../lib/quizAnswers'
 import { Flag } from './Flag'
 import { Lives } from './Lives'
 
@@ -43,7 +53,14 @@ export function QuizScreen({
   const correctName = countryName(question.country, lang)
   const secondsLeft = Math.ceil(remainingMs / 1000)
   const urgent = !answered && remainingMs <= 3000
-  const timerWidth = `${Math.max(0, (remainingMs / QUESTION_TIME_MS) * 100)}%`
+  const timerWidth = `${Math.max(0, (remainingMs / questionLimitMs(mode)) * 100)}%`
+  const promptNeighbors =
+    mode === 'neighborsToName'
+      ? landNeighbors(question.country.iso)
+          .map((iso) => COUNTRIES.find((country) => country.iso === iso))
+          .filter((country): country is Country => country !== undefined)
+          .sort((a, b) => countryName(a, lang).localeCompare(countryName(b, lang), lang === 'ru' ? 'ru' : 'en'))
+      : []
 
   return (
     <div className="screen quiz-screen">
@@ -95,6 +112,21 @@ export function QuizScreen({
       <section className="card question-card">
         {mode === 'flagToName' ? (
           <Flag iso={question.country.iso} name={correctName} size="hero" />
+        ) : mode === 'neighborsToName' ? (
+          <div className="neighbors-prompt">
+            <p className="neighbors-prompt-label">{t.whoseNeighbors}</p>
+            <ul className="neighbors-prompt-list">
+              {promptNeighbors.map((neighbor) => {
+                const name = countryName(neighbor, lang)
+                return (
+                  <li key={neighbor.iso} className="neighbors-prompt-item">
+                    <Flag iso={neighbor.iso} name={name} size="thumb" />
+                    <span>{name}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         ) : (
           <h2 className="prompt-name">{correctName}</h2>
         )}
@@ -117,7 +149,7 @@ export function QuizScreen({
             <button
               key={option.iso}
               type="button"
-              className={`option ${stateClass}`}
+              className={`option ${stateClass}${isFactMode(mode) ? ' option-fact' : ''}`}
               disabled={answered}
               onClick={() => onSelect(option.iso)}
             >
@@ -127,7 +159,7 @@ export function QuizScreen({
                   {answered && <span className="option-caption">{name}</span>}
                 </>
               ) : (
-                name
+                optionLabel(option, mode, lang)
               )}
             </button>
           )

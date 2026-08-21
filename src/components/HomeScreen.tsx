@@ -2,11 +2,13 @@ import type { Region } from '../data/countries'
 import { REGIONS, STRINGS, difficultyLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
 import { findBest, type RoundRecord } from '../lib/history'
 import {
+  QUIZ_MODES,
   PLAY_DIFFICULTIES,
   ROUND_SIZES,
   fitRoundSize,
   formatClock,
   getPool,
+  hasLevels,
   isRegionSelected,
   toggleRegion,
   type LearnFrom,
@@ -16,6 +18,7 @@ import {
   type RegionFilter,
   type RoundSize,
 } from '../lib/quiz'
+import { AccountButton } from './AccountButton'
 import { LanguageToggle } from './LanguageToggle'
 
 export interface QuizSettings {
@@ -60,25 +63,27 @@ export function HomeScreen({
   const t = STRINGS[settings.lang]
   const poolSize = getPool(settings.region, settings.difficulty).length
   const regions: Array<Region | 'all'> = ['all', ...REGIONS]
-  const modes: QuizMode[] = ['flagToName', 'nameToFlag']
   const difficulties = PLAY_DIFFICULTIES
   const currentBest = findBest(bests, settings)
 
   return (
     <div className="screen home-screen">
       <header className="home-header">
-        <LanguageToggle
-          lang={settings.lang}
-          onChange={(lang) => onChange({ ...settings, lang })}
-        />
+        <div className="home-top">
+          <AccountButton lang={settings.lang} />
+          <LanguageToggle
+            lang={settings.lang}
+            onChange={(lang) => onChange({ ...settings, lang })}
+          />
+        </div>
         <h1>{t.title}</h1>
         <p className="subtitle">{t.subtitle}</p>
       </header>
 
       <section className="card settings-card">
         <h2>{t.mode}</h2>
-        <div className="choice-grid">
-          {modes.map((mode) => (
+        <div className="choice-grid is-modes">
+          {QUIZ_MODES.map((mode) => (
             <button
               key={mode}
               type="button"
@@ -89,13 +94,18 @@ export function HomeScreen({
               {modeLabel(mode, settings.lang)}
             </button>
           ))}
-          <button type="button" className="choice" onClick={onOpenLevels}>
-            {t.levels}
-          </button>
+        </div>
+        <h2>{t.explore}</h2>
+        <div className="choice-grid is-paths">
+          {hasLevels(settings.mode) ? (
+            <button type="button" className="choice" onClick={onOpenLevels}>
+              {t.levels}
+            </button>
+          ) : null}
           <button type="button" className="choice" onClick={onOpenLearn}>
             {t.learn}
           </button>
-          <button type="button" className="choice is-wide" onClick={onOpenMap}>
+          <button type="button" className="choice" onClick={onOpenMap}>
             {t.map}
           </button>
         </div>
