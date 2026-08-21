@@ -15,7 +15,9 @@ interface QuizScreenProps {
   roundMs: number
   livesLeft: number
   maxLives: number
+  practice?: boolean
   onSelect: (iso: string) => void
+  onNext?: () => void
   onBack: () => void
 }
 
@@ -31,7 +33,9 @@ export function QuizScreen({
   roundMs,
   livesLeft,
   maxLives,
+  practice = false,
   onSelect,
+  onNext,
   onBack,
 }: QuizScreenProps) {
   const t = STRINGS[lang]
@@ -48,7 +52,9 @@ export function QuizScreen({
           {t.back}
         </button>
         <div className="progress-copy">{t.questionOf(index + 1, total)}</div>
-        {maxLives <= 3 ? (
+        {practice ? (
+          <span className="levels-header-spacer" aria-hidden="true" />
+        ) : maxLives <= 3 ? (
           <Lives
             filled={livesLeft}
             total={maxLives}
@@ -68,19 +74,23 @@ export function QuizScreen({
         )}
       </header>
 
-      <div className="quiz-timers">
-        <div className={`question-clock ${urgent || timedOut ? 'is-urgent' : ''}`}>
-          {timedOut ? t.timedOut : secondsLeft}
-        </div>
-        <div className="round-clock">{t.totalTime(formatClock(roundMs))}</div>
-      </div>
+      {!practice && (
+        <>
+          <div className="quiz-timers">
+            <div className={`question-clock ${urgent || timedOut ? 'is-urgent' : ''}`}>
+              {timedOut ? t.timedOut : secondsLeft}
+            </div>
+            <div className="round-clock">{t.totalTime(formatClock(roundMs))}</div>
+          </div>
 
-      <div className="progress-track timer-track" aria-hidden="true">
-        <div
-          className={`progress-bar timer-bar ${urgent ? 'is-urgent' : ''}`}
-          style={{ width: timerWidth }}
-        />
-      </div>
+          <div className="progress-track timer-track" aria-hidden="true">
+            <div
+              className={`progress-bar timer-bar ${urgent ? 'is-urgent' : ''}`}
+              style={{ width: timerWidth }}
+            />
+          </div>
+        </>
+      )}
 
       <section className="card question-card">
         {mode === 'flagToName' ? (
@@ -123,6 +133,12 @@ export function QuizScreen({
           )
         })}
       </div>
+
+      {practice && answered && onNext && (
+        <button type="button" className="btn-primary" onClick={onNext}>
+          {index >= total - 1 ? t.seeResults : t.next}
+        </button>
+      )}
     </div>
   )
 }

@@ -2,7 +2,8 @@ import { COUNTRIES, REGIONS, type Country, type Difficulty, type Region } from '
 import { LEVEL_ISOS, isFinalLevel, isLevelNumber } from '../data/levels'
 
 export type QuizMode = 'flagToName' | 'nameToFlag'
-export type PlayPath = 'pool' | 'levels'
+export type PlayPath = 'pool' | 'levels' | 'learn'
+export type LearnFrom = 'region' | 'level'
 export type RegionFilter = string
 export type RoundEnd = 'complete' | 'timeout' | 'lives'
 export type QuizDifficulty = 'easy' | 'hard' | 'hardcore'
@@ -79,6 +80,7 @@ export function livesFor(
   level = 1,
   levelLives = MAX_LIVES,
 ): number {
+  if (path === 'learn') return Number.MAX_SAFE_INTEGER
   if (path !== 'levels') return maxLives(difficulty)
   if (isFinalLevel(level)) return levelHardcore ? 1 : levelLives
   return levelHardcore ? 1 : MAX_LIVES
@@ -142,11 +144,28 @@ export function getPool(region: RegionFilter, difficulty: QuizDifficulty): Count
   )
 }
 
+export function getRegionPool(region: RegionFilter): Country[] {
+  const regions = parseRegions(region)
+  return COUNTRIES.filter((country) => regions.includes(country.region))
+}
+
 export function getLevelPool(level: number): Country[] {
   if (!isLevelNumber(level)) return []
   if (isFinalLevel(level)) return [...COUNTRIES]
-  const wanted = new Set(LEVEL_ISOS[level - 1])
-  return COUNTRIES.filter((country) => wanted.has(country.iso))
+  const byIso = new Map(COUNTRIES.map((country) => [country.iso, country]))
+  return LEVEL_ISOS[level - 1].flatMap((iso) => {
+    const country = byIso.get(iso)
+    return country ? [country] : []
+  })
+}
+
+export function sortCountriesByName(countries: Country[], lang: 'ru' | 'en'): Country[] {
+  const collator = new Intl.Collator(lang === 'ru' ? 'ru' : 'en')
+  return [...countries].sort((a, b) => collator.compare(countryName(a, lang), countryName(b, lang)))
+}
+
+export function getLearnPool(learnFrom: LearnFrom, region: RegionFilter, level: number): Country[] {
+  return learnFrom === 'level' ? getLevelPool(level) : getRegionPool(region)
 }
 
 export function createRound(

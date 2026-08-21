@@ -24,6 +24,13 @@ type Strings = {
   hardcore: string
   hardcoreHint: string
   levels: string
+  learn: string
+  learnHint: string
+  learnLevelHint: string
+  checkYourself: string
+  backToCards: string
+  countriesCount: (n: number) => string
+  levelLabel: (n: number) => string
   livesLeft: (n: number) => string
   roundSize: string
   start: string
@@ -68,6 +75,14 @@ type Strings = {
   leaderboardEmpty: string
   leaderboardOffline: string
   leaderboardProgress: (cleared: number, total: number) => string
+  tapPassport: string
+  capital: string
+  population: string
+  currency: string
+  fact: string
+  neighbors: string
+  noNeighbors: string
+  close: string
   credit: string
 }
 
@@ -91,6 +106,13 @@ export const STRINGS: Record<Lang, Strings> = {
     hardcore: 'Хардкор',
     hardcoreHint: 'Без права на ошибку',
     levels: 'Уровни',
+    learn: 'Обучение',
+    learnHint: 'Карточки без таймера. Потом можно проверить себя.',
+    learnLevelHint: 'Нажмите уровень, чтобы открыть карточки',
+    checkYourself: 'Проверить',
+    backToCards: 'К карточкам',
+    countriesCount: (n) => `${n} ${pluralRu(n, 'страна', 'страны', 'стран')}`,
+    levelLabel: (n) => `Уровень ${n}`,
     livesLeft: (n) => `${n} ${pluralRu(n, 'жизнь', 'жизни', 'жизней')}`,
     roundSize: 'Стран в блоке',
     start: 'Начать',
@@ -135,6 +157,14 @@ export const STRINGS: Record<Lang, Strings> = {
     leaderboardEmpty: 'Пока пусто — пройдите уровень с именем',
     leaderboardOffline: 'Общая таблица пока недоступна',
     leaderboardProgress: (cleared, total) => `${cleared}/${total}`,
+    tapPassport: 'Нажмите страну — откроется паспорт',
+    capital: 'Столица',
+    population: 'Население',
+    currency: 'Валюта',
+    fact: 'Факт',
+    neighbors: 'Сухопутные соседи',
+    noNeighbors: 'Нет сухопутных соседей',
+    close: 'Закрыть',
     credit: 'Создано Львом Уманским',
   },
   en: {
@@ -156,6 +186,13 @@ export const STRINGS: Record<Lang, Strings> = {
     hardcore: 'Hardcore',
     hardcoreHint: 'No mistakes allowed',
     levels: 'Levels',
+    learn: 'Learn',
+    learnHint: 'Cards without a timer. Then test yourself.',
+    learnLevelHint: 'Tap a level to open its cards',
+    checkYourself: 'Test yourself',
+    backToCards: 'Back to cards',
+    countriesCount: (n) => `${n} ${n === 1 ? 'country' : 'countries'}`,
+    levelLabel: (n) => `Level ${n}`,
     livesLeft: (n) => `${n} ${n === 1 ? 'life' : 'lives'}`,
     roundSize: 'Flags in the round',
     start: 'Start',
@@ -200,6 +237,14 @@ export const STRINGS: Record<Lang, Strings> = {
     leaderboardEmpty: 'Empty for now — clear a level with a name',
     leaderboardOffline: 'The shared board is unavailable',
     leaderboardProgress: (cleared, total) => `${cleared}/${total}`,
+    tapPassport: 'Tap a country to open its passport',
+    capital: 'Capital',
+    population: 'Population',
+    currency: 'Currency',
+    fact: 'Fact',
+    neighbors: 'Land neighbors',
+    noNeighbors: 'No land neighbors',
+    close: 'Close',
     credit: 'Created by Lev Umansky',
   },
 }

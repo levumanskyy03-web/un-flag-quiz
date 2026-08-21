@@ -9,6 +9,7 @@ import {
   getPool,
   isRegionSelected,
   toggleRegion,
+  type LearnFrom,
   type PlayPath,
   type QuizDifficulty,
   type QuizMode,
@@ -27,6 +28,8 @@ export interface QuizSettings {
   level: number
   levelHardcore: boolean
   levelLives: number
+  levelLearn: boolean
+  learnFrom: LearnFrom
 }
 
 interface HomeScreenProps {
@@ -36,6 +39,7 @@ interface HomeScreenProps {
   onChange: (settings: QuizSettings) => void
   onStart: () => void
   onOpenLevels: () => void
+  onOpenLearn: () => void
   onClearHistory: () => void
   onClearBests: () => void
 }
@@ -47,6 +51,7 @@ export function HomeScreen({
   onChange,
   onStart,
   onOpenLevels,
+  onOpenLearn,
   onClearHistory,
   onClearBests,
 }: HomeScreenProps) {
@@ -70,7 +75,7 @@ export function HomeScreen({
 
       <section className="card settings-card">
         <h2>{t.mode}</h2>
-        <div className="choice-grid is-3">
+        <div className="choice-grid">
           {modes.map((mode) => (
             <button
               key={mode}
@@ -84,6 +89,9 @@ export function HomeScreen({
           ))}
           <button type="button" className="choice" onClick={onOpenLevels}>
             {t.levels}
+          </button>
+          <button type="button" className="choice" onClick={onOpenLearn}>
+            {t.learn}
           </button>
         </div>
 

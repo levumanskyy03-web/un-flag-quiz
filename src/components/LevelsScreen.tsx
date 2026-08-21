@@ -121,17 +121,18 @@ export function LevelsScreen({ settings, levelClears, onChange, onPlay, onBack }
           {LEVEL_NUMBERS.map((level) => {
             const cleared = findLevelClear(levelClears, level, settings.mode)
             const unlocked = isLevelUnlocked(levelClears, level, settings.mode)
+            const canOpen = settings.levelLearn || unlocked
             const livesLimit = cleared ? cleared.livesLimit ?? (cleared.hardcore ? 1 : MAX_LIVES) : MAX_LIVES
             return (
               <button
                 key={level}
                 type="button"
                 className={`choice level-choice${cleared?.hardcore ? ' is-gold' : cleared ? ' is-cleared' : ''}${
-                  unlocked ? '' : ' is-locked'
+                  canOpen ? '' : ' is-locked'
                 }`}
-                disabled={!unlocked}
+                disabled={!canOpen}
                 onClick={() => {
-                  if (!unlocked) return
+                  if (!canOpen) return
                   onPlay(level)
                 }}
               >
@@ -157,15 +158,29 @@ export function LevelsScreen({ settings, levelClears, onChange, onPlay, onBack }
           })}
         </div>
 
-        <button
-          type="button"
-          className={`choice ${settings.levelHardcore ? 'is-active' : ''}`}
-          aria-pressed={settings.levelHardcore}
-          onClick={() => onChange({ ...settings, path: 'levels', levelHardcore: !settings.levelHardcore })}
-        >
-          {t.hardcore}
-        </button>
-        {settings.levelHardcore && <p className="setting-hint">{t.hardcoreHint}</p>}
+        <div className="choice-grid">
+          <button
+            type="button"
+            className={`choice ${settings.levelLearn ? 'is-active' : ''}`}
+            aria-pressed={settings.levelLearn}
+            onClick={() => onChange({ ...settings, path: 'levels', levelLearn: !settings.levelLearn })}
+          >
+            {t.learn}
+          </button>
+          <button
+            type="button"
+            className={`choice ${settings.levelHardcore ? 'is-active' : ''}`}
+            aria-pressed={settings.levelHardcore}
+            onClick={() => onChange({ ...settings, path: 'levels', levelHardcore: !settings.levelHardcore })}
+          >
+            {t.hardcore}
+          </button>
+        </div>
+        {settings.levelLearn ? (
+          <p className="setting-hint">{t.learnLevelHint}</p>
+        ) : settings.levelHardcore ? (
+          <p className="setting-hint">{t.hardcoreHint}</p>
+        ) : null}
       </section>
 
       <section className="card history-card">

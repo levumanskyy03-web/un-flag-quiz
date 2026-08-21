@@ -20,6 +20,8 @@ interface ResultsScreenProps {
   roundMs: number
   endedBy: RoundEnd
   isNewBest: boolean
+  saveNote?: boolean
+  menuLabel?: string
   onAgain: () => void
   onNextLevel?: () => void
   onMenu: () => void
@@ -33,6 +35,8 @@ export function ResultsScreen({
   roundMs,
   endedBy,
   isNewBest,
+  saveNote = true,
+  menuLabel,
   onAgain,
   onNextLevel,
   onMenu,
@@ -75,7 +79,7 @@ export function ResultsScreen({
           </p>
         )}
         <p className="score-headline">{headline}</p>
-        <p className="saved-note">{isNewBest ? t.newBest : t.savedOnDevice}</p>
+        {saveNote && <p className="saved-note">{isNewBest ? t.newBest : t.savedOnDevice}</p>}
       </section>
 
       {mistakes.length === 0 ? (
@@ -123,7 +127,7 @@ export function ResultsScreen({
           {t.playAgain}
         </button>
         <button type="button" className="btn-secondary" onClick={onMenu}>
-          {t.backToMenu}
+          {menuLabel ?? t.backToMenu}
         </button>
       </div>
     </div>

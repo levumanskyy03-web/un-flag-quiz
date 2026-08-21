@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { HomeScreen, type QuizSettings } from "./components/HomeScreen";
+import { LearnScreen } from "./components/LearnScreen";
 import { Level20Screen } from "./components/Level20Screen";
 import { LevelsScreen } from "./components/LevelsScreen";
 import { QuizScreen } from "./components/QuizScreen";
@@ -16,6 +17,7 @@ import {
   QUESTION_TIME_MS,
   createRound,
   getLevelPool,
+  getLearnPool,
   getPool,
   isCorrect,
   livesFor,
@@ -25,7 +27,7 @@ import {
 
 const LANG_KEY = "un-flag-quiz-lang";
 
-type Screen = "home" | "levels" | "level20" | "quiz" | "results";
+type Screen = "home" | "levels" | "level20" | "learn" | "quiz" | "results";
 type ResultTone = "success" | "fail" | "gold";
 
 function subscribeLang(onChange: () => void) {
@@ -50,6 +52,8 @@ export default function App() {
     level: 1,
     levelHardcore: false,
     levelLives: 3,
+    levelLearn: false,
+    learnFrom: "region",
   });
   const [screen, setScreen] = useState<Screen>("home");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -73,6 +77,7 @@ export default function App() {
     lang: lang ?? storedLang,
   };
   const answered = selectedIso !== null || timedOut;
+  const isLearn = quizSettings.path === "learn";
   const livesLimit = livesFor(
     quizSettings.path,
     quizSettings.difficulty,
@@ -113,7 +118,7 @@ export default function App() {
   }, [screen]);
 
   useEffect(() => {
-    if (screen !== "quiz" || answered) return;
+    if (screen !== "quiz" || answered || isLearn) return;
     const started = Date.now();
     questionStartRef.current = started;
     const id = window.setInterval(() => {
@@ -133,10 +138,10 @@ export default function App() {
       setRemainingMs(left);
     }, 50);
     return () => window.clearInterval(id);
-  }, [answered, index, questions, screen]);
+  }, [answered, index, isLearn, questions, screen]);
 
   useEffect(() => {
-    if (screen !== "quiz" || !answered) return;
+    if (screen !== "quiz" || !answered || isLearn) return;
     const last = index >= questions.length - 1;
     const roundOver = timedOut || mistakes >= livesLimit || last;
     const id = window.setTimeout(() => {
@@ -195,6 +200,7 @@ export default function App() {
     answers,
     endedBy,
     index,
+    isLearn,
     livesLimit,
     mistakes,
     questions.length,
@@ -211,8 +217,9 @@ export default function App() {
 
   function questionTimeMs() {
     const started = questionStartRef.current;
-    if (started === null) return QUESTION_TIME_MS;
-    return Math.min(QUESTION_TIME_MS, Math.max(0, Date.now() - started));
+    if (started === null) return 0;
+    const elapsed = Math.max(0, Date.now() - started);
+    return isLearn ? elapsed : Math.min(QUESTION_TIME_MS, elapsed);
   }
 
   function handleSettingsChange(next: QuizSettings) {
@@ -229,6 +236,8 @@ export default function App() {
       level: next.level,
       levelHardcore: next.levelHardcore,
       levelLives: next.levelLives,
+      levelLearn: next.levelLearn,
+      learnFrom: next.learnFrom,
     });
   }
 
@@ -263,6 +272,10 @@ export default function App() {
   }
 
   function playLevel(level: number) {
+    if (quizSettings.levelLearn) {
+      openLearnLevel(level);
+      return;
+    }
     if (!isLevelUnlocked(levelClears, level, quizSettings.mode)) return;
     if (isFinalLevel(level)) {
       setSettings((prev) => ({ ...prev, path: "levels", level: FINAL_LEVEL }));
@@ -291,8 +304,56 @@ export default function App() {
   }
 
   function leaveLevels() {
+    setSettings((prev) => ({ ...prev, path: "pool", levelLearn: false }));
+    setScreen("home");
+  }
+
+  function openLearnRegion() {
+    setSettings((prev) => ({ ...prev, path: "learn", learnFrom: "region", levelLearn: false }));
+    setScreen("learn");
+  }
+
+  function openLearnLevel(level: number) {
+    setSettings((prev) => ({
+      ...prev,
+      path: "learn",
+      learnFrom: "level",
+      level,
+      levelLearn: true,
+    }));
+    setScreen("learn");
+  }
+
+  function leaveLearn() {
+    roundStartRef.current = null;
+    if (quizSettings.learnFrom === "level") {
+      setSettings((prev) => ({ ...prev, path: "levels" }));
+      setScreen("levels");
+      return;
+    }
     setSettings((prev) => ({ ...prev, path: "pool" }));
     setScreen("home");
+  }
+
+  function startPractice() {
+    const pool = getLearnPool(quizSettings.learnFrom, quizSettings.region, quizSettings.level);
+    beginRound(pool, pool.length, "learn", quizSettings.level);
+  }
+
+  function handlePracticeNext() {
+    if (index >= questions.length - 1) {
+      const finishedMs =
+        roundStartRef.current !== null ? Date.now() - roundStartRef.current : 0;
+      if (roundStartRef.current !== null) setRoundMs(finishedMs);
+      const wrong = answers.filter((answer) => !isCorrect(answer)).length;
+      setResultTone(wrong === 0 ? "success" : null);
+      setScreen("results");
+      return;
+    }
+    setIndex((prev) => prev + 1);
+    setSelectedIso(null);
+    setTimedOut(false);
+    questionStartRef.current = Date.now();
   }
 
   function selectAnswer(iso: string) {
@@ -303,6 +364,10 @@ export default function App() {
   }
 
   function playAgain() {
+    if (quizSettings.path === "learn") {
+      startPractice();
+      return;
+    }
     if (quizSettings.path === "levels" && isFinalLevel(quizSettings.level)) {
       playFinalLevel(quizSettings.levelLives);
       return;
@@ -320,6 +385,10 @@ export default function App() {
 
   function goBackFromPlay() {
     roundStartRef.current = null;
+    if (quizSettings.path === "learn") {
+      setScreen("learn");
+      return;
+    }
     if (
       quizSettings.path === "levels" &&
       isFinalLevel(quizSettings.level) &&
@@ -349,6 +418,7 @@ export default function App() {
           onChange={handleSettingsChange}
           onStart={startRound}
           onOpenLevels={openLevels}
+          onOpenLearn={openLearnRegion}
           onClearHistory={handleClearHistory}
           onClearBests={handleClearBests}
         />
@@ -370,6 +440,14 @@ export default function App() {
           onBack={() => setScreen("levels")}
         />
       )}
+      {screen === "learn" && (
+        <LearnScreen
+          settings={quizSettings}
+          onChange={handleSettingsChange}
+          onBack={leaveLearn}
+          onPractice={startPractice}
+        />
+      )}
       {screen === "quiz" && questions[index] && (
         <QuizScreen
           lang={quizSettings.lang}
@@ -382,8 +460,10 @@ export default function App() {
           remainingMs={remainingMs}
           roundMs={roundMs}
           livesLeft={livesLeft}
-          maxLives={livesLimit}
+          maxLives={isLearn ? 0 : livesLimit}
+          practice={isLearn}
           onSelect={selectAnswer}
+          onNext={isLearn ? handlePracticeNext : undefined}
           onBack={goBackFromPlay}
         />
       )}
@@ -400,6 +480,8 @@ export default function App() {
           roundMs={roundMs}
           endedBy={endedBy}
           isNewBest={isNewBest}
+          saveNote={!isLearn}
+          menuLabel={isLearn ? STRINGS[quizSettings.lang].backToCards : undefined}
           onAgain={playAgain}
           onNextLevel={
             endedBy === "complete" &&

@@ -671,7 +671,12 @@ img {
 .flag {
   display: grid;
   place-items: center;
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   aspect-ratio: 3 / 2;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
   background: transparent;
 }
 
@@ -682,6 +687,35 @@ img {
   height: auto;
   object-fit: contain;
   border: 1px solid #cfd8e3;
+}
+
+.flag-compact:not(.flag-thumb) .flag-img {
+  max-width: calc(52% * 1.4);
+  max-height: calc(78% * 1.4);
+}
+
+.flag-tall:not(.flag-thumb) .flag-img {
+  max-width: calc(36% * 1.4);
+  max-height: calc(92% * 1.4);
+}
+
+.flag-boost.flag-compact:not(.flag-thumb) .flag-img {
+  max-width: calc(52% * 1.4 * 1.15);
+  max-height: calc(78% * 1.4 * 1.15);
+}
+
+.flag-boost.flag-tall:not(.flag-thumb) .flag-img {
+  max-width: calc(36% * 1.4 * 1.15 * 0.93);
+  max-height: min(100%, calc(92% * 1.4 * 1.15 * 0.93));
+  height: min(100%, calc(92% * 1.4 * 1.15 * 0.93));
+  width: auto;
+}
+
+.flag-niger:not(.flag-thumb) .flag-img {
+  width: auto;
+  height: 95%;
+  max-width: 100%;
+  max-height: 95%;
 }
 
 .flag-hero {
@@ -698,6 +732,14 @@ img {
 
 .flag-option .flag-img {
   border-radius: 10px;
+}
+
+.flag-card {
+  width: 100%;
+}
+
+.flag-card .flag-img {
+  border-radius: 8px;
 }
 
 .flag-thumb {
@@ -865,10 +907,212 @@ img {
   color: var(--muted);
 }
 
+.learn-screen .quiz-header .btn-ghost {
+  width: 72px;
+}
+
+.learn-screen .quiz-header .lang-toggle {
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.learn-copy {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+.learn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.learn-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+
+button.learn-card {
+  width: 100%;
+  min-height: 0;
+  font: inherit;
+  color: inherit;
+}
+
+button.learn-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.learn-card-name {
+  margin: 0;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.learn-screen .btn-primary {
+  position: sticky;
+  bottom: 12px;
+}
+
+.passport-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px 16px 32px;
+  overflow: auto;
+  background: rgba(28, 42, 58, 0.42);
+}
+
+.passport-sheet {
+  width: min(520px, 100%);
+  margin-top: 8px;
+  padding: 16px 18px 22px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.passport-sheet .flag-hero {
+  width: min(100%, 280px);
+}
+
+.passport-title {
+  margin: 0;
+  text-align: center;
+  font-size: 1.45rem;
+  letter-spacing: -0.03em;
+  padding-left: 10px;
+}
+
+.passport-fields {
+  width: 100%;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+  text-align: center;
+  padding-left: 10px;
+}
+
+.passport-fields div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.passport-fields dt {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.passport-fields dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.passport-fact {
+  width: 100%;
+  margin: 4px 0 0;
+  padding: 12px 14px 12px 24px;
+  background: var(--accent-soft);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.passport-fact-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.passport-neighbors {
+  width: 100%;
+  text-align: center;
+  padding-left: 10px;
+}
+
+.passport-neighbors h3 {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.passport-neighbors-empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+.passport-neighbors-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.passport-neighbor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 10px 6px 6px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.passport-neighbor:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.passport-neighbor .flag-thumb {
+  width: 40px;
+  flex: 0 0 40px;
+}
+
 @media (min-width: 640px) {
   .options-names,
   .options-flags {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .learn-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .app {

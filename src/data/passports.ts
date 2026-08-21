@@ -1,0 +1,257 @@
+import type { Lang } from '../i18n/strings'
+
+export interface Passport {
+  capitalEn: string
+  capitalRu: string
+  population: number
+  currencyEn: string
+  currencyRu: string
+  factEn: string
+  factRu: string
+}
+
+function p(
+  capitalEn: string,
+  capitalRu: string,
+  population: number,
+  currencyEn: string,
+  currencyRu: string,
+  factEn: string,
+  factRu: string,
+): Passport {
+  return { capitalEn, capitalRu, population, currencyEn, currencyRu, factEn, factRu }
+}
+
+export const PASSPORTS: Record<string, Passport> = {
+  dz: p("Algiers", "Алжир", 46_700_000, "Algerian dinar", "алжирский динар", "The largest country in Africa — and the tenth-largest on Earth.", "Самая большая страна Африки — и десятая по площади в мире."),
+  ao: p("Luanda", "Луанда", 37_900_000, "Angolan kwanza", "ангольская кванза", "Home of the giant sable antelope, found nowhere else on Earth.", "Родина гигантской чёрной антилопы — её нет больше нигде в мире."),
+  bj: p("Porto-Novo", "Порто-Ново", 14_100_000, "West African CFA franc", "франк КФА", "The historic heartland of Vodun, with the great Pendjari wildlife park.", "Историческая родина вуду и заповедник Пенджари с большой африканской пятёркой."),
+  bw: p("Gaborone", "Габороне", 2_500_000, "Botswana pula", "ботсванская пула", "Holds one of the world’s largest elephant populations, centred on the Okavango Delta.", "Одно из крупнейших в мире стад слонов — в дельте Окаванго."),
+  bf: p("Ouagadougou", "Уагадугу", 23_600_000, "West African CFA franc", "франк КФА", "Hosts FESPACO, Africa’s biggest film festival.", "Здесь проходит FESPACO — крупнейший кинофестиваль Африки."),
+  bi: p("Gitega", "Гитега", 13_700_000, "Burundian franc", "бурундийский франк", "Sits on Lake Tanganyika, the world’s second-deepest lake.", "Стоит на Танганьике — втором по глубине озере планеты."),
+  cv: p("Praia", "Прая", 600_000, "Cape Verdean escudo", "эскудо Кабо-Верде", "A world capital of morna music — and one of the few African countries with no malaria.", "Мировая столица музыки морны и одна из немногих стран Африки без малярии."),
+  cm: p("Yaoundé", "Яунде", 29_100_000, "Central African CFA franc", "франк КФА", "Called “Africa in miniature”: rainforest, savanna, mountains and coast in one country.", "Его зовут «Африка в миниатюре»: джунгли, саванна, горы и океан в одной стране."),
+  cf: p("Bangui", "Банги", 5_300_000, "Central African CFA franc", "франк КФА", "Dzanga-Sangha is one of the best places on Earth to see forest elephants.", "В Дзанга-Санга — одно из лучших в мире мест, где живут лесные слоны."),
+  td: p("N'Djamena", "Нджамена", 19_300_000, "Central African CFA franc", "франк КФА", "The Ennedi Plateau is a Sahara of stone arches and ancient rock art.", "Плато Эннеди — сахарские каменные арки и древние наскальные рисунки."),
+  km: p("Moroni", "Морони", 870_000, "Comorian franc", "коморский франк", "The world’s leading grower of ylang-ylang, the flower behind many famous perfumes.", "Мировой лидер по иланг-илангу — цветку, из которого делают знаменитые духи."),
+  cg: p("Brazzaville", "Браззавиль", 6_300_000, "Central African CFA franc", "франк КФА", "Part of the Congo Basin, Earth’s second-largest rainforest.", "Часть бассейна Конго — второго по величине тропического леса Земли."),
+  ci: p("Yamoussoukro", "Ямусукро", 31_200_000, "West African CFA franc", "франк КФА", "The world’s largest cocoa producer — most of the planet’s chocolate starts here.", "Крупнейший в мире производитель какао: большая часть шоколада начинается здесь."),
+  cd: p("Kinshasa", "Киншаса", 109_000_000, "Congolese franc", "конголезский франк", "The Congo River is the world’s deepest, and Kinshasa is Africa’s largest French-speaking city.", "Река Конго — самая глубокая в мире, а Киншаса — крупнейший франкоязычный город Африки."),
+  dj: p("Djibouti", "Джибути", 1_200_000, "Djiboutian franc", "джибутийский франк", "Lake Assal is Africa’s lowest point — a salt crater 155 metres below sea level.", "Озеро Ассаль — самая низкая точка Африки: соляной кратер на 155 метров ниже уровня моря."),
+  eg: p("Cairo", "Каир", 114_000_000, "Egyptian pound", "египетский фунт", "Home to the only surviving Wonder of the Ancient World: the Great Pyramid of Giza.", "Здесь стоит единственное уцелевшее чудо Древнего мира — Великая пирамида в Гизе."),
+  gq: p("Malabo", "Малабо", 1_800_000, "Central African CFA franc", "франк КФА", "The only Spanish-speaking country in Africa.", "Единственная испаноязычная страна Африки."),
+  er: p("Asmara", "Асмэра", 3_700_000, "Eritrean nakfa", "эритрейская накфа", "Asmara is a UNESCO city of intact 1930s modernist architecture.", "Асмэра — город ЮНЕСКО с целым ансамблем модернизма 1930-х."),
+  sz: p("Mbabane", "Мбабане", 1_200_000, "Swazi lilangeni", "свазилендский лилангени", "Africa’s last remaining absolute monarchy, famous for the Umhlanga reed dance.", "Последняя абсолютная монархия Африки, известная танцем тростника Умхланга."),
+  et: p("Addis Ababa", "Аддис-Абеба", 132_000_000, "Ethiopian birr", "эфиопский быр", "The birthplace of coffee — and the only African country never colonised.", "Родина кофе и единственная африканская страна, которую не колонизировали."),
+  ga: p("Libreville", "Либревиль", 2_500_000, "Central African CFA franc", "франк КФА", "About 88% forest; it has pledged to stay a carbon-positive country.", "Около 88% территории — лес; страна обещала остаться углеродно-положительной."),
+  gm: p("Banjul", "Банжул", 2_800_000, "Gambian dalasi", "гамбийский даласи", "Mainland Africa’s smallest country, strung along a single great river.", "Самая маленькая страна континентальной Африки — вся вытянута вдоль одной реки."),
+  gh: p("Accra", "Аккра", 34_400_000, "Ghanaian cedi", "ганский седи", "The first sub-Saharan country to win independence, in 1957.", "Первая страна Африки южнее Сахары, получившая независимость — в 1957 году."),
+  gn: p("Conakry", "Конакри", 14_800_000, "Guinean franc", "гвинейский франк", "Holds some of the world’s largest reserves of bauxite, the ore of aluminium.", "Одни из крупнейших в мире запасов бокситов — руды, из которой делают алюминий."),
+  gw: p("Bissau", "Бисау", 2_200_000, "West African CFA franc", "франк КФА", "The Bijagós archipelago is a UNESCO biosphere where saltwater hippos live.", "Архипелаг Бижагош — биосфера ЮНЕСКО, где живут морские бегемоты."),
+  ke: p("Nairobi", "Найроби", 56_400_000, "Kenyan shilling", "кенийский шиллинг", "The Great Rift Valley here holds some of the oldest human fossils on Earth.", "В Великой рифтовой долине нашли одни из древнейших останков человека."),
+  ls: p("Maseru", "Масеру", 2_300_000, "Lesotho loti", "лоти Лесото", "The only country on Earth lying entirely above 1,000 metres.", "Единственная страна мира, вся территория которой выше 1 000 метров."),
+  lr: p("Monrovia", "Монровия", 5_500_000, "Liberian dollar", "либерийский доллар", "Africa’s first republic, founded in 1847.", "Первая республика Африки — основана в 1847 году."),
+  ly: p("Tripoli", "Триполи", 7_000_000, "Libyan dinar", "ливийский динар", "Leptis Magna is one of the finest Roman cities still standing.", "Лептис-Магна — один из лучше всего сохранившихся римских городов."),
+  mg: p("Antananarivo", "Антананариву", 31_200_000, "Malagasy ariary", "малагасийский ариари", "About 90% of its wildlife exists nowhere else — including the baobabs of Avenue of the Baobabs.", "Около 90% животных и растений больше нигде не встречаются, в том числе знаменитые баобабы."),
+  mw: p("Lilongwe", "Лилонгве", 21_700_000, "Malawian kwacha", "малавийская квача", "Lake Malawi has more fish species than any other lake on Earth.", "В озере Малави больше видов рыб, чем в любом другом озере мира."),
+  ml: p("Bamako", "Бамако", 24_500_000, "West African CFA franc", "франк КФА", "Timbuktu held one of the great medieval libraries and universities of the world.", "В Томбукту была одна из великих средневековых библиотек и университетов мира."),
+  mr: p("Nouakchott", "Нуакшот", 5_200_000, "Mauritanian ouguiya", "мавританская угия", "Banc d’Arguin is a vast Sahara-meets-ocean park and a key stop for migrating birds.", "Банк-д’Арген — огромный парк «Сахара встречает океан» и ключевая точка птичьего пролёта."),
+  mu: p("Port Louis", "Порт-Луи", 1_300_000, "Mauritian rupee", "маврикийская рупия", "The only home of the dodo — and one of Africa’s most stable democracies.", "Единственная родина дронта додо и одна из самых устойчивых демократий Африки."),
+  ma: p("Rabat", "Рабат", 38_100_000, "Moroccan dirham", "марокканский дирхам", "Noor Ouarzazate is among the world’s largest concentrated solar power complexes.", "Нур-Уарзазат — один из крупнейших в мире комплексов солнечной энергетики."),
+  mz: p("Maputo", "Мапуту", 34_900_000, "Mozambican metical", "мозамбикский метикал", "The Island of Mozambique is a UNESCO stone-and-coral town that once ruled the Indian Ocean trade.", "Остров Мозамбик — город ЮНЕСКО из камня и коралла, когда-то правивший торговлей Индийского океана."),
+  na: p("Windhoek", "Виндхук", 2_600_000, "Namibian dollar", "намибийский доллар", "The Namib is often called the world’s oldest desert, and the country wrote nature protection into its constitution.", "Намиб часто называют старейшей пустыней мира, а охрану природы вписали в конституцию."),
+  ne: p("Niamey", "Ниамей", 27_300_000, "West African CFA franc", "франк КФА", "A top global uranium producer, with dinosaur fossils scattered across the Ténéré.", "Один из мировых лидеров по урану, а в пустыне Тенере находят динозавров."),
+  ng: p("Abuja", "Абуджа", 229_000_000, "Nigerian naira", "нигерийская найра", "Africa’s most populous country — and Nollywood is one of the world’s largest film industries.", "Самая населённая страна Африки, а Нолливуд — одна из крупнейших киноиндустрий мира."),
+  rw: p("Kigali", "Кигали", 14_300_000, "Rwandan franc", "руандийский франк", "The first country with a female majority in parliament, and a stronghold of mountain gorillas.", "Первая страна с женским большинством в парламенте и один из последних домов горных горилл."),
+  st: p("São Tomé", "Сан-Томе", 240_000, "São Tomé and Príncipe dobra", "добра Сан-Томе и Принсипи", "Príncipe Island is a UNESCO biosphere of chocolate-era plantations and rare birds.", "Остров Принсипи — биосфера ЮНЕСКО: плантации «шоколадной эпохи» и редкие птицы."),
+  sn: p("Dakar", "Дакар", 18_500_000, "West African CFA franc", "франк КФА", "The westernmost point of mainland Africa, and host of the famous Dakar Rally’s spiritual home.", "Самая западная точка континентальной Африки и духовный дом ралли «Дакар»."),
+  sc: p("Victoria", "Виктория", 100_000, "Seychellois rupee", "сейшельская рупия", "The Aldabra atoll holds the world’s largest population of giant tortoises.", "На атолле Альдабра — крупнейшая в мире популяция гигантских черепах."),
+  sl: p("Freetown", "Фритаун", 8_800_000, "Sierra Leonean leone", "леоне Сьерра-Леоне", "Fourah Bay College (1827) was West Africa’s first Western-style university.", "Колледж Фоура-Бей (1827) — первый университет западного типа в Западной Африке."),
+  so: p("Mogadishu", "Могадишо", 19_000_000, "Somali shilling", "сомалийский шиллинг", "Has mainland Africa’s longest coastline, and is the classic homeland of frankincense.", "Самое длинное побережье континентальной Африки и классическая родина ладана."),
+  za: p("Pretoria", "Претория", 63_200_000, "South African rand", "южноафриканский рэнд", "The first African country to host the FIFA World Cup, and it has 11 official languages.", "Первая африканская страна, принявшая чемпионат мира по футболу, и 11 официальных языков."),
+  ss: p("Juba", "Джуба", 11_500_000, "South Sudanese pound", "южносуданский фунт", "The world’s newest UN member state, born in 2011 on the White Nile.", "Самый молодой член ООН: государство появилось в 2011 году на Белом Ниле."),
+  sd: p("Khartoum", "Хартум", 50_000_000, "Sudanese pound", "суданский фунт", "The pyramids of Meroë outnumber those of Egypt.", "Пирамид в Мероэ больше, чем в Египте."),
+  tz: p("Dodoma", "Додома", 68_600_000, "Tanzanian shilling", "танзанийский шиллинг", "Home to Kilimanjaro, Africa’s highest peak, and the Serengeti migration.", "Здесь Килиманджаро — высшая точка Африки — и миграция Серенгети."),
+  tg: p("Lomé", "Ломе", 9_500_000, "West African CFA franc", "франк КФА", "Lomé’s Grand Market is one of West Africa’s great trading crossroads.", "Большой рынок Ломе — один из главных торговых перекрёстков Западной Африки."),
+  tn: p("Tunis", "Тунис", 12_300_000, "Tunisian dinar", "тунисский динар", "Carthage stood here — and Tunisia’s 2015 National Dialogue Quartet won the Nobel Peace Prize.", "Здесь стоял Карфаген, а тунисский «квартет национального диалога» получил Нобелевскую премию мира."),
+  ug: p("Kampala", "Кампала", 50_000_000, "Ugandan shilling", "угандийский шиллинг", "Winston Churchill called it the Pearl of Africa; the Nile begins at Lake Victoria here.", "Черчилль назвал её жемчужиной Африки: Нил начинается из озера Виктория именно здесь."),
+  zm: p("Lusaka", "Лусака", 21_300_000, "Zambian kwacha", "замбийская квача", "Victoria Falls, shared with Zimbabwe, is one of the world’s greatest sheets of falling water.", "Водопад Виктория (вместе с Зимбабве) — один из величайших водных обрывов планеты."),
+  zw: p("Harare", "Хараре", 16_600_000, "Zimbabwean gold (ZiG)", "зимбабвийский золотой (ZiG)", "Great Zimbabwe is a medieval stone city that gave the country its name.", "Великий Зимбабве — средневековый каменный город, давший стране имя."),
+  af: p("Kabul", "Кабул", 43_000_000, "Afghan afghani", "афгани", "Band-e Amir is Afghanistan’s first national park: six deep-blue lakes in the Hindu Kush.", "Банд-э-Амир — первый национальный парк: шесть ярко-синих озёр в Гиндукуше."),
+  am: p("Yerevan", "Ереван", 3_000_000, "Armenian dram", "армянский драм", "One of the world’s oldest Christian nations, with churches carved into stone at Geghard.", "Одна из древнейших христианских стран: храмы Гегарда высечены в скале."),
+  az: p("Baku", "Баку", 10_400_000, "Azerbaijani manat", "азербайджанский манат", "The Land of Fire: mud volcanoes and the burning hillside of Yanar Dag.", "Страна огней: грязевые вулканы и горящий склон Янардаг."),
+  bh: p("Manama", "Манама", 1_600_000, "Bahraini dinar", "бахрейнский динар", "The first Gulf country to strike oil, and home to the ancient Dilmun civilisation.", "Первая страна Залива, где нашли нефть, и родина древней цивилизации Дильмун."),
+  bd: p("Dhaka", "Дакка", 173_000_000, "Bangladeshi taka", "бангладешская така", "The world’s most densely populated large country, and a leader in mangrove conservation at the Sundarbans.", "Самая плотно населённая крупная страна и хранитель мангров Сундарбана."),
+  bt: p("Thimphu", "Тхимпху", 790_000, "Bhutanese ngultrum", "бутанский нгултрум", "The only country that measures Gross National Happiness, and carbon-negative by law.", "Единственная страна, которая считает валовое национальное счастье и углеродно-отрицательна."),
+  bn: p("Bandar Seri Begawan", "Бандар-Сери-Бегаван", 460_000, "Brunei dollar", "брунейский доллар", "A rainforest sultanate on Borneo, with one of Southeast Asia’s richest royal mosques.", "Султанат дождевых лесов на Борнео и одна из самых богатых королевских мечетей Юго-Восточной Азии."),
+  kh: p("Phnom Penh", "Пномпень", 17_600_000, "Cambodian riel", "камбоджийский риель", "Angkor Wat is the largest religious monument on Earth.", "Ангкор-Ват — крупнейший религиозный памятник планеты."),
+  cn: p("Beijing", "Пекин", 1_410_000_000, "Chinese yuan", "китайский юань", "The Great Wall is the longest wall ever built, and China is the world’s most populous country after India.", "Великая китайская стена — самая длинная стена в истории, а Китай — вторая страна мира по населению."),
+  cy: p("Nicosia", "Никосия", 1_300_000, "Euro", "евро", "The legendary birthplace of Aphrodite, with some of the oldest wine traditions in the world.", "Легендарная родина Афродиты и один из древнейших винодельческих краёв мира."),
+  ge: p("Tbilisi", "Тбилиси", 3_700_000, "Georgian lari", "грузинский лари", "Among the world’s oldest wine cultures — qvevri clay-jar wine is UNESCO-listed.", "Одна из древнейших виноделен мира: вино в квеври входит в список ЮНЕСКО."),
+  in: p("New Delhi", "Нью-Дели", 1_440_000_000, "Indian rupee", "индийская рупия", "The world’s most populous country, and the birthplace of four major religions.", "Самая населённая страна мира и родина четырёх великих религий."),
+  id: p("Jakarta", "Джакарта", 283_000_000, "Indonesian rupiah", "индонезийская рупия", "The world’s largest archipelago nation, with more than 17,000 islands.", "Крупнейшее в мире государство-архипелаг: больше 17 000 островов."),
+  ir: p("Tehran", "Тегеран", 90_600_000, "Iranian rial", "иранский риал", "Persepolis was the ceremonial capital of the first Persian Empire.", "Персеполь — парадная столица первой Персидской империи."),
+  iq: p("Baghdad", "Багдад", 46_100_000, "Iraqi dinar", "иракский динар", "Mesopotamia here is called the cradle of writing: cuneiform was born between the Tigris and Euphrates.", "Месопотамия — колыбель письменности: клинопись родилась между Тигром и Евфратом."),
+  il: p("Jerusalem", "Иерусалим", 9_800_000, "Israeli shekel", "израильский шекель", "A world leader in water recycling and desert agriculture.", "Мировой лидер по повторному использованию воды и земледелию в пустыне."),
+  jp: p("Tokyo", "Токио", 124_000_000, "Japanese yen", "японская иена", "Tokyo is the world’s largest metropolitan area, and Japan has the most UNESCO Intangible Heritage listings in Asia.", "Токио — крупнейшая городская агломерация мира, а Япония лидирует в Азии по нематериальному наследию ЮНЕСКО."),
+  jo: p("Amman", "Амман", 11_500_000, "Jordanian dinar", "иорданский динар", "Petra is the rose-red city carved into rock, one of the New Seven Wonders.", "Петра — розово-красный город, вырезанный в скале, одно из новых семи чудес света."),
+  kz: p("Astana", "Астана", 20_600_000, "Kazakhstani tenge", "казахстанский тенге", "The world’s largest landlocked country, stretching from the Caspian to the Altai.", "Самая большая страна мира без выхода к океану — от Каспия до Алтая."),
+  kw: p("Kuwait City", "Эль-Кувейт", 4_900_000, "Kuwaiti dinar", "кувейтский динар", "The Kuwaiti dinar is the world’s highest-valued currency unit.", "Кувейтский динар — самая «тяжёлая» валюта мира."),
+  kg: p("Bishkek", "Бишкек", 7_200_000, "Kyrgyz som", "киргизский сом", "The Tian Shan here holds some of the world’s last wild walnut forests.", "В Тянь-Шане сохранились одни из последних в мире диких ореховых лесов."),
+  la: p("Vientiane", "Вьентьян", 7_800_000, "Lao kip", "лаосский кип", "The only landlocked country in Southeast Asia, threaded by the Mekong.", "Единственная страна Юго-Восточной Азии без моря, вся пронизанная Меконгом."),
+  lb: p("Beirut", "Бейрут", 5_300_000, "Lebanese pound", "ливанский фунт", "Byblos is among the oldest continuously inhabited cities, and gave its name to the Bible.", "Библ — один из древнейших живых городов, от него произошло слово «Библия»."),
+  my: p("Kuala Lumpur", "Куала-Лумпур", 35_100_000, "Malaysian ringgit", "малайзийский ринггит", "The Petronas Towers were the world’s tallest twin towers, standing over a rainforest city.", "Башни Петронас — самые высокие башни-близнецы, над городом у кромки джунглей."),
+  mv: p("Malé", "Мале", 520_000, "Maldivian rufiyaa", "мальдивская руфия", "The world’s lowest country: its average ground is only about 1.5 metres above the sea.", "Самая низкая страна мира: средняя высота суши — около полутора метров над морем."),
+  mn: p("Ulaanbaatar", "Улан-Батор", 3_500_000, "Mongolian tögrög", "монгольский тугрик", "The most sparsely populated independent country, and the heartland of Genghis Khan’s empire.", "Самая редко населённая независимая страна и сердце империи Чингисхана."),
+  mm: p("Naypyidaw", "Нейпьидо", 54_600_000, "Myanmar kyat", "мьянманский кьят", "Bagan’s plain holds thousands of Buddhist temples across a single ancient capital.", "На равнине Багана — тысячи буддийских храмов одной древней столицы."),
+  np: p("Kathmandu", "Катманду", 30_900_000, "Nepalese rupee", "непальская рупия", "Home to eight of the world’s ten highest peaks, including Everest.", "Здесь восемь из десяти высочайших вершин мира, включая Эверест."),
+  kp: p("Pyongyang", "Пхеньян", 26_300_000, "North Korean won", "северокорейская вона", "Rungrado 1st of May Stadium is the world’s largest stadium by capacity.", "Стадион Первого мая на острове Рынградо — крупнейший в мире по вместимости."),
+  om: p("Muscat", "Маскат", 4_700_000, "Omani rial", "оманский риал", "An Arabian maritime empire that once reached Zanzibar, with forts watching the Indian Ocean.", "Аравийская морская империя, когда-то державшая Занзибар, с крепостями над океаном."),
+  pk: p("Islamabad", "Исламабад", 247_000_000, "Pakistani rupee", "пакистанская рупия", "Home to the Karakoram’s K2, and the ancient cities of Mohenjo-daro and Taxila.", "Здесь Каракорум и Чогори (K2), а также древние города Мохенджо-Даро и Таксила."),
+  ph: p("Manila", "Манила", 117_000_000, "Philippine peso", "филиппинское песо", "The world’s second-largest archipelago after Indonesia, and a global centre of biodiversity.", "Второй по величине архипелаг после Индонезии и один из центров мирового биоразнообразия."),
+  qa: p("Doha", "Доха", 3_100_000, "Qatari riyal", "катарский риал", "The first Middle Eastern country to host the FIFA World Cup.", "Первая ближневосточная страна, принявшая чемпионат мира по футболу."),
+  sa: p("Riyadh", "Эр-Рияд", 36_900_000, "Saudi riyal", "саудовский риял", "Keeper of Mecca and Medina, the two holiest cities in Islam.", "Хранитель Мекки и Медины — двух святых городов ислама."),
+  sg: p("Singapore", "Сингапур", 6_000_000, "Singapore dollar", "сингапурский доллар", "A city-state that turned a harbour into one of the world’s busiest ports and a garden-city.", "Город-государство, превративший гавань в один из самых загруженных портов и город-сад."),
+  kr: p("Seoul", "Сеул", 51_700_000, "South Korean won", "южнокорейская вона", "A world leader in broadband, pop culture and shipbuilding.", "Мировой лидер в скоростном интернете, поп-культуре и судостроении."),
+  lk: p("Sri Jayawardenepura Kotte", "Шри-Джаяварденепура-Котте", 22_000_000, "Sri Lankan rupee", "шри-ланкийская рупия", "The first country in the world to have a female prime minister, Sirimavo Bandaranaike.", "Первая страна мира с женщиной-премьером — Сиримаво Бандаранаике."),
+  sy: p("Damascus", "Дамаск", 23_200_000, "Syrian pound", "сирийский фунт", "Damascus is among the world’s oldest continuously inhabited capital cities.", "Дамаск — одна из древнейших столиц, где непрерывно живут люди."),
+  tj: p("Dushanbe", "Душанбе", 10_300_000, "Tajik somoni", "таджикский сомони", "More than 90% mountains: the Pamirs are called the Roof of the World.", "Больше 90% — горы: Памир называют крышей мира."),
+  th: p("Bangkok", "Бангкок", 71_800_000, "Thai baht", "тайский бат", "The only Southeast Asian country never colonised, and a world capital of street food.", "Единственная страна Юго-Восточной Азии без колониального прошлого и мировая столица уличной еды."),
+  tl: p("Dili", "Дили", 1_400_000, "United States dollar", "доллар США", "Asia’s youngest nation, and one of the few places where ancient animist rites meet Portuguese churches.", "Самое молодое государство Азии, где древние обряды соседствуют с португальскими церквями."),
+  tr: p("Ankara", "Анкара", 87_300_000, "Turkish lira", "турецкая лира", "Istanbul is the only major city on two continents, split by the Bosphorus.", "Стамбул — единственный крупный город на двух континентах, разрезанный Босфором."),
+  tm: p("Ashgabat", "Ашхабад", 6_500_000, "Turkmen manat", "туркменский манат", "The Darvaza gas crater — the Door to Hell — has burned in the Karakum for decades.", "Газовый кратер Дарваза — «Врата ада» — горит в Каракумах уже десятки лет."),
+  ae: p("Abu Dhabi", "Абу-Даби", 11_000_000, "UAE dirham", "дирхам ОАЭ", "Home to the world’s tallest building, Burj Khalifa, and a desert that hosts a global airline hub.", "Здесь самое высокое здание мира — Бурдж-Халифа — и пустынный хаб мировой авиации."),
+  uz: p("Tashkent", "Ташкент", 36_400_000, "Uzbekistani som", "узбекский сум", "Samarkand and Bukhara were jewels of the Silk Road.", "Самарканд и Бухара — жемчужины Великого шёлкового пути."),
+  vn: p("Hanoi", "Ханой", 100_000_000, "Vietnamese đồng", "вьетнамский донг", "Hạ Long Bay’s limestone islets are a UNESCO wonder of the sea.", "Бухта Халонг с известняковыми островами — морское чудо ЮНЕСКО."),
+  ye: p("Sana'a", "Сана", 40_600_000, "Yemeni rial", "йеменский риал", "Shibam’s 16th-century mudbrick towers are called the Manhattan of the Desert, and Socotra’s flora is unique on Earth.", "Глиняные башни Шибама XVI века зовут Манхэттеном пустыни, а флора Сокотры больше нигде не повторяется."),
+  al: p("Tirana", "Тирана", 2_800_000, "Albanian lek", "албанский лек", "The Accursed Mountains hold some of Europe’s last wild rivers, including the Vjosa.", "В Проклятых горах сохранились одни из последних диких рек Европы, включая Вьосу."),
+  ad: p("Andorra la Vella", "Андорра-ла-Велья", 80_000, "Euro", "евро", "A tiny Pyrenean co-principality headed jointly by France’s president and a Spanish bishop.", "Крошечное княжество в Пиренеях: соправители — президент Франции и испанский епископ."),
+  at: p("Vienna", "Вена", 9_100_000, "Euro", "евро", "Vienna has been named the world’s most liveable city, and it was the capital of classical music.", "Вену не раз называли самым удобным для жизни городом мира и столицей классической музыки."),
+  by: p("Minsk", "Минск", 9_100_000, "Belarusian ruble", "белорусский рубль", "Europe’s largest remaining tract of old-growth forest, Belovezhskaya Pushcha, lies on its border.", "На границе — Беловежская пуща, крупнейший сохранившийся древний лес Европы."),
+  be: p("Brussels", "Брюссель", 11_800_000, "Euro", "евро", "The de facto capital of the European Union, and the land of comics, chocolate and 1,500 beer styles.", "Фактическая столица Евросоюза, страна комиксов, шоколада и полутора тысяч сортов пива."),
+  ba: p("Sarajevo", "Сараево", 3_200_000, "Bosnia and Herzegovina convertible mark", "конвертируемая марка", "Sarajevo hosted the 1984 Winter Olympics, ringed by mountains in the heart of the Balkans.", "Сараево приняло зимнюю Олимпиаду-1984 — город в кольце гор в сердце Балкан."),
+  bg: p("Sofia", "София", 6_400_000, "Euro", "евро", "The oldest gold treasure on Earth was found at Varna, and the country is a historic rose-oil power.", "В Варне нашли древнейшее золото Земли, а страна — исторический лидер по розовому маслу."),
+  hr: p("Zagreb", "Загреб", 3_800_000, "Euro", "евро", "It has one of the most indented coastlines in the world, with over a thousand Adriatic islands.", "Одно из самых изрезанных побережий мира: больше тысячи островов Адриатики."),
+  cz: p("Prague", "Прага", 10_900_000, "Czech koruna", "чешская крона", "Czechs drink more beer per person than anyone, and Prague’s centre is a UNESCO jewel of spires.", "Чехи пьют больше всего пива на человека в мире, а центр Праги — кружево шпилей ЮНЕСКО."),
+  dk: p("Copenhagen", "Копенгаген", 6_000_000, "Danish krone", "датская крона", "The Faroe Islands and Greenland are part of the Danish Realm, and Lego was born here.", "Фареры и Гренландия входят в Датское королевство, а Lego родился здесь."),
+  ee: p("Tallinn", "Таллин", 1_400_000, "Euro", "евро", "The first country to offer nationwide digital residency and e-government as a complete system.", "Первая страна с полной цифровой резиденцией и электронным государством как системой."),
+  fi: p("Helsinki", "Хельсинки", 5_600_000, "Euro", "евро", "Repeatedly ranks among the world’s happiest countries, and is a global leader in education.", "Регулярно входит в самые счастливые страны мира и — мировой лидер в школьном образовании."),
+  fr: p("Paris", "Париж", 68_400_000, "Euro", "евро", "The most visited country on Earth, and the land of the Louvre, champagne and 18 Nobel literature prizes.", "Самая посещаемая страна мира: Лувр, шампанское и 18 Нобелевских премий по литературе."),
+  de: p("Berlin", "Берлин", 84_100_000, "Euro", "евро", "Europe’s largest economy, and the country with the most UNESCO sites in Europe after Italy.", "Крупнейшая экономика Европы и одна из стран с наибольшим числом объектов ЮНЕСКО."),
+  gr: p("Athens", "Афины", 10_300_000, "Euro", "евро", "The birthplace of democracy, the Olympic Games and the idea of the marathon.", "Родина демократии, Олимпийских игр и самого понятия марафона."),
+  hu: p("Budapest", "Будапешт", 9_600_000, "Hungarian forint", "венгерский форинт", "Budapest sits on one of the world’s great spa-city networks of thermal baths.", "Будапешт — одна из великих банных столиц мира, город термальных купален."),
+  is: p("Reykjavík", "Рейкьявик", 400_000, "Icelandic króna", "исландская крона", "Almost all electricity comes from volcanoes and glaciers: geothermal and hydropower.", "Почти всё электричество — от вулканов и ледников: геотермия и гидроэнергия."),
+  ie: p("Dublin", "Дублин", 5_300_000, "Euro", "евро", "A literary superpower: four Nobel Prize in Literature winners from a small island.", "Литературная сверхдержава: четыре Нобелевские премии по литературе с одного небольшого острова."),
+  it: p("Rome", "Рим", 59_000_000, "Euro", "евро", "Has more UNESCO World Heritage sites than any other country.", "Больше объектов Всемирного наследия ЮНЕСКО, чем у любой другой страны."),
+  lv: p("Riga", "Рига", 1_800_000, "Euro", "евро", "Riga’s Art Nouveau district is among the finest in the world.", "Район модерна в Риге — один из лучших в мире."),
+  li: p("Vaduz", "Вадуц", 40_000, "Swiss franc", "швейцарский франк", "The world’s largest private art collection open to the public is the princely gallery here.", "Крупнейшая частная художественная коллекция, открытая публике, — княжеская галерея здесь."),
+  lt: p("Vilnius", "Вильнюс", 2_900_000, "Euro", "евро", "In 1989 two million people joined the Baltic Way, a human chain across three nations.", "В 1989 году два миллиона человек встали в Балтийский путь — живую цепь через три страны."),
+  lu: p("Luxembourg City", "Люксембург", 670_000, "Euro", "евро", "One of the EU’s founding capitals, with the highest GDP per person in the Union.", "Одна из столиц-основательниц ЕС и лидер Союза по ВВП на человека."),
+  mt: p("Valletta", "Валлетта", 540_000, "Euro", "евро", "Valletta is one of the world’s smallest capitals, built by the Knights of St John.", "Валлетта — одна из самых маленьких столиц мира, построенная рыцарями Святого Иоанна."),
+  md: p("Chișinău", "Кишинёв", 3_000_000, "Moldovan leu", "молдавский лей", "One of the world’s great underground wine cities: Cricova’s cellars run for over 100 kilometres.", "Один из великих винных городов мира: погреба Крикова тянутся больше чем на 100 километров."),
+  mc: p("Monaco", "Монако", 39_000, "Euro", "евро", "The most densely populated country, and host of Formula 1’s most famous street race.", "Самая плотно населённая страна и хозяйка самой знаменитой городской трассы Формулы-1."),
+  me: p("Podgorica", "Подгорица", 620_000, "Euro", "евро", "One of the world’s newest independent states (2006), with Europe’s southernmost fjord-like bay at Kotor.", "Одно из самых молодых независимых государств (2006) и южная «фиордовая» бухта Котора."),
+  nl: p("Amsterdam", "Амстердам", 18_000_000, "Euro", "евро", "About a quarter of the country lies below sea level — a world master of holding back the ocean.", "Около четверти страны ниже уровня моря: мировой мастер удержания океана."),
+  mk: p("Skopje", "Скопье", 1_800_000, "Macedonian denar", "македонский денар", "Lake Ohrid is among Europe’s oldest and deepest lakes, shared as a UNESCO site.", "Охридское озеро — одно из древнейших и глубоких в Европе, объект ЮНЕСКО."),
+  no: p("Oslo", "Осло", 5_600_000, "Norwegian krone", "норвежская крона", "A world leader in electric cars, and keeper of the fjords and the Nobel Peace Prize.", "Мировой лидер по электромобилям, страна фьордов и Нобелевской премии мира."),
+  pl: p("Warsaw", "Варшава", 36_600_000, "Polish złoty", "польский злотый", "Copernicus was born here, and Poland has one of Europe’s greatest surviving medieval city squares in Kraków.", "Родина Коперника, а в Кракове — одна из величайших сохранившихся средневековых площадей Европы."),
+  pt: p("Lisbon", "Лиссабон", 10_500_000, "Euro", "евро", "The first global sea empire of the Age of Discovery, and the land of azulejo and port wine.", "Первая глобальная морская империя эпохи Великих географических открытий, страна азулежу и портвейна."),
+  ro: p("Bucharest", "Бухарест", 19_000_000, "Romanian leu", "румынский лей", "The Danube Delta is Europe’s largest remaining wetland wilderness.", "Дельта Дуная — крупнейшая сохранившаяся водно-болотная глушь Европы."),
+  ru: p("Moscow", "Москва", 144_000_000, "Russian ruble", "российский рубль", "The world’s largest country, spanning eleven time zones from the Baltic to the Pacific.", "Самая большая страна мира — одиннадцать часовых поясов от Балтики до Тихого океана."),
+  sm: p("San Marino", "Сан-Марино", 34_000, "Euro", "евро", "The world’s oldest surviving republic, founded in 301.", "Древнейшая сохранившаяся республика мира — основана в 301 году."),
+  rs: p("Belgrade", "Белград", 6_600_000, "Serbian dinar", "сербский динар", "Belgrade sits at the meeting of the Sava and the Danube, one of Europe’s great river junctions.", "Белград стоит у слияния Савы и Дуная — одном из великих речных узлов Европы."),
+  sk: p("Bratislava", "Братислава", 5_400_000, "Euro", "евро", "Bratislava is the only capital that borders two other countries.", "Братислава — единственная столица, граничащая сразу с двумя другими странами."),
+  si: p("Ljubljana", "Любляна", 2_100_000, "Euro", "евро", "Europe’s first country declared a green destination, with a capital almost free of cars in the centre.", "Первая «зелёная» страна Европы: центр столицы почти без машин."),
+  es: p("Madrid", "Мадрид", 48_400_000, "Euro", "евро", "The second-largest country in the EU, and a world capital of language, spoken by over 500 million people.", "Вторая по площади страна ЕС и мировая столица языка, на котором говорят больше 500 миллионов."),
+  se: p("Stockholm", "Стокгольм", 10_600_000, "Swedish krona", "шведская крона", "The Nobel Prizes were born here, except the Peace Prize awarded in Oslo.", "Здесь родились Нобелевские премии — кроме премии мира, которую вручают в Осло."),
+  ch: p("Bern", "Берн", 8_900_000, "Swiss franc", "швейцарский франк", "A world capital of watches, neutrality and alpine rail engineering.", "Мировая столица часов, нейтралитета и альпийских железных дорог."),
+  ua: p("Kyiv", "Киев", 37_900_000, "Ukrainian hryvnia", "украинская гривна", "Home to the fertile black soil of the steppe, and Kyiv’s Saint Sophia is a jewel of medieval Europe.", "Страна чернозёма степей, а София Киевская — жемчужина средневековой Европы."),
+  gb: p("London", "Лондон", 69_200_000, "Pound sterling", "фунт стерлингов", "The Industrial Revolution began here, and English became the world’s lingua franca.", "Здесь началась промышленная революция, а английский стал мировым языком общения."),
+  ag: p("St. John's", "Сент-Джонс", 94_000, "East Caribbean dollar", "восточнокарибский доллар", "The first country to celebrate each new year: Antigua’s headlands catch the sunrise of the Americas.", "Одна из первых стран, встречающих год: мысы Антигуа ловят рассвет Америки."),
+  ar: p("Buenos Aires", "Буэнос-Айрес", 46_700_000, "Argentine peso", "аргентинское песо", "The tango was born in Buenos Aires, and Patagonia holds some of the world’s last great ice fields.", "Танго родилось в Буэнос-Айресе, а в Патагонии — одни из последних великих ледников мира."),
+  bs: p("Nassau", "Нассау", 410_000, "Bahamian dollar", "багамский доллар", "A nation of 700 islands, with some of the clearest water on Earth at the Tongue of the Ocean.", "Страна семисот островов и одна из самых прозрачных вод планеты у Языка океана."),
+  bb: p("Bridgetown", "Бриджтаун", 280_000, "Barbadian dollar", "барбадосский доллар", "The birthplace of rum distillation, and the home of cricket legend Sir Garfield Sobers.", "Родина дистилляции рома и родина крикетной легенды сэра Гарфилда Соберса."),
+  bz: p("Belmopan", "Бельмопан", 410_000, "Belize dollar", "белизский доллар", "The only Central American country with English as the official language, guarding the Belize Barrier Reef.", "Единственная страна Центральной Америки с английским официальным языком и барьерным рифом Белиза."),
+  bo: p("Sucre", "Сукре", 12_400_000, "Bolivian boliviano", "боливийский боливиано", "The world’s highest administrative capital region: La Paz sits above 3,600 metres, with Lake Titicaca nearby.", "Самый высокогорный административный центр: Ла-Пас выше 3 600 метров, рядом Титикака."),
+  br: p("Brasília", "Бразилиа", 216_000_000, "Brazilian real", "бразильский реал", "The largest country in the Southern Hemisphere, holding most of the Amazon rainforest.", "Крупнейшая страна Южного полушария, хранящая большую часть Амазонии."),
+  ca: p("Ottawa", "Оттава", 41_000_000, "Canadian dollar", "канадский доллар", "The world’s second-largest country, with the longest coastline on Earth.", "Вторая по площади страна мира с самой длинной береговой линией на Земле."),
+  cl: p("Santiago", "Сантьяго", 19_800_000, "Chilean peso", "чилийское песо", "The Atacama is the driest non-polar desert, and Chile is a world capital of astronomy.", "Атакама — самая сухая внеполярная пустыня, а Чили — мировая столица астрономии."),
+  co: p("Bogotá", "Богота", 52_900_000, "Colombian peso", "колумбийское песо", "The most biodiverse country per square kilometre, from Andes snow to Amazon and Caribbean.", "Самая богатая видами страна на квадратный километр: от андских снегов до Амазонии и Карибов."),
+  cr: p("San José", "Сан-Хосе", 5_300_000, "Costa Rican colón", "коста-риканский колон", "Abolished its army in 1948 and now runs on nearly 100% renewable electricity.", "Распустила армию в 1948 году и почти на 100% живёт на возобновляемой электроэнергии."),
+  cu: p("Havana", "Гавана", 11_000_000, "Cuban peso", "кубинское песо", "The land of son and salsa, with a classic-car capital and the first UNESCO World Heritage city in the Caribbean: Old Havana.", "Родина сона и сальсы: столица ретро-автомобилей и первый объект ЮНЕСКО Карибов — Старая Гавана."),
+  dm: p("Roseau", "Розо", 72_000, "East Caribbean dollar", "восточнокарибский доллар", "The Nature Island: home to the world’s second-largest boiling lake.", "Остров природы: здесь второе по величине кипящее озеро мира."),
+  do: p("Santo Domingo", "Санто-Доминго", 11_400_000, "Dominican peso", "доминиканское песо", "Santo Domingo is the oldest European-founded city in the Americas, and merengue was born here.", "Санто-Доминго — старейший европейский город Америки, и здесь родилось меренге."),
+  ec: p("Quito", "Кито", 18_200_000, "United States dollar", "доллар США", "The first country named after the equator, and the Galápagos rewrote biology for Darwin.", "Первая страна, названная в честь экватора, а Галапагосы переписали биологию для Дарвина."),
+  sv: p("San Salvador", "Сан-Сальвадор", 6_300_000, "United States dollar", "доллар США", "The smallest mainland country in the Americas, packed with volcanoes and Pacific surf.", "Самая маленькая материковая страна Америки — сплошь вулканы и тихоокеанский сёрф."),
+  gd: p("St. George's", "Сент-Джорджес", 130_000, "East Caribbean dollar", "восточнокарибский доллар", "The Spice Isle: a leading grower of nutmeg and one of the Caribbean’s most perfect harbour towns.", "Остров пряностей: один из лидеров по мускатному ореху и одна из красивейших гаваней Карибов."),
+  gt: p("Guatemala City", "Гватемала", 18_400_000, "Guatemalan quetzal", "гватемальский кетсаль", "The heart of the ancient Maya world, with Tikal’s temples rising from the rainforest.", "Сердце мира майя: храмы Тикаля поднимаются из джунглей."),
+  gy: p("Georgetown", "Джорджтаун", 830_000, "Guyanese dollar", "гайанский доллар", "Kaieteur is one of the world’s most powerful single-drop waterfalls, in an Amazon-Guiana rainforest.", "Кайетур — один из мощнейших однокаскадных водопадов, в лесах Гвианского щита."),
+  ht: p("Port-au-Prince", "Порт-о-Пренс", 11_700_000, "Haitian gourde", "гаитянский гурд", "The first Black republic, and the first in the Americas to abolish slavery, in 1804.", "Первая чёрная республика и первая в Америке, отменившая рабство — в 1804 году."),
+  hn: p("Tegucigalpa", "Тегусигальпа", 10_800_000, "Honduran lempira", "гондурасская лемпира", "The Bay Islands sit on the Mesoamerican Barrier Reef, the world’s second-largest.", "Острова Бай — на Месоамериканском барьерном рифе, втором по величине в мире."),
+  jm: p("Kingston", "Кингстон", 2_800_000, "Jamaican dollar", "ямайский доллар", "The birthplace of reggae and Rastafari, and a sprint powerhouse of the Olympic Games.", "Родина регги и растафари и спринтерская держава Олимпийских игр."),
+  mx: p("Mexico City", "Мехико", 130_000_000, "Mexican peso", "мексиканское песо", "The world’s largest Spanish-speaking country, heir to the Aztec and Maya civilisations.", "Крупнейшая испаноязычная страна, наследница цивилизаций ацтеков и майя."),
+  ni: p("Managua", "Манагуа", 6_900_000, "Nicaraguan córdoba", "никарагуанская кордоба", "The largest country in Central America, with twin volcanoes watching colonial Granada and León.", "Крупнейшая страна Центральной Америки: вулканы смотрят на колониальные Гранаду и Леон."),
+  pa: p("Panama City", "Панама", 4_500_000, "United States dollar / balboa", "доллар США / бальбоа", "The Panama Canal links two oceans and carries a huge share of world shipping.", "Панамский канал соединяет два океана и пропускает огромную долю мирового флота."),
+  py: p("Asunción", "Асунсьон", 6_900_000, "Paraguayan guaraní", "парагвайский гуарани", "A truly bilingual nation: Guaraní is spoken as widely as Spanish.", "По-настоящему двуязычная страна: гуарани звучит не реже испанского."),
+  pe: p("Lima", "Лима", 34_400_000, "Peruvian sol", "перуанский соль", "Machu Picchu and the Andes heartland of the Inca, plus the Amazon’s headwaters.", "Мачу-Пикчу и андское сердце инков, плюс верховья Амазонки."),
+  kn: p("Basseterre", "Бастер", 47_000, "East Caribbean dollar", "восточнокарибский доллар", "The smallest country in the Americas, with a fortress UNESCO site at Brimstone Hill.", "Самая маленькая страна Америки и крепость ЮНЕСКО на холме Бримстон."),
+  lc: p("Castries", "Кастри", 180_000, "East Caribbean dollar", "восточнокарибский доллар", "The Pitons are twin volcanic spires and a UNESCO emblem of the Caribbean.", "Питоны — два вулканических пика, эмблема Карибов и объект ЮНЕСКО."),
+  vc: p("Kingstown", "Кингстаун", 100_000, "East Caribbean dollar", "восточнокарибский доллар", "The botanical gardens in Kingstown (1765) are the oldest in the Western Hemisphere.", "Ботанический сад Кингстауна (1765) — старейший в Западном полушарии."),
+  sr: p("Paramaribo", "Парамарибо", 630_000, "Surinamese dollar", "суринамский доллар", "The smallest country in South America, and the continent’s only Dutch-speaking nation.", "Самая маленькая страна Южной Америки и единственная нидерландскоязычная на континенте."),
+  tt: p("Port of Spain", "Порт-оф-Спейн", 1_500_000, "Trinidad and Tobago dollar", "доллар Тринидада и Тобаго", "The birthplace of the steelpan, the only acoustic instrument invented in the 20th century.", "Родина стилпана — единственного акустического инструмента, изобретённого в XX веке."),
+  us: p("Washington, D.C.", "Вашингтон", 341_000_000, "United States dollar", "доллар США", "The first country to land humans on the Moon, and still the world’s largest economy.", "Первая страна, высадившая человека на Луну, и пока крупнейшая экономика мира."),
+  uy: p("Montevideo", "Монтевидео", 3_400_000, "Uruguayan peso", "уругвайское песо", "First in Latin America to legalise a nationwide smoking ban in public spaces, and a football giant for its size.", "Первая в Латинской Америке ввела полный запрет курения в общественных местах и футбольный гигант при малом размере."),
+  ve: p("Caracas", "Каракас", 28_400_000, "Venezuelan bolívar", "венесуэльский боливар", "Angel Falls is the world’s highest uninterrupted waterfall.", "Анхель — самый высокий непрерывный водопад на Земле."),
+  au: p("Canberra", "Канберра", 27_200_000, "Australian dollar", "австралийский доллар", "The smallest continent and a country, with more unique mammal families than anywhere else — including the kangaroo.", "Самый маленький континент и страна: больше уникальных семейств млекопитающих, чем где-либо, включая кенгуру."),
+  fj: p("Suva", "Сува", 930_000, "Fijian dollar", "фиджийский доллар", "A crossroads of Melanesia and Polynesia, with some of the world’s softest coral reefs.", "Перекрёсток Меланезии и Полинезии с одними из мягчайших коралловых рифов мира."),
+  ki: p("South Tarawa", "Южная Тарава", 130_000, "Australian dollar", "австралийский доллар", "The first country to see each new day: it sits on the front of the International Date Line.", "Первая страна, встречающая новый день: стоит на переднем крае линии перемены дат."),
+  mh: p("Majuro", "Маджуро", 42_000, "United States dollar", "доллар США", "A nation of low coral atolls, and a master of traditional Pacific stick-chart navigation.", "Страна низких коралловых атоллов и мастеров традиционной тихоокеанской навигации по палочным картам."),
+  fm: p("Palikir", "Паликир", 110_000, "United States dollar", "доллар США", "Hundreds of islands across a million square miles of Pacific, with Nan Madol’s stone city on the water.", "Сотни островов на миллионе квадратных миль океана и каменный город на воде Нан-Мадол."),
+  nr: p("Yaren", "Ярен", 13_000, "Australian dollar", "австралийский доллар", "The world’s smallest island country, a single coral island in the Pacific.", "Самое маленькое островное государство — один коралловый остров в Тихом океане."),
+  nz: p("Wellington", "Веллингтон", 5_300_000, "New Zealand dollar", "новозеландский доллар", "The first country to give women the vote, in 1893, and a world of endemic birds like the kiwi.", "Первая страна, давшая женщинам право голоса — в 1893 году — и родина киви и других уникальных птиц."),
+  pw: p("Ngerulmud", "Нгерулмуд", 18_000, "United States dollar", "доллар США", "The first country to create a nationwide shark sanctuary, around Rock Islands of turquoise water.", "Первая страна, создавшая общенациональное святилище акул у Каменных островов."),
+  pg: p("Port Moresby", "Порт-Морсби", 10_400_000, "Papua New Guinean kina", "кина Папуа — Новой Гвинеи", "The most linguistically diverse country: over 800 living languages.", "Самая языковая страна мира: больше 800 живых языков."),
+  ws: p("Apia", "Апиа", 220_000, "Samoan tālā", "самоанская тала", "The heartland of Polynesia, and the first independent Pacific island state of the modern era.", "Сердце Полинезии и первое независимое островное государство Тихого океана новой эпохи."),
+  sb: p("Honiara", "Хониара", 740_000, "Solomon Islands dollar", "доллар Соломоновых Островов", "A Pacific biodiversity jewel, with WWII wrecks and some of the last intact island forests.", "Жемчужина тихоокеанского биоразнообразия: корабли Второй мировой и одни из последних целых островных лесов."),
+  to: p("Nuku'alofa", "Нукуалофа", 100_000, "Tongan paʻanga", "тонганская паанга", "The only remaining kingdom in Polynesia, never fully colonised.", "Единственное сохранившееся королевство Полинезии, которое так и не стало колонией."),
+  tv: p("Funafuti", "Фунафути", 11_000, "Australian dollar", "австралийский доллар", "The world’s least populous UN member, a chain of atolls in the mid-Pacific.", "Самый малонаселённый член ООН — цепочка атоллов посреди Тихого океана."),
+  vu: p("Port Vila", "Порт-Вила", 330_000, "Vanuatu vatu", "вату Вануату", "One of the world’s most culturally dense places: over 100 languages, and a famous land-diving ritual that inspired bungee.", "Одно из культурно самых плотных мест: больше 100 языков и ритуал прыжков с вышки, вдохновивший банджи."),
+}
+
+export function getPassport(iso: string): Passport | undefined {
+  return PASSPORTS[iso]
+}
+
+function formatAmount(value: number, lang: Lang): string {
+  const rounded = value >= 10 ? Math.round(value) : Math.round(value * 10) / 10
+  const text = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)
+  return lang === 'ru' ? text.replace('.', ',') : text
+}
+
+export function formatPopulation(population: number, lang: Lang): string {
+  if (population >= 1_000_000_000) {
+    const amount = formatAmount(population / 1_000_000_000, lang)
+    return lang === 'ru' ? `${amount} млрд` : `${amount} billion`
+  }
+  if (population >= 1_000_000) {
+    const amount = formatAmount(population / 1_000_000, lang)
+    return lang === 'ru' ? `${amount} млн` : `${amount} million`
+  }
+  if (population >= 1_000) {
+    const amount = formatAmount(population / 1_000, lang)
+    return lang === 'ru' ? `${amount} тыс.` : `${amount} thousand`
+  }
+  return String(population)
+}
+
+export function passportCapital(passport: Passport, lang: Lang): string {
+  return lang === 'ru' ? passport.capitalRu : passport.capitalEn
+}
+
+export function passportCurrency(passport: Passport, lang: Lang): string {
+  return lang === 'ru' ? passport.currencyRu : passport.currencyEn
+}
+
+export function passportFact(passport: Passport, lang: Lang): string {
+  return lang === 'ru' ? passport.factRu : passport.factEn
+}
