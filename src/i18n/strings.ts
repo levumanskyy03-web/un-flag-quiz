@@ -25,6 +25,19 @@ type Strings = {
   hardcoreHint: string
   levels: string
   learn: string
+  map: string
+  mapHint: string
+  mapSearch: string
+  mapLoading: string
+  mapCredit: string
+  mapRegion: string
+  mapMove: string
+  mapLeft: string
+  mapRight: string
+  mapUp: string
+  mapDown: string
+  territory: string
+  dispute: string
   learnHint: string
   learnLevelHint: string
   checkYourself: string
@@ -107,6 +120,19 @@ export const STRINGS: Record<Lang, Strings> = {
     hardcoreHint: 'Без права на ошибку',
     levels: 'Уровни',
     learn: 'Обучение',
+    map: 'Карта',
+    mapHint: 'Нажмите страну — откроется паспорт',
+    mapSearch: 'Найти страну',
+    mapLoading: 'Загрузка карты…',
+    mapCredit: 'Карта: MapSVG · CC BY 4.0',
+    mapRegion: 'Регион карты',
+    mapMove: 'Движение по карте',
+    mapLeft: 'Влево',
+    mapRight: 'Вправо',
+    mapUp: 'Вверх',
+    mapDown: 'Вниз',
+    territory: 'Территория',
+    dispute: 'Спор',
     learnHint: 'Карточки без таймера. Потом можно проверить себя.',
     learnLevelHint: 'Нажмите уровень, чтобы открыть карточки',
     checkYourself: 'Проверить',
@@ -187,6 +213,19 @@ export const STRINGS: Record<Lang, Strings> = {
     hardcoreHint: 'No mistakes allowed',
     levels: 'Levels',
     learn: 'Learn',
+    map: 'Map',
+    mapHint: 'Tap a country to open its passport',
+    mapSearch: 'Find a country',
+    mapLoading: 'Loading the map…',
+    mapCredit: 'Map: MapSVG · CC BY 4.0',
+    mapRegion: 'Map region',
+    mapMove: 'Move around the map',
+    mapLeft: 'Left',
+    mapRight: 'Right',
+    mapUp: 'Up',
+    mapDown: 'Down',
+    territory: 'Territory',
+    dispute: 'Dispute',
     learnHint: 'Cards without a timer. Then test yourself.',
     learnLevelHint: 'Tap a level to open its cards',
     checkYourself: 'Test yourself',

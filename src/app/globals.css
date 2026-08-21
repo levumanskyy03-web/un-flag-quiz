@@ -1105,6 +1105,293 @@ button.learn-card:hover {
   flex: 0 0 40px;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.choice.is-wide {
+  grid-column: 1 / -1;
+}
+
+.app:has(.map-screen) {
+  width: min(1100px, calc(100% - 24px));
+}
+
+.map-screen .quiz-header .btn-ghost {
+  width: 72px;
+}
+
+.map-screen .quiz-header .lang-toggle {
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.map-search {
+  position: relative;
+}
+
+.map-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.map-toolbar .map-search {
+  flex: 1;
+  min-width: 0;
+}
+
+.map-region-btn {
+  flex: 0 0 auto;
+  min-width: 132px;
+  padding-left: 14px;
+  padding-right: 14px;
+  white-space: nowrap;
+}
+
+.map-region-sheet {
+  width: min(420px, 100%);
+  margin-top: 48px;
+  padding: 18px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.map-region-sheet h2 {
+  margin: 0;
+  text-align: center;
+  font-size: 1.15rem;
+}
+
+.passport-territory {
+  width: 100%;
+  margin: 0;
+  padding: 10px 14px 10px 24px;
+  background: var(--accent-soft);
+  border-radius: 12px;
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+.passport-dispute {
+  width: 100%;
+  margin: 0;
+  padding: 10px 14px 10px 24px;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: 12px;
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+.map-search input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+}
+
+.map-search input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.map-search-list {
+  position: absolute;
+  z-index: 4;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+
+.map-search-list button {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+}
+
+.map-search-list button:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.map-card {
+  position: relative;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.map-zoom {
+  position: absolute;
+  z-index: 2;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 6px;
+}
+
+.map-zoom .btn-ghost {
+  width: 40px;
+  min-height: 40px;
+  padding: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: var(--card);
+}
+
+.map-pan {
+  position: absolute;
+  z-index: 2;
+  left: 20px;
+  bottom: 20px;
+  display: grid;
+  grid-template-columns: 40px 40px 40px;
+  grid-template-rows: 40px 40px 40px;
+  gap: 4px;
+}
+
+.map-pan .btn-ghost {
+  width: 40px;
+  min-height: 40px;
+  padding: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  background: var(--card);
+}
+
+.map-pan-up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.map-pan-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.map-pan-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.map-pan-down {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.map-frame {
+  position: relative;
+  overflow: hidden;
+  height: min(68vh, 620px);
+  border-radius: 14px;
+  background: #c9dced;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.map-frame.is-panning {
+  cursor: grabbing;
+}
+
+.map-frame.is-panning .map-country,
+.map-frame.is-panning .map-pin {
+  pointer-events: none;
+}
+
+.world-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.map-country {
+  fill: #7fa3c9;
+  stroke: #f4f8fc;
+  stroke-width: 0.7px;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+}
+
+.map-country.is-other {
+  fill: #d3deea;
+  cursor: default;
+  pointer-events: none;
+}
+
+.map-country.is-hover {
+  fill: #4b8bd6;
+}
+
+.map-country.is-open,
+.map-pin.is-open {
+  fill: var(--accent);
+}
+
+.map-pin {
+  fill: var(--accent);
+  stroke: #fff;
+  stroke-width: 0.9;
+  cursor: pointer;
+}
+
+.map-pin.is-dispute {
+  fill: #c9a227;
+  stroke: #fff;
+}
+
+.map-pin.is-hover {
+  fill: #155bb0;
+}
+
+.map-pin.is-dispute.is-hover,
+.map-pin.is-dispute.is-open {
+  fill: #9a7209;
+}
+
+.map-active-name {
+  margin: 10px 0 0;
+  min-height: 1.3em;
+  text-align: center;
+  font-weight: 700;
+}
+
+.map-source {
+  margin: 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
 @media (min-width: 640px) {
   .options-names,
   .options-flags {

@@ -15,11 +15,13 @@ import { Flag } from './Flag'
 interface PassportModalProps {
   country: Country
   lang: Lang
+  territoryNote?: string
+  disputeNote?: string
   onClose: () => void
   onOpenCountry: (iso: string) => void
 }
 
-export function PassportModal({ country, lang, onClose, onOpenCountry }: PassportModalProps) {
+export function PassportModal({ country, lang, territoryNote, disputeNote, onClose, onOpenCountry }: PassportModalProps) {
   const t = STRINGS[lang]
   const passport = getPassport(country.iso)
   const name = countryName(country, lang)
@@ -59,6 +61,18 @@ export function PassportModal({ country, lang, onClose, onOpenCountry }: Passpor
         <h2 id="passport-title" className="passport-title">
           {name}
         </h2>
+        {territoryNote ? (
+          <p className="passport-territory">
+            <span className="passport-fact-label">{t.territory}</span>
+            {territoryNote}
+          </p>
+        ) : null}
+        {disputeNote ? (
+          <p className="passport-dispute">
+            <span className="passport-fact-label">{t.dispute}</span>
+            {disputeNote}
+          </p>
+        ) : null}
         <dl className="passport-fields">
           <div>
             <dt>{t.region}</dt>
@@ -77,29 +91,31 @@ export function PassportModal({ country, lang, onClose, onOpenCountry }: Passpor
             <dd>{passportCurrency(passport, lang)}</dd>
           </div>
         </dl>
-        <section className="passport-neighbors">
-          <h3>{t.neighbors}</h3>
-          {neighbors.length === 0 ? (
-            <p className="passport-neighbors-empty">{t.noNeighbors}</p>
-          ) : (
-            <div className="passport-neighbors-list">
-              {neighbors.map((neighbor) => {
-                const neighborName = countryName(neighbor, lang)
-                return (
-                  <button
-                    key={neighbor.iso}
-                    type="button"
-                    className="passport-neighbor"
-                    onClick={() => onOpenCountry(neighbor.iso)}
-                  >
-                    <Flag iso={neighbor.iso} name={neighborName} size="thumb" />
-                    <span>{neighborName}</span>
-                  </button>
-                )
-              })}
-            </div>
-          )}
-        </section>
+        {territoryNote ? null : (
+          <section className="passport-neighbors">
+            <h3>{t.neighbors}</h3>
+            {neighbors.length === 0 ? (
+              <p className="passport-neighbors-empty">{t.noNeighbors}</p>
+            ) : (
+              <div className="passport-neighbors-list">
+                {neighbors.map((neighbor) => {
+                  const neighborName = countryName(neighbor, lang)
+                  return (
+                    <button
+                      key={neighbor.iso}
+                      type="button"
+                      className="passport-neighbor"
+                      onClick={() => onOpenCountry(neighbor.iso)}
+                    >
+                      <Flag iso={neighbor.iso} name={neighborName} size="thumb" />
+                      <span>{neighborName}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </section>
+        )}
         <p className="passport-fact">
           <span className="passport-fact-label">{t.fact}</span>
           {passportFact(passport, lang)}

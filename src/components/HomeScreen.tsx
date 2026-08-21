@@ -40,6 +40,7 @@ interface HomeScreenProps {
   onStart: () => void
   onOpenLevels: () => void
   onOpenLearn: () => void
+  onOpenMap: () => void
   onClearHistory: () => void
   onClearBests: () => void
 }
@@ -52,6 +53,7 @@ export function HomeScreen({
   onStart,
   onOpenLevels,
   onOpenLearn,
+  onOpenMap,
   onClearHistory,
   onClearBests,
 }: HomeScreenProps) {
@@ -92,6 +94,9 @@ export function HomeScreen({
           </button>
           <button type="button" className="choice" onClick={onOpenLearn}>
             {t.learn}
+          </button>
+          <button type="button" className="choice is-wide" onClick={onOpenMap}>
+            {t.map}
           </button>
         </div>
 

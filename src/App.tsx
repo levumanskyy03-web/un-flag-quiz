@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { HomeScreen, type QuizSettings } from "./components/HomeScreen";
 import { LearnScreen } from "./components/LearnScreen";
+import { MapScreen } from "./components/MapScreen";
 import { Level20Screen } from "./components/Level20Screen";
 import { LevelsScreen } from "./components/LevelsScreen";
 import { QuizScreen } from "./components/QuizScreen";
@@ -27,7 +28,7 @@ import {
 
 const LANG_KEY = "un-flag-quiz-lang";
 
-type Screen = "home" | "levels" | "level20" | "learn" | "quiz" | "results";
+type Screen = "home" | "levels" | "level20" | "learn" | "map" | "quiz" | "results";
 type ResultTone = "success" | "fail" | "gold";
 
 function subscribeLang(onChange: () => void) {
@@ -419,6 +420,7 @@ export default function App() {
           onStart={startRound}
           onOpenLevels={openLevels}
           onOpenLearn={openLearnRegion}
+          onOpenMap={() => setScreen("map")}
           onClearHistory={handleClearHistory}
           onClearBests={handleClearBests}
         />
@@ -446,6 +448,13 @@ export default function App() {
           onChange={handleSettingsChange}
           onBack={leaveLearn}
           onPractice={startPractice}
+        />
+      )}
+      {screen === "map" && (
+        <MapScreen
+          settings={quizSettings}
+          onChange={handleSettingsChange}
+          onBack={() => setScreen("home")}
         />
       )}
       {screen === "quiz" && questions[index] && (
