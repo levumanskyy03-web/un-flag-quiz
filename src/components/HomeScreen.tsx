@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Region } from '../data/countries'
 import { REGIONS, STRINGS, difficultyLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
 import { findBest, type RoundRecord } from '../lib/history'
@@ -19,6 +20,7 @@ import {
   type RoundSize,
 } from '../lib/quiz'
 import { AccountButton } from './AccountButton'
+import { DuelCreateModal } from './DuelCreateModal'
 import { LanguageToggle } from './LanguageToggle'
 
 export interface QuizSettings {
@@ -39,8 +41,11 @@ interface HomeScreenProps {
   settings: QuizSettings
   history: RoundRecord[]
   bests: RoundRecord[]
+  duelError?: string | null
   onChange: (settings: QuizSettings) => void
   onStart: () => void
+  onCreateDuel: (modes: QuizMode[]) => void
+  onJoinDuel: (code: string) => void
   onOpenLevels: () => void
   onOpenLearn: () => void
   onOpenMap: () => void
@@ -52,8 +57,11 @@ export function HomeScreen({
   settings,
   history,
   bests,
+  duelError,
   onChange,
   onStart,
+  onCreateDuel,
+  onJoinDuel,
   onOpenLevels,
   onOpenLearn,
   onOpenMap,
@@ -61,10 +69,18 @@ export function HomeScreen({
   onClearBests,
 }: HomeScreenProps) {
   const t = STRINGS[settings.lang]
-  const poolSize = getPool(settings.region, settings.difficulty).length
+  const poolSize = getPool(settings.region, settings.difficulty, settings.mode).length
   const regions: Array<Region | 'all'> = ['all', ...REGIONS]
   const difficulties = PLAY_DIFFICULTIES
   const currentBest = findBest(bests, settings)
+  const [joinCode, setJoinCode] = useState('')
+  const [duelSetupOpen, setDuelSetupOpen] = useState(false)
+
+  function update(patch: Partial<QuizSettings>) {
+    const next = { ...settings, ...patch }
+    const nextPool = getPool(next.region, next.difficulty, next.mode).length
+    onChange({ ...next, roundSize: fitRoundSize(next.roundSize, nextPool) })
+  }
 
   return (
     <div className="screen home-screen">
@@ -89,7 +105,7 @@ export function HomeScreen({
               type="button"
               className={`choice ${settings.mode === mode ? 'is-active' : ''}`}
               aria-pressed={settings.mode === mode}
-              onClick={() => onChange({ ...settings, path: 'pool', mode })}
+              onClick={() => update({ path: 'pool', mode })}
             >
               {modeLabel(mode, settings.lang)}
             </button>
@@ -118,16 +134,7 @@ export function HomeScreen({
               type="button"
               className={`chip ${isRegionSelected(settings.region, region) ? 'is-active' : ''}`}
               aria-pressed={isRegionSelected(settings.region, region)}
-              onClick={() => {
-                const nextRegion = toggleRegion(settings.region, region)
-                const nextPool = getPool(nextRegion, settings.difficulty).length
-                onChange({
-                  ...settings,
-                  path: 'pool',
-                  region: nextRegion,
-                  roundSize: fitRoundSize(settings.roundSize, nextPool),
-                })
-              }}
+              onClick={() => update({ path: 'pool', region: toggleRegion(settings.region, region) })}
             >
               {regionLabel(region, settings.lang)}
             </button>
@@ -142,16 +149,13 @@ export function HomeScreen({
               type="button"
               className={`choice ${settings.difficulty === difficulty ? 'is-active' : ''}`}
               aria-pressed={settings.difficulty === difficulty}
-              onClick={() => {
-                const nextPool = getPool(settings.region, difficulty).length
-                onChange({
-                  ...settings,
+              onClick={() =>
+                update({
                   path: 'pool',
                   difficulty,
                   levelHardcore: difficulty === 'hardcore',
-                  roundSize: fitRoundSize(settings.roundSize, nextPool),
                 })
-              }}
+              }
             >
               {difficultyLabel(difficulty, settings.lang)}
             </button>
@@ -185,6 +189,47 @@ export function HomeScreen({
       <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
         {t.start}
       </button>
+
+      <section className="card settings-card">
+        <h2>{t.duel}</h2>
+        <p className="setting-hint">{t.duelHint}</p>
+        <button type="button" className="btn-secondary" disabled={poolSize === 0} onClick={() => setDuelSetupOpen(true)}>
+          {t.duelCreate}
+        </button>
+        <form
+          className="duel-join"
+          onSubmit={(event) => {
+            event.preventDefault()
+            onJoinDuel(joinCode)
+          }}
+        >
+          <input
+            value={joinCode}
+            onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
+            placeholder={t.duelCode}
+            autoComplete="off"
+            maxLength={4}
+            spellCheck={false}
+            aria-label={t.duelCode}
+          />
+          <button type="submit" className="choice" disabled={joinCode.trim().length !== 4}>
+            {t.duelJoin}
+          </button>
+        </form>
+        {duelError ? <p className="account-error">{duelError}</p> : null}
+      </section>
+
+      {duelSetupOpen ? (
+        <DuelCreateModal
+          lang={settings.lang}
+          initialMode={settings.mode}
+          onCancel={() => setDuelSetupOpen(false)}
+          onConfirm={(modes) => {
+            setDuelSetupOpen(false)
+            onCreateDuel(modes)
+          }}
+        />
+      ) : null}
 
       {bests.length > 0 && (
         <section className="card history-card">

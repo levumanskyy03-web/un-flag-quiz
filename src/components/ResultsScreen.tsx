@@ -1,3 +1,4 @@
+import { COUNTRIES } from '../data/countries'
 import { STRINGS, type Lang } from '../i18n/strings'
 import {
   averageTimeMs,
@@ -6,6 +7,7 @@ import {
   formatSeconds,
   isCorrect,
   isFactMode,
+  isMapMode,
   slowestAnswer,
   type QuizMode,
   type RoundAnswer,
@@ -96,10 +98,11 @@ export function ResultsScreen({
                 answer.selectedIso === null
                   ? null
                   : answer.question.options.find((option) => option.iso === answer.selectedIso) ??
-                    correct
+                    COUNTRIES.find((country) => country.iso === answer.selectedIso) ??
+                    null
               return (
                 <li key={`${correct.iso}-${answer.selectedIso ?? 'timeout'}`} className="mistake-row">
-                  {(mode === 'flagToName' || mode === 'neighborsToName' || isFactMode(mode)) && (
+                  {(mode === 'flagToName' || mode === 'neighborsToName' || isMapMode(mode) || isFactMode(mode)) && (
                     <Flag iso={correct.iso} name={countryName(correct, lang)} size="thumb" />
                   )}
                   <div className="mistake-copy">
@@ -108,11 +111,11 @@ export function ResultsScreen({
                     ) : null}
                     <p>
                       <span className="mistake-label">{t.yourAnswer}</span>
-                      {chosen ? optionLabel(chosen, mode, lang) : t.timedOut}
+                      {chosen ? optionLabel(chosen, mode, lang, answer.question) : t.timedOut}
                     </p>
                     <p>
                       <span className="mistake-label">{t.correctAnswer}</span>
-                      {optionLabel(correct, mode, lang)}
+                      {optionLabel(correct, mode, lang, answer.question)}
                     </p>
                   </div>
                 </li>

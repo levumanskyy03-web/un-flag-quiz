@@ -1,8 +1,11 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import { COUNTRIES, REGIONS, type Region } from '../data/countries'
 import {
+  HOLDOUTS,
+  HOLDOUT_BY_ISO,
   disputeNote,
   fitIsosForRegion,
+  holdoutName,
   resolveMapLocation,
   TERRITORIES,
   TERRITORY_BY_ISO,
@@ -11,8 +14,25 @@ import {
 } from '../data/territories'
 import { isClickableIso, markersFor, type WorldMapData } from '../data/worldMap'
 import { STRINGS, regionLabel } from '../i18n/strings'
+import {
+  cameraFromPinch,
+  cameraToViewBox,
+  clampCamera,
+  insetCamera,
+  parseViewBox,
+  pointerDistance,
+  REGION_START_ZOOM,
+  screenToSvg,
+  viewBoxFromBoxes,
+  WORLD,
+  WORLD_VIEWBOX,
+  ZOOM_MAX,
+  zoomCamera,
+  type Camera,
+} from '../lib/mapCamera'
 import { countryName } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
+import { HoldoutModal } from './HoldoutModal'
 import { LanguageToggle } from './LanguageToggle'
 import { PassportModal } from './PassportModal'
 
@@ -24,31 +44,8 @@ interface MapScreenProps {
   onBack: () => void
 }
 
-const ZOOM_MAX = 8
 const PAN_STEP = 0.28
-const WORLD = { x: 0, y: 0, w: 1010, h: 666 }
-const WORLD_VIEWBOX = `${WORLD.x} ${WORLD.y} ${WORLD.w} ${WORLD.h}`
 type MapRegion = Region | 'all'
-type Camera = { x: number; y: number; w: number; h: number }
-
-function parseViewBox(value: string): Camera {
-  const [x, y, w, h] = value.split(/[\s,]+/).map(Number)
-  return { x, y, w, h }
-}
-
-function clampCamera(camera: Camera): Camera {
-  const minW = WORLD.w / ZOOM_MAX
-  const minH = WORLD.h / ZOOM_MAX
-  const w = Math.max(minW, camera.w)
-  const h = Math.max(minH, camera.h)
-  if (w >= WORLD.w || h >= WORLD.h) return { ...WORLD }
-  return {
-    x: Math.min(WORLD.x + WORLD.w - w, Math.max(WORLD.x, camera.x)),
-    y: Math.min(WORLD.y + WORLD.h - h, Math.max(WORLD.y, camera.y)),
-    w,
-    h,
-  }
-}
 
 function isoFromTarget(target: EventTarget | null) {
   if (!(target instanceof Element)) return null
@@ -58,37 +55,26 @@ function isoFromTarget(target: EventTarget | null) {
 function locationLabel(id: string, lang: QuizSettings['lang']) {
   const resolved = resolveMapLocation(id)
   if (!resolved) return ''
-  if (resolved.territory) {
+  if (resolved.holdout) return holdoutName(resolved.holdout, lang)
+  if (resolved.territory && resolved.country) {
     return `${territoryName(resolved.territory, lang)} · ${countryName(resolved.country, lang)}`
   }
-  return countryName(resolved.country, lang)
-}
-
-function viewBoxFromBoxes(boxes: Array<{ x: number; y: number; width: number; height: number }>) {
-  let minX = Infinity
-  let minY = Infinity
-  let maxX = -Infinity
-  let maxY = -Infinity
-  for (const box of boxes) {
-    if (box.width <= 0 && box.height <= 0) continue
-    minX = Math.min(minX, box.x)
-    minY = Math.min(minY, box.y)
-    maxX = Math.max(maxX, box.x + box.width)
-    maxY = Math.max(maxY, box.y + box.height)
-  }
-  if (!Number.isFinite(minX)) return WORLD_VIEWBOX
-  const width = Math.max(24, maxX - minX)
-  const height = Math.max(24, maxY - minY)
-  const padX = width * 0.08
-  const padY = height * 0.08
-  return `${minX - padX} ${minY - padY} ${width + padX * 2} ${height + padY * 2}`
+  return resolved.country ? countryName(resolved.country, lang) : ''
 }
 
 export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
   const t = STRINGS[settings.lang]
   const svgRef = useRef<SVGSVGElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
-  const dragRef = useRef<{ x: number; y: number; moved: boolean; iso: string | null } | null>(null)
+  const dragRef = useRef<{ id: number; x: number; y: number; moved: boolean; iso: string | null } | null>(null)
+  const pointersRef = useRef(new Map<number, { x: number; y: number }>())
+  const pinchRef = useRef<{
+    startDist: number
+    startCam: Camera
+    px: number
+    py: number
+  } | null>(null)
+  const cameraRef = useRef<Camera>(WORLD)
   const [world, setWorld] = useState<WorldMapData | null>(null)
   const [boxes, setBoxes] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({})
   const [openId, setOpenId] = useState<string | null>(null)
@@ -98,6 +84,7 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
   const [panning, setPanning] = useState(false)
   const [mapRegion, setMapRegion] = useState<MapRegion>('all')
   const [regionOpen, setRegionOpen] = useState(false)
+  cameraRef.current = camera
 
   useEffect(() => {
     let live = true
@@ -155,10 +142,25 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
     if (!frame) return
     function onWheel(event: WheelEvent) {
       event.preventDefault()
-      zoomBy(event.deltaY < 0 ? 1 : -1)
+      const pixels =
+        event.deltaMode === 1 ? event.deltaY * 16 : event.deltaMode === 2 ? event.deltaY * 320 : event.deltaY
+      const clamped = Math.min(72, Math.max(-72, pixels))
+      const factor = Math.exp(clamped * (event.ctrlKey || event.metaKey ? 0.012 : 0.0034))
+      const svg = svgRef.current
+      const cam = cameraRef.current
+      const origin = svg ? screenToSvg(svg, event.clientX, event.clientY) : null
+      const pivot = origin ?? { x: cam.x + cam.w / 2, y: cam.y + cam.h / 2 }
+      setCamera(zoomCamera(cam, factor, pivot))
+    }
+    function onTouchMove(event: TouchEvent) {
+      if (event.touches.length >= 1) event.preventDefault()
     }
     frame.addEventListener('wheel', onWheel, { passive: false })
-    return () => frame.removeEventListener('wheel', onWheel)
+    frame.addEventListener('touchmove', onTouchMove, { passive: false })
+    return () => {
+      frame.removeEventListener('wheel', onWheel)
+      frame.removeEventListener('touchmove', onTouchMove)
+    }
   }, [world])
 
   const markers = useMemo(() => (world ? markersFor(world.locations) : []), [world])
@@ -166,7 +168,8 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
     if (!world || mapRegion === 'all') return world?.viewBox ?? WORLD_VIEWBOX
     const fit = fitIsosForRegion(mapRegion)
     const selected = [...fit].map((iso) => boxes[iso]).filter(Boolean)
-    return selected.length > 0 ? viewBoxFromBoxes(selected) : world.viewBox
+    if (selected.length === 0) return world.viewBox
+    return cameraToViewBox(insetCamera(viewBoxFromBoxes(selected), REGION_START_ZOOM))
   }, [world, mapRegion, boxes])
 
   useEffect(() => {
@@ -198,23 +201,25 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
         },
       ]
     })
-    return [...countries, ...territories]
+    const holdouts = HOLDOUTS.flatMap((holdout) => {
+      if (
+        !holdout.nameRu.toLowerCase().includes(needle) &&
+        !holdout.nameEn.toLowerCase().includes(needle)
+      ) {
+        return []
+      }
+      return [{ id: holdout.iso, label: `${holdoutName(holdout, settings.lang)} · ${STRINGS[settings.lang].notInQuiz}` }]
+    })
+    return [...countries, ...territories, ...holdouts]
       .sort((a, b) => a.label.localeCompare(b.label, settings.lang))
       .slice(0, 8)
   }, [needle, settings.lang])
 
   function zoomBy(direction: 1 | -1) {
-    const factor = direction > 0 ? 1 / 1.35 : 1.35
-    setCamera((current) => {
-      const cx = current.x + current.w / 2
-      const cy = current.y + current.h / 2
-      return clampCamera({
-        x: cx - (current.w * factor) / 2,
-        y: cy - (current.h * factor) / 2,
-        w: current.w * factor,
-        h: current.h * factor,
-      })
-    })
+    const factor = direction > 0 ? 1 / 1.28 : 1.28
+    setCamera((current) =>
+      zoomCamera(current, factor, { x: current.x + current.w / 2, y: current.y + current.h / 2 }),
+    )
   }
 
   function panBy(dx: number, dy: number) {
@@ -233,8 +238,31 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
   }
 
   function onFramePointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (event.button !== 0) return
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    event.currentTarget.setPointerCapture(event.pointerId)
+    pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
+    const points = [...pointersRef.current.values()]
+    if (points.length >= 2) {
+      const svg = svgRef.current
+      const [first, second] = points
+      const midX = (first.x + second.x) / 2
+      const midY = (first.y + second.y) / 2
+      const svgPoint = svg ? screenToSvg(svg, midX, midY) : null
+      const cam = cameraRef.current
+      dragRef.current = null
+      setPanning(true)
+      if (svgPoint) {
+        pinchRef.current = {
+          startDist: Math.max(1, pointerDistance(first, second)),
+          startCam: cam,
+          px: svgPoint.x,
+          py: svgPoint.y,
+        }
+      }
+      return
+    }
     dragRef.current = {
+      id: event.pointerId,
       x: event.clientX,
       y: event.clientY,
       moved: false,
@@ -243,28 +271,67 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
   }
 
   function onFramePointerMove(event: PointerEvent<HTMLDivElement>) {
+    if (!pointersRef.current.has(event.pointerId)) return
+    pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
+    const pinch = pinchRef.current
+    if (pinch && pointersRef.current.size >= 2) {
+      const svg = svgRef.current
+      const [first, second] = [...pointersRef.current.values()]
+      const distance = pointerDistance(first, second)
+      if (!svg || distance < 8) return
+      setCamera(
+        cameraFromPinch(
+          svg,
+          pinch.startCam,
+          pinch.px,
+          pinch.py,
+          (first.x + second.x) / 2,
+          (first.y + second.y) / 2,
+          pinch.startDist / distance,
+        ),
+      )
+      return
+    }
     const drag = dragRef.current
     const svg = svgRef.current
-    if (!drag || !svg) return
+    if (!drag || drag.id !== event.pointerId || !svg) return
     const dx = event.clientX - drag.x
     const dy = event.clientY - drag.y
     if (!drag.moved && Math.hypot(dx, dy) < 8) return
-    const ctm = svg.getScreenCTM()
-    if (!ctm) return
+    const from = screenToSvg(svg, drag.x, drag.y)
+    const to = screenToSvg(svg, event.clientX, event.clientY)
+    if (!from || !to) return
     if (!drag.moved) {
       event.currentTarget.setPointerCapture(event.pointerId)
       drag.moved = true
       setPanning(true)
     }
-    const inv = ctm.inverse()
-    const from = new DOMPoint(drag.x, drag.y).matrixTransform(inv)
-    const to = new DOMPoint(event.clientX, event.clientY).matrixTransform(inv)
     drag.x = event.clientX
     drag.y = event.clientY
     panBy(from.x - to.x, from.y - to.y)
   }
 
-  function onFramePointerUp() {
+  function onFramePointerUp(event: PointerEvent<HTMLDivElement>) {
+    pointersRef.current.delete(event.pointerId)
+    if (pinchRef.current) {
+      if (pointersRef.current.size < 2) {
+        pinchRef.current = null
+        const leftover = [...pointersRef.current.entries()][0]
+        if (leftover) {
+          dragRef.current = {
+            id: leftover[0],
+            x: leftover[1].x,
+            y: leftover[1].y,
+            moved: true,
+            iso: null,
+          }
+        } else {
+          dragRef.current = null
+          setPanning(false)
+        }
+      }
+      return
+    }
     const drag = dragRef.current
     dragRef.current = null
     setPanning(false)
@@ -363,6 +430,7 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
             >
               {world.locations.map((location) => {
                 const clickable = isClickableIso(location.id)
+                const holdout = HOLDOUT_BY_ISO.has(location.id)
                 const isOpen = location.id === openId
                 const isHover = location.id === hoverId
                 return (
@@ -370,7 +438,7 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
                     key={location.id}
                     data-iso={location.id}
                     d={location.path}
-                    className={`map-country${clickable ? '' : ' is-other'}${isOpen ? ' is-open' : ''}${isHover ? ' is-hover' : ''}`}
+                    className={`map-country${clickable ? '' : ' is-other'}${holdout ? ' is-holdout' : ''}${isOpen ? ' is-open' : ''}${isHover ? ' is-hover' : ''}`}
                     onMouseEnter={() => {
                       if (clickable) setHoverId(location.id)
                     }}
@@ -408,8 +476,9 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
       </section>
 
       <p className="map-source">{t.mapCredit}</p>
+      <p className="map-source">{t.mapHoldoutHint}</p>
 
-      {resolvedOpen && (
+      {resolvedOpen?.country ? (
         <PassportModal
           country={resolvedOpen.country}
           lang={settings.lang}
@@ -418,7 +487,14 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
           onClose={() => setOpenId(null)}
           onOpenCountry={(iso) => setOpenId(iso)}
         />
-      )}
+      ) : null}
+      {resolvedOpen?.holdout ? (
+        <HoldoutModal
+          holdout={resolvedOpen.holdout}
+          lang={settings.lang}
+          onClose={() => setOpenId(null)}
+        />
+      ) : null}
 
       {regionOpen && (
         <div

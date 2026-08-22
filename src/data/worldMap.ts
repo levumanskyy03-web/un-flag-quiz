@@ -1,5 +1,5 @@
 import { COUNTRIES } from './countries'
-import { TERRITORIES, TERRITORY_BY_ISO } from './territories'
+import { HOLDOUT_BY_ISO, TERRITORIES, TERRITORY_BY_ISO } from './territories'
 
 export interface WorldLocation {
   id: string
@@ -21,6 +21,7 @@ export interface WorldMarker {
 const CLICKABLE_ISOS = new Set([
   ...COUNTRIES.map((country) => country.iso),
   ...TERRITORY_BY_ISO.keys(),
+  ...HOLDOUT_BY_ISO.keys(),
 ])
 const MARKER_PATH_MAX = 360
 

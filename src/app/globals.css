@@ -43,6 +43,8 @@ body {
     var(--bg);
   line-height: 1.45;
   min-height: 100svh;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html[data-result="success"] body {
@@ -309,7 +311,11 @@ img {
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--accent-soft);
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr);
+}
+
+.choice-grid.is-paths:has(.choice:nth-child(3)) {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.22fr) minmax(0, 1fr);
 }
 
 .choice-grid.is-paths .choice {
@@ -532,6 +538,29 @@ img {
   text-align: center;
 }
 
+.choice.has-note {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 68px;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.choice-note {
+  display: block;
+  font-size: 0.64rem;
+  font-weight: 500;
+  line-height: 1.25;
+  opacity: 0.78;
+}
+
+.choice.is-active .choice-note {
+  opacity: 0.92;
+}
+
 .option-fact {
   white-space: normal;
   line-height: 1.25;
@@ -571,6 +600,49 @@ img {
 
 .btn-secondary:hover {
   background: var(--accent-soft);
+}
+
+.duel-join {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.duel-join input {
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.duel-code {
+  margin: 8px 0 12px;
+  font-size: clamp(2.2rem, 10vw, 3.4rem);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.duel-score {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.duel-status {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.option.is-duel-opponent {
+  box-shadow: 0 0 0 2px var(--gold-border);
 }
 
 .results-actions {
@@ -763,7 +835,7 @@ img {
 .question-card {
   display: grid;
   place-items: center;
-  min-height: 180px;
+  min-height: 120px;
   padding: 20px;
 }
 
@@ -900,7 +972,21 @@ img {
 .options-names,
 .options-flags {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.options-names .option {
+  overflow-wrap: anywhere;
+}
+
+.options-flags .option {
+  min-height: 0;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .option.is-correct {
@@ -921,8 +1007,8 @@ img {
 
 .option-caption {
   display: block;
-  margin-top: 8px;
-  font-size: 0.92rem;
+  margin-top: 4px;
+  font-size: 0.78rem;
 }
 
 .score-card {
@@ -1140,6 +1226,29 @@ button.learn-card:hover {
   gap: 12px;
 }
 
+.duel-setup-sheet {
+  align-items: stretch;
+}
+
+.duel-setup-sheet .passport-title {
+  padding-left: 0;
+}
+
+.duel-setup-hint {
+  margin: 0;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.duel-setup-sheet .choice-grid {
+  width: 100%;
+}
+
+.duel-setup-sheet .btn-primary {
+  margin-top: 4px;
+}
+
 .passport-sheet .flag-hero {
   width: min(100%, 280px);
 }
@@ -1180,6 +1289,10 @@ button.learn-card:hover {
 .passport-fields dd {
   margin: 0;
   font-weight: 700;
+}
+
+.passport-founded {
+  grid-column: 1 / -1;
 }
 
 .passport-fact {
@@ -1465,23 +1578,117 @@ button.learn-card:hover {
   border-radius: 14px;
   background: #c9dced;
   touch-action: none;
+  overscroll-behavior: none;
   cursor: grab;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .map-frame.is-panning {
   cursor: grabbing;
 }
 
-.map-frame.is-panning .map-country,
-.map-frame.is-panning .map-pin {
+.quiz-map-frame {
+  height: min(52dvh, 440px);
+  border-radius: 16px;
+}
+
+.quiz-map-frame.is-round {
+  width: min(100%, 280px);
+  height: auto;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  cursor: default;
+}
+
+.quiz-map-frame.is-locked .map-country,
+.quiz-map-frame.is-locked .map-pin {
+  cursor: default;
   pointer-events: none;
+}
+
+.quiz-map-frame.is-find {
+  width: 100%;
+}
+
+.question-card.is-map {
+  min-height: 0;
+  padding: 12px;
+}
+
+.quiz-map-ask {
+  margin: 0 0 8px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.quiz-map-frame .map-country.is-other {
+  fill: #c9dced;
+  stroke: none;
+}
+
+.quiz-map-frame.is-round .map-country.is-quiz-ask {
+  fill: #1e6ad4;
+  stroke: #fff8e1;
+  stroke-width: 2.4px;
+  filter: drop-shadow(0 0 1.6px rgba(20, 80, 180, 0.9));
+  animation: quiz-ask-pulse 1.4s ease-in-out infinite;
+}
+
+.quiz-map-frame.is-round .map-pin.is-quiz-ask {
+  fill: #1e6ad4;
+  stroke: #fff8e1;
+  stroke-width: 1.5;
+  animation: quiz-ask-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes quiz-ask-pulse {
+  0%,
+  100% {
+    fill: #1e6ad4;
+  }
+  50% {
+    fill: #4b8eef;
+  }
+}
+
+.quiz-map-frame .map-country.is-quiz-correct,
+.quiz-map-frame .map-pin.is-quiz-correct {
+  fill: var(--ok);
+  animation: none;
+  filter: none;
+}
+
+.quiz-map-frame .map-country.is-quiz-wrong,
+.quiz-map-frame .map-pin.is-quiz-wrong {
+  fill: var(--bad);
+  animation: none;
+  filter: none;
+}
+
+.quiz-map-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  margin: 0;
+  text-align: center;
+  font-weight: 700;
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff;
+}
+
+.quiz-screen.is-map-find {
+  gap: 10px;
 }
 
 .world-map {
   display: block;
   width: 100%;
   height: 100%;
+  touch-action: none;
 }
 
 .map-country {
@@ -1498,6 +1705,10 @@ button.learn-card:hover {
   pointer-events: none;
 }
 
+.map-country.is-holdout {
+  fill: #e6d7a2;
+}
+
 .map-country.is-hover {
   fill: #4b8bd6;
 }
@@ -1505,6 +1716,14 @@ button.learn-card:hover {
 .map-country.is-open,
 .map-pin.is-open {
   fill: var(--accent);
+}
+
+.map-country.is-holdout.is-hover {
+  fill: #d4c078;
+}
+
+.map-country.is-holdout.is-open {
+  fill: #c9a227;
 }
 
 .map-pin {
@@ -1542,17 +1761,132 @@ button.learn-card:hover {
   color: var(--muted);
 }
 
-@media (min-width: 640px) {
-  .options-names,
-  .options-flags {
-    grid-template-columns: 1fr 1fr;
+@media (max-width: 639px) {
+  .app {
+    width: calc(100% - 16px);
+    padding: 12px 0 calc(24px + env(safe-area-inset-bottom, 0px));
   }
 
+  .app:has(.map-screen) {
+    width: calc(100% - 12px);
+  }
+
+  .screen {
+    gap: 12px;
+  }
+
+  .quiz-screen {
+    gap: 8px;
+  }
+
+  .question-card {
+    min-height: 0;
+    padding: 10px 12px;
+  }
+
+  .question-card:has(.flag) {
+    padding: 0;
+  }
+
+  .flag-hero {
+    width: min(100%, 220px);
+  }
+
+  .prompt-name {
+    font-size: clamp(1.15rem, 6.4vw, 1.65rem);
+  }
+
+  .options-flags {
+    gap: 6px;
+  }
+
+  .options-flags .flag-option {
+    width: min(100%, calc(18dvh * 3 / 2));
+  }
+
+  .options-names .option {
+    min-height: 44px;
+    padding: 8px;
+    font-size: 0.84rem;
+  }
+
+  .neighbors-prompt {
+    gap: 8px;
+  }
+
+  .neighbors-prompt-item {
+    min-height: 32px;
+    padding: 4px 8px 4px 4px;
+    font-size: 0.82rem;
+  }
+
+  .neighbors-prompt-item .flag-thumb {
+    width: 32px;
+    flex-basis: 32px;
+  }
+
+  .map-frame {
+    height: min(70dvh, calc(100dvh - 210px));
+  }
+
+  .quiz-map-frame.is-find {
+    height: min(48dvh, calc(100dvh - 280px));
+  }
+
+  .quiz-map-frame.is-round {
+    width: min(100%, 240px);
+  }
+
+  .map-zoom {
+    top: 12px;
+    right: 12px;
+  }
+
+  .map-pan {
+    left: 12px;
+    bottom: 12px;
+    grid-template-columns: 36px 36px 36px;
+    grid-template-rows: 36px 36px 36px;
+  }
+
+  .map-zoom .btn-ghost,
+  .map-pan .btn-ghost {
+    width: 36px;
+    min-height: 36px;
+  }
+
+  .map-region-btn {
+    min-width: 0;
+  }
+
+  .passport-overlay {
+    padding: 8px 8px 20px;
+  }
+
+  .passport-sheet .flag-hero {
+    width: min(100%, 180px);
+  }
+
+  .home-header h1 {
+    font-size: clamp(1.55rem, 8vw, 2.2rem);
+  }
+}
+
+@media (min-width: 640px) {
   .learn-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .app {
     padding-top: 40px;
+  }
+
+  .options-flags .option {
+    padding: 10px;
+  }
+
+  .option-caption {
+    margin-top: 8px;
+    font-size: 0.92rem;
   }
 }

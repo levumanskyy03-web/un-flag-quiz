@@ -25,7 +25,7 @@ interface LearnScreenProps {
 
 export function LearnScreen({ settings, onChange, onBack, onPractice }: LearnScreenProps) {
   const t = STRINGS[settings.lang]
-  const pool = getLearnPool(settings.learnFrom, settings.region, settings.level)
+  const pool = getLearnPool(settings.learnFrom, settings.region, settings.level, settings.mode)
   const countries =
     settings.learnFrom === 'level' ? pool : sortCountriesByName(pool, settings.lang)
   const modes = settings.learnFrom === 'level' ? LEVEL_MODES : QUIZ_MODES

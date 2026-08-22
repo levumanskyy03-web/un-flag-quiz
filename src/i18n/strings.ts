@@ -1,5 +1,15 @@
 import { REGIONS } from '../data/countries'
-import { isAllRegions, parseRegions, type QuizDifficulty, type QuizMode, type RegionFilter } from '../lib/quiz'
+import {
+  EASY_MIX_MODES,
+  HARD_MIX_MODES,
+  isAllRegions,
+  parseRegions,
+  QUIZ_MODES,
+  sameModes,
+  type QuizDifficulty,
+  type QuizMode,
+  type RegionFilter,
+} from '../lib/quiz'
 
 export { REGIONS }
 
@@ -14,8 +24,12 @@ type Strings = {
   nameToCapital: string
   nameToCurrency: string
   nameToPopulation: string
+  nameToFounded: string
   neighborsToName: string
+  nameToMap: string
+  mapToName: string
   whoseNeighbors: string
+  whichCountry: string
   founded: string
   region: string
   allRegions: string
@@ -37,6 +51,7 @@ type Strings = {
   mapSearch: string
   mapLoading: string
   mapCredit: string
+  mapHoldoutHint: string
   mapRegion: string
   mapMove: string
   mapLeft: string
@@ -45,6 +60,7 @@ type Strings = {
   mapDown: string
   territory: string
   dispute: string
+  notInQuiz: string
   learnHint: string
   learnLevelHint: string
   checkYourself: string
@@ -118,6 +134,31 @@ type Strings = {
   noNeighbors: string
   close: string
   credit: string
+  duel: string
+  duelHint: string
+  duelCreate: string
+  duelJoin: string
+  duelCode: string
+  duelWaiting: string
+  duelCopy: string
+  duelCopied: string
+  duelNotFound: string
+  duelFull: string
+  duelOffline: string
+  duelPickModes: string
+  duelPickModesHint: string
+  easyMix: string
+  hardMix: string
+  easyMixNote: string
+  hardMixNote: string
+  duelVs: (name: string) => string
+  duelWaitingOpponent: string
+  duelOpponentDone: string
+  duelOpponent: string
+  duelWin: string
+  duelLose: string
+  duelDraw: string
+  duelScore: (you: number, them: number, total: number) => string
 }
 
 export const STRINGS: Record<Lang, Strings> = {
@@ -130,8 +171,12 @@ export const STRINGS: Record<Lang, Strings> = {
     nameToCapital: 'Страна → столица',
     nameToCurrency: 'Страна → валюта',
     nameToPopulation: 'Страна → население',
+    nameToFounded: 'Страна → год основания',
     neighborsToName: 'Соседи → страна',
+    nameToMap: 'Страна → карта',
+    mapToName: 'Карта → страна',
     whoseNeighbors: 'Чьи это сухопутные соседи?',
+    whichCountry: 'Какая это страна?',
     founded: 'Основание',
     region: 'Регион',
     allRegions: 'Все регионы',
@@ -153,6 +198,7 @@ export const STRINGS: Record<Lang, Strings> = {
     mapSearch: 'Найти страну',
     mapLoading: 'Загрузка карты…',
     mapCredit: 'Карта: MapSVG · CC BY 4.0',
+    mapHoldoutHint: 'Золотистым отмечены территории вне викторины — не из 193 стран ООН.',
     mapRegion: 'Регион карты',
     mapMove: 'Движение по карте',
     mapLeft: 'Влево',
@@ -161,6 +207,7 @@ export const STRINGS: Record<Lang, Strings> = {
     mapDown: 'Вниз',
     territory: 'Территория',
     dispute: 'Спор',
+    notInQuiz: 'Не в викторине',
     learnHint: 'Карточки без таймера. Потом можно проверить себя.',
     learnLevelHint: 'Нажмите уровень, чтобы открыть карточки',
     checkYourself: 'Проверить',
@@ -234,6 +281,31 @@ export const STRINGS: Record<Lang, Strings> = {
     noNeighbors: 'Нет сухопутных соседей',
     close: 'Закрыть',
     credit: 'Создано Львом Уманским',
+    duel: 'Дуэль',
+    duelHint: 'Один на один: создайте комнату или введите код.',
+    duelCreate: 'Создать комнату',
+    duelJoin: 'Войти',
+    duelCode: 'Код комнаты',
+    duelWaiting: 'Ждём соперника',
+    duelCopy: 'Скопировать код',
+    duelCopied: 'Скопировано',
+    duelNotFound: 'Комната не найдена',
+    duelFull: 'В этой комнате уже играют',
+    duelOffline: 'Комнаты сейчас недоступны',
+    duelPickModes: 'Режим дуэли',
+    duelPickModesHint: 'Можно выбрать несколько — вопросы будут чередоваться',
+    easyMix: 'Простой микс',
+    hardMix: 'Сложный микс',
+    easyMixNote: 'Флаг → страна · Страна → флаг · Страна → столица',
+    hardMixNote: 'Микс из всех режимов',
+    duelVs: (name) => `против ${name}`,
+    duelWaitingOpponent: 'соперник ещё отвечает',
+    duelOpponentDone: 'соперник ответил',
+    duelOpponent: 'Соперник',
+    duelWin: 'Победа',
+    duelLose: 'Поражение',
+    duelDraw: 'Ничья',
+    duelScore: (you, them, total) => `${you} — ${them} из ${total}`,
   },
   en: {
     title: 'Country Passport',
@@ -244,8 +316,12 @@ export const STRINGS: Record<Lang, Strings> = {
     nameToCapital: 'Country → capital',
     nameToCurrency: 'Country → currency',
     nameToPopulation: 'Country → population',
+    nameToFounded: 'Country → founding year',
     neighborsToName: 'Neighbors → country',
+    nameToMap: 'Country → map',
+    mapToName: 'Map → country',
     whoseNeighbors: 'Whose land neighbors are these?',
+    whichCountry: 'Which country is this?',
     founded: 'Founded',
     region: 'Region',
     allRegions: 'All regions',
@@ -267,6 +343,7 @@ export const STRINGS: Record<Lang, Strings> = {
     mapSearch: 'Find a country',
     mapLoading: 'Loading the map…',
     mapCredit: 'Map: MapSVG · CC BY 4.0',
+    mapHoldoutHint: 'Gold-tinted areas are outside the quiz — not among the 193 UN members.',
     mapRegion: 'Map region',
     mapMove: 'Move around the map',
     mapLeft: 'Left',
@@ -275,6 +352,7 @@ export const STRINGS: Record<Lang, Strings> = {
     mapDown: 'Down',
     territory: 'Territory',
     dispute: 'Dispute',
+    notInQuiz: 'Not in the quiz',
     learnHint: 'Cards without a timer. Then test yourself.',
     learnLevelHint: 'Tap a level to open its cards',
     checkYourself: 'Test yourself',
@@ -348,6 +426,31 @@ export const STRINGS: Record<Lang, Strings> = {
     noNeighbors: 'No land neighbors',
     close: 'Close',
     credit: 'Created by Lev Umansky',
+    duel: 'Duel',
+    duelHint: 'One on one: create a room or enter a code.',
+    duelCreate: 'Create room',
+    duelJoin: 'Join',
+    duelCode: 'Room code',
+    duelWaiting: 'Waiting for opponent',
+    duelCopy: 'Copy code',
+    duelCopied: 'Copied',
+    duelNotFound: 'Room not found',
+    duelFull: 'This room is already full',
+    duelOffline: 'Rooms are unavailable right now',
+    duelPickModes: 'Duel mode',
+    duelPickModesHint: 'Pick several — questions will alternate between them',
+    easyMix: 'Easy mix',
+    hardMix: 'Hard mix',
+    easyMixNote: 'Flag → country · Country → flag · Country → capital',
+    hardMixNote: 'Mix of all modes',
+    duelVs: (name) => `vs ${name}`,
+    duelWaitingOpponent: 'opponent is still answering',
+    duelOpponentDone: 'opponent answered',
+    duelOpponent: 'Opponent',
+    duelWin: 'You win',
+    duelLose: 'You lose',
+    duelDraw: 'Draw',
+    duelScore: (you, them, total) => `${you} — ${them} of ${total}`,
   },
 }
 
@@ -365,6 +468,15 @@ export function difficultyLabel(difficulty: QuizDifficulty, lang: Lang): string 
 
 export function modeLabel(mode: QuizMode, lang: Lang): string {
   return STRINGS[lang][mode]
+}
+
+export function modesLabel(modes: readonly QuizMode[], lang: Lang): string {
+  const t = STRINGS[lang]
+  const selected = QUIZ_MODES.filter((mode) => modes.includes(mode))
+  if (sameModes(selected, EASY_MIX_MODES)) return t.easyMix
+  if (sameModes(selected, HARD_MIX_MODES)) return t.hardMix
+  if (selected.length === 0) return modeLabel('flagToName', lang)
+  return selected.map((mode) => modeLabel(mode, lang)).join(' · ')
 }
 
 function pluralRu(n: number, one: string, few: string, many: string): string {

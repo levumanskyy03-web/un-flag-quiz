@@ -93,7 +93,7 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
             <dd>{passportCurrency(passport, lang)}</dd>
           </div>
           {founded !== undefined ? (
-            <div>
+            <div className="passport-founded">
               <dt>{t.founded}</dt>
               <dd>{founded}</dd>
             </div>

@@ -71,7 +71,7 @@ export const TERRITORIES: MapTerritory[] = [
   { iso: 'um-hq', parent: 'us', region: 'oceania', fit: false, nameEn: 'Howland Island', nameRu: 'Остров Хауленд', statusEn: 'an unincorporated territory of the United States', statusRu: 'территория США' },
   { iso: 'um-jq', parent: 'us', region: 'oceania', fit: false, nameEn: 'Johnston Atoll', nameRu: 'Атолл Джонстон', statusEn: 'an unincorporated territory of the United States', statusRu: 'территория США' },
   { iso: 'um-mq', parent: 'us', region: 'oceania', fit: false, nameEn: 'Midway Islands', nameRu: 'Острова Мидуэй', statusEn: 'an unincorporated territory of the United States', statusRu: 'территория США' },
-  { iso: 'um-wq', parent: 'us', region: 'oceania', fit: false, nameEn: 'Wake Island', nameRu: 'Остров Уэйк', statusEn: 'an unincorporated territory of the United States', statusRu: 'территория США' },
+  { iso: 'um-wq', parent: 'us', region: 'oceania', fit: false, nameEn: 'Wake Island', nameRu: 'Остров Уэйк', statusEn: 'administered by the United States', statusRu: 'под контролем США', claimEn: 'The Marshall Islands claim Wake Island.', claimRu: 'Есть претензия: Маршалловы Острова считают Уэйк своим.' },
   { iso: 'wf', parent: 'fr', region: 'oceania', fit: true, nameEn: 'Wallis and Futuna', nameRu: 'Уоллис и Футуна', statusEn: 'an overseas collectivity of France', statusRu: 'заморская община Франции' },
   { iso: 'eh', parent: 'ma', region: 'africa', fit: true, nameEn: 'Western Sahara', nameRu: 'Западная Сахара', statusEn: 'mostly administered by Morocco', statusRu: 'большую часть территории контролирует Марокко', claimEn: 'The Sahrawi Arab Democratic Republic (Polisario Front) claims the territory.', claimRu: 'Есть претензия: САДР и фронт Полисарио считают территорию своей.' },
   {
@@ -115,7 +115,61 @@ export const TERRITORIES: MapTerritory[] = [
   },
 ]
 
+export interface MapHoldout {
+  iso: string
+  region: Region
+  nameEn: string
+  nameRu: string
+  noteEn: string
+  noteRu: string
+  claimEn?: string
+  claimRu?: string
+}
+
+/** On the map, but not among the 193 UN members in the quiz. */
+export const HOLDOUTS: MapHoldout[] = [
+  {
+    iso: 'tw',
+    region: 'asia',
+    nameEn: 'Taiwan',
+    nameRu: 'Тайвань',
+    noteEn: 'Not in the quiz: not a UN member. De facto self-governed, not administered by a quiz country.',
+    noteRu: 'Не входит в викторину: не член ООН. Де-факто самоуправляемая, не под контролем страны из 193.',
+    claimEn: 'The People’s Republic of China claims Taiwan as a province.',
+    claimRu: 'Есть претензия: КНР считает Тайвань своей провинцией.',
+  },
+  {
+    iso: 'xk',
+    region: 'europe',
+    nameEn: 'Kosovo',
+    nameRu: 'Косово',
+    noteEn: 'Not in the quiz: not a UN member. De facto self-governed, not administered by a quiz country.',
+    noteRu: 'Не входит в викторину: не член ООН. Де-факто самоуправляемая, не под контролем страны из 193.',
+    claimEn: 'Serbia claims Kosovo as its territory.',
+    claimRu: 'Есть претензия: Сербия считает Косово своей территорией.',
+  },
+  {
+    iso: 'ps',
+    region: 'asia',
+    nameEn: 'Palestine',
+    nameRu: 'Палестина',
+    noteEn: 'Not in the quiz: UN observer, not a full member, and not one of the 193 countries.',
+    noteRu: 'Не входит в викторину: наблюдатель ООН, не полный член и не одна из 193 стран.',
+    claimEn: 'Statehood and borders are disputed with Israel.',
+    claimRu: 'Есть спор с Израилем о государственности и границах.',
+  },
+  {
+    iso: 'va',
+    region: 'europe',
+    nameEn: 'Vatican City',
+    nameRu: 'Ватикан',
+    noteEn: 'Not in the quiz: UN observer, not a full member, and not one of the 193 countries.',
+    noteRu: 'Не входит в викторину: наблюдатель ООН, не полный член и не одна из 193 стран.',
+  },
+]
+
 export const TERRITORY_BY_ISO = new Map(TERRITORIES.map((item) => [item.iso, item]))
+export const HOLDOUT_BY_ISO = new Map(HOLDOUTS.map((item) => [item.iso, item]))
 
 const COUNTRY_BY_ISO = new Map(COUNTRIES.map((country) => [country.iso, country]))
 
@@ -134,24 +188,63 @@ export function disputeNote(territory: MapTerritory, lang: 'ru' | 'en') {
   return claim || undefined
 }
 
-export function fitIsosForRegion(region: Region | 'all') {
-  const isos = new Set<string>()
-  if (region === 'all') return isos
+function addRegionIsos(isos: Set<string>, region: Region, includeRussia: boolean) {
   for (const country of COUNTRIES) {
-    if (country.region === region && country.iso !== 'ru') isos.add(country.iso)
+    if (country.region !== region) continue
+    if (!includeRussia && country.iso === 'ru') continue
+    isos.add(country.iso)
   }
   for (const territory of TERRITORIES) {
     if (territory.fit && territory.region === region) isos.add(territory.iso)
   }
+  for (const holdout of HOLDOUTS) {
+    if (holdout.region === region) isos.add(holdout.iso)
+  }
+}
+
+export function fitIsosForRegion(region: Region | 'all') {
+  const isos = new Set<string>()
+  if (region === 'all') return isos
+  addRegionIsos(isos, region, false)
   return isos
 }
 
+export function fitIsosForRegions(regions: readonly Region[]) {
+  const isos = new Set<string>()
+  for (const region of regions) addRegionIsos(isos, region, false)
+  return isos
+}
+
+export function visibleIsosForRegions(regions: readonly Region[]) {
+  const isos = new Set<string>()
+  for (const region of regions) addRegionIsos(isos, region, true)
+  return isos
+}
+
+export function holdoutName(holdout: MapHoldout, lang: 'ru' | 'en') {
+  return lang === 'ru' ? holdout.nameRu : holdout.nameEn
+}
+
+export function holdoutNote(holdout: MapHoldout, lang: 'ru' | 'en') {
+  return lang === 'ru' ? holdout.noteRu : holdout.noteEn
+}
+
+export function holdoutClaim(holdout: MapHoldout, lang: 'ru' | 'en') {
+  return lang === 'ru' ? holdout.claimRu : holdout.claimEn
+}
+
 export function resolveMapLocation(id: string) {
+  const holdout = HOLDOUT_BY_ISO.get(id)
+  if (holdout) return { country: undefined, territory: undefined, holdout }
   const country = COUNTRY_BY_ISO.get(id)
-  if (country) return { country, territory: undefined }
+  if (country) return { country, territory: undefined, holdout: undefined }
   const territory = TERRITORY_BY_ISO.get(id)
   if (!territory) return null
   const parent = COUNTRY_BY_ISO.get(territory.parent)
   if (!parent) return null
-  return { country: parent, territory }
+  return { country: parent, territory, holdout: undefined }
+}
+
+export function quizIsoFromMapId(id: string): string | null {
+  return resolveMapLocation(id)?.country?.iso ?? null
 }
