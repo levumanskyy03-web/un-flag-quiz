@@ -121,6 +121,38 @@ type Strings = {
   authBadCredentials: string
   authPasswordMismatch: string
   authOffline: string
+  settings: string
+  settingsAccount: string
+  settingsAbout: string
+  settingsReport: string
+  settingsAchievements: string
+  avatars: string
+  avatarChange: string
+  avatarPickerHint: string
+  avatarUpload: string
+  avatarCropHint: string
+  avatarCropApply: string
+  avatarZoom: string
+  achievementsUnlocked: (n: number, total: number) => string
+  achievementTap: string
+  profileName: string
+  profileLanguage: string
+  guestName: string
+  guestHint: string
+  saveProfile: string
+  profileSaved: string
+  modeStats: string
+  modeStatsEmpty: string
+  modeStatsRounds: (n: number) => string
+  modeStatsCampaign: (cleared: number, total: number) => string
+  aboutBody: string
+  aboutModes: string
+  reportHint: string
+  reportSubject: string
+  reportMessage: string
+  reportSend: string
+  reportSent: string
+  reportDefaultTitle: string
   leaderboard: string
   leaderboardEmpty: string
   leaderboardOffline: string
@@ -159,6 +191,10 @@ type Strings = {
   duelLose: string
   duelDraw: string
   duelScore: (you: number, them: number, total: number) => string
+  duelRematch: string
+  duelRematchHint: string
+  duelRematchWaiting: string
+  duelRematchOffered: string
 }
 
 export const STRINGS: Record<Lang, Strings> = {
@@ -268,6 +304,45 @@ export const STRINGS: Record<Lang, Strings> = {
     authBadCredentials: 'Неверное имя или пароль',
     authPasswordMismatch: 'Пароли не совпадают',
     authOffline: 'Аккаунты пока недоступны',
+    settings: 'Настройки',
+    settingsAccount: 'Аккаунт',
+    settingsAbout: 'О нас',
+    settingsReport: 'Сообщить о проблеме',
+    settingsAchievements: 'Ачивки',
+    avatars: 'Аватар',
+    avatarChange: 'Сменить',
+    avatarPickerHint: 'Выберите значок или загрузите своё фото — его можно подвинуть под круг.',
+    avatarUpload: 'Загрузить фото',
+    avatarCropHint: 'Перетащите фото и подгоните масштаб, чтобы лицо попало в круг.',
+    avatarCropApply: 'Обрезать',
+    avatarZoom: 'Масштаб',
+    achievementsUnlocked: (n, total) => `${n} из ${total}`,
+    achievementTap: 'Нажмите ачивку — подпись снизу.',
+    profileName: 'Имя',
+    profileLanguage: 'Язык',
+    guestName: 'Гость',
+    guestHint: 'Имя и аватар хранятся на этом устройстве. Войдите, чтобы синхронизировать аккаунт.',
+    saveProfile: 'Сохранить',
+    profileSaved: 'Сохранено',
+    modeStats: 'Успехи по режимам',
+    modeStatsEmpty: 'Пока нет игр',
+    modeStatsRounds: (n) => {
+      const n10 = n % 10
+      const n100 = n % 100
+      if (n10 === 1 && n100 !== 11) return `${n} раунд`
+      if (n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14)) return `${n} раунда`
+      return `${n} раундов`
+    },
+    modeStatsCampaign: (cleared, total) => `кампания ${cleared}/${total}`,
+    aboutBody:
+      'Паспорт страны — викторина по 193 государствам ООН: флаги, столицы, валюты, население, год основания, соседи и карты. Играйте соло, проходите кампанию или вызывайте друга на дуэль.',
+    aboutModes: 'На каждой карточке страны — короткий факт. Открыли паспорт снова — увидите другой.',
+    reportHint: 'Опишите, что сломалось или чего не хватает. Письмо откроется в почте на levumanskyy03@gmail.com.',
+    reportSubject: 'Тема',
+    reportMessage: 'Что случилось',
+    reportSend: 'Написать письмо',
+    reportSent: 'Почта открыта — отправьте письмо, если всё выглядит верно.',
+    reportDefaultTitle: 'Проблема в Паспорте страны',
     leaderboard: 'Лидеры',
     leaderboardEmpty: 'Пока пусто — войдите и пройдите уровень',
     leaderboardOffline: 'Общая таблица пока недоступна',
@@ -306,6 +381,10 @@ export const STRINGS: Record<Lang, Strings> = {
     duelLose: 'Поражение',
     duelDraw: 'Ничья',
     duelScore: (you, them, total) => `${you} — ${them} из ${total}`,
+    duelRematch: 'Реванш',
+    duelRematchHint: 'Если оба нажмут — сыграете ещё раз в этой комнате.',
+    duelRematchWaiting: 'Ждём, пока соперник примет реванш.',
+    duelRematchOffered: 'Соперник предлагает реванш.',
   },
   en: {
     title: 'Country Passport',
@@ -413,6 +492,39 @@ export const STRINGS: Record<Lang, Strings> = {
     authBadCredentials: 'Wrong name or password',
     authPasswordMismatch: 'Passwords do not match',
     authOffline: 'Accounts are unavailable right now',
+    settings: 'Settings',
+    settingsAccount: 'Account',
+    settingsAbout: 'About',
+    settingsReport: 'Report a problem',
+    settingsAchievements: 'Achievements',
+    avatars: 'Avatar',
+    avatarChange: 'Change',
+    avatarPickerHint: 'Pick an icon or upload a photo — you can drag it into the circle.',
+    avatarUpload: 'Upload photo',
+    avatarCropHint: 'Drag the photo and zoom so the face sits in the circle.',
+    avatarCropApply: 'Crop',
+    avatarZoom: 'Zoom',
+    achievementsUnlocked: (n, total) => `${n} of ${total}`,
+    achievementTap: 'Tap an achievement to read it.',
+    profileName: 'Name',
+    profileLanguage: 'Language',
+    guestName: 'Guest',
+    guestHint: 'Name and avatar stay on this device. Sign in to sync an account.',
+    saveProfile: 'Save',
+    profileSaved: 'Saved',
+    modeStats: 'Progress by mode',
+    modeStatsEmpty: 'No games yet',
+    modeStatsRounds: (n) => (n === 1 ? '1 round' : `${n} rounds`),
+    modeStatsCampaign: (cleared, total) => `campaign ${cleared}/${total}`,
+    aboutBody:
+      'Country Passport is a quiz of all 193 UN members: flags, capitals, currencies, population, founding years, neighbors and maps. Play solo, run the campaign, or duel a friend.',
+    aboutModes: 'Each country card has a short fact. Open the passport again and you will see a different one.',
+    reportHint: 'Describe what broke or what is missing. This opens an email to levumanskyy03@gmail.com.',
+    reportSubject: 'Subject',
+    reportMessage: 'What happened',
+    reportSend: 'Write email',
+    reportSent: 'Mail opened — send the message if it looks right.',
+    reportDefaultTitle: 'Issue in Country Passport',
     leaderboard: 'Leaders',
     leaderboardEmpty: 'Empty for now — sign in and clear a level',
     leaderboardOffline: 'The shared board is unavailable',
@@ -451,6 +563,10 @@ export const STRINGS: Record<Lang, Strings> = {
     duelLose: 'You lose',
     duelDraw: 'Draw',
     duelScore: (you, them, total) => `${you} — ${them} of ${total}`,
+    duelRematch: 'Rematch',
+    duelRematchHint: 'If both accept, the same room starts another round.',
+    duelRematchWaiting: 'Waiting for your opponent to accept the rematch.',
+    duelRematchOffered: 'Your opponent wants a rematch.',
   },
 }
 

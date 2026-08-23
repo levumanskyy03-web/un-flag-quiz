@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Region } from '../data/countries'
 import { REGIONS, STRINGS, difficultyLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
 import { findBest, type RoundRecord } from '../lib/history'
+import type { LevelClear } from '../lib/levelProgress'
 import {
   QUIZ_MODES,
   PLAY_DIFFICULTIES,
@@ -19,7 +20,7 @@ import {
   type RegionFilter,
   type RoundSize,
 } from '../lib/quiz'
-import { AccountButton } from './AccountButton'
+import { SettingsButton } from './SettingsButton'
 import { DuelCreateModal } from './DuelCreateModal'
 import { LanguageToggle } from './LanguageToggle'
 
@@ -41,6 +42,7 @@ interface HomeScreenProps {
   settings: QuizSettings
   history: RoundRecord[]
   bests: RoundRecord[]
+  levelClears: LevelClear[]
   duelError?: string | null
   onChange: (settings: QuizSettings) => void
   onStart: () => void
@@ -57,6 +59,7 @@ export function HomeScreen({
   settings,
   history,
   bests,
+  levelClears,
   duelError,
   onChange,
   onStart,
@@ -86,7 +89,13 @@ export function HomeScreen({
     <div className="screen home-screen">
       <header className="home-header">
         <div className="home-top">
-          <AccountButton lang={settings.lang} />
+          <SettingsButton
+            lang={settings.lang}
+            history={history}
+            bests={bests}
+            levelClears={levelClears}
+            onLangChange={(lang) => onChange({ ...settings, lang })}
+          />
           <LanguageToggle
             lang={settings.lang}
             onChange={(lang) => onChange({ ...settings, lang })}

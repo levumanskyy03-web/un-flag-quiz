@@ -1,8 +1,11 @@
+import { isAvatarId, type AvatarId } from '../data/avatars'
 import { NAME_MAX, type Player, savePlayer } from './leaderboard'
+import { loadProfile, saveProfile } from './profile'
 
 export interface Account {
   id: string
   name: string
+  avatarId?: AvatarId
 }
 
 export type AuthError = 'invalid' | 'taken' | 'auth' | 'offline' | 'mismatch'
@@ -32,25 +35,53 @@ export async function loginAccount(name: string, password: string): Promise<
   return sendAuth('/api/auth/login', name, password)
 }
 
+export async function updateAccountProfile(patch: {
+  name?: string
+  avatarId?: AvatarId
+}): Promise<{ ok: true; user: Account } | { ok: false; error: AuthError }> {
+  try {
+    const response = await fetch('/api/auth/me', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    })
+    const body: unknown = await response.json().catch(() => null)
+    if (!response.ok) return { ok: false, error: parseError(body, response.status) }
+    const user = parseAccount(body)
+    if (!user) return { ok: false, error: 'offline' }
+    rememberAccount(user)
+    return { ok: true, user }
+  } catch {
+    return { ok: false, error: 'offline' }
+  }
+}
+
 export async function logoutAccount(): Promise<void> {
   try {
     await fetch('/api/auth/logout', { method: 'POST' })
   } catch {
     /* still drop the local session copy */
   }
-  savePlayer({ id: crypto.randomUUID(), name: '' })
+  savePlayer({ id: crypto.randomUUID(), name: loadProfile().name })
 }
 
 function rememberAccount(user: Account) {
   savePlayer({ id: user.id, name: user.name.slice(0, NAME_MAX) } satisfies Player)
+  const profile = loadProfile()
+  saveProfile({
+    name: user.name,
+    avatarId: user.avatarId ?? profile.avatarId,
+    photo: profile.photo,
+  })
 }
 
 async function sendAuth(url: string, name: string, password: string) {
   try {
+    const profile = loadProfile()
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, password }),
+      body: JSON.stringify({ name, password, avatarId: profile.avatarId }),
     })
     const body: unknown = await response.json().catch(() => null)
     if (!response.ok) {
@@ -71,7 +102,11 @@ function parseAccount(body: unknown): Account | null {
   if (!user || typeof user !== 'object') return null
   const record = user as Record<string, unknown>
   if (typeof record.id !== 'string' || typeof record.name !== 'string') return null
-  return { id: record.id, name: record.name }
+  return {
+    id: record.id,
+    name: record.name,
+    avatarId: isAvatarId(record.avatarId) ? record.avatarId : undefined,
+  }
 }
 
 function parseError(body: unknown, status: number): AuthError {

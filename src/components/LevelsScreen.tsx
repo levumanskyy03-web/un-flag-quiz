@@ -5,6 +5,7 @@ import { LEVEL_COUNT, LEVEL_NUMBERS, isFinalLevel } from '../data/levels'
 import { STRINGS, modeLabel } from '../i18n/strings'
 import type { LevelClear } from '../lib/levelProgress'
 import { findLevelClear, isLevelUnlocked } from '../lib/levelProgress'
+import type { RoundRecord } from '../lib/history'
 import { fetchAccount } from '../lib/account'
 import {
   fetchLeaderboard,
@@ -14,18 +15,20 @@ import {
 } from '../lib/leaderboard'
 import { MAX_LIVES, LEVEL_MODES, formatClock } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
-import { AccountButton } from './AccountButton'
+import { SettingsButton } from './SettingsButton'
 import { Lives } from './Lives'
 
 interface LevelsScreenProps {
   settings: QuizSettings
   levelClears: LevelClear[]
+  history: RoundRecord[]
+  bests: RoundRecord[]
   onChange: (settings: QuizSettings) => void
   onPlay: (level: number) => void
   onBack: () => void
 }
 
-export function LevelsScreen({ settings, levelClears, onChange, onPlay, onBack }: LevelsScreenProps) {
+export function LevelsScreen({ settings, levelClears, history, bests, onChange, onPlay, onBack }: LevelsScreenProps) {
   const t = STRINGS[settings.lang]
   const [signedIn, setSignedIn] = useState(false)
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
@@ -84,8 +87,12 @@ export function LevelsScreen({ settings, levelClears, onChange, onPlay, onBack }
       </header>
 
       <section className="card settings-card">
-        <AccountButton
+        <SettingsButton
           lang={settings.lang}
+          history={history}
+          bests={bests}
+          levelClears={levelClears}
+          onLangChange={(lang) => onChange({ ...settings, lang })}
           onAuth={(user) => {
             setSignedIn(Boolean(user))
             if (user) {

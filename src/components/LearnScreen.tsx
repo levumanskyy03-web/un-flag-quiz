@@ -123,6 +123,7 @@ export function LearnScreen({ settings, onChange, onBack, onPractice }: LearnScr
 
       {openCountry && (
         <PassportModal
+          key={openCountry.iso}
           country={openCountry}
           lang={settings.lang}
           onClose={() => setOpenIso(null)}

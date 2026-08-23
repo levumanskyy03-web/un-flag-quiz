@@ -4,6 +4,7 @@ import {
   normalizeCode,
   parsePlayerId,
   readDuel,
+  rematchDuel,
   viewFor,
 } from '../../../../lib/duelStore'
 
@@ -44,6 +45,13 @@ export async function POST(request: Request, context: RouteContext<'/api/duel/[c
     if (record.action === 'leave') {
       await leaveDuel(code, playerId)
       return Response.json({ ok: true })
+    }
+    if (record.action === 'rematch') {
+      const room = await rematchDuel(code, playerId)
+      if (!room) return Response.json({ error: 'missing' }, { status: 404 })
+      const view = viewFor(room, playerId)
+      if (!view) return Response.json({ error: 'forbidden' }, { status: 403 })
+      return Response.json({ room: view })
     }
     const iso = record.iso === null || typeof record.iso === 'string' ? record.iso : undefined
     if (iso === undefined) return Response.json({ error: 'invalid' }, { status: 400 })

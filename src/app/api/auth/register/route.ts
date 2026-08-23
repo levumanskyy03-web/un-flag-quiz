@@ -1,3 +1,4 @@
+import { isAvatarId } from '../../../../data/avatars'
 import {
   authResponse,
   parseAccountName,
@@ -24,8 +25,9 @@ export async function POST(request: Request) {
   if (!name || !password) {
     return authResponse({ error: 'invalid' }, undefined, 400)
   }
+  const avatarId = isAvatarId(record.avatarId) ? record.avatarId : undefined
   try {
-    const result = await registerAccount(name, password)
+    const result = await registerAccount(name, password, avatarId)
     if (!result.ok) {
       const status = result.error === 'taken' ? 409 : 503
       return authResponse({ error: result.error }, undefined, status)

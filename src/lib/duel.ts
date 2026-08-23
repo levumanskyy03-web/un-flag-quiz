@@ -70,6 +70,12 @@ export async function answerDuel(
   return post(`/api/duel/${code}`, { playerId: duelPlayerId(), iso })
 }
 
+export async function rematchDuel(
+  code: string,
+): Promise<{ ok: true; room: DuelView } | { ok: false; error: string }> {
+  return post(`/api/duel/${code}`, { playerId: duelPlayerId(), action: 'rematch' })
+}
+
 export async function leaveDuel(code: string): Promise<void> {
   try {
     await fetch(`/api/duel/${code}`, {

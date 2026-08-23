@@ -30,4 +30,6 @@ export interface DuelView {
   opponentAnswer: string | null | undefined
   question: DuelQuestionWire | null
   youWon: boolean | null
+  youRematch: boolean
+  opponentRematch: boolean
 }

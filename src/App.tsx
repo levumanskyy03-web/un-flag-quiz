@@ -23,6 +23,7 @@ import {
   joinDuel,
   leaveDuel,
   questionFromWire,
+  rematchDuel,
 } from "./lib/duel";
 import type { DuelView } from "./lib/duelTypes";
 import { answerKey } from "./lib/quizAnswers";
@@ -93,6 +94,8 @@ export default function App() {
   const roundStartRef = useRef<number | null>(null);
   const questionStartRef = useRef<number | null>(null);
   const savedRoundRef = useRef(false);
+  const duelIndexRef = useRef(-1);
+  const duelPhaseRef = useRef<DuelView["phase"] | null>(null);
 
   const quizSettings: QuizSettings = {
     ...settings,
@@ -142,7 +145,34 @@ export default function App() {
       setRoundMs(Date.now() - started);
     }, 200);
     return () => window.clearInterval(id);
-  }, [screen]);
+  }, [screen, isDuel]);
+
+  useEffect(() => {
+    if (!isDuel || !duelView) return;
+    if (screen !== "quiz" && screen !== "duel-results") return;
+    if (duelView.phase === "waiting") return;
+    if (duelView.phase === "done") {
+      setRoundMs(duelView.roundMs);
+      return;
+    }
+    const origin = Date.now() - duelView.roundMs;
+    setRoundMs(duelView.roundMs);
+    const id = window.setInterval(() => {
+      setRoundMs(Date.now() - origin);
+    }, 200);
+    return () => window.clearInterval(id);
+  }, [isDuel, duelView, screen]);
+
+  useEffect(() => {
+    if (!isDuel || !duelView || screen !== "quiz" || duelView.phase !== "question") return;
+    const origin = Date.now();
+    const start = duelView.remainingMs;
+    setRemainingMs(start);
+    const id = window.setInterval(() => {
+      setRemainingMs(Math.max(0, start - (Date.now() - origin)));
+    }, 50);
+    return () => window.clearInterval(id);
+  }, [isDuel, duelView, screen]);
 
   useEffect(() => {
     if (screen !== "quiz" || answered || isLearn || isDuel) return;
@@ -279,21 +309,17 @@ export default function App() {
   }, [duelCode, quizSettings.lang]);
 
   useEffect(() => {
-    if (!duelView) return
-    setSelectedIso(duelView.youAnswer ?? null)
-    setTimedOut(duelView.youAnswer === null)
-  }, [duelView?.index]);
-
-  useEffect(() => {
     if (!duelCode || !duelView || duelView.phase !== "question") return;
     if (duelView.youAnswer !== undefined || selectedIso !== null) return;
     if (duelView.remainingMs > 0) return;
-    void answerDuel(duelCode, null).then((result) => {
-      if (result.ok) applyDuelView(result.room);
-    });
+    void submitDuelPick(null);
   }, [duelCode, duelView, selectedIso]);
 
   function applyDuelView(view: DuelView) {
+    const prevPhase = duelPhaseRef.current
+    const indexChanged = duelIndexRef.current !== view.index
+    duelIndexRef.current = view.index
+    duelPhaseRef.current = view.phase
     setDuelView(view)
     setDuelCode(view.code)
     setSettings((prev) => ({
@@ -304,25 +330,33 @@ export default function App() {
       roundSize: view.roundSize as QuizSettings["roundSize"],
       path: "pool",
     }))
+    if (view.youAnswer !== undefined) {
+      setSelectedIso(view.youAnswer)
+      setTimedOut(view.youAnswer === null)
+    } else if (indexChanged || prevPhase === "done" || prevPhase === "waiting" || view.phase !== "question") {
+      setSelectedIso(null)
+      setTimedOut(false)
+    }
     if (view.phase === "waiting") {
       setScreen("duel-lobby")
       setResultTone(null)
       return
     }
     if (view.phase === "done") {
+      setRoundMs(view.roundMs)
       setResultTone(view.youWon === false ? "fail" : "success")
       setScreen("duel-results")
       return
     }
     setRemainingMs(view.remainingMs)
     setRoundMs(view.roundMs)
-    setTimedOut(view.youAnswer === null)
-    if (view.youAnswer !== undefined) setSelectedIso(view.youAnswer)
     setResultTone(null)
     setScreen("quiz")
   }
 
   function clearDuel() {
+    duelIndexRef.current = -1
+    duelPhaseRef.current = null
     setDuelCode(null)
     setDuelView(null)
     setDuelCopied(false)
@@ -531,15 +565,39 @@ export default function App() {
     questionStartRef.current = Date.now();
   }
 
+  async function submitDuelPick(iso: string | null) {
+    if (!duelCode) return;
+    for (let attempt = 0; attempt < 8; attempt += 1) {
+      const result = await answerDuel(duelCode, iso);
+      if (result.ok) {
+        applyDuelView(result.room);
+        if (iso === null || result.room.youAnswer !== undefined || result.room.phase === "done") return;
+      }
+      await new Promise((resolve) => window.setTimeout(resolve, 50 + attempt * 40));
+    }
+    const latest = await fetchDuel(duelCode);
+    if (latest.ok) {
+      applyDuelView(latest.room);
+      if (latest.room.youAnswer !== undefined) return;
+    }
+    if (iso !== null) setSelectedIso(null);
+  }
+
+  async function handleRematch() {
+    if (!duelCode) return;
+    const result = await rematchDuel(duelCode);
+    if (result.ok) applyDuelView(result.room);
+  }
+
   function selectAnswer(iso: string) {
-    if (answered) return;
     if (duelCode) {
+      if (duelView?.youAnswer !== undefined) return;
+      if (duelView && duelView.phase !== "question" && duelView.phase !== "reveal") return;
       setSelectedIso(iso);
-      void answerDuel(duelCode, iso).then((result) => {
-        if (result.ok) applyDuelView(result.room);
-      });
+      void submitDuelPick(iso);
       return;
     }
+    if (answered) return;
     const question = questions[index];
     setSelectedIso(iso);
     setAnswers((prev) => [...prev, { question, selectedIso: iso, timeMs: questionTimeMs() }]);
@@ -601,6 +659,7 @@ export default function App() {
           settings={quizSettings}
           history={history}
           bests={bests}
+          levelClears={levelClears}
           duelError={duelError}
           onChange={handleSettingsChange}
           onStart={startRound}
@@ -617,6 +676,8 @@ export default function App() {
         <LevelsScreen
           settings={quizSettings}
           levelClears={levelClears}
+          history={history}
+          bests={bests}
           onChange={handleSettingsChange}
           onPlay={playLevel}
           onBack={leaveLevels}
@@ -694,7 +755,13 @@ export default function App() {
         />
       )}
       {screen === "duel-results" && duelView && (
-        <DuelResults lang={quizSettings.lang} room={duelView} onMenu={() => void handleLeaveDuel()} />
+        <DuelResults
+          lang={quizSettings.lang}
+          room={duelView}
+          roundMs={roundMs}
+          onRematch={() => void handleRematch()}
+          onMenu={() => void handleLeaveDuel()}
+        />
       )}
       {screen === "results" && (
         <ResultsScreen

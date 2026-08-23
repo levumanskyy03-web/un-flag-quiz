@@ -1,13 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { COUNTRIES, type Country } from '../data/countries'
 import { foundedYear } from '../data/founded'
 import { landNeighbors } from '../data/neighbors'
+import { factText, pickFactIndex } from '../data/facts'
 import {
   formatPopulation,
   getPassport,
   passportCapital,
   passportCurrency,
-  passportFact,
 } from '../data/passports'
 import { STRINGS, regionLabel, type Lang } from '../i18n/strings'
 import { countryName } from '../lib/quiz'
@@ -31,6 +31,12 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
     .map((iso) => COUNTRIES.find((item) => item.iso === iso))
     .filter((item): item is Country => item !== undefined)
     .sort((a, b) => countryName(a, lang).localeCompare(countryName(b, lang), lang === 'ru' ? 'ru' : 'en'))
+  const [factKey, setFactKey] = useState(country.iso)
+  const [factIndex, setFactIndex] = useState(() => pickFactIndex(country.iso))
+  if (factKey !== country.iso) {
+    setFactKey(country.iso)
+    setFactIndex(pickFactIndex(country.iso))
+  }
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -126,7 +132,7 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
         )}
         <p className="passport-fact">
           <span className="passport-fact-label">{t.fact}</span>
-          {passportFact(passport, lang)}
+          {factText(country.iso, factIndex, lang, { en: passport.factEn, ru: passport.factRu })}
         </p>
       </div>
     </div>

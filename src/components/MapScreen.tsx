@@ -480,6 +480,7 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
 
       {resolvedOpen?.country ? (
         <PassportModal
+          key={resolvedOpen.country.iso}
           country={resolvedOpen.country}
           lang={settings.lang}
           territoryNote={resolvedOpen.territory ? territoryNote(resolvedOpen.territory, settings.lang) : undefined}

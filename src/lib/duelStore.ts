@@ -59,7 +59,10 @@ export interface DuelRoom {
   phase: 'waiting' | 'question' | 'reveal' | 'done'
   questionStartedAt: number
   playStartedAt: number
+  playEndedAt: number
   revealUntil: number
+  hostRematch: boolean
+  guestRematch: boolean
 }
 
 export function normalizeCode(value: unknown): string | null {
@@ -107,7 +110,10 @@ export async function createDuelRoom(input: {
       phase: 'waiting',
       questionStartedAt: 0,
       playStartedAt: 0,
+      playEndedAt: 0,
       revealUntil: 0,
+      hostRematch: false,
+      guestRematch: false,
     }
     await saveRoom(room)
     return { ok: true, room }
@@ -131,6 +137,7 @@ export async function joinDuelRoom(
       current.phase = 'question'
       current.questionStartedAt = now
       current.playStartedAt = now
+      current.playEndedAt = 0
       current.expiresAt = now + ROOM_MS
       return current
     })
@@ -149,23 +156,55 @@ export async function answerDuel(
 ): Promise<DuelRoom | null> {
   try {
     return await mutateRoom(code, (current) => {
-    const ticked = tickRoom(current, Date.now())
-    if (ticked.phase !== 'question') return ticked
-    const player = playerOf(ticked, playerId)
-    if (!player) return 'forbidden'
-    if (player.answers[ticked.index]) return ticked
-    const question = ticked.questions[ticked.index]
-    const mode = isQuizMode(question?.mode) ? question.mode : ticked.mode
-    const pick = acceptDuelIso(iso, question?.optionIsos ?? [], mode)
-    player.answers[ticked.index] = {
-      iso: pick,
-      timeMs: Math.max(0, Date.now() - ticked.questionStartedAt),
-    }
-    if (bothAnswered(ticked)) {
-      ticked.phase = 'reveal'
-      ticked.revealUntil = Date.now() + revealMs(ticked)
-    }
-    return ticked
+      const now = Date.now()
+      const ticked = tickRoom(current, now)
+      const player = playerOf(ticked, playerId)
+      if (!player) return 'forbidden'
+      const existing = player.answers[ticked.index]
+      const question = ticked.questions[ticked.index]
+      const mode = isQuizMode(question?.mode) ? question.mode : ticked.mode
+      const pick = acceptDuelIso(iso, question?.optionIsos ?? [], mode)
+
+      if (ticked.phase === 'question') {
+        if (existing?.iso != null) return ticked
+        player.answers[ticked.index] = {
+          iso: pick,
+          timeMs: Math.max(0, now - ticked.questionStartedAt),
+        }
+        if (bothAnswered(ticked)) {
+          ticked.phase = 'reveal'
+          ticked.revealUntil = now + revealMs(ticked)
+        }
+        return ticked
+      }
+
+      if (ticked.phase === 'reveal' && existing && existing.iso === null && pick) {
+        player.answers[ticked.index] = {
+          iso: pick,
+          timeMs: Math.max(0, now - ticked.questionStartedAt),
+        }
+      }
+      return ticked
+    })
+  } catch (error) {
+    if (error instanceof DuelError) return null
+    throw error
+  }
+}
+
+export async function rematchDuel(code: string, playerId: string): Promise<DuelRoom | null> {
+  try {
+    return await mutateRoom(code, (current) => {
+      const ticked = tickRoom(current, Date.now())
+      if (ticked.phase !== 'done') return ticked
+      const player = playerOf(ticked, playerId)
+      if (!player) return 'forbidden'
+      if (ticked.host.id === playerId) ticked.hostRematch = true
+      else ticked.guestRematch = true
+      if (ticked.hostRematch && ticked.guestRematch && ticked.guest) {
+        return restartRound(ticked)
+      }
+      return ticked
     })
   } catch (error) {
     if (error instanceof DuelError) return null
@@ -188,6 +227,7 @@ export async function leaveDuel(code: string, playerId: string): Promise<void> {
       player.answers[current.index] = { iso: null, timeMs: Math.max(0, now - current.questionStartedAt) }
     }
     current.phase = 'done'
+    if (!current.playEndedAt) current.playEndedAt = now
     return current
   })
 }
@@ -211,9 +251,12 @@ export function viewFor(room: DuelRoom, playerId: string): DuelView | null {
     room.phase === 'question'
       ? Math.max(0, limitMs - (Date.now() - room.questionStartedAt))
       : 0
+  const endedAt = room.playEndedAt > 0 ? room.playEndedAt : Date.now()
   const youScore = scoreOf(room, you)
   const opponentScore = opponent ? scoreOf(room, opponent) : null
   const modes = room.modes?.length ? orderedModes(room.modes) : [room.mode]
+  const youRematch = role === 'host' ? Boolean(room.hostRematch) : Boolean(room.guestRematch)
+  const opponentRematch = role === 'host' ? Boolean(room.guestRematch) : Boolean(room.hostRematch)
   return {
     code: room.code,
     you: role,
@@ -226,7 +269,7 @@ export function viewFor(room: DuelRoom, playerId: string): DuelView | null {
     index: room.index,
     total: room.questions.length,
     remainingMs,
-    roundMs: room.playStartedAt > 0 ? Math.max(0, Date.now() - room.playStartedAt) : 0,
+    roundMs: room.playStartedAt > 0 ? Math.max(0, endedAt - room.playStartedAt) : 0,
     host: { name: room.host.name, score: scoreOf(room, room.host) },
     guest: room.guest ? { name: room.guest.name, score: scoreOf(room, room.guest) } : null,
     youName: you.name,
@@ -243,6 +286,8 @@ export function viewFor(room: DuelRoom, playerId: string): DuelView | null {
           ? null
           : youScore > opponentScore
         : null,
+    youRematch,
+    opponentRematch,
   }
 }
 
@@ -333,6 +378,7 @@ function tickRoom(room: DuelRoom, now: number): DuelRoom {
   if (room.phase === 'reveal' && now >= room.revealUntil) {
     if (room.index >= room.questions.length - 1) {
       room.phase = 'done'
+      if (!room.playEndedAt) room.playEndedAt = now
     } else {
       room.index += 1
       room.phase = 'question'
@@ -352,6 +398,9 @@ function playState(room: DuelRoom): string {
     guest: room.guest?.id ?? null,
     hostAnswers: room.host.answers,
     guestAnswers: room.guest?.answers ?? null,
+    hostRematch: room.hostRematch,
+    guestRematch: room.guestRematch,
+    playEndedAt: room.playEndedAt,
   })
 }
 
@@ -373,6 +422,25 @@ function buildQuestions(
     optionIsos: question.options.map((option) => option.iso),
     mode: question.mode ?? modes[0],
   }))
+}
+
+function restartRound(room: DuelRoom): DuelRoom {
+  const questions = buildQuestions(room.modes, room.region, room.difficulty, room.roundSize)
+  if (questions.length === 0) return room
+  const now = Date.now()
+  room.questions = questions
+  room.index = 0
+  room.phase = 'question'
+  room.questionStartedAt = now
+  room.playStartedAt = now
+  room.playEndedAt = 0
+  room.revealUntil = 0
+  room.hostRematch = false
+  room.guestRematch = false
+  room.host.answers = Array.from({ length: questions.length }, () => null)
+  if (room.guest) room.guest.answers = Array.from({ length: questions.length }, () => null)
+  room.expiresAt = now + ROOM_MS
+  return room
 }
 
 function questionModeOf(room: DuelRoom, index = room.index): QuizMode {
@@ -418,6 +486,7 @@ async function mutateRoom(
     if (playState(next) === playState(current)) return current
     const saved = await saveRoomIf(next, current.version)
     if (saved) return next
+    await new Promise((resolve) => setTimeout(resolve, 25 + attempt * 20))
   }
   throw new Error('duel busy')
 }
@@ -497,6 +566,9 @@ function parseRoom(value: unknown): DuelRoom | null {
           mode: isQuizMode(question.mode) ? question.mode : room.mode,
         }))
       : []
+    room.playEndedAt = typeof room.playEndedAt === 'number' ? room.playEndedAt : 0
+    room.hostRematch = Boolean(room.hostRematch)
+    room.guestRematch = Boolean(room.guestRematch)
     return room
   } catch {
     return null

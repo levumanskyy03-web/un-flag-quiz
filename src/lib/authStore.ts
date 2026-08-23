@@ -12,6 +12,7 @@ const PBKDF2_ITERS = 100_000
 export interface PublicAccount {
   id: string
   name: string
+  avatarId?: string
 }
 
 interface AccountRecord extends PublicAccount {
@@ -46,9 +47,11 @@ export function parseAccountName(value: unknown): string | null {
   return name
 }
 
-export async function registerAccount(name: string, password: string): Promise<
-  { ok: true; user: PublicAccount; token: string } | { ok: false; error: 'taken' | 'offline' }
-> {
+export async function registerAccount(
+  name: string,
+  password: string,
+  avatarId?: string,
+): Promise<{ ok: true; user: PublicAccount; token: string } | { ok: false; error: 'taken' | 'offline' }> {
   const store = await loadStore()
   if (store === null) return { ok: false, error: 'offline' }
   const key = normalizeName(name)
@@ -56,6 +59,7 @@ export async function registerAccount(name: string, password: string): Promise<
   const user: AccountRecord = {
     id: crypto.randomUUID(),
     name,
+    avatarId,
     hash: await hashPassword(password),
     createdAt: Date.now(),
   }
@@ -63,7 +67,7 @@ export async function registerAccount(name: string, password: string): Promise<
   store.users[key] = user
   store.sessions[token] = { userId: user.id, exp: Date.now() + SESSION_MS }
   await saveStore(pruneSessions(store))
-  return { ok: true, user: { id: user.id, name: user.name }, token }
+  return { ok: true, user: toPublic(user), token }
 }
 
 export async function loginAccount(name: string, password: string): Promise<
@@ -78,7 +82,33 @@ export async function loginAccount(name: string, password: string): Promise<
   const token = createToken()
   store.sessions[token] = { userId: user.id, exp: Date.now() + SESSION_MS }
   await saveStore(pruneSessions(store))
-  return { ok: true, user: { id: user.id, name: user.name }, token }
+  return { ok: true, user: toPublic(user), token }
+}
+
+export async function updateAccount(
+  token: string | undefined,
+  patch: { name?: string; avatarId?: string },
+): Promise<{ ok: true; user: PublicAccount } | { ok: false; error: 'auth' | 'taken' | 'offline' | 'invalid' }> {
+  if (!token) return { ok: false, error: 'auth' }
+  const store = await loadStore()
+  if (store === null) return { ok: false, error: 'offline' }
+  const session = store.sessions[token]
+  if (!session || session.exp < Date.now() || !isPlayerId(session.userId)) return { ok: false, error: 'auth' }
+  const entry = Object.entries(store.users).find(([, item]) => item.id === session.userId)
+  if (!entry) return { ok: false, error: 'auth' }
+  const [currentKey, user] = entry
+  if (patch.avatarId) user.avatarId = patch.avatarId
+  if (patch.name && patch.name !== user.name) {
+    const nextKey = normalizeName(patch.name)
+    if (nextKey !== currentKey && store.users[nextKey]) return { ok: false, error: 'taken' }
+    user.name = patch.name
+    if (nextKey !== currentKey) {
+      delete store.users[currentKey]
+      store.users[nextKey] = user
+    }
+  }
+  await saveStore(store)
+  return { ok: true, user: toPublic(user) }
 }
 
 export async function accountFromRequest(request: Request): Promise<PublicAccount | null> {
@@ -94,7 +124,7 @@ export async function accountFromToken(token: string): Promise<PublicAccount | n
   if (!session || session.exp < Date.now() || !isPlayerId(session.userId)) return null
   const user = Object.values(store.users).find((item) => item.id === session.userId)
   if (!user) return null
-  return { id: user.id, name: user.name }
+  return toPublic(user)
 }
 
 export async function dropSession(token: string | undefined): Promise<void> {
@@ -141,6 +171,10 @@ export function readCookie(request: Request, name: string) {
     return decodeURIComponent(trimmed.slice(cut + 1))
   }
   return undefined
+}
+
+function toPublic(user: AccountRecord): PublicAccount {
+  return { id: user.id, name: user.name, avatarId: user.avatarId }
 }
 
 function createToken() {
