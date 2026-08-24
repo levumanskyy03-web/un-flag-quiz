@@ -13,6 +13,7 @@ import {
   type RoundAnswer,
   type RoundEnd,
 } from '../lib/quiz'
+import { formatXp, accountProgress } from '../lib/xp'
 import { optionLabel } from '../lib/quizAnswers'
 import { Flag } from './Flag'
 
@@ -24,6 +25,8 @@ interface ResultsScreenProps {
   roundMs: number
   endedBy: RoundEnd
   isNewBest: boolean
+  earnedXp?: number
+  totalXp?: number
   saveNote?: boolean
   menuLabel?: string
   onAgain: () => void
@@ -39,6 +42,8 @@ export function ResultsScreen({
   roundMs,
   endedBy,
   isNewBest,
+  earnedXp = 0,
+  totalXp,
   saveNote = true,
   menuLabel,
   onAgain,
@@ -76,6 +81,17 @@ export function ResultsScreen({
         <p className="score-value">{t.score(correctCount, total)}</p>
         <p className="score-percent">{percent}%</p>
         <p className="score-time">{t.totalTime(formatClock(roundMs))}</p>
+        {earnedXp > 0 ? (
+          <p className="score-xp">
+            {t.xpGained(formatXp(earnedXp, lang))}
+            {totalXp !== undefined ? (
+              <span>
+                {' '}
+                · {t.accountLevel(accountProgress(totalXp).level)} · {t.xpTotal(formatXp(totalXp, lang))}
+              </span>
+            ) : null}
+          </p>
+        ) : null}
         {success && <p className="score-avg">{t.avgTime(avgSeconds)}</p>}
         {slowest && (
           <p className="score-slowest">

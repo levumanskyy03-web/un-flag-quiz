@@ -11,6 +11,7 @@ import {
 } from '../data/territories'
 import { isClickableIso, markersFor, type WorldMapData } from '../data/worldMap'
 import { STRINGS, type Lang } from '../i18n/strings'
+import { countryName } from '../lib/quiz'
 import {
   cameraForCountry,
   cameraFromPinch,
@@ -437,7 +438,7 @@ export function QuizMap({
       )}
       {variant === 'find' && revealed ? (
         <p className="quiz-map-caption">
-          {selectedName ? (lang === 'ru' ? selectedName.nameRu : selectedName.nameEn) : t.timedOut}
+          {selectedName ? countryName(selectedName, lang) : t.timedOut}
         </p>
       ) : null}
     </div>

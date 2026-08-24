@@ -1,6 +1,7 @@
 import { LEVEL_COUNT } from '../data/levels'
 import type { LevelClear } from './levelProgress'
-import type { QuizMode } from './quiz'
+import { LEVEL_MODES, hasLevels, isQuizMode, type QuizMode } from './quiz'
+import { accountLevel } from './xp'
 
 export const PLAYER_KEY = 'un-flag-quiz-player'
 export const LEADERBOARD_LIMIT = 20
@@ -8,6 +9,9 @@ export const NAME_MIN = 2
 export const NAME_MAX = 24
 export const PASSWORD_MIN = 6
 export const PASSWORD_MAX = 72
+export const RATING_LEVELS_MAX = LEVEL_MODES.length * LEVEL_COUNT
+export const RATING_XP_MAX = 99_999_999
+export const RATING_LEVEL_MAX = 999
 
 export interface Player {
   id: string
@@ -19,12 +23,19 @@ export interface LeaderboardEntry {
   levelsCleared: number
   totalMs: number
   you?: boolean
+  xp?: number
+  level?: number
 }
 
 export interface CampaignStats {
   levelsCleared: number
   totalMs: number
 }
+
+export type RatingBoard =
+  | { kind: 'xp' }
+  | { kind: 'clears'; hardcore: boolean }
+  | { kind: 'mode'; mode: QuizMode; hardcore: boolean }
 
 export function campaignStats(
   clears: LevelClear[],
@@ -44,11 +55,40 @@ export function campaignStats(
   }
 }
 
-export function isBetterCampaign(candidate: CampaignStats, current: CampaignStats): boolean {
-  if (candidate.levelsCleared !== current.levelsCleared) {
-    return candidate.levelsCleared > current.levelsCleared
+export function uniqueLevelsCleared(clears: LevelClear[], hardcoreOnly: boolean): number {
+  const seen = new Set<string>()
+  for (const item of clears) {
+    if (!hasLevels(item.mode)) continue
+    if (hardcoreOnly && !item.hardcore) continue
+    seen.add(`${item.mode}:${item.level}`)
   }
-  return candidate.totalMs < current.totalMs
+  return seen.size
+}
+
+export function isBetterCampaign(candidate: CampaignStats, current: CampaignStats): boolean {
+  return candidate.levelsCleared > current.levelsCleared
+}
+
+export function isBetterXp(
+  candidate: { xp?: number; level?: number },
+  current: { xp?: number; level?: number },
+): boolean {
+  const a = candidate.xp ?? 0
+  const b = current.xp ?? 0
+  if (a !== b) return a > b
+  return (candidate.level ?? 0) > (current.level ?? 0)
+}
+
+export function parseRatingBoard(params: URLSearchParams): RatingBoard | null {
+  const board = params.get('board')
+  const hardcore = params.get('hardcore') === '1'
+  if (board === 'xp') return { kind: 'xp' }
+  if (board === 'clears') return { kind: 'clears', hardcore }
+  const mode = params.get('mode')
+  if ((board === 'mode' || board === null) && isQuizMode(mode)) {
+    return { kind: 'mode', mode, hardcore }
+  }
+  return null
 }
 
 export function sanitizeName(raw: string): string {
@@ -98,11 +138,24 @@ export async function fetchLeaderboard(
   hardcore: boolean,
   playerId: string,
 ): Promise<{ entries: LeaderboardEntry[]; configured: boolean }> {
-  const params = new URLSearchParams({
-    mode,
-    hardcore: hardcore ? '1' : '0',
-    me: playerId,
-  })
+  return fetchRating({ kind: 'mode', mode, hardcore }, playerId)
+}
+
+export async function fetchRating(
+  board: RatingBoard,
+  playerId: string,
+): Promise<{ entries: LeaderboardEntry[]; configured: boolean }> {
+  const params = new URLSearchParams({ me: playerId })
+  if (board.kind === 'xp') {
+    params.set('board', 'xp')
+  } else if (board.kind === 'clears') {
+    params.set('board', 'clears')
+    params.set('hardcore', board.hardcore ? '1' : '0')
+  } else {
+    params.set('board', 'mode')
+    params.set('mode', board.mode)
+    params.set('hardcore', board.hardcore ? '1' : '0')
+  }
   const response = await fetch(`/api/leaderboard?${params}`)
   if (!response.ok) return { entries: [], configured: false }
   const body: unknown = await response.json()
@@ -113,36 +166,51 @@ export async function fetchLeaderboard(
 }
 
 export async function submitCampaign(clears: LevelClear[], mode: QuizMode): Promise<void> {
+  const stats = campaignStats(clears, mode, false)
+  if (stats.levelsCleared <= 0) return
+  await submitRatings(clears, 0)
+}
+
+export async function submitRatings(clears: LevelClear[], xp: number): Promise<void> {
   const player = loadPlayer()
   if (player.name.length < NAME_MIN) return
-  const boards = [false]
-  if (campaignStats(clears, mode, true).levelsCleared > 0) boards.push(true)
-  await Promise.all(
-    boards.map(async (hardcore) => {
+  const items: unknown[] = []
+  const safeXp = Math.max(0, Math.floor(xp))
+  if (safeXp > 0) {
+    items.push({ board: 'xp', xp: safeXp, level: accountLevel(safeXp) })
+  }
+  for (const hardcore of [false, true]) {
+    const levelsCleared = uniqueLevelsCleared(clears, hardcore)
+    if (levelsCleared <= 0 || levelsCleared > RATING_LEVELS_MAX) continue
+    items.push({ board: 'clears', hardcore, levelsCleared })
+  }
+  for (const mode of LEVEL_MODES) {
+    for (const hardcore of [false, true]) {
       const stats = campaignStats(clears, mode, hardcore)
-      if (stats.levelsCleared <= 0 || stats.levelsCleared > LEVEL_COUNT) return
-      await fetch('/api/leaderboard', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: player.id,
-          name: player.name,
-          mode,
-          hardcore,
-          levelsCleared: stats.levelsCleared,
-          totalMs: stats.totalMs,
-        }),
+      if (stats.levelsCleared <= 0 || stats.levelsCleared > LEVEL_COUNT) continue
+      items.push({
+        board: 'mode',
+        mode,
+        hardcore,
+        levelsCleared: stats.levelsCleared,
+        totalMs: 0,
       })
-    }),
-  )
+    }
+  }
+  if (items.length === 0) return
+  await fetch('/api/leaderboard', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items }),
+  })
 }
 
 function isPublicEntry(value: unknown): value is LeaderboardEntry {
   if (!value || typeof value !== 'object') return false
   const record = value as Record<string, unknown>
-  return (
-    typeof record.name === 'string' &&
-    typeof record.levelsCleared === 'number' &&
-    typeof record.totalMs === 'number'
-  )
+  if (typeof record.name !== 'string' || typeof record.levelsCleared !== 'number') return false
+  if (typeof record.totalMs !== 'number') return false
+  if (record.xp !== undefined && typeof record.xp !== 'number') return false
+  if (record.level !== undefined && typeof record.level !== 'number') return false
+  return true
 }

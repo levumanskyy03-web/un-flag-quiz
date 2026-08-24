@@ -1,21 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { LEVEL_COUNT, LEVEL_NUMBERS, isFinalLevel } from '../data/levels'
+import { LEVEL_NUMBERS, isFinalLevel } from '../data/levels'
 import { STRINGS, modeLabel } from '../i18n/strings'
 import type { LevelClear } from '../lib/levelProgress'
 import { findLevelClear, isLevelUnlocked } from '../lib/levelProgress'
 import type { RoundRecord } from '../lib/history'
-import { fetchAccount } from '../lib/account'
-import {
-  fetchLeaderboard,
-  loadPlayer,
-  submitCampaign,
-  type LeaderboardEntry,
-} from '../lib/leaderboard'
 import { MAX_LIVES, LEVEL_MODES, formatClock } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
-import { SettingsButton } from './SettingsButton'
+import { HubNav, type HubTab } from './HubNav'
+import { PlayerHud } from './PlayerHud'
 import { Lives } from './Lives'
 
 interface LevelsScreenProps {
@@ -23,86 +16,32 @@ interface LevelsScreenProps {
   levelClears: LevelClear[]
   history: RoundRecord[]
   bests: RoundRecord[]
+  xp?: number
+  xpReady?: boolean
   onChange: (settings: QuizSettings) => void
   onPlay: (level: number) => void
-  onBack: () => void
+  onHub: (tab: HubTab) => void
 }
 
-export function LevelsScreen({ settings, levelClears, history, bests, onChange, onPlay, onBack }: LevelsScreenProps) {
+export function LevelsScreen({ settings, levelClears, history, bests, xp = 0, xpReady = false, onChange, onPlay, onHub }: LevelsScreenProps) {
   const t = STRINGS[settings.lang]
-  const [signedIn, setSignedIn] = useState(false)
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([])
-  const [boardReady, setBoardReady] = useState(true)
-
-  useEffect(() => {
-    let cancelled = false
-    fetchAccount().then((user) => {
-      if (!cancelled) setSignedIn(Boolean(user))
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  function reloadBoard() {
-    const player = loadPlayer()
-    fetchLeaderboard(settings.mode, settings.levelHardcore, player.id)
-      .then((result) => {
-        setEntries(result.entries)
-        setBoardReady(result.configured)
-      })
-      .catch(() => {
-        setEntries([])
-        setBoardReady(false)
-      })
-  }
-
-  useEffect(() => {
-    let cancelled = false
-    const player = loadPlayer()
-    fetchLeaderboard(settings.mode, settings.levelHardcore, player.id)
-      .then((result) => {
-        if (cancelled) return
-        setEntries(result.entries)
-        setBoardReady(result.configured)
-      })
-      .catch(() => {
-        if (cancelled) return
-        setEntries([])
-        setBoardReady(false)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [settings.mode, settings.levelHardcore])
 
   return (
     <div className="screen levels-screen">
-      <header className="quiz-header">
-        <button type="button" className="btn-ghost" onClick={onBack}>
-          {t.back}
-        </button>
-        <h1 className="levels-title">{t.levels}</h1>
-        <span className="levels-header-spacer" aria-hidden="true" />
+      <header className="quiz-header is-hub">
+        <HubNav lang={settings.lang} active="levels" onSelect={onHub} />
       </header>
 
       <section className="card settings-card">
-        <SettingsButton
+        <PlayerHud
           lang={settings.lang}
           history={history}
           bests={bests}
           levelClears={levelClears}
+          xp={xp}
+          xpReady={xpReady}
           onLangChange={(lang) => onChange({ ...settings, lang })}
-          onAuth={(user) => {
-            setSignedIn(Boolean(user))
-            if (user) {
-              void submitCampaign(levelClears, settings.mode).then(reloadBoard)
-              return
-            }
-            reloadBoard()
-          }}
         />
-        {!signedIn ? <p className="setting-hint">{t.accountNeeded}</p> : null}
 
         <div className="choice-grid is-modes">
           {LEVEL_MODES.map((mode) => (
@@ -182,27 +121,6 @@ export function LevelsScreen({ settings, levelClears, history, bests, onChange, 
         ) : settings.levelHardcore ? (
           <p className="setting-hint">{t.hardcoreHint}</p>
         ) : null}
-      </section>
-
-      <section className="card history-card">
-        <h2>{t.leaderboard}</h2>
-        {!boardReady ? (
-          <p className="leaderboard-empty">{t.leaderboardOffline}</p>
-        ) : entries.length === 0 ? (
-          <p className="leaderboard-empty">{t.leaderboardEmpty}</p>
-        ) : (
-          <ol className="leaderboard-list">
-            {entries.map((entry, index) => (
-              <li key={`${entry.name}-${index}`} className={`leaderboard-row${entry.you ? ' is-you' : ''}`}>
-                <span className="leaderboard-rank">{index + 1}</span>
-                <span className="leaderboard-name">{entry.name}</span>
-                <span className="leaderboard-score">
-                  {t.leaderboardProgress(entry.levelsCleared, LEVEL_COUNT)} · {formatClock(entry.totalMs)}
-                </span>
-              </li>
-            ))}
-          </ol>
-        )}
       </section>
     </div>
   )

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Region } from '../data/countries'
-import { REGIONS, STRINGS, difficultyLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
+import { REGIONS, STRINGS, difficultyLabel, localeTag, modeLabel, regionLabel, type Lang } from '../i18n/strings'
 import { findBest, type RoundRecord } from '../lib/history'
 import type { LevelClear } from '../lib/levelProgress'
 import {
@@ -10,7 +10,6 @@ import {
   fitRoundSize,
   formatClock,
   getPool,
-  hasLevels,
   isRegionSelected,
   toggleRegion,
   type LearnFrom,
@@ -20,7 +19,8 @@ import {
   type RegionFilter,
   type RoundSize,
 } from '../lib/quiz'
-import { SettingsButton } from './SettingsButton'
+import { HubNav, type HubTab } from './HubNav'
+import { PlayerHud } from './PlayerHud'
 import { DuelCreateModal } from './DuelCreateModal'
 import { LanguageToggle } from './LanguageToggle'
 
@@ -43,14 +43,14 @@ interface HomeScreenProps {
   history: RoundRecord[]
   bests: RoundRecord[]
   levelClears: LevelClear[]
+  xp?: number
+  xpReady?: boolean
   duelError?: string | null
   onChange: (settings: QuizSettings) => void
   onStart: () => void
   onCreateDuel: (modes: QuizMode[]) => void
   onJoinDuel: (code: string) => void
-  onOpenLevels: () => void
-  onOpenLearn: () => void
-  onOpenMap: () => void
+  onHub: (tab: HubTab) => void
   onClearHistory: () => void
   onClearBests: () => void
 }
@@ -60,14 +60,14 @@ export function HomeScreen({
   history,
   bests,
   levelClears,
+  xp = 0,
+  xpReady = false,
   duelError,
   onChange,
   onStart,
   onCreateDuel,
   onJoinDuel,
-  onOpenLevels,
-  onOpenLearn,
-  onOpenMap,
+  onHub,
   onClearHistory,
   onClearBests,
 }: HomeScreenProps) {
@@ -89,11 +89,13 @@ export function HomeScreen({
     <div className="screen home-screen">
       <header className="home-header">
         <div className="home-top">
-          <SettingsButton
+          <PlayerHud
             lang={settings.lang}
             history={history}
             bests={bests}
             levelClears={levelClears}
+            xp={xp}
+            xpReady={xpReady}
             onLangChange={(lang) => onChange({ ...settings, lang })}
           />
           <LanguageToggle
@@ -104,6 +106,8 @@ export function HomeScreen({
         <h1>{t.title}</h1>
         <p className="subtitle">{t.subtitle}</p>
       </header>
+
+      <HubNav lang={settings.lang} active="free" onSelect={onHub} />
 
       <section className="card settings-card">
         <h2>{t.mode}</h2>
@@ -120,21 +124,6 @@ export function HomeScreen({
             </button>
           ))}
         </div>
-        <h2>{t.explore}</h2>
-        <div className="choice-grid is-paths">
-          {hasLevels(settings.mode) ? (
-            <button type="button" className="choice" onClick={onOpenLevels}>
-              {t.levels}
-            </button>
-          ) : null}
-          <button type="button" className="choice" onClick={onOpenLearn}>
-            {t.learn}
-          </button>
-          <button type="button" className="choice" onClick={onOpenMap}>
-            {t.map}
-          </button>
-        </div>
-
         <h2>{t.region}</h2>
         <div className="choice-wrap">
           {regions.map((region) => (
@@ -299,7 +288,7 @@ function RecordRow({
 }
 
 function formatPlayedAt(at: number, lang: Lang): string {
-  return new Date(at).toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-GB', {
+  return new Date(at).toLocaleString(localeTag(lang), {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',

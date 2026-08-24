@@ -1,8 +1,8 @@
 import { isAvatarId } from '../../../../data/avatars'
 import {
   authResponse,
-  parseAccountName,
   parsePassword,
+  publicAccountName,
   registerAccount,
 } from '../../../../lib/authStore'
 
@@ -20,11 +20,15 @@ export async function POST(request: Request) {
     return authResponse({ error: 'invalid' }, undefined, 400)
   }
   const record = body as Record<string, unknown>
-  const name = parseAccountName(record.name)
+  const parsed = publicAccountName(record.name)
   const password = parsePassword(record.password)
-  if (!name || !password) {
+  if (!parsed.ok) {
+    return authResponse({ error: parsed.error }, undefined, 400)
+  }
+  if (!password) {
     return authResponse({ error: 'invalid' }, undefined, 400)
   }
+  const name = parsed.name
   const avatarId = isAvatarId(record.avatarId) ? record.avatarId : undefined
   try {
     const result = await registerAccount(name, password, avatarId)

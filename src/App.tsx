@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { DuelLobby } from "./components/DuelLobby";
 import { DuelResults } from "./components/DuelResults";
 import { HomeScreen, type QuizSettings } from "./components/HomeScreen";
+import { type HubTab } from "./components/HubNav";
 import { LearnScreen } from "./components/LearnScreen";
 import { MapScreen } from "./components/MapScreen";
 import { Level20Screen } from "./components/Level20Screen";
@@ -11,11 +12,13 @@ import { LevelsScreen } from "./components/LevelsScreen";
 import { QuizScreen } from "./components/QuizScreen";
 import { ResultsScreen } from "./components/ResultsScreen";
 import { FINAL_LEVEL, LEVEL_COUNT, isFinalLevel } from "./data/levels";
-import { STRINGS, type Lang } from "./i18n/strings";
+import { STRINGS, isLang, langDir, localeTag, type Lang } from "./i18n/strings";
 import { clearBests, clearHistory, loadBests, loadHistory, saveRound, type RoundRecord } from "./lib/history";
 import { loadLevelClears, saveLevelClear, isLevelUnlocked, type LevelClear } from "./lib/levelProgress";
+import { addPlayMs, bumpLifetime, countLifetimeSeed, seedLifetimeIfEmpty } from "./lib/lifetime";
+import { xpForAnswers } from "./lib/xp";
 import { fetchAccount } from "./lib/account";
-import { submitCampaign } from "./lib/leaderboard";
+import { submitRatings } from "./lib/leaderboard";
 import {
   answerDuel,
   createDuel,
@@ -56,7 +59,7 @@ function subscribeLang(onChange: () => void) {
 
 function getStoredLang(): Lang {
   const stored = localStorage.getItem(LANG_KEY);
-  return stored === "en" || stored === "ru" ? stored : "ru";
+  return isLang(stored) ? stored : "ru";
 }
 
 export default function App() {
@@ -86,6 +89,9 @@ export default function App() {
   const [bests, setBests] = useState<RoundRecord[]>([]);
   const [levelClears, setLevelClears] = useState<LevelClear[]>([]);
   const [isNewBest, setIsNewBest] = useState(false);
+  const [earnedXp, setEarnedXp] = useState(0);
+  const [xp, setXp] = useState(0);
+  const [xpReady, setXpReady] = useState(false);
   const [resultTone, setResultTone] = useState<ResultTone | null>(null);
   const [duelCode, setDuelCode] = useState<string | null>(null);
   const [duelView, setDuelView] = useState<DuelView | null>(null);
@@ -120,7 +126,8 @@ export default function App() {
   const currentPath: PlayPath = isDuel ? "pool" : quizSettings.path;
 
   useEffect(() => {
-    document.documentElement.lang = quizSettings.lang;
+    document.documentElement.lang = localeTag(quizSettings.lang);
+    document.documentElement.dir = langDir(quizSettings.lang);
     document.title = STRINGS[quizSettings.lang].title;
   }, [quizSettings.lang]);
 
@@ -133,9 +140,18 @@ export default function App() {
   }, [resultTone]);
 
   useEffect(() => {
-    setHistory(loadHistory());
+    const nextHistory = loadHistory();
+    const nextClears = loadLevelClears();
+    setHistory(nextHistory);
     setBests(loadBests());
-    setLevelClears(loadLevelClears());
+    setLevelClears(nextClears);
+    setXp(seedLifetimeIfEmpty(countLifetimeSeed(nextHistory, nextClears)).xp);
+    setXpReady(true);
+    void fetchAccount().then((user) => {
+      if (!user) return
+      const lifetime = seedLifetimeIfEmpty(countLifetimeSeed(nextHistory, nextClears))
+      void submitRatings(nextClears, lifetime.xp)
+    })
   }, []);
 
   useEffect(() => {
@@ -216,6 +232,18 @@ export default function App() {
           savedRoundRef.current = true;
           if (quizSettings.path === "levels") {
             if (endedBy === "complete") {
+              const gained = xpForAnswers(answers, finishedMs, {
+                mode: quizSettings.mode,
+                path: "levels",
+                difficulty: quizSettings.levelHardcore ? "hardcore" : "hard",
+                level: quizSettings.level,
+                hardcore: quizSettings.levelHardcore,
+                livesLimit,
+                region: quizSettings.region,
+              });
+              setEarnedXp(gained);
+              const lifetime = bumpLifetime(true, countLifetimeSeed(loadHistory(), loadLevelClears()), gained, finishedMs);
+              setXp(lifetime.xp);
               const nextClears = saveLevelClear({
                 level: quizSettings.level,
                 mode: quizSettings.mode,
@@ -226,9 +254,19 @@ export default function App() {
                 at: Date.now(),
               });
               setLevelClears(nextClears);
-              void submitCampaign(nextClears, quizSettings.mode);
+              void submitRatings(nextClears, lifetime.xp);
+            } else {
+              setEarnedXp(0);
+              addPlayMs(finishedMs, countLifetimeSeed(loadHistory(), loadLevelClears()));
             }
           } else {
+            setEarnedXp(0);
+            bumpLifetime(
+              endedBy === "complete",
+              countLifetimeSeed(loadHistory(), loadLevelClears()),
+              0,
+              finishedMs,
+            );
             const saved = saveRound({
               at: Date.now(),
               correct: answers.filter(isCorrect).length,
@@ -453,6 +491,7 @@ export default function App() {
     questionStartRef.current = Date.now();
     savedRoundRef.current = false;
     setIsNewBest(false);
+    setEarnedXp(0);
     setResultTone(null);
     setQuestions(round);
     setIndex(0);
@@ -495,6 +534,22 @@ export default function App() {
       levelHardcore: lives === 1,
       levelLives: lives,
     });
+  }
+
+  function goHub(tab: HubTab) {
+    if (tab === "free") {
+      leaveLevels();
+      return;
+    }
+    if (tab === "levels") {
+      openLevels();
+      return;
+    }
+    if (tab === "learn") {
+      openLearnRegion();
+      return;
+    }
+    setScreen("map");
   }
 
   function openLevels() {
@@ -654,20 +709,30 @@ export default function App() {
 
   return (
     <div className={`app${resultTone ? ` is-${resultTone}` : ""}`}>
+      <div className="map-marks" aria-hidden="true">
+        <span className="map-marks-n">N</span>
+        <span className="map-marks-e">E</span>
+        <span className="map-marks-s">S</span>
+        <span className="map-marks-w">W</span>
+        <span className="map-tick is-nw" />
+        <span className="map-tick is-ne" />
+        <span className="map-tick is-sw" />
+        <span className="map-tick is-se" />
+      </div>
       {screen === "home" && (
         <HomeScreen
           settings={quizSettings}
           history={history}
           bests={bests}
           levelClears={levelClears}
+          xp={xp}
+          xpReady={xpReady}
           duelError={duelError}
           onChange={handleSettingsChange}
           onStart={startRound}
           onCreateDuel={(modes) => void handleCreateDuel(modes)}
           onJoinDuel={(code) => void handleJoinDuel(code)}
-          onOpenLevels={openLevels}
-          onOpenLearn={openLearnRegion}
-          onOpenMap={() => setScreen("map")}
+          onHub={goHub}
           onClearHistory={handleClearHistory}
           onClearBests={handleClearBests}
         />
@@ -678,9 +743,11 @@ export default function App() {
           levelClears={levelClears}
           history={history}
           bests={bests}
+          xp={xp}
+          xpReady={xpReady}
           onChange={handleSettingsChange}
           onPlay={playLevel}
-          onBack={leaveLevels}
+          onHub={goHub}
         />
       )}
       {screen === "level20" && (
@@ -696,6 +763,7 @@ export default function App() {
           settings={quizSettings}
           onChange={handleSettingsChange}
           onBack={leaveLearn}
+          onHub={goHub}
           onPractice={startPractice}
         />
       )}
@@ -703,7 +771,7 @@ export default function App() {
         <MapScreen
           settings={quizSettings}
           onChange={handleSettingsChange}
-          onBack={() => setScreen("home")}
+          onHub={goHub}
         />
       )}
       {screen === "duel-lobby" && duelView && (
@@ -776,6 +844,8 @@ export default function App() {
           roundMs={roundMs}
           endedBy={endedBy}
           isNewBest={isNewBest}
+          earnedXp={earnedXp}
+          totalXp={xp}
           saveNote={!isLearn}
           menuLabel={isLearn ? STRINGS[quizSettings.lang].backToCards : undefined}
           onAgain={playAgain}

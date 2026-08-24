@@ -10,12 +10,13 @@ import {
   type QuizMode,
   type RegionFilter,
 } from '../lib/quiz'
+import { EXTRA_STRINGS } from './extra'
+import { type Lang } from './lang'
 
 export { REGIONS }
+export { LANGS, LANG_NATIVE, LANG_SHORT, isLang, isRtl, langDir, localeTag, type Lang } from './lang'
 
-export type Lang = 'ru' | 'en'
-
-type Strings = {
+export type Strings = {
   title: string
   subtitle: string
   mode: string
@@ -47,6 +48,7 @@ type Strings = {
   learn: string
   map: string
   explore: string
+  freePlay: string
   mapHint: string
   mapSearch: string
   mapLoading: string
@@ -114,12 +116,21 @@ type Strings = {
   password: string
   passwordRepeat: string
   passwordHint: string
+  passwordCurrent: string
+  passwordNew: string
+  passwordChange: string
+  passwordChanged: string
+  nameChangeHint: string
   accountSignedIn: string
   accountNeeded: string
   authInvalid: string
   authNameTaken: string
+  authNameBlocked: string
+  authNameCooldown: string
   authBadCredentials: string
   authPasswordMismatch: string
+  authPasswordSame: string
+  authWrongPassword: string
   authOffline: string
   settings: string
   settingsAccount: string
@@ -141,6 +152,10 @@ type Strings = {
   guestHint: string
   saveProfile: string
   profileSaved: string
+  xpTotal: (amount: string) => string
+  xpGained: (amount: string) => string
+  accountLevel: (n: number) => string
+  accountLevelNext: (amount: string) => string
   modeStats: string
   modeStatsEmpty: string
   modeStatsRounds: (n: number) => string
@@ -157,6 +172,14 @@ type Strings = {
   leaderboardEmpty: string
   leaderboardOffline: string
   leaderboardProgress: (cleared: number, total: number) => string
+  ratings: string
+  ratingsXp: string
+  ratingsLevels: string
+  ratingsAll: string
+  ratingsXpHint: string
+  ratingsLevelsHint: string
+  ratingsHardcoreHint: string
+  ratingsRecordHint: string
   tapPassport: string
   capital: string
   population: string
@@ -230,6 +253,7 @@ export const STRINGS: Record<Lang, Strings> = {
     learn: 'Обучение',
     map: 'Карта',
     explore: 'Разделы',
+    freePlay: 'Вольное',
     mapHint: 'Нажмите страну — откроется паспорт',
     mapSearch: 'Найти страну',
     mapLoading: 'Загрузка карты…',
@@ -297,12 +321,21 @@ export const STRINGS: Record<Lang, Strings> = {
     password: 'Пароль',
     passwordRepeat: 'Повторите пароль',
     passwordHint: 'Пароль — минимум 6 символов',
+    passwordCurrent: 'Текущий пароль',
+    passwordNew: 'Новый пароль',
+    passwordChange: 'Сменить пароль',
+    passwordChanged: 'Пароль обновлён',
+    nameChangeHint: 'Ник можно сменить не чаще чем раз в месяц.',
     accountSignedIn: 'Таблица лидеров пишет этот аккаунт',
     accountNeeded: 'Войдите, чтобы попасть в таблицу лидеров',
     authInvalid: 'Проверьте имя и пароль',
     authNameTaken: 'Это имя уже занято',
+    authNameBlocked: 'Это имя нельзя использовать',
+    authNameCooldown: 'Имя можно менять раз в месяц',
     authBadCredentials: 'Неверное имя или пароль',
     authPasswordMismatch: 'Пароли не совпадают',
+    authPasswordSame: 'Новый пароль должен отличаться от текущего',
+    authWrongPassword: 'Неверный текущий пароль',
     authOffline: 'Аккаунты пока недоступны',
     settings: 'Настройки',
     settingsAccount: 'Аккаунт',
@@ -324,6 +357,10 @@ export const STRINGS: Record<Lang, Strings> = {
     guestHint: 'Имя и аватар хранятся на этом устройстве. Войдите, чтобы синхронизировать аккаунт.',
     saveProfile: 'Сохранить',
     profileSaved: 'Сохранено',
+    xpTotal: (amount) => `${amount} опыта`,
+    xpGained: (amount) => `+${amount} опыта`,
+    accountLevel: (n) => `Уровень ${n}`,
+    accountLevelNext: (amount) => `до следующего: ${amount}`,
     modeStats: 'Успехи по режимам',
     modeStatsEmpty: 'Пока нет игр',
     modeStatsRounds: (n) => {
@@ -347,6 +384,14 @@ export const STRINGS: Record<Lang, Strings> = {
     leaderboardEmpty: 'Пока пусто — войдите и пройдите уровень',
     leaderboardOffline: 'Общая таблица пока недоступна',
     leaderboardProgress: (cleared, total) => `${cleared}/${total}`,
+    ratings: 'Рейтинг',
+    ratingsXp: 'Опыт',
+    ratingsLevels: 'Уровни',
+    ratingsAll: 'Все',
+    ratingsXpHint: 'По очкам опыта и уровню аккаунта',
+    ratingsLevelsHint: 'По числу пройденных уровней. Ошибки и время не считаются.',
+    ratingsHardcoreHint: 'Только прохождения в хардкоре',
+    ratingsRecordHint: 'На каждом уровне — только лучший результат',
     tapPassport: 'Нажмите страну — откроется паспорт',
     capital: 'Столица',
     population: 'Население',
@@ -418,6 +463,7 @@ export const STRINGS: Record<Lang, Strings> = {
     learn: 'Learn',
     map: 'Map',
     explore: 'Explore',
+    freePlay: 'Free play',
     mapHint: 'Tap a country to open its passport',
     mapSearch: 'Find a country',
     mapLoading: 'Loading the map…',
@@ -485,12 +531,21 @@ export const STRINGS: Record<Lang, Strings> = {
     password: 'Password',
     passwordRepeat: 'Repeat password',
     passwordHint: 'Password — at least 6 characters',
+    passwordCurrent: 'Current password',
+    passwordNew: 'New password',
+    passwordChange: 'Change password',
+    passwordChanged: 'Password updated',
+    nameChangeHint: 'You can change your name once a month.',
     accountSignedIn: 'The leaderboard uses this account',
     accountNeeded: 'Sign in to appear on the leaderboard',
     authInvalid: 'Check the name and password',
     authNameTaken: 'That name is taken',
+    authNameBlocked: 'That name isn’t allowed',
+    authNameCooldown: 'You can change your name once a month',
     authBadCredentials: 'Wrong name or password',
     authPasswordMismatch: 'Passwords do not match',
+    authPasswordSame: 'New password must be different',
+    authWrongPassword: 'Current password is wrong',
     authOffline: 'Accounts are unavailable right now',
     settings: 'Settings',
     settingsAccount: 'Account',
@@ -512,6 +567,10 @@ export const STRINGS: Record<Lang, Strings> = {
     guestHint: 'Name and avatar stay on this device. Sign in to sync an account.',
     saveProfile: 'Save',
     profileSaved: 'Saved',
+    xpTotal: (amount) => `${amount} XP`,
+    xpGained: (amount) => `+${amount} XP`,
+    accountLevel: (n) => `Level ${n}`,
+    accountLevelNext: (amount) => `to next: ${amount}`,
     modeStats: 'Progress by mode',
     modeStatsEmpty: 'No games yet',
     modeStatsRounds: (n) => (n === 1 ? '1 round' : `${n} rounds`),
@@ -529,6 +588,14 @@ export const STRINGS: Record<Lang, Strings> = {
     leaderboardEmpty: 'Empty for now — sign in and clear a level',
     leaderboardOffline: 'The shared board is unavailable',
     leaderboardProgress: (cleared, total) => `${cleared}/${total}`,
+    ratings: 'Ratings',
+    ratingsXp: 'XP',
+    ratingsLevels: 'Levels',
+    ratingsAll: 'All',
+    ratingsXpHint: 'By experience points and account level',
+    ratingsLevelsHint: 'By levels cleared. Mistakes and time do not count.',
+    ratingsHardcoreHint: 'Hardcore clears only',
+    ratingsRecordHint: 'Only the best result on each level',
     tapPassport: 'Tap a country to open its passport',
     capital: 'Capital',
     population: 'Population',
@@ -568,6 +635,7 @@ export const STRINGS: Record<Lang, Strings> = {
     duelRematchWaiting: 'Waiting for your opponent to accept the rematch.',
     duelRematchOffered: 'Your opponent wants a rematch.',
   },
+  ...EXTRA_STRINGS,
 }
 
 export function regionLabel(region: RegionFilter, lang: Lang): string {

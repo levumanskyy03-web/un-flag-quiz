@@ -12,6 +12,7 @@ import {
   toggleRegion,
 } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
+import { HubNav, type HubTab } from './HubNav'
 import { Flag } from './Flag'
 import { LanguageToggle } from './LanguageToggle'
 import { PassportModal } from './PassportModal'
@@ -20,10 +21,11 @@ interface LearnScreenProps {
   settings: QuizSettings
   onChange: (settings: QuizSettings) => void
   onBack: () => void
+  onHub: (tab: HubTab) => void
   onPractice: () => void
 }
 
-export function LearnScreen({ settings, onChange, onBack, onPractice }: LearnScreenProps) {
+export function LearnScreen({ settings, onChange, onBack, onHub, onPractice }: LearnScreenProps) {
   const t = STRINGS[settings.lang]
   const pool = getLearnPool(settings.learnFrom, settings.region, settings.level, settings.mode)
   const countries =
@@ -47,11 +49,15 @@ export function LearnScreen({ settings, onChange, onBack, onPractice }: LearnScr
 
   return (
     <div className="screen learn-screen">
-      <header className="quiz-header">
-        <button type="button" className="btn-ghost" onClick={onBack}>
-          {t.back}
-        </button>
-        <h1 className="levels-title">{title}</h1>
+      <header className={`quiz-header${settings.learnFrom === 'level' ? '' : ' is-hub'}`}>
+        {settings.learnFrom === 'level' ? (
+          <button type="button" className="btn-ghost" onClick={onBack}>
+            {t.back}
+          </button>
+        ) : (
+          <HubNav lang={settings.lang} active="learn" onSelect={onHub} />
+        )}
+        {settings.learnFrom === 'level' ? <h1 className="levels-title">{title}</h1> : null}
         <LanguageToggle
           lang={settings.lang}
           onChange={(lang) => onChange({ ...settings, lang })}

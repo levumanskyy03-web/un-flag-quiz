@@ -1,4 +1,4 @@
-import { STRINGS, type Lang } from '../i18n/strings'
+import { STRINGS, localeTag, type Lang } from '../i18n/strings'
 import { COUNTRIES, type Country } from '../data/countries'
 import { landNeighbors } from '../data/neighbors'
 import {
@@ -79,7 +79,7 @@ export function QuizScreen({
       ? landNeighbors(question.country.iso)
           .map((iso) => COUNTRIES.find((country) => country.iso === iso))
           .filter((country): country is Country => country !== undefined)
-          .sort((a, b) => countryName(a, lang).localeCompare(countryName(b, lang), lang === 'ru' ? 'ru' : 'en'))
+          .sort((a, b) => countryName(a, lang).localeCompare(countryName(b, lang), localeTag(lang)))
       : []
 
   return (

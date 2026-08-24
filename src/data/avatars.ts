@@ -1,3 +1,5 @@
+import type { Lang } from '../i18n/lang'
+
 export const AVATAR_IDS = [
   'globe',
   'compass',
@@ -74,7 +76,7 @@ export function avatarInfo(id: string | undefined): AvatarInfo {
   return AVATARS.find((item) => item.id === id) ?? AVATARS[0]
 }
 
-export function avatarLabel(id: string | undefined, lang: 'ru' | 'en'): string {
+export function avatarLabel(id: string | undefined, lang: Lang): string {
   const info = avatarInfo(id)
   return lang === 'ru' ? info.ru : info.en
 }

@@ -6,9 +6,11 @@ export interface Account {
   id: string
   name: string
   avatarId?: AvatarId
+  nameChangedAt?: number
+  createdAt?: number
 }
 
-export type AuthError = 'invalid' | 'taken' | 'auth' | 'offline' | 'mismatch'
+export type AuthError = 'invalid' | 'taken' | 'auth' | 'offline' | 'mismatch' | 'cooldown' | 'blocked'
 
 export async function fetchAccount(): Promise<Account | null> {
   try {
@@ -38,6 +40,8 @@ export async function loginAccount(name: string, password: string): Promise<
 export async function updateAccountProfile(patch: {
   name?: string
   avatarId?: AvatarId
+  currentPassword?: string
+  newPassword?: string
 }): Promise<{ ok: true; user: Account } | { ok: false; error: AuthError }> {
   try {
     const response = await fetch('/api/auth/me', {
@@ -51,6 +55,22 @@ export async function updateAccountProfile(patch: {
     if (!user) return { ok: false, error: 'offline' }
     rememberAccount(user)
     return { ok: true, user }
+  } catch {
+    return { ok: false, error: 'offline' }
+  }
+}
+
+export async function checkNameAvailable(name: string): Promise<
+  { ok: true; available: boolean } | { ok: false; error: AuthError }
+> {
+  try {
+    const response = await fetch(`/api/auth/name?name=${encodeURIComponent(name)}`)
+    const body: unknown = await response.json().catch(() => null)
+    if (!response.ok) return { ok: false, error: parseError(body, response.status) }
+    if (!body || typeof body !== 'object' || typeof (body as { available?: unknown }).available !== 'boolean') {
+      return { ok: false, error: 'offline' }
+    }
+    return { ok: true, available: (body as { available: boolean }).available }
   } catch {
     return { ok: false, error: 'offline' }
   }
@@ -72,6 +92,7 @@ function rememberAccount(user: Account) {
     name: user.name,
     avatarId: user.avatarId ?? profile.avatarId,
     photo: profile.photo,
+    nameChangedAt: user.nameChangedAt ?? profile.nameChangedAt,
   })
 }
 
@@ -106,17 +127,27 @@ function parseAccount(body: unknown): Account | null {
     id: record.id,
     name: record.name,
     avatarId: isAvatarId(record.avatarId) ? record.avatarId : undefined,
+    nameChangedAt: typeof record.nameChangedAt === 'number' ? record.nameChangedAt : undefined,
+    createdAt: typeof record.createdAt === 'number' ? record.createdAt : undefined,
   }
 }
 
 function parseError(body: unknown, status: number): AuthError {
   if (body && typeof body === 'object' && typeof (body as { error?: unknown }).error === 'string') {
     const error = (body as { error: string }).error
-    if (error === 'taken' || error === 'auth' || error === 'offline' || error === 'invalid') {
+    if (
+      error === 'taken' ||
+      error === 'auth' ||
+      error === 'offline' ||
+      error === 'invalid' ||
+      error === 'cooldown' ||
+      error === 'blocked'
+    ) {
       return error
     }
   }
   if (status === 409) return 'taken'
+  if (status === 429) return 'cooldown'
   if (status === 401) return 'auth'
   if (status === 503) return 'offline'
   return 'invalid'

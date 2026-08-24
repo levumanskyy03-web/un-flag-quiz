@@ -33,11 +33,11 @@ export function loadLevelClears(): LevelClear[] {
 export function saveLevelClear(clear: LevelClear): LevelClear[] {
   const previous = loadLevelClears()
   if (!isLevelUnlocked(previous, clear.level, clear.mode)) return previous
-  const current = findLevelClear(previous, clear.level, clear.mode, livesKey(clear))
+  const current = findLevelClear(previous, clear.level, clear.mode)
   const next =
     current && !isBetterClear(clear, current)
       ? previous
-      : [...previous.filter((item) => !sameSlot(item, clear)), clear]
+      : [...previous.filter((item) => !(item.level === clear.level && item.mode === clear.mode)), clear]
   localStorage.setItem(LEVELS_KEY, JSON.stringify(next))
   return next
 }
@@ -52,7 +52,10 @@ export function findLevelClear(
   if (livesLimit !== undefined) {
     return matches.find((item) => livesKey(item) === livesLimit)
   }
-  return matches.find((item) => item.hardcore) ?? matches[0]
+  return matches.reduce<LevelClear | undefined>(
+    (best, item) => (!best || isBetterClear(item, best) ? item : best),
+    undefined,
+  )
 }
 
 export function isLevelUnlocked(clears: LevelClear[], level: number, mode: QuizMode): boolean {
@@ -78,20 +81,17 @@ function keepConsecutive(clears: LevelClear[]): LevelClear[] {
     for (let level = 1; level <= CAMPAIGN_LEVELS; level++) {
       const hits = clears.filter((item) => item.level === level && item.mode === mode)
       if (hits.length === 0) break
-      chain.push(...hits)
+      chain.push(hits.reduce((best, item) => (isBetterClear(item, best) ? item : best)))
     }
     if (chain.some((item) => item.level === CAMPAIGN_LEVELS)) {
-      chain.push(...clears.filter((item) => item.level === FINAL_LEVEL && item.mode === mode))
+      const finals = clears.filter((item) => item.level === FINAL_LEVEL && item.mode === mode)
+      if (finals.length > 0) {
+        chain.push(finals.reduce((best, item) => (isBetterClear(item, best) ? item : best)))
+      }
     }
     kept.push(...chain)
   }
   return kept
-}
-
-function sameSlot(a: LevelClear, b: LevelClear): boolean {
-  if (a.level !== b.level || a.mode !== b.mode) return false
-  if (isFinalLevel(a.level) || isFinalLevel(b.level)) return livesKey(a) === livesKey(b)
-  return true
 }
 
 function isBetterClear(candidate: LevelClear, current: LevelClear): boolean {

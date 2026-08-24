@@ -2,6 +2,7 @@ import { COUNTRIES, REGIONS, type Country, type Difficulty, type Region } from '
 import { LEVEL_ISOS, isFinalLevel, isLevelNumber } from '../data/levels'
 import { isEasyForMode } from '../data/modeDifficulty'
 import { canAskNeighbors } from '../data/neighbors'
+import { localeTag, type Lang } from '../i18n/lang'
 
 export const QUIZ_MODES = [
   'flagToName',
@@ -207,9 +208,9 @@ export function formatClock(ms: number): string {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`
 }
 
-export function formatSeconds(ms: number, lang: 'ru' | 'en'): string {
-  const value = (Math.max(0, ms) / 1000).toFixed(1)
-  return lang === 'ru' ? value.replace('.', ',') : value
+export function formatSeconds(ms: number, lang: Lang): string {
+  const value = Math.max(0, ms) / 1000
+  return new Intl.NumberFormat(localeTag(lang), { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value)
 }
 
 export function averageTimeMs(answers: RoundAnswer[]): number {
@@ -222,8 +223,16 @@ export function slowestAnswer(answers: RoundAnswer[]): RoundAnswer | null {
   return answers.reduce((slowest, answer) => (answer.timeMs > slowest.timeMs ? answer : slowest))
 }
 
-export function countryName(country: Country, lang: 'ru' | 'en'): string {
-  return lang === 'ru' ? country.nameRu : country.nameEn
+export function countryName(country: Country, lang: Lang): string {
+  if (lang === 'ru') return country.nameRu
+  if (lang === 'en') return country.nameEn
+  try {
+    const name = new Intl.DisplayNames([localeTag(lang)], { type: 'region' }).of(country.iso.toUpperCase())
+    if (name) return name
+  } catch {
+    /* fall back */
+  }
+  return country.nameEn
 }
 
 export function flagUrl(iso: string): string {
@@ -288,8 +297,8 @@ export function getLevelPool(level: number, mode: QuizMode = 'flagToName'): Coun
   return levelChunksFor(mode)[level - 1] ?? []
 }
 
-export function sortCountriesByName(countries: Country[], lang: 'ru' | 'en'): Country[] {
-  const collator = new Intl.Collator(lang === 'ru' ? 'ru' : 'en')
+export function sortCountriesByName(countries: Country[], lang: Lang): Country[] {
+  const collator = new Intl.Collator(localeTag(lang))
   return [...countries].sort((a, b) => collator.compare(countryName(a, lang), countryName(b, lang)))
 }
 

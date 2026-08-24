@@ -10,7 +10,7 @@ import { loadProfile } from '../lib/profile'
 import { AvatarMark } from './AvatarMark'
 import { SettingsModal } from './SettingsModal'
 
-interface SettingsButtonProps {
+export interface SettingsButtonProps {
   lang: Lang
   history?: RoundRecord[]
   bests?: RoundRecord[]
@@ -49,14 +49,14 @@ export function SettingsButton({
       <button type="button" className="settings-chip" onClick={() => setOpen(true)} aria-label={t.settings}>
         <AvatarMark id={avatarId} photo={photo} size={32} />
         <span className="settings-chip-gear" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
             <path
-              d="M6.5 1.5h3l.4 1.6 1.5.6 1.4-1 2.1 2.1-1 1.4.6 1.5 1.6.4v3l-1.6.4-.6 1.5 1 1.4-2.1 2.1-1.4-1-1.5.6-.4 1.6h-3l-.4-1.6-1.5-.6-1.4 1-2.1-2.1 1-1.4L1.5 9.9 0 9.5v-3l1.6-.4.6-1.5-1-1.4L3.3 1.1l1.4 1 .5-.6L6.5 1.5z"
+              d="M6.70 4.01 7.13 2.11 8.87 2.11 9.30 4.01 10.81 4.88 12.66 4.30 13.53 5.81 12.11 7.13 12.11 8.87 13.53 10.19 12.66 11.70 10.81 11.12 9.30 11.99 8.87 13.89 7.13 13.89 6.70 11.99 5.19 11.12 3.34 11.70 2.47 10.19 3.89 8.87 3.89 7.13 2.47 5.81 3.34 4.30 5.19 4.88Z"
               stroke="currentColor"
-              strokeWidth="1.3"
+              strokeWidth="1.25"
               strokeLinejoin="round"
             />
-            <circle cx="8" cy="8" r="2.2" stroke="currentColor" strokeWidth="1.3" />
+            <circle cx="8" cy="8" r="2.15" stroke="currentColor" strokeWidth="1.25" />
           </svg>
         </span>
       </button>

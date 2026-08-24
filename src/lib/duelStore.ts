@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { COUNTRIES } from '../data/countries'
 import { isPlayerId, sanitizeName } from './leaderboard'
+import { isNameAllowed } from './nameFilter'
 import type { DuelQuestionWire, DuelView } from './duelTypes'
 import { answerKey } from './quizAnswers'
 import {
@@ -331,7 +332,8 @@ function parseModes(record: Record<string, unknown>): QuizMode[] | null {
 export function parseDuelName(value: unknown): string {
   if (typeof value !== 'string') return 'Player'
   const name = sanitizeName(value)
-  return name.length >= 1 ? name : 'Player'
+  if (name.length < 1 || !isNameAllowed(name)) return 'Player'
+  return name
 }
 
 class DuelError extends Error {

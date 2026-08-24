@@ -1,4 +1,4 @@
-import type { Lang } from '../i18n/strings'
+import { localeTag, type Lang } from '../i18n/lang'
 
 export interface Passport {
   capitalEn: string
@@ -222,26 +222,12 @@ export function getPassport(iso: string): Passport | undefined {
   return PASSPORTS[iso]
 }
 
-function formatAmount(value: number, lang: Lang): string {
-  const rounded = value >= 10 ? Math.round(value) : Math.round(value * 10) / 10
-  const text = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)
-  return lang === 'ru' ? text.replace('.', ',') : text
-}
-
 export function formatPopulation(population: number, lang: Lang): string {
-  if (population >= 1_000_000_000) {
-    const amount = formatAmount(population / 1_000_000_000, lang)
-    return lang === 'ru' ? `${amount} млрд` : `${amount} billion`
-  }
-  if (population >= 1_000_000) {
-    const amount = formatAmount(population / 1_000_000, lang)
-    return lang === 'ru' ? `${amount} млн` : `${amount} million`
-  }
-  if (population >= 1_000) {
-    const amount = formatAmount(population / 1_000, lang)
-    return lang === 'ru' ? `${amount} тыс.` : `${amount} thousand`
-  }
-  return String(population)
+  return new Intl.NumberFormat(localeTag(lang), {
+    notation: 'compact',
+    compactDisplay: 'short',
+    maximumFractionDigits: 1,
+  }).format(population)
 }
 
 export function passportCapital(passport: Passport, lang: Lang): string {

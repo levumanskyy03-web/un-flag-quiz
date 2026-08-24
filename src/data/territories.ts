@@ -1,4 +1,5 @@
 import { COUNTRIES, type Region } from './countries'
+import type { Lang } from '../i18n/lang'
 
 export interface MapTerritory {
   iso: string
@@ -173,17 +174,17 @@ export const HOLDOUT_BY_ISO = new Map(HOLDOUTS.map((item) => [item.iso, item]))
 
 const COUNTRY_BY_ISO = new Map(COUNTRIES.map((country) => [country.iso, country]))
 
-export function territoryName(territory: MapTerritory, lang: 'ru' | 'en') {
+export function territoryName(territory: MapTerritory, lang: Lang) {
   return lang === 'ru' ? territory.nameRu : territory.nameEn
 }
 
-export function territoryNote(territory: MapTerritory, lang: 'ru' | 'en') {
+export function territoryNote(territory: MapTerritory, lang: Lang) {
   return lang === 'ru'
     ? `${territory.nameRu} — ${territory.statusRu}`
     : `${territory.nameEn} is ${territory.statusEn}`
 }
 
-export function disputeNote(territory: MapTerritory, lang: 'ru' | 'en') {
+export function disputeNote(territory: MapTerritory, lang: Lang) {
   const claim = lang === 'ru' ? territory.claimRu : territory.claimEn
   return claim || undefined
 }
@@ -221,15 +222,15 @@ export function visibleIsosForRegions(regions: readonly Region[]) {
   return isos
 }
 
-export function holdoutName(holdout: MapHoldout, lang: 'ru' | 'en') {
+export function holdoutName(holdout: MapHoldout, lang: Lang) {
   return lang === 'ru' ? holdout.nameRu : holdout.nameEn
 }
 
-export function holdoutNote(holdout: MapHoldout, lang: 'ru' | 'en') {
+export function holdoutNote(holdout: MapHoldout, lang: Lang) {
   return lang === 'ru' ? holdout.noteRu : holdout.noteEn
 }
 
-export function holdoutClaim(holdout: MapHoldout, lang: 'ru' | 'en') {
+export function holdoutClaim(holdout: MapHoldout, lang: Lang) {
   return lang === 'ru' ? holdout.claimRu : holdout.claimEn
 }
 

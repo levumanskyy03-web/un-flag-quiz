@@ -32,6 +32,7 @@ import {
 } from '../lib/mapCamera'
 import { countryName } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
+import { HubNav, type HubTab } from './HubNav'
 import { HoldoutModal } from './HoldoutModal'
 import { LanguageToggle } from './LanguageToggle'
 import { PassportModal } from './PassportModal'
@@ -41,7 +42,7 @@ const COUNTRY_BY_ISO = new Map(COUNTRIES.map((country) => [country.iso, country]
 interface MapScreenProps {
   settings: QuizSettings
   onChange: (settings: QuizSettings) => void
-  onBack: () => void
+  onHub: (tab: HubTab) => void
 }
 
 const PAN_STEP = 0.28
@@ -62,7 +63,7 @@ function locationLabel(id: string, lang: QuizSettings['lang']) {
   return resolved.country ? countryName(resolved.country, lang) : ''
 }
 
-export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
+export function MapScreen({ settings, onChange, onHub }: MapScreenProps) {
   const t = STRINGS[settings.lang]
   const svgRef = useRef<SVGSVGElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
@@ -344,11 +345,8 @@ export function MapScreen({ settings, onChange, onBack }: MapScreenProps) {
 
   return (
     <div className="screen map-screen">
-      <header className="quiz-header">
-        <button type="button" className="btn-ghost" onClick={onBack}>
-          {t.back}
-        </button>
-        <h1 className="levels-title">{t.map}</h1>
+      <header className="quiz-header is-hub">
+        <HubNav lang={settings.lang} active="map" onSelect={onHub} />
         <LanguageToggle
           lang={settings.lang}
           onChange={(lang) => onChange({ ...settings, lang })}

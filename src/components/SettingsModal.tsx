@@ -5,6 +5,7 @@ import { ACHIEVEMENTS, achievementCopy } from '../data/achievements'
 import { type AvatarId } from '../data/avatars'
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import {
+  checkNameAvailable,
   fetchAccount,
   loginAccount,
   logoutAccount,
@@ -17,12 +18,18 @@ import { listAchievements } from '../lib/achievements'
 import type { RoundRecord } from '../lib/history'
 import type { LevelClear } from '../lib/levelProgress'
 import { NAME_MIN, PASSWORD_MIN } from '../lib/leaderboard'
+import { isNameAllowed } from '../lib/nameFilter'
+import { isNameCooldown } from '../lib/nameRules'
 import { statsByMode } from '../lib/modeStats'
 import { loadProfile, saveProfile } from '../lib/profile'
 import { formatClock, hasLevels } from '../lib/quiz'
+import { formatXp, accountProgress } from '../lib/xp'
+import { countLifetimeSeed, loadLifetime } from '../lib/lifetime'
 import { AvatarMark } from './AvatarMark'
+import { AchievementMark } from './AchievementMark'
 import { AvatarPicker } from './AvatarPicker'
 import { LanguageToggle } from './LanguageToggle'
+import { PasswordModal } from './PasswordModal'
 
 const REPORT_EMAIL = 'levumanskyy03@gmail.com'
 
@@ -61,15 +68,20 @@ export function SettingsModal({
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<AuthError | null>(null)
   const [saved, setSaved] = useState(false)
+  const [passwordSaved, setPasswordSaved] = useState(false)
+  const [passwordOpen, setPasswordOpen] = useState(false)
+  const [nameFree, setNameFree] = useState<boolean | null>(null)
   const [reportTitle, setReportTitle] = useState('')
   const [reportBody, setReportBody] = useState('')
   const [reportOpened, setReportOpened] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [focusAchievement, setFocusAchievement] = useState<(typeof ACHIEVEMENTS)[number]['id'] | null>(null)
   const stats = useMemo(() => statsByMode(history, bests, levelClears), [history, bests, levelClears])
+  const xp = loadLifetime(countLifetimeSeed(history, levelClears)).xp
+  const rank = accountProgress(xp)
   const achievements = useMemo(
-    () => listAchievements(history, bests, levelClears),
-    [history, bests, levelClears],
+    () => listAchievements(history, bests, levelClears, account?.createdAt),
+    [history, bests, levelClears, account?.createdAt],
   )
   const unlockedCount = achievements.filter((item) => item.unlocked).length
 
@@ -104,6 +116,10 @@ export function SettingsModal({
         setPickerOpen(false)
         return
       }
+      if (passwordOpen) {
+        setPasswordOpen(false)
+        return
+      }
       onClose()
     }
     window.addEventListener('keydown', onKey)
@@ -113,7 +129,31 @@ export function SettingsModal({
       window.removeEventListener('keydown', onKey)
       document.body.style.overflow = previous
     }
-  }, [onClose, pickerOpen])
+  }, [onClose, pickerOpen, passwordOpen])
+
+  useEffect(() => {
+    const trimmed = name.trim()
+    const current = account?.name ?? profile.name
+    if (trimmed.length < NAME_MIN || trimmed === current) {
+      setNameFree(null)
+      return
+    }
+    if (!isNameAllowed(trimmed)) {
+      setNameFree(null)
+      setError('blocked')
+      return
+    }
+    const id = window.setTimeout(() => {
+      void checkNameAvailable(trimmed).then((result) => {
+        if (!result.ok) {
+          if (result.error === 'blocked') setError('blocked')
+          return
+        }
+        setNameFree(result.available)
+      })
+    }, 350)
+    return () => window.clearTimeout(id)
+  }, [name, account?.name, profile.name])
 
   async function pickAvatar(avatarId: AvatarId) {
     const next = saveProfile({
@@ -141,9 +181,28 @@ export function SettingsModal({
       setError('invalid')
       return
     }
+    if (!isNameAllowed(trimmed)) {
+      setError('blocked')
+      return
+    }
+    const current = account?.name ?? profile.name
+    const changedAt = account?.nameChangedAt ?? profile.nameChangedAt
+    if (trimmed !== current && isNameCooldown(changedAt)) {
+      setError('cooldown')
+      return
+    }
     setBusy(true)
     setError(null)
     setSaved(false)
+    if (trimmed !== current) {
+      const taken = await checkNameAvailable(trimmed)
+      if (taken.ok && !taken.available) {
+        setBusy(false)
+        setError('taken')
+        setNameFree(false)
+        return
+      }
+    }
     if (account) {
       const result = await updateAccountProfile({ name: trimmed })
       setBusy(false)
@@ -153,12 +212,20 @@ export function SettingsModal({
       }
       setAccount(result.user)
       setName(result.user.name)
+      setProfile(loadProfile())
       onAuth?.(result.user)
     } else {
-      setProfile(saveProfile({ ...loadProfile(), name: trimmed }))
+      setProfile(
+        saveProfile({
+          ...loadProfile(),
+          name: trimmed,
+          nameChangedAt: trimmed === current ? profile.nameChangedAt : Date.now(),
+        }),
+      )
       setBusy(false)
     }
     setSaved(true)
+    setNameFree(null)
   }
 
   async function submitAuth() {
@@ -166,6 +233,10 @@ export function SettingsModal({
     const trimmed = name.trim()
     if (trimmed.length < NAME_MIN || password.length < PASSWORD_MIN) {
       setError('invalid')
+      return
+    }
+    if (authTab === 'register' && !isNameAllowed(trimmed)) {
+      setError('blocked')
       return
     }
     if (authTab === 'register' && password !== repeat) {
@@ -259,9 +330,11 @@ export function SettingsModal({
               </button>
               <div>
                 <p className="account-signed-in">{name.trim() || t.guestName}</p>
-                <p className="setting-hint">
-                  {!authReady ? t.guestHint : account ? t.accountSignedIn : t.guestHint}
+                <p className="account-level">{t.accountLevel(rank.level)}</p>
+                <p className="profile-xp">
+                  {t.xpTotal(formatXp(xp, lang))} · {t.accountLevelNext(formatXp(rank.remain, lang))}
                 </p>
+                {authReady && !account ? <p className="setting-hint">{t.guestHint}</p> : null}
                 <button type="button" className="btn-ghost avatar-change-btn" onClick={() => setPickerOpen(true)}>
                   {t.avatarChange}
                 </button>
@@ -284,6 +357,9 @@ export function SettingsModal({
                 }}
               />
             </label>
+            <p className="setting-hint">{t.nameChangeHint}</p>
+            {nameFree === false ? <p className="account-error">{t.authNameTaken}</p> : null}
+            {error === 'blocked' ? <p className="account-error">{t.authNameBlocked}</p> : null}
             <button type="button" className="btn-secondary" onClick={() => void saveName()} disabled={busy}>
               {t.saveProfile}
             </button>
@@ -293,9 +369,23 @@ export function SettingsModal({
             <LanguageToggle lang={lang} onChange={onLangChange} />
 
             {authReady && account ? (
-              <button type="button" className="btn-secondary" onClick={() => void signOut()} disabled={busy}>
-                {t.signOut}
-              </button>
+              <div className="settings-account-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => {
+                    setPasswordSaved(false)
+                    setPasswordOpen(true)
+                  }}
+                  disabled={busy}
+                >
+                  {t.passwordChange}
+                </button>
+                {passwordSaved ? <p className="settings-ok">{t.passwordChanged}</p> : null}
+                <button type="button" className="btn-secondary" onClick={() => void signOut()} disabled={busy}>
+                  {t.signOut}
+                </button>
+              </div>
             ) : null}
             {authReady && !account ? (
               <>
@@ -360,7 +450,7 @@ export function SettingsModal({
                 </form>
               </>
             ) : null}
-            {error ? <p className="account-error">{authErrorText(error, t)}</p> : null}
+            {error && error !== 'blocked' ? <p className="account-error">{authErrorText(error, t)}</p> : null}
 
             <h3 className="settings-sub">{t.modeStats}</h3>
             <ul className="mode-stats">
@@ -392,17 +482,19 @@ export function SettingsModal({
               {t.achievementsUnlocked(unlockedCount, ACHIEVEMENTS.length)}
             </p>
             <div className="achievement-grid">
-              {achievements.map((item) => {
-                const copy = achievementCopy(item.id, lang)
+              {ACHIEVEMENTS.map((info) => {
+                const item = achievements.find((entry) => entry.id === info.id)
+                const copy = achievementCopy(info.id, lang)
                 return (
                   <button
-                    key={item.id}
+                    key={info.id}
                     type="button"
-                    className={`achievement-pick ${item.unlocked ? 'is-on' : ''} ${focusAchievement === item.id ? 'is-active' : ''}`}
-                    aria-pressed={item.unlocked}
-                    onClick={() => setFocusAchievement(item.id)}
+                    className={`achievement-pick ${item?.unlocked ? 'is-on' : ''} ${focusAchievement === info.id ? 'is-active' : ''}`}
+                    aria-pressed={item?.unlocked ?? false}
+                    aria-label={copy.title}
+                    onClick={() => setFocusAchievement(info.id)}
                   >
-                    <span className="achievement-mark">{copy.mark}</span>
+                    <AchievementMark id={info.id} />
                   </button>
                 )
               })}
@@ -464,6 +556,17 @@ export function SettingsModal({
           </form>
         ) : null}
       </div>
+      {passwordOpen ? (
+        <PasswordModal
+          lang={lang}
+          onClose={() => setPasswordOpen(false)}
+          onDone={(user) => {
+            setAccount(user)
+            setPasswordSaved(true)
+            onAuth?.(user)
+          }}
+        />
+      ) : null}
       {pickerOpen ? (
         <AvatarPicker
           lang={lang}
@@ -480,6 +583,8 @@ export function SettingsModal({
 
 function authErrorText(error: AuthError, t: (typeof STRINGS)[Lang]) {
   if (error === 'taken') return t.authNameTaken
+  if (error === 'blocked') return t.authNameBlocked
+  if (error === 'cooldown') return t.authNameCooldown
   if (error === 'auth') return t.authBadCredentials
   if (error === 'offline') return t.authOffline
   if (error === 'mismatch') return t.authPasswordMismatch

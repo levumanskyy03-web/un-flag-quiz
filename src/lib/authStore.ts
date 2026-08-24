@@ -2,6 +2,8 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { NextResponse } from 'next/server'
 import { NAME_MAX, NAME_MIN, PASSWORD_MAX, PASSWORD_MIN, isPlayerId, sanitizeName } from './leaderboard'
+import { isNameAllowed } from './nameFilter'
+import { isNameCooldown } from './nameRules'
 
 export const SESSION_COOKIE = 'pq-session'
 
@@ -13,6 +15,8 @@ export interface PublicAccount {
   id: string
   name: string
   avatarId?: string
+  nameChangedAt?: number
+  createdAt?: number
 }
 
 interface AccountRecord extends PublicAccount {
@@ -45,6 +49,15 @@ export function parseAccountName(value: unknown): string | null {
   const name = sanitizeName(value)
   if (name.length < NAME_MIN || name.length > NAME_MAX) return null
   return name
+}
+
+export function publicAccountName(
+  value: unknown,
+): { ok: true; name: string } | { ok: false; error: 'invalid' | 'blocked' } {
+  const name = parseAccountName(value)
+  if (!name) return { ok: false, error: 'invalid' }
+  if (!isNameAllowed(name)) return { ok: false, error: 'blocked' }
+  return { ok: true, name }
 }
 
 export async function registerAccount(
@@ -88,7 +101,9 @@ export async function loginAccount(name: string, password: string): Promise<
 export async function updateAccount(
   token: string | undefined,
   patch: { name?: string; avatarId?: string },
-): Promise<{ ok: true; user: PublicAccount } | { ok: false; error: 'auth' | 'taken' | 'offline' | 'invalid' }> {
+): Promise<
+  { ok: true; user: PublicAccount } | { ok: false; error: 'auth' | 'taken' | 'offline' | 'invalid' | 'cooldown' }
+> {
   if (!token) return { ok: false, error: 'auth' }
   const store = await loadStore()
   if (store === null) return { ok: false, error: 'offline' }
@@ -101,7 +116,9 @@ export async function updateAccount(
   if (patch.name && patch.name !== user.name) {
     const nextKey = normalizeName(patch.name)
     if (nextKey !== currentKey && store.users[nextKey]) return { ok: false, error: 'taken' }
+    if (isNameCooldown(user.nameChangedAt)) return { ok: false, error: 'cooldown' }
     user.name = patch.name
+    user.nameChangedAt = Date.now()
     if (nextKey !== currentKey) {
       delete store.users[currentKey]
       store.users[nextKey] = user
@@ -109,6 +126,53 @@ export async function updateAccount(
   }
   await saveStore(store)
   return { ok: true, user: toPublic(user) }
+}
+
+export async function changePassword(
+  token: string | undefined,
+  current: string,
+  next: string,
+): Promise<{ ok: true; user: PublicAccount } | { ok: false; error: 'auth' | 'offline' | 'invalid' }> {
+  if (!token) return { ok: false, error: 'auth' }
+  const store = await loadStore()
+  if (store === null) return { ok: false, error: 'offline' }
+  const session = store.sessions[token]
+  if (!session || session.exp < Date.now() || !isPlayerId(session.userId)) return { ok: false, error: 'auth' }
+  const user = Object.values(store.users).find((item) => item.id === session.userId)
+  if (!user) return { ok: false, error: 'auth' }
+  if (!(await verifyPassword(current, user.hash))) return { ok: false, error: 'auth' }
+  user.hash = await hashPassword(next)
+  await saveStore(store)
+  return { ok: true, user: toPublic(user) }
+}
+
+export async function nameAvailable(
+  name: string,
+  token?: string,
+): Promise<{ ok: true; available: boolean } | { ok: false; error: 'offline' | 'invalid' | 'blocked' }> {
+  const parsed = publicAccountName(name)
+  if (!parsed.ok) return parsed
+  const store = await loadStore()
+  if (store === null) return { ok: false, error: 'offline' }
+  const key = normalizeName(parsed.name)
+  const existing = store.users[key]
+  if (!existing) return { ok: true, available: true }
+  if (!token) return { ok: true, available: false }
+  const session = store.sessions[token]
+  if (session && session.exp >= Date.now() && existing.id === session.userId) {
+    return { ok: true, available: true }
+  }
+  return { ok: true, available: false }
+}
+
+function toPublic(user: AccountRecord): PublicAccount {
+  return {
+    id: user.id,
+    name: user.name,
+    avatarId: user.avatarId,
+    nameChangedAt: user.nameChangedAt,
+    createdAt: user.createdAt,
+  }
 }
 
 export async function accountFromRequest(request: Request): Promise<PublicAccount | null> {
@@ -171,10 +235,6 @@ export function readCookie(request: Request, name: string) {
     return decodeURIComponent(trimmed.slice(cut + 1))
   }
   return undefined
-}
-
-function toPublic(user: AccountRecord): PublicAccount {
-  return { id: user.id, name: user.name, avatarId: user.avatarId }
 }
 
 function createToken() {

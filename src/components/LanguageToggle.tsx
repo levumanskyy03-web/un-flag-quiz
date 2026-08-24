@@ -1,4 +1,5 @@
-import type { Lang } from '../i18n/strings'
+import { LANGS, LANG_NATIVE, type Lang } from '../i18n/lang'
+import { STRINGS } from '../i18n/strings'
 
 interface LanguageToggleProps {
   lang: Lang
@@ -6,24 +7,33 @@ interface LanguageToggleProps {
 }
 
 export function LanguageToggle({ lang, onChange }: LanguageToggleProps) {
+  const t = STRINGS[lang]
   return (
-    <div className="lang-toggle" role="group" aria-label="Language">
-      <button
-        type="button"
-        className={lang === 'ru' ? 'is-active' : ''}
-        aria-pressed={lang === 'ru'}
-        onClick={() => onChange('ru')}
+    <label className="lang-toggle lang-select-wrap">
+      <span className="visually-hidden">{t.profileLanguage}</span>
+      <select
+        className="lang-select"
+        value={lang}
+        aria-label={t.profileLanguage}
+        onChange={(event) => onChange(event.target.value as Lang)}
       >
-        RU
-      </button>
-      <button
-        type="button"
-        className={lang === 'en' ? 'is-active' : ''}
-        aria-pressed={lang === 'en'}
-        onClick={() => onChange('en')}
-      >
-        EN
-      </button>
-    </div>
+        {LANGS.map((code) => (
+          <option key={code} value={code}>
+            {LANG_NATIVE[code]}
+          </option>
+        ))}
+      </select>
+      <span className="lang-select-mark" aria-hidden="true">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path
+            d="M2.5 4.25 6 7.75l3.5-3.5"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+    </label>
   )
 }

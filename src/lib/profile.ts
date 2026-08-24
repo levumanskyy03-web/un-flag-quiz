@@ -8,6 +8,7 @@ export interface LocalProfile {
   name: string
   avatarId: AvatarId
   photo?: string
+  nameChangedAt?: number
 }
 
 export function loadProfile(): LocalProfile {
@@ -22,7 +23,7 @@ export function loadProfile(): LocalProfile {
     const record = parsed as Record<string, unknown>
     const name = typeof record.name === 'string' ? record.name : fallback.name
     const avatarId = isAvatarId(record.avatarId) ? record.avatarId : DEFAULT_AVATAR
-    return { name, avatarId, photo: parsePhoto(record.photo) }
+    return { name, avatarId, photo: parsePhoto(record.photo), nameChangedAt: parseStamp(record.nameChangedAt) }
   } catch {
     return fallback
   }
@@ -33,11 +34,16 @@ export function saveProfile(profile: LocalProfile): LocalProfile {
     name: profile.name.trim(),
     avatarId: isAvatarId(profile.avatarId) ? profile.avatarId : DEFAULT_AVATAR,
     photo: parsePhoto(profile.photo),
+    nameChangedAt: profile.nameChangedAt,
   }
   localStorage.setItem(PROFILE_KEY, JSON.stringify(next))
   const player = loadPlayer()
   savePlayer({ ...player, name: next.name })
   return next
+}
+
+function parseStamp(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined
 }
 
 function parsePhoto(value: unknown): string | undefined {

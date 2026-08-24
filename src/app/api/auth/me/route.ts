@@ -3,7 +3,9 @@ import {
   SESSION_COOKIE,
   accountFromRequest,
   authResponse,
-  parseAccountName,
+  changePassword,
+  parsePassword,
+  publicAccountName,
   readCookie,
   updateAccount,
 } from '../../../../lib/authStore'
@@ -31,11 +33,29 @@ export async function PATCH(request: Request) {
     return authResponse({ error: 'invalid' }, undefined, 400)
   }
   const record = body as Record<string, unknown>
+  const token = readCookie(request, SESSION_COOKIE)
+
+  if (record.currentPassword !== undefined || record.newPassword !== undefined) {
+    const current = parsePassword(record.currentPassword)
+    const next = parsePassword(record.newPassword)
+    if (!current || !next) return authResponse({ error: 'invalid' }, undefined, 400)
+    try {
+      const result = await changePassword(token, current, next)
+      if (!result.ok) {
+        const status = result.error === 'auth' ? 401 : result.error === 'offline' ? 503 : 400
+        return authResponse({ error: result.error }, undefined, status)
+      }
+      return authResponse({ user: result.user })
+    } catch {
+      return authResponse({ error: 'offline' }, undefined, 503)
+    }
+  }
+
   let name: string | undefined
   if (record.name !== undefined) {
-    const parsed = parseAccountName(record.name)
-    if (!parsed) return authResponse({ error: 'invalid' }, undefined, 400)
-    name = parsed
+    const parsed = publicAccountName(record.name)
+    if (!parsed.ok) return authResponse({ error: parsed.error }, undefined, 400)
+    name = parsed.name
   }
   let avatarId: string | undefined
   if (record.avatarId !== undefined) {
@@ -43,12 +63,21 @@ export async function PATCH(request: Request) {
     avatarId = record.avatarId
   }
   try {
-    const result = await updateAccount(readCookie(request, SESSION_COOKIE), {
+    const result = await updateAccount(token, {
       name,
       avatarId,
     })
     if (!result.ok) {
-      const status = result.error === 'taken' ? 409 : result.error === 'auth' ? 401 : result.error === 'offline' ? 503 : 400
+      const status =
+        result.error === 'taken'
+          ? 409
+          : result.error === 'cooldown'
+            ? 429
+            : result.error === 'auth'
+              ? 401
+              : result.error === 'offline'
+                ? 503
+                : 400
       return authResponse({ error: result.error }, undefined, status)
     }
     return authResponse({ user: result.user })
@@ -56,4 +85,3 @@ export async function PATCH(request: Request) {
     return authResponse({ error: 'offline' }, undefined, 503)
   }
 }
-

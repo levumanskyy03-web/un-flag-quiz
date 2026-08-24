@@ -9,7 +9,7 @@ import {
   passportCapital,
   passportCurrency,
 } from '../data/passports'
-import { STRINGS, regionLabel, type Lang } from '../i18n/strings'
+import { STRINGS, localeTag, regionLabel, type Lang } from '../i18n/strings'
 import { countryName } from '../lib/quiz'
 import { Flag } from './Flag'
 
@@ -30,7 +30,7 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
   const neighbors = landNeighbors(country.iso)
     .map((iso) => COUNTRIES.find((item) => item.iso === iso))
     .filter((item): item is Country => item !== undefined)
-    .sort((a, b) => countryName(a, lang).localeCompare(countryName(b, lang), lang === 'ru' ? 'ru' : 'en'))
+    .sort((a, b) => countryName(a, lang).localeCompare(countryName(b, lang), localeTag(lang)))
   const [factKey, setFactKey] = useState(country.iso)
   const [factIndex, setFactIndex] = useState(() => pickFactIndex(country.iso))
   if (factKey !== country.iso) {
