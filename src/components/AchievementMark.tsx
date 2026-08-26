@@ -264,5 +264,116 @@ function Icon({ id }: { id: AchievementId }) {
           <path d="M12 3.2 13.4 7h3.6l-2.9 2.2 1.1 3.5L12 10.6 8.8 12.7l1.1-3.5L7 7h3.6z" />
         </>
       )
+    case 'fbKickoff':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M12 7.2 14.4 9l-.9 2.8H10.5L9.6 9z" />
+          <path d="M4.8 12h14.4" />
+        </>
+      )
+    case 'fbFirstGoal':
+      return (
+        <>
+          <path d="M4 16.5h16" />
+          <path d="M7 16.5V8.5l5 3.2 5-3.2v8" />
+          <circle cx="17.5" cy="6.2" r="2.1" />
+        </>
+      )
+    case 'fbHatTrick':
+      return (
+        <>
+          <circle cx="6.2" cy="13" r="2.4" />
+          <circle cx="12" cy="9.2" r="2.4" />
+          <circle cx="17.8" cy="13" r="2.4" />
+        </>
+      )
+    case 'fbCleanSheet':
+      return (
+        <>
+          <path d="M5 16.5V8.2l7-3.4 7 3.4v8.3" />
+          <path d="M9.2 13.2 11.4 15.4 15.5 10.8" />
+        </>
+      )
+    case 'fbWorldCup':
+      return (
+        <>
+          <path d="M8 5h8v4.2a4 4 0 0 1-8 0z" />
+          <path d="M8 5H5.5a3.2 3.2 0 0 0 3.2 3.2M16 5h2.5A3.2 3.2 0 0 1 15.3 8.2" />
+          <path d="M10 13.4h4V16M8.5 20h7M12 16v4" />
+        </>
+      )
+    case 'fbFinal':
+      return (
+        <>
+          <circle cx="8" cy="12" r="3.2" />
+          <circle cx="16" cy="12" r="3.2" />
+          <path d="M11.2 12h1.6" />
+        </>
+      )
+    case 'fbHosts':
+      return (
+        <>
+          <path d="M4.5 18.5h15" />
+          <path d="M6 18.5V9.5l6-4.2 6 4.2v9" />
+          <path d="M10.2 18.5v-5.2h3.6v5.2" />
+        </>
+      )
+    case 'fbYears':
+      return (
+        <>
+          <rect x="4.5" y="6" width="15" height="14" rx="2" />
+          <path d="M4.5 10h15M8 4.5v3M16 4.5v3" />
+          <path d="M9.2 14.2h5.6M12 12.2v5" />
+        </>
+      )
+    case 'fbEuro':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M8.2 9.2c1.2-1.4 3.1-1.6 4.4-.4 1.4 1.3.4 3.4-1.2 3.6-1.2.2-2.1-.6-1.8-1.6" />
+          <path d="M14.8 16.2c-.8.6-2 .8-3.2.4" />
+        </>
+      )
+    case 'fbAllModes':
+      return (
+        <>
+          <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+          <path d="M3.5 12h17" />
+          <circle cx="12" cy="12" r="3.2" />
+        </>
+      )
+    case 'fbPerfect10':
+      return (
+        <>
+          <path d="M12 3.5 14.6 10h6.7l-5.4 4 2 6.6L12 16.8 5.9 20.6l2-6.6-5.4-4h6.7z" />
+          <circle cx="12" cy="12.2" r="2.2" />
+        </>
+      )
+    case 'fbHard':
+      return (
+        <>
+          <path d="M4 16.5h16" />
+          <path d="M6.5 16.5 9 8.5h6l2.5 8" />
+          <path d="M9.5 12h5" />
+        </>
+      )
+    case 'fbTenMatches':
+      return (
+        <>
+          <rect x="3.8" y="5.5" width="7.2" height="5.5" rx="1" />
+          <rect x="13" y="5.5" width="7.2" height="5.5" rx="1" />
+          <rect x="3.8" y="13" width="7.2" height="5.5" rx="1" />
+          <rect x="13" y="13" width="7.2" height="5.5" rx="1" />
+        </>
+      )
+    case 'fbHardcore':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M8 12h8M12 8v8" />
+          <path d="M12.4 8.2 9.8 12.4h2.1L11.3 16" />
+        </>
+      )
   }
 }

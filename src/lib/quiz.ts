@@ -5,6 +5,7 @@ import { canAskNeighbors } from '../data/neighbors'
 import { euroPool, euroRelatedTeamIds, euroTeamCountries } from '../data/euros'
 import {
   footballTeamCountry,
+  footballOptionClashes,
   isNamedFootballTeam,
   wcChampionCountries,
   wcFinalistCountries,
@@ -14,6 +15,7 @@ import {
   wcHostPool,
   wcHostRelatedIds,
   wcRelatedTeamIds,
+  wcWinYearsFor,
   WORLD_CUP_WINNERS,
 } from '../data/worldCup'
 import { localeTag, type Lang } from '../i18n/lang'
@@ -476,13 +478,9 @@ function createWcHostsRound(count: number, difficulty: QuizDifficulty): Question
   const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
   return picked.map((item) => {
     const host = footballTeamCountry(wcHostAnswerId(item.hostIds))
-    const joint = item.hostIds.length > 1
     return {
       country: host,
-      options: pickFootballOptions(host, wcHostRelatedIds(item.year), wcHostCountries(), {
-        shuffleRelated: !joint,
-        maxRelated: joint ? 3 : 2,
-      }),
+      options: pickFootballOptions(host, wcHostRelatedIds(item.year), wcHostCountries()),
       mode: 'wcHosts',
       year: item.year,
     }
@@ -494,9 +492,7 @@ function createWcTitleYearsRound(count: number): Question[] {
   const allYears = WORLD_CUP_WINNERS.map((item) => item.year)
   return picked.map((item) => {
     const winner = footballTeamCountry(item.winnerId)
-    const theirYears = new Set(
-      WORLD_CUP_WINNERS.filter((cup) => cup.winnerId === item.winnerId).map((cup) => cup.year),
-    )
+    const theirYears = new Set(wcWinYearsFor(item.winnerId))
     const related: number[] = []
     const addYear = (year?: number) => {
       if (year === undefined || year === item.year || theirYears.has(year) || related.includes(year)) return
@@ -508,14 +504,19 @@ function createWcTitleYearsRound(count: number): Question[] {
     const index = WORLD_CUP_WINNERS.findIndex((cup) => cup.year === item.year)
     addYear(WORLD_CUP_WINNERS[index - 1]?.year)
     addYear(WORLD_CUP_WINNERS[index + 1]?.year)
-    const relatedTake = related.length >= 2 ? 2 : related.length > 0 ? 1 : 0
-    const relatedPicks = shuffle(related).slice(0, relatedTake)
-    const used = new Set([item.year, ...relatedPicks, ...theirYears])
-    const fillers = shuffle(allYears.filter((year) => !used.has(year)))
+    const blocked = new Set(theirYears)
+    const relatedPicks = shuffle(related).slice(0, 2)
+    const fillers = shuffle(allYears.filter((year) => !blocked.has(year) && !relatedPicks.includes(year)))
+    const yearOptions: number[] = [item.year]
+    for (const year of [...relatedPicks, ...fillers]) {
+      if (yearOptions.includes(year) || blocked.has(year)) continue
+      yearOptions.push(year)
+      if (yearOptions.length === 4) break
+    }
     return {
       country: winner,
       options: [],
-      yearOptions: shuffle([item.year, ...[...relatedPicks, ...fillers].slice(0, 3)]),
+      yearOptions: shuffle(yearOptions),
       mode: 'wcTitleYears',
       year: item.year,
     }
@@ -547,7 +548,7 @@ function pickFootballOptions(
   const seen = new Set([correct.iso])
   for (const id of relatedIds) {
     const team = footballTeamCountry(id)
-    if (seen.has(team.iso)) continue
+    if (seen.has(team.iso) || footballOptionClashes(team.iso, correct.iso)) continue
     seen.add(team.iso)
     related.push(team)
   }
@@ -555,9 +556,19 @@ function pickFootballOptions(
   const ordered = opts.shuffleRelated === false ? related : shuffle(related)
   const take = Math.min(maxRelated, ordered.length)
   const relatedPicks = ordered.slice(0, take)
-  const used = new Set([correct.iso, ...relatedPicks.map((team) => team.iso)])
-  const extra = shuffle(fillers.filter((team) => !used.has(team.iso)))
-  return shuffle([correct, ...[...relatedPicks, ...extra].slice(0, 3)])
+  for (const team of relatedPicks) seen.add(team.iso)
+  const extra = shuffle(
+    fillers.filter((team) => !seen.has(team.iso) && !footballOptionClashes(team.iso, correct.iso)),
+  )
+  const options: Country[] = [correct]
+  const used = new Set<string>([correct.iso])
+  for (const team of [...relatedPicks, ...extra]) {
+    if (used.has(team.iso) || footballOptionClashes(team.iso, correct.iso)) continue
+    used.add(team.iso)
+    options.push(team)
+    if (options.length === 4) break
+  }
+  return shuffle(options)
 }
 
 export function createMixedRound(

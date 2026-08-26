@@ -19,7 +19,7 @@ import { FINAL_LEVEL, LEVEL_COUNT, isFinalLevel } from "./data/levels";
 import { STRINGS, isLang, langDir, localeTag, type Lang } from "./i18n/strings";
 import { clearBests, clearHistory, loadBests, loadHistory, saveRound, type RoundRecord } from "./lib/history";
 import { loadLevelClears, saveLevelClear, findLevelClear, isLevelUnlocked, type LevelClear } from "./lib/levelProgress";
-import { addPlayMs, bumpLifetime, bumpRecordBreaks, countLifetimeSeed, seedLifetimeIfEmpty } from "./lib/lifetime";
+import { addPlayMs, bumpFootballLifetime, bumpLifetime, bumpRecordBreaks, countLifetimeSeed, seedLifetimeIfEmpty } from "./lib/lifetime";
 import { campaignXpDelta, WORLD_RECORD_XP, xpForAnswers, xpForFreePlay } from "./lib/xp";
 import { fetchAccount } from "./lib/account";
 import { unlockedAchievementIds } from "./lib/achievements";
@@ -164,6 +164,14 @@ export default function App() {
       delete document.documentElement.dataset.result;
     }
   }, [resultTone]);
+
+  useEffect(() => {
+    if (world === "football") {
+      document.documentElement.dataset.world = "football";
+    } else {
+      delete document.documentElement.dataset.world;
+    }
+  }, [world]);
 
   useEffect(() => {
     const nextHistory = loadHistory();
@@ -317,27 +325,31 @@ export default function App() {
               addPlayMs(finishedMs, countLifetimeSeed(loadHistory(), loadLevelClears()));
             }
           } else {
+            const footballDifficulty =
+              isFootballMode(quizSettings.mode) && !footballHasDifficulty(quizSettings.mode)
+                ? "easy"
+                : quizSettings.difficulty;
             const gained =
               quizSettings.path === "pool"
-                ? xpForFreePlay(
-                    answers,
-                    isFootballMode(quizSettings.mode) && !footballHasDifficulty(quizSettings.mode)
-                      ? "easy"
-                      : quizSettings.difficulty,
-                    quizSettings.mode,
-                  )
+                ? xpForFreePlay(answers, footballDifficulty, quizSettings.mode, endedBy)
                 : 0;
             setEarnedXp(gained);
-            const lifetime = bumpLifetime(
+            const seed = countLifetimeSeed(loadHistory(), loadLevelClears());
+            let lifetime = bumpLifetime(
               endedBy === "complete",
-              countLifetimeSeed(loadHistory(), loadLevelClears()),
+              seed,
               gained,
               finishedMs,
             );
-            setXp(lifetime.xp);
-            if (gained > 0) {
-              void publishRatings(loadLevelClears(), lifetime.xp);
+            if (isFootballMode(quizSettings.mode)) {
+              lifetime = bumpFootballLifetime(seed, {
+                complete: endedBy === "complete",
+                perfect: endedBy === "complete" && answers.length > 0 && answers.every(isCorrect),
+                playMs: finishedMs,
+                mode: quizSettings.mode,
+              });
             }
+            setXp(lifetime.xp);
             const saved = saveRound({
               at: Date.now(),
               correct: answers.filter(isCorrect).length,
@@ -346,16 +358,16 @@ export default function App() {
               mode: quizSettings.mode,
               mix: quizSettings.path === "pool" ? quizSettings.mix ?? undefined : undefined,
               region: isFootballMode(quizSettings.mode) ? "all" : quizSettings.region,
-              difficulty:
-                isFootballMode(quizSettings.mode) && !footballHasDifficulty(quizSettings.mode)
-                  ? "easy"
-                  : quizSettings.difficulty,
+              difficulty: footballDifficulty,
               roundSize: questions.length,
               endedBy,
             });
             setHistory(saved.history);
             setBests(saved.bests);
             setIsNewBest(saved.isNewBest);
+            if (gained > 0) {
+              void publishRatings(loadLevelClears(), lifetime.xp);
+            }
           }
         }
         const gold = endedBy === "complete" && quizSettings.path === "levels" && quizSettings.levelHardcore;
@@ -870,7 +882,7 @@ export default function App() {
   }
 
   return (
-    <div className={`app${resultTone ? ` is-${resultTone}` : ""}`}>
+    <div className={`app${resultTone ? ` is-${resultTone}` : ""}${world === "football" ? " is-football" : ""}`}>
       {world === "geo" ? (
         <div className="map-marks" aria-hidden="true">
           <span className="map-marks-n">N</span>
@@ -881,6 +893,15 @@ export default function App() {
           <span className="map-tick is-ne" />
           <span className="map-tick is-sw" />
           <span className="map-tick is-se" />
+        </div>
+      ) : null}
+      {world === "football" ? (
+        <div className="pitch-marks" aria-hidden="true">
+          <span className="pitch-mid" />
+          <span className="pitch-circle" />
+          <span className="pitch-spot" />
+          <span className="pitch-box is-top" />
+          <span className="pitch-box is-bottom" />
         </div>
       ) : null}
       {world === null && (

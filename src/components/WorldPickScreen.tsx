@@ -51,7 +51,7 @@ export function WorldPickScreen({
           {t.geography}
         </button>
         <button type="button" className="choice is-wide world-pick" onClick={() => onPick('football')}>
-          <span className="world-pick-ball" aria-hidden="true" />
+          <GeoIcon name="ball" size={24} />
           {t.football}
         </button>
       </div>

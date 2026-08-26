@@ -1,9 +1,18 @@
 import type { RoundRecord } from './history'
 import type { LevelClear } from './levelProgress'
+import { FOOTBALL_MODES, isFootballMode, type FootballMode } from './quiz'
 import { clearBestXp } from './xp'
 
 const LIFETIME_KEY = 'un-flag-quiz-lifetime'
 const XP_SCHEMA = 2
+
+export interface FootballLifetime {
+  rounds: number
+  completes: number
+  perfects: number
+  playMs: number
+  modes: FootballMode[]
+}
 
 export interface LifetimeStats {
   rounds: number
@@ -12,6 +21,11 @@ export interface LifetimeStats {
   playMs: number
   firstSeen: number
   recordBreaks: number
+  football: FootballLifetime
+}
+
+export function emptyFootballLifetime(): FootballLifetime {
+  return { rounds: 0, completes: 0, perfects: 0, playMs: 0, modes: [] }
 }
 
 export function countLifetimeSeed(history: RoundRecord[], clears: LevelClear[]): LifetimeStats {
@@ -27,6 +41,7 @@ export function countLifetimeSeed(history: RoundRecord[], clears: LevelClear[]):
       clears.reduce((sum, clear) => sum + Math.max(0, clear.roundMs), 0),
     firstSeen: stamps.length > 0 ? Math.min(...stamps) : Date.now(),
     recordBreaks: 0,
+    football: emptyFootballLifetime(),
   }
 }
 
@@ -43,6 +58,7 @@ export function loadLifetime(seedIfEmpty?: LifetimeStats): LifetimeStats {
       playMs: play.playMs,
       firstSeen: play.firstSeen,
       recordBreaks: stored.recordBreaks,
+      football: stored.football,
     }
     if (
       stored.xp !== next.xp ||
@@ -79,6 +95,7 @@ export function bumpLifetime(
     playMs: current.playMs + Math.max(0, Math.floor(playMs)),
     firstSeen: current.firstSeen,
     recordBreaks: current.recordBreaks,
+    football: current.football,
   }
   writeLifetime(next)
   return next
@@ -104,8 +121,42 @@ export function bumpRecordBreaks(seedIfEmpty: LifetimeStats): LifetimeStats {
   return next
 }
 
+export function bumpFootballLifetime(
+  seedIfEmpty: LifetimeStats,
+  input: {
+    complete: boolean
+    perfect: boolean
+    playMs: number
+    mode: FootballMode
+  },
+): LifetimeStats {
+  const current = loadLifetime(seedIfEmpty)
+  const modes = new Set(current.football.modes)
+  if (input.complete) modes.add(input.mode)
+  const next: LifetimeStats = {
+    ...current,
+    football: {
+      rounds: current.football.rounds + 1,
+      completes: current.football.completes + (input.complete ? 1 : 0),
+      perfects: current.football.perfects + (input.perfect ? 1 : 0),
+      playMs: current.football.playMs + Math.max(0, Math.floor(input.playMs)),
+      modes: FOOTBALL_MODES.filter((mode) => modes.has(mode)),
+    },
+  }
+  writeLifetime(next)
+  return next
+}
+
 function emptyLifetime(): LifetimeStats {
-  return { rounds: 0, completes: 0, xp: 0, playMs: 0, firstSeen: Date.now(), recordBreaks: 0 }
+  return {
+    rounds: 0,
+    completes: 0,
+    xp: 0,
+    playMs: 0,
+    firstSeen: Date.now(),
+    recordBreaks: 0,
+    football: emptyFootballLifetime(),
+  }
 }
 
 function mergePlay(
@@ -127,6 +178,7 @@ function readLifetime(): {
   playMs: number | null
   firstSeen: number | null
   recordBreaks: number
+  football: FootballLifetime
 } | null {
   if (typeof window === 'undefined') return null
   try {
@@ -151,9 +203,37 @@ function readLifetime(): {
       typeof record.recordBreaks === 'number' && Number.isFinite(record.recordBreaks) && record.recordBreaks >= 0
         ? Math.floor(record.recordBreaks)
         : 0
-    return { rounds: record.rounds, completes: record.completes, xp, schema, playMs, firstSeen, recordBreaks }
+    return {
+      rounds: record.rounds,
+      completes: record.completes,
+      xp,
+      schema,
+      playMs,
+      firstSeen,
+      recordBreaks,
+      football: parseFootball(record.football),
+    }
   } catch {
     return null
+  }
+}
+
+function parseFootball(value: unknown): FootballLifetime {
+  if (!value || typeof value !== 'object') return emptyFootballLifetime()
+  const record = value as Record<string, unknown>
+  const modes = Array.isArray(record.modes)
+    ? record.modes.filter((item): item is FootballMode => isFootballMode(item))
+    : []
+  const n = (key: string) =>
+    typeof record[key] === 'number' && Number.isFinite(record[key]) && (record[key] as number) >= 0
+      ? Math.floor(record[key] as number)
+      : 0
+  return {
+    rounds: n('rounds'),
+    completes: n('completes'),
+    perfects: n('perfects'),
+    playMs: n('playMs'),
+    modes: FOOTBALL_MODES.filter((mode) => modes.includes(mode)),
   }
 }
 

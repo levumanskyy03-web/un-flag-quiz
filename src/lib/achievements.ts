@@ -5,7 +5,7 @@ import type { RoundRecord } from './history'
 import { campaignStats } from './leaderboard'
 import type { LevelClear } from './levelProgress'
 import { countLifetimeSeed, loadLifetime } from './lifetime'
-import { LEVEL_MODES, QUIZ_MODES, isAllRegions, parseRegions, type QuizMode } from './quiz'
+import { LEVEL_MODES, QUIZ_MODES, FOOTBALL_MODES, isAllRegions, isFootballMode, parseRegions, type QuizMode } from './quiz'
 import { accountLevel } from './xp'
 
 const MINUTE_MS = 60_000
@@ -41,6 +41,10 @@ export function listAchievements(
     ...LEVEL_MODES.map((mode) => campaignStats(levelClears, mode, true).levelsCleared),
   )
   const lifetime = loadLifetime(countLifetimeSeed(history, levelClears))
+  const football = lifetime.football
+  const footballPool = pool.filter((round) => isFootballMode(round.mode))
+  const footballComplete = completedPool.filter((round) => isFootballMode(round.mode))
+  const footballModes = new Set<QuizMode>([...football.modes, ...footballComplete.map((round) => round.mode)])
   const rank = accountLevel(lifetime.xp)
   const bornAt = createdAt && createdAt > 0 ? createdAt : lifetime.firstSeen
   const ageMs = Math.max(0, Date.now() - bornAt)
@@ -97,6 +101,24 @@ export function listAchievements(
     play10h: lifetime.playMs >= 10 * HOUR_MS,
     recordBreak1: lifetime.recordBreaks >= 1,
     recordBreak10: lifetime.recordBreaks >= 10,
+    fbKickoff: footballPool.length > 0 || football.rounds > 0,
+    fbFirstGoal: footballPool.some((round) => round.correct > 0),
+    fbHatTrick: footballPool.some((round) => round.correct >= 3),
+    fbCleanSheet: footballComplete.some((round) => round.total >= 5 && round.correct === round.total),
+    fbWorldCup: footballComplete.some((round) => round.mode === 'wcWinners'),
+    fbFinal: footballComplete.some((round) => round.mode === 'wcFinalists'),
+    fbHosts: footballComplete.some((round) => round.mode === 'wcHosts'),
+    fbYears: footballComplete.some((round) => round.mode === 'wcTitleYears'),
+    fbEuro: footballComplete.some((round) => round.mode === 'euroWinners'),
+    fbAllModes: FOOTBALL_MODES.every((mode) => footballModes.has(mode)),
+    fbPerfect10: footballComplete.some((round) => round.total >= 10 && round.correct === round.total),
+    fbHard: footballComplete.some(
+      (round) =>
+        (round.mode === 'wcHosts' || round.mode === 'euroWinners') &&
+        (round.difficulty === 'hard' || round.difficulty === 'hardcore'),
+    ),
+    fbTenMatches: football.completes >= 10,
+    fbHardcore: footballComplete.some((round) => round.difficulty === 'hardcore'),
   }
   return ACHIEVEMENTS.map((item) => ({ id: item.id, unlocked: unlocked[item.id] }))
 }

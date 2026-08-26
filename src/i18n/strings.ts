@@ -34,6 +34,8 @@ export type Strings = {
   euroWinners: string
   euroWinnerPrompt: (year: number) => string
   worldsBack: string
+  footballRoundSize: string
+  footballXpHint: (n: number) => string
   mode: string
   flagToName: string
   nameToFlag: string
@@ -343,6 +345,8 @@ export const STRINGS: Record<Lang, Strings> = {
     euroWinners: 'Победители Евро',
     euroWinnerPrompt: (year) => `Кто выиграл Евро ${year}?`,
     worldsBack: 'К темам',
+    footballRoundSize: 'Вопросов в матче',
+    footballXpHint: (n) => `Верный ответ: +${n} опыта. Полный матч и идеал дают бонус.`,
     mode: 'Режим',
     flagToName: 'Флаг → страна',
     nameToFlag: 'Страна → флаг',
@@ -657,6 +661,8 @@ export const STRINGS: Record<Lang, Strings> = {
     euroWinners: 'Euro winners',
     euroWinnerPrompt: (year) => `Who won Euro ${year}?`,
     worldsBack: 'Topics',
+    footballRoundSize: 'Questions in the match',
+    footballXpHint: (n) => `Correct answer: +${n} XP. Finish and go perfect for a bonus.`,
     mode: 'Mode',
     flagToName: 'Flag → country',
     nameToFlag: 'Country → flag',

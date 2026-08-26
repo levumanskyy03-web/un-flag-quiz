@@ -114,6 +114,16 @@ export function wcHostCountries(): Country[] {
   return [...ids].map(footballTeamCountry)
 }
 
+export function footballOptionClashes(optionId: string, answerId: string): boolean {
+  if (optionId === answerId) return false
+  const answer = new Set(footballIsos(answerId))
+  return footballIsos(optionId).some((id) => answer.has(id))
+}
+
+export function wcWinYearsFor(winnerId: string): number[] {
+  return WORLD_CUP_WINNERS.filter((item) => item.winnerId === winnerId).map((item) => item.year)
+}
+
 export function isNamedFootballTeam(iso: string): boolean {
   return iso in TEAM_NAMES
 }
@@ -153,7 +163,6 @@ export function wcHostRelatedIds(year: number): string[] {
   const prev = WORLD_CUP_HOSTS[index - 1]
   const next = WORLD_CUP_HOSTS[index + 1]
   return uniqueIds([
-    ...(current.hostIds.length > 1 ? current.hostIds : []),
     prev ? wcHostAnswerId(prev.hostIds) : undefined,
     next ? wcHostAnswerId(next.hostIds) : undefined,
   ], answerId)

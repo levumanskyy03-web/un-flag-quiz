@@ -1,4 +1,4 @@
-type GeoIconName = 'compass' | 'globe' | 'map' | 'pin' | 'meridians' | 'trophy'
+type GeoIconName = 'compass' | 'globe' | 'map' | 'pin' | 'meridians' | 'trophy' | 'ball'
 
 interface GeoIconProps {
   name: GeoIconName
@@ -11,10 +11,33 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
       className="geo-icon"
       width={size}
       height={size}
-      viewBox={name === 'trophy' ? '0 0 20 20' : '0 0 16 16'}
+      viewBox={name === 'trophy' ? '0 0 20 20' : name === 'ball' ? '0 0 24 24' : '0 0 16 16'}
       fill="none"
       aria-hidden="true"
     >
+      {name === 'ball' ? (
+        <>
+          <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.7" />
+          <path
+            d="M12 6.6 14.8 8.6 13.7 11.9H10.3L9.2 8.6Z"
+            stroke="currentColor"
+            strokeWidth="1.45"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M9.2 8.6 5.6 7.2M14.8 8.6 18.4 7.2M13.7 11.9 17.2 15.6M10.3 11.9 7.8 15.6"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+          />
+          <path
+            d="M5.6 7.2c.3 2.6-.4 5.2-1.6 7.1M18.4 7.2c-.3 2.6.4 5.2 1.6 7.1M7.8 15.6c1.3 1.6 2.7 2.5 4.2 2.8M17.2 15.6c-1.3 1.6-2.7 2.5-4.2 2.8"
+            stroke="currentColor"
+            strokeWidth="1.3"
+            strokeLinecap="round"
+          />
+        </>
+      ) : null}
       {name === 'trophy' ? (
         <>
           <path

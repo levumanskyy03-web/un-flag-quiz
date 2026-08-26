@@ -2,15 +2,18 @@ import { LEVEL_COUNT } from '../data/levels'
 import { localeTag, type Lang } from '../i18n/lang'
 import type { LevelClear } from './levelProgress'
 import {
+  footballHasDifficulty,
   getLevelPool,
   hasLevels,
   isFootballMode,
   questionLimitMs,
+  type FootballMode,
   type PlayPath,
   type QuizDifficulty,
   type QuizMode,
   type RegionFilter,
   type RoundAnswer,
+  type RoundEnd,
   isCorrect,
 } from './quiz'
 
@@ -76,10 +79,44 @@ export function xpForAnswers(
   })
 }
 
+const FOOTBALL_MODE_XP: Record<FootballMode, number> = {
+  wcWinners: 4,
+  wcFinalists: 5,
+  wcHosts: 5,
+  wcTitleYears: 6,
+  euroWinners: 5,
+}
+
+export function xpPerFootballCorrect(mode: QuizMode, difficulty: QuizDifficulty): number {
+  if (!isFootballMode(mode)) return xpPerFreePlayCorrect(difficulty, mode)
+  const base = FOOTBALL_MODE_XP[mode]
+  if (!footballHasDifficulty(mode)) return base
+  if (difficulty === 'hardcore') return 12
+  if (difficulty === 'hard') return 8
+  return base
+}
+
+export function xpForFootballRound(
+  answers: RoundAnswer[],
+  mode: QuizMode,
+  difficulty: QuizDifficulty,
+  endedBy: RoundEnd,
+): number {
+  if (!isFootballMode(mode) || answers.length === 0) return 0
+  const correct = answers.filter(isCorrect).length
+  const per = xpPerFootballCorrect(mode, difficulty)
+  let xp = correct * per
+  if (endedBy === 'complete') {
+    xp += 2 * answers.length
+    if (correct === answers.length) xp += 5 * answers.length
+  }
+  return Math.max(0, Math.round(xp))
+}
+
 export function xpPerFreePlayCorrect(difficulty: QuizDifficulty, mode: QuizMode): number {
+  if (isFootballMode(mode)) return xpPerFootballCorrect(mode, difficulty)
   const base =
     difficulty === 'hardcore' ? 10 : difficulty === 'hard' ? 5 : difficulty === 'medium' ? 3 : 2
-  if (isFootballMode(mode)) return base
   return hasLevels(mode) ? base : base * 10
 }
 
@@ -87,7 +124,9 @@ export function xpForFreePlay(
   answers: RoundAnswer[],
   difficulty: QuizDifficulty,
   mode: QuizMode,
+  endedBy: RoundEnd = 'complete',
 ): number {
+  if (isFootballMode(mode)) return xpForFootballRound(answers, mode, difficulty, endedBy)
   return answers
     .filter(isCorrect)
     .reduce((sum, answer) => sum + xpPerFreePlayCorrect(difficulty, answer.question.mode ?? mode), 0)

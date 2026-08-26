@@ -10,7 +10,9 @@ import {
   footballPoolSize,
   formatClock,
 } from '../lib/quiz'
+import { xpPerFootballCorrect } from '../lib/xp'
 import { AppChrome } from './AppChrome'
+import { GeoIcon } from './GeoIcon'
 import type { QuizSettings } from './HomeScreen'
 
 interface FootballScreenProps {
@@ -65,7 +67,13 @@ export function FootballScreen({
         <button type="button" className="btn-ghost worlds-back" onClick={onWorlds}>
           {t.worldsBack}
         </button>
-        <h1>{t.football}</h1>
+        <h1 className="football-title">
+          <GeoIcon name="ball" size={34} />
+          {t.football}
+        </h1>
+        <p className="subtitle football-xp-hint">
+          {t.footballXpHint(xpPerFootballCorrect(settings.mode, settings.difficulty))}
+        </p>
       </header>
 
       <section className="card settings-card">
@@ -115,7 +123,7 @@ export function FootballScreen({
           </>
         ) : null}
 
-        <h2>{t.roundSize}</h2>
+        <h2>{t.footballRoundSize}</h2>
         <div className="choice-grid is-3">
           {ROUND_SIZES.map((roundSize) => (
             <button
