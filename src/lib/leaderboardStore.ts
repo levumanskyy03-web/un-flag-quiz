@@ -20,6 +20,7 @@ export interface StoredEntry {
   totalMs: number
   xp?: number
   level?: number
+  livesLeft?: number
 }
 
 type BoardMap = Record<string, StoredEntry[]>
@@ -31,7 +32,12 @@ let writeChain: Promise<void> = Promise.resolve()
 export function ratingKey(board: RatingBoard): string {
   if (board.kind === 'xp') return 'xp'
   if (board.kind === 'clears') return `clears:${board.hardcore ? '1' : '0'}`
+  if (board.kind === 'levelBest') return levelBestKey(board.mode, board.level, board.hardcore)
   return `${board.mode}:${board.hardcore ? '1' : '0'}`
+}
+
+export function levelBestKey(mode: QuizMode, level: number, hardcore: boolean): string {
+  return `level:${mode}:${level}:${hardcore ? '1' : '0'}`
 }
 
 export function boardKey(mode: QuizMode, hardcore: boolean): string {
@@ -85,6 +91,42 @@ export async function upsertRatings(
   })
 }
 
+export async function upsertLevelBest(
+  board: Extract<RatingBoard, { kind: 'levelBest' }>,
+  incoming: StoredEntry,
+): Promise<{ configured: boolean; accepted: boolean; previous: StoredEntry | null }> {
+  return enqueue(async () => {
+    const store = await loadStore()
+    if (store === null) return { configured: false, accepted: false, previous: null }
+    const key = ratingKey(board)
+    const holder = (store[key] ?? [])[0] ?? null
+    if (holder && !isBetterLevelBest(incoming, holder)) {
+      if (holder.id === incoming.id && holder.name !== incoming.name) {
+        store[key] = [{ ...holder, name: incoming.name }]
+        await saveStore(store)
+      }
+      return { configured: true, accepted: false, previous: holder }
+    }
+    store[key] = [incoming]
+    await saveStore(store)
+    return { configured: true, accepted: true, previous: holder }
+  })
+}
+
+export async function readLevelBests(
+  mode: QuizMode,
+  hardcore: boolean,
+): Promise<{ records: Record<number, StoredEntry>; configured: boolean }> {
+  const store = await loadStore()
+  if (store === null) return { records: {}, configured: false }
+  const records: Record<number, StoredEntry> = {}
+  for (let level = 1; level <= LEVEL_COUNT; level += 1) {
+    const entry = store[levelBestKey(mode, level, hardcore)]?.[0]
+    if (entry) records[level] = entry
+  }
+  return { records, configured: true }
+}
+
 function applyUpsert(store: BoardMap, board: RatingBoard, incoming: StoredEntry): void {
   if (!isValidEntry(board, incoming)) return
   const key = ratingKey(board)
@@ -92,7 +134,7 @@ function applyUpsert(store: BoardMap, board: RatingBoard, incoming: StoredEntry)
   const existing = current.find((item) => item.id === incoming.id)
   const nextEntry =
     existing && !isBetterEntry(board, incoming, existing)
-      ? { ...existing, name: incoming.name, xp: incoming.xp ?? existing.xp, level: incoming.level ?? existing.level }
+      ? { ...existing, name: incoming.name }
       : incoming
   store[key] = sortBoard(board, [...current.filter((item) => item.id !== incoming.id), nextEntry]).slice(0, 200)
 }
@@ -145,12 +187,28 @@ function isValidEntry(board: RatingBoard, incoming: StoredEntry): boolean {
     const level = incoming.level ?? 0
     return xp >= 1 && xp <= RATING_XP_MAX && level >= 1 && level <= RATING_LEVEL_MAX
   }
+  if (board.kind === 'levelBest') {
+    return (
+      incoming.totalMs >= 1 &&
+      incoming.totalMs <= 3_600_000 &&
+      (incoming.livesLeft ?? 0) >= 0 &&
+      (incoming.livesLeft ?? 0) <= 200
+    )
+  }
   const max = board.kind === 'clears' ? RATING_LEVELS_MAX : LEVEL_COUNT
   return incoming.levelsCleared >= 1 && incoming.levelsCleared <= max
 }
 
+function isBetterLevelBest(candidate: StoredEntry, current: StoredEntry): boolean {
+  const aLives = candidate.livesLeft ?? 0
+  const bLives = current.livesLeft ?? 0
+  if (aLives !== bLives) return aLives > bLives
+  return candidate.totalMs < current.totalMs
+}
+
 function isBetterEntry(board: RatingBoard, candidate: StoredEntry, current: StoredEntry): boolean {
   if (board.kind === 'xp') return isBetterXp(candidate, current)
+  if (board.kind === 'levelBest') return isBetterLevelBest(candidate, current)
   return isBetterCampaign(candidate, current)
 }
 

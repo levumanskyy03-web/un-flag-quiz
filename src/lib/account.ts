@@ -12,9 +12,13 @@ export interface Account {
 
 export type AuthError = 'invalid' | 'taken' | 'auth' | 'offline' | 'mismatch' | 'cooldown' | 'blocked'
 
+function authFetch(url: string, init?: RequestInit) {
+  return fetch(url, { credentials: 'include', cache: 'no-store', ...init })
+}
+
 export async function fetchAccount(): Promise<Account | null> {
   try {
-    const response = await fetch('/api/auth/me')
+    const response = await authFetch('/api/auth/me')
     if (!response.ok) return null
     const body: unknown = await response.json()
     const user = parseAccount(body)
@@ -44,7 +48,7 @@ export async function updateAccountProfile(patch: {
   newPassword?: string
 }): Promise<{ ok: true; user: Account } | { ok: false; error: AuthError }> {
   try {
-    const response = await fetch('/api/auth/me', {
+    const response = await authFetch('/api/auth/me', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(patch),
@@ -64,7 +68,7 @@ export async function checkNameAvailable(name: string): Promise<
   { ok: true; available: boolean } | { ok: false; error: AuthError }
 > {
   try {
-    const response = await fetch(`/api/auth/name?name=${encodeURIComponent(name)}`)
+    const response = await authFetch(`/api/auth/name?name=${encodeURIComponent(name)}`)
     const body: unknown = await response.json().catch(() => null)
     if (!response.ok) return { ok: false, error: parseError(body, response.status) }
     if (!body || typeof body !== 'object' || typeof (body as { available?: unknown }).available !== 'boolean') {
@@ -78,7 +82,7 @@ export async function checkNameAvailable(name: string): Promise<
 
 export async function logoutAccount(): Promise<void> {
   try {
-    await fetch('/api/auth/logout', { method: 'POST' })
+    await authFetch('/api/auth/logout', { method: 'POST' })
   } catch {
     /* still drop the local session copy */
   }
@@ -99,7 +103,7 @@ function rememberAccount(user: Account) {
 async function sendAuth(url: string, name: string, password: string) {
   try {
     const profile = loadProfile()
-    const response = await fetch(url, {
+    const response = await authFetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, password, avatarId: profile.avatarId }),

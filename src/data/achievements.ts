@@ -38,6 +38,8 @@ export const ACHIEVEMENT_IDS = [
   'perfectHardcore',
   'worldPerfect',
   'play10h',
+  'recordBreak1',
+  'recordBreak10',
 ] as const
 
 export type AchievementId = (typeof ACHIEVEMENT_IDS)[number]
@@ -323,6 +325,22 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     ru: 'Десять часов',
     enHint: 'Play for 10 hours in total',
     ruHint: 'Сыграйте суммарно 10 часов',
+  },
+  {
+    id: 'recordBreak1',
+    tier: 2,
+    en: 'Record breaker',
+    ru: 'Рекордсмен',
+    enHint: 'Beat a world record on a campaign level',
+    ruHint: 'Обновите мировой рекорд на уровне кампании',
+  },
+  {
+    id: 'recordBreak10',
+    tier: 4,
+    en: 'Ten records',
+    ru: 'Десять рекордов',
+    enHint: 'Beat 10 world records on campaign levels',
+    ruHint: 'Обновите 10 мировых рекордов на уровнях кампании',
   },
 ]
 

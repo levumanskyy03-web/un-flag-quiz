@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { ACHIEVEMENTS, achievementCopy } from '../data/achievements'
 import { type AvatarId } from '../data/avatars'
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
@@ -76,6 +76,7 @@ export function SettingsModal({
   const [reportOpened, setReportOpened] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [focusAchievement, setFocusAchievement] = useState<(typeof ACHIEVEMENTS)[number]['id'] | null>(null)
+  const authBlockRef = useRef<HTMLDivElement>(null)
   const stats = useMemo(() => statsByMode(history, bests, levelClears), [history, bests, levelClears])
   const xp = loadLifetime(countLifetimeSeed(history, levelClears)).xp
   const rank = accountProgress(xp)
@@ -263,13 +264,27 @@ export function SettingsModal({
   async function signOut() {
     if (busy) return
     setBusy(true)
+    setError(null)
     await logoutAccount()
+    const still = await fetchAccount()
     setBusy(false)
+    if (still) {
+      setAccount(still)
+      onAuth?.(still)
+      setError('offline')
+      return
+    }
     setAccount(null)
+    setAuthTab('login')
     setPassword('')
     setRepeat('')
+    setPasswordOpen(false)
+    setPasswordSaved(false)
     setProfile(loadProfile())
     onAuth?.(null)
+    window.setTimeout(() => {
+      authBlockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }, 50)
   }
 
   function sendReport() {
@@ -388,7 +403,7 @@ export function SettingsModal({
               </div>
             ) : null}
             {authReady && !account ? (
-              <>
+              <div ref={authBlockRef}>
                 <h3 className="settings-sub">{t.account}</h3>
                 <div className="choice-grid">
                   <button
@@ -448,7 +463,7 @@ export function SettingsModal({
                     {authTab === 'register' ? t.signUp : t.signIn}
                   </button>
                 </form>
-              </>
+              </div>
             ) : null}
             {error && error !== 'blocked' ? <p className="account-error">{authErrorText(error, t)}</p> : null}
 

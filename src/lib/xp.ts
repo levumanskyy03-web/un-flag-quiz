@@ -3,6 +3,7 @@ import { localeTag, type Lang } from '../i18n/lang'
 import type { LevelClear } from './levelProgress'
 import {
   getLevelPool,
+  hasLevels,
   questionLimitMs,
   type PlayPath,
   type QuizDifficulty,
@@ -35,7 +36,8 @@ export interface AccountProgress {
   ratio: number
 }
 
-const XP_PER_QUESTION = 10
+export const XP_PER_QUESTION = 10
+export const WORLD_RECORD_XP = 100
 const ACCURACY_EXP = 1.5
 const SPEED_MIN = 0.7
 const SPEED_MAX = 1.4
@@ -71,6 +73,36 @@ export function xpForAnswers(
     correct: answers.filter(isCorrect).length,
     roundMs,
   })
+}
+
+export function xpPerFreePlayCorrect(difficulty: QuizDifficulty, mode: QuizMode): number {
+  const base = difficulty === 'hardcore' ? 10 : difficulty === 'hard' ? 5 : 2
+  return hasLevels(mode) ? base : base * 10
+}
+
+export function xpForFreePlay(
+  answers: RoundAnswer[],
+  difficulty: QuizDifficulty,
+  mode: QuizMode,
+): number {
+  return answers.filter(isCorrect).length * xpPerFreePlayCorrect(difficulty, mode)
+}
+
+export function clearBestXp(clear: LevelClear): number {
+  const computed = xpFromClear(clear)
+  const stored =
+    typeof clear.xp === 'number' && Number.isFinite(clear.xp) && clear.xp >= 0 ? Math.floor(clear.xp) : 0
+  return Math.max(computed, stored)
+}
+
+export function campaignXpDelta(
+  runXp: number,
+  previous?: LevelClear | null,
+): { award: number; bestXp: number } {
+  const scored = Math.max(0, Math.floor(runXp))
+  const previousBest = previous ? clearBestXp(previous) : 0
+  const bestXp = Math.max(previousBest, scored)
+  return { award: Math.max(0, scored - previousBest), bestXp }
 }
 
 export function xpFromClear(clear: LevelClear): number {

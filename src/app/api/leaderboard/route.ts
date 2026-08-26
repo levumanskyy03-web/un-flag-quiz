@@ -1,4 +1,4 @@
-import { LEVEL_COUNT } from '../../../data/levels'
+import { LEVEL_COUNT, isLevelNumber } from '../../../data/levels'
 import {
   RATING_LEVEL_MAX,
   RATING_LEVELS_MAX,
@@ -8,7 +8,7 @@ import {
   type RatingBoard,
 } from '../../../lib/leaderboard'
 import { accountFromRequest } from '../../../lib/authStore'
-import { publicEntries, readRating, upsertRatings } from '../../../lib/leaderboardStore'
+import { publicEntries, readLevelBests, readRating, upsertLevelBest, upsertRatings } from '../../../lib/leaderboardStore'
 import { isQuizMode, type QuizMode } from '../../../lib/quiz'
 
 export const dynamic = 'force-dynamic'
@@ -16,6 +16,34 @@ export const runtime = 'nodejs'
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
+  if (url.searchParams.get('board') === 'levelBests') {
+    const mode = url.searchParams.get('mode')
+    const hardcore = url.searchParams.get('hardcore') === '1'
+    const meParam = url.searchParams.get('me') ?? undefined
+    if (!mode || !isQuizMode(mode)) {
+      return Response.json({ error: 'bad request' }, { status: 400 })
+    }
+    try {
+      const session = await accountFromRequest(request).catch(() => null)
+      const me = session?.id ?? meParam
+      const stored = await readLevelBests(mode, hardcore)
+      const records: Record<
+        number,
+        { name: string; roundMs: number; livesLeft: number; you: boolean }
+      > = {}
+      for (const [level, entry] of Object.entries(stored.records)) {
+        records[Number(level)] = {
+          name: entry.name,
+          roundMs: entry.totalMs,
+          livesLeft: entry.livesLeft ?? 0,
+          you: Boolean(me && isPlayerId(me) && entry.id === me),
+        }
+      }
+      return Response.json({ configured: stored.configured, records })
+    } catch {
+      return Response.json({ configured: false, records: {} }, { status: 503 })
+    }
+  }
   const board = parseRatingBoard(url.searchParams)
   const meParam = url.searchParams.get('me') ?? undefined
   if (!board) {
@@ -44,6 +72,29 @@ export async function POST(request: Request) {
   const session = await accountFromRequest(request).catch(() => null)
   if (!session) {
     return Response.json({ error: 'auth' }, { status: 401 })
+  }
+  const levelBest = parseLevelBest(body)
+  if (levelBest) {
+    try {
+      const saved = await upsertLevelBest(levelBest.board, {
+        id: session.id,
+        name: session.name,
+        at: Date.now(),
+        levelsCleared: 0,
+        totalMs: levelBest.roundMs,
+        livesLeft: levelBest.livesLeft,
+      })
+      if (!saved.configured) {
+        return Response.json({ configured: false }, { status: 503 })
+      }
+      return Response.json({
+        ok: true,
+        beat: saved.accepted && saved.previous !== null,
+        previousName: saved.previous?.name ?? null,
+      })
+    } catch {
+      return Response.json({ configured: false }, { status: 503 })
+    }
   }
   const parsed = parseBody(body)
   if (parsed === null) {
@@ -127,5 +178,29 @@ function parseEntry(body: unknown): null | {
   return {
     board: { kind: 'mode', mode, hardcore: record.hardcore },
     entry: { levelsCleared: record.levelsCleared, totalMs },
+  }
+}
+
+function parseLevelBest(body: unknown): null | {
+  board: Extract<RatingBoard, { kind: 'levelBest' }>
+  roundMs: number
+  livesLeft: number
+} {
+  if (!body || typeof body !== 'object') return null
+  const record = body as Record<string, unknown>
+  if (record.board !== 'levelBest') return null
+  if (typeof record.mode !== 'string' || !isQuizMode(record.mode)) return null
+  if (typeof record.hardcore !== 'boolean') return null
+  if (typeof record.level !== 'number' || !isLevelNumber(record.level)) return null
+  if (typeof record.roundMs !== 'number' || !Number.isFinite(record.roundMs)) return null
+  const roundMs = Math.round(record.roundMs)
+  const livesLeft =
+    typeof record.livesLeft === 'number' && Number.isFinite(record.livesLeft) ? Math.round(record.livesLeft) : 0
+  if (roundMs < 1 || roundMs > 3_600_000) return null
+  if (livesLeft < 0 || livesLeft > 200) return null
+  return {
+    board: { kind: 'levelBest', mode: record.mode, level: record.level, hardcore: record.hardcore },
+    roundMs,
+    livesLeft,
   }
 }

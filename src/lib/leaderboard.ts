@@ -36,6 +36,7 @@ export type RatingBoard =
   | { kind: 'xp' }
   | { kind: 'clears'; hardcore: boolean }
   | { kind: 'mode'; mode: QuizMode; hardcore: boolean }
+  | { kind: 'levelBest'; mode: QuizMode; level: number; hardcore: boolean }
 
 export function campaignStats(
   clears: LevelClear[],
@@ -151,12 +152,14 @@ export async function fetchRating(
   } else if (board.kind === 'clears') {
     params.set('board', 'clears')
     params.set('hardcore', board.hardcore ? '1' : '0')
-  } else {
+  } else if (board.kind === 'mode') {
     params.set('board', 'mode')
     params.set('mode', board.mode)
     params.set('hardcore', board.hardcore ? '1' : '0')
+  } else {
+    return { entries: [], configured: false }
   }
-  const response = await fetch(`/api/leaderboard?${params}`)
+  const response = await fetch(`/api/leaderboard?${params}`, { credentials: 'include', cache: 'no-store' })
   if (!response.ok) return { entries: [], configured: false }
   const body: unknown = await response.json()
   if (!body || typeof body !== 'object') return { entries: [], configured: false }
@@ -200,9 +203,90 @@ export async function submitRatings(clears: LevelClear[], xp: number): Promise<v
   if (items.length === 0) return
   await fetch('/api/leaderboard', {
     method: 'POST',
+    credentials: 'include',
+    cache: 'no-store',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ items }),
   })
+}
+
+export interface LevelBest {
+  name: string
+  roundMs: number
+  livesLeft: number
+  you?: boolean
+}
+
+export async function fetchLevelBests(
+  mode: QuizMode,
+  hardcore: boolean,
+): Promise<Record<number, LevelBest>> {
+  const player = loadPlayer()
+  const params = new URLSearchParams({
+    board: 'levelBests',
+    mode,
+    hardcore: hardcore ? '1' : '0',
+    me: player.id,
+  })
+  try {
+    const response = await fetch(`/api/leaderboard?${params}`, { credentials: 'include', cache: 'no-store' })
+    if (!response.ok) return {}
+    const body: unknown = await response.json()
+    if (!body || typeof body !== 'object') return {}
+    const raw = (body as { records?: unknown }).records
+    if (!raw || typeof raw !== 'object') return {}
+    const records: Record<number, LevelBest> = {}
+    for (const [key, value] of Object.entries(raw)) {
+      const level = Number(key)
+      if (!Number.isInteger(level) || !value || typeof value !== 'object') continue
+      const record = value as Record<string, unknown>
+      if (typeof record.name !== 'string' || typeof record.roundMs !== 'number') continue
+      records[level] = {
+        name: record.name,
+        roundMs: record.roundMs,
+        livesLeft: typeof record.livesLeft === 'number' ? record.livesLeft : 0,
+        you: record.you === true,
+      }
+    }
+    return records
+  } catch {
+    return {}
+  }
+}
+
+export async function submitLevelBest(input: {
+  mode: QuizMode
+  level: number
+  hardcore: boolean
+  roundMs: number
+  livesLeft: number
+}): Promise<{ beat: boolean; previousName: string | null }> {
+  try {
+    const response = await fetch('/api/leaderboard', {
+      method: 'POST',
+      credentials: 'include',
+      cache: 'no-store',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        board: 'levelBest',
+        mode: input.mode,
+        level: input.level,
+        hardcore: input.hardcore,
+        roundMs: input.roundMs,
+        livesLeft: input.livesLeft,
+      }),
+    })
+    if (!response.ok) return { beat: false, previousName: null }
+    const body: unknown = await response.json()
+    if (!body || typeof body !== 'object') return { beat: false, previousName: null }
+    const record = body as Record<string, unknown>
+    return {
+      beat: record.beat === true,
+      previousName: typeof record.previousName === 'string' ? record.previousName : null,
+    }
+  } catch {
+    return { beat: false, previousName: null }
+  }
 }
 
 function isPublicEntry(value: unknown): value is LeaderboardEntry {

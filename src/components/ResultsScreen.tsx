@@ -7,6 +7,7 @@ import {
   formatSeconds,
   isCorrect,
   isFactMode,
+  isFactsToName,
   isMapMode,
   slowestAnswer,
   type QuizMode,
@@ -118,11 +119,15 @@ export function ResultsScreen({
                     null
               return (
                 <li key={`${correct.iso}-${answer.selectedIso ?? 'timeout'}`} className="mistake-row">
-                  {(mode === 'flagToName' || mode === 'neighborsToName' || isMapMode(mode) || isFactMode(mode)) && (
+                  {(mode === 'flagToName' ||
+                    mode === 'neighborsToName' ||
+                    isMapMode(mode) ||
+                    isFactMode(mode) ||
+                    isFactsToName(mode)) && (
                     <Flag iso={correct.iso} name={countryName(correct, lang)} size="thumb" />
                   )}
                   <div className="mistake-copy">
-                    {isFactMode(mode) ? (
+                    {isFactMode(mode) || isFactsToName(mode) ? (
                       <p className="mistake-country">{countryName(correct, lang)}</p>
                     ) : null}
                     <p>

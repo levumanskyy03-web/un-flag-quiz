@@ -1,4 +1,5 @@
 import {
+  advanceDuelFact,
   answerDuel,
   leaveDuel,
   normalizeCode,
@@ -48,6 +49,13 @@ export async function POST(request: Request, context: RouteContext<'/api/duel/[c
     }
     if (record.action === 'rematch') {
       const room = await rematchDuel(code, playerId)
+      if (!room) return Response.json({ error: 'missing' }, { status: 404 })
+      const view = viewFor(room, playerId)
+      if (!view) return Response.json({ error: 'forbidden' }, { status: 403 })
+      return Response.json({ room: view })
+    }
+    if (record.action === 'advanceFact') {
+      const room = await advanceDuelFact(code, playerId)
       if (!room) return Response.json({ error: 'missing' }, { status: 404 })
       const view = viewFor(room, playerId)
       if (!view) return Response.json({ error: 'forbidden' }, { status: 403 })

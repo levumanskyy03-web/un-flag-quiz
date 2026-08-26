@@ -1,9 +1,12 @@
+import type { FactClue } from './countryFacts'
+import type { FactsDuelConfig } from './factsRules'
 import type { QuizDifficulty, QuizMode, RegionFilter } from './quiz'
 
 export interface DuelQuestionWire {
   countryIso: string
   optionIsos: string[]
   mode?: QuizMode
+  facts?: FactClue[]
 }
 
 export interface DuelView {
@@ -32,4 +35,9 @@ export interface DuelView {
   youWon: boolean | null
   youRematch: boolean
   opponentRematch: boolean
+  facts?: FactsDuelConfig
+  factIndex?: number
+  youWrongs?: number
+  factsMax?: number
+  factsWrongLimit?: number
 }

@@ -248,5 +248,21 @@ function Icon({ id }: { id: AchievementId }) {
           <path d="M12 13.2v4.2M10.2 15h3.6" />
         </>
       )
+    case 'recordBreak1':
+      return (
+        <>
+          <path d="M8 5h8v4.2a4 4 0 0 1-8 0z" />
+          <path d="M8 5H5.5a3.2 3.2 0 0 0 3.2 3.2M16 5h2.5A3.2 3.2 0 0 1 15.3 8.2" />
+          <path d="M9.2 16.5 12 14.2l2.8 2.3V20H9.2z" />
+        </>
+      )
+    case 'recordBreak10':
+      return (
+        <>
+          <path d="M8 4.5h8v4a4 4 0 0 1-8 0z" />
+          <path d="M8 4.5H5.6a3 3 0 0 0 3 3M16 4.5h2.4a3 3 0 0 1-3 3" />
+          <path d="M12 3.2 13.4 7h3.6l-2.9 2.2 1.1 3.5L12 10.6 8.8 12.7l1.1-3.5L7 7h3.6z" />
+        </>
+      )
   }
 }

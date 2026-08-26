@@ -1,7 +1,8 @@
 import { COUNTRIES, type Country } from '../data/countries'
 import type { DuelQuestionWire, DuelView } from './duelTypes'
+import type { FactsDuelConfig } from './factsRules'
 import { isPlayerId } from './leaderboard'
-import { isQuizMode, type Question } from './quiz'
+import { isFactsToName, isQuizMode, type Question } from './quiz'
 
 const DUEL_ID_KEY = 'pq-duel-player'
 
@@ -23,10 +24,19 @@ export function questionFromWire(wire: DuelQuestionWire | null): Question | null
   if (!wire) return null
   const byIso = new Map(COUNTRIES.map((country) => [country.iso, country]))
   const country = byIso.get(wire.countryIso)
+  if (!country) return null
+  if (isFactsToName(wire.mode ?? 'flagToName')) {
+    return {
+      country,
+      options: [country],
+      mode: 'factsToName',
+      facts: wire.facts ?? [],
+    }
+  }
   const options = wire.optionIsos
     .map((iso) => byIso.get(iso))
-    .filter((country): country is Country => country !== undefined)
-  if (!country || options.length < 2) return null
+    .filter((item): item is Country => item !== undefined)
+  if (options.length < 2) return null
   return { country, options, mode: isQuizMode(wire.mode) ? wire.mode : undefined }
 }
 
@@ -36,12 +46,17 @@ export async function createDuel(input: {
   region: DuelView['region']
   difficulty: DuelView['difficulty']
   roundSize: number
+  facts?: FactsDuelConfig
 }): Promise<{ ok: true; room: DuelView } | { ok: false; error: string }> {
   return post('/api/duel/create', {
     ...input,
     playerId: duelPlayerId(),
     name: input.name || 'Player',
     mode: input.modes[0],
+    facts: input.facts,
+    factsEnd: input.facts?.end,
+    factsHardcore: input.facts?.hardcore,
+    factsSeries: input.facts?.series,
   })
 }
 
@@ -74,6 +89,12 @@ export async function rematchDuel(
   code: string,
 ): Promise<{ ok: true; room: DuelView } | { ok: false; error: string }> {
   return post(`/api/duel/${code}`, { playerId: duelPlayerId(), action: 'rematch' })
+}
+
+export async function advanceDuelFact(
+  code: string,
+): Promise<{ ok: true; room: DuelView } | { ok: false; error: string }> {
+  return post(`/api/duel/${code}`, { playerId: duelPlayerId(), action: 'advanceFact' })
 }
 
 export async function leaveDuel(code: string): Promise<void> {

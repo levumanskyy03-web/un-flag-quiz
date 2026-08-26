@@ -10,6 +10,7 @@ import {
   fitRoundSize,
   formatClock,
   getPool,
+  isFactsToName,
   isRegionSelected,
   toggleRegion,
   type LearnFrom,
@@ -19,6 +20,7 @@ import {
   type RegionFilter,
   type RoundSize,
 } from '../lib/quiz'
+import type { FactsDuelConfig } from '../lib/factsRules'
 import { HubNav, type HubTab } from './HubNav'
 import { PlayerHud } from './PlayerHud'
 import { DuelCreateModal } from './DuelCreateModal'
@@ -48,7 +50,7 @@ interface HomeScreenProps {
   duelError?: string | null
   onChange: (settings: QuizSettings) => void
   onStart: () => void
-  onCreateDuel: (modes: QuizMode[]) => void
+  onCreateDuel: (modes: QuizMode[], facts?: FactsDuelConfig) => void
   onJoinDuel: (code: string) => void
   onHub: (tab: HubTab) => void
   onClearHistory: () => void
@@ -74,7 +76,9 @@ export function HomeScreen({
   const t = STRINGS[settings.lang]
   const poolSize = getPool(settings.region, settings.difficulty, settings.mode).length
   const regions: Array<Region | 'all'> = ['all', ...REGIONS]
-  const difficulties = PLAY_DIFFICULTIES
+  const difficulties = isFactsToName(settings.mode)
+    ? PLAY_DIFFICULTIES.filter((item) => item !== 'hardcore')
+    : PLAY_DIFFICULTIES
   const currentBest = findBest(bests, settings)
   const [joinCode, setJoinCode] = useState('')
   const [duelSetupOpen, setDuelSetupOpen] = useState(false)
@@ -118,12 +122,13 @@ export function HomeScreen({
               type="button"
               className={`choice ${settings.mode === mode ? 'is-active' : ''}`}
               aria-pressed={settings.mode === mode}
-              onClick={() => update({ path: 'pool', mode })}
+              onClick={() => update({ path: 'pool', mode, difficulty: mode === 'factsToName' && settings.difficulty === 'hardcore' ? 'hard' : settings.difficulty })}
             >
               {modeLabel(mode, settings.lang)}
             </button>
           ))}
         </div>
+        {isFactsToName(settings.mode) ? <p className="setting-hint">{t.factsHint}</p> : null}
         <h2>{t.region}</h2>
         <div className="choice-wrap">
           {regions.map((region) => (
@@ -159,23 +164,27 @@ export function HomeScreen({
             </button>
           ))}
         </div>
-        {settings.difficulty === 'hardcore' && <p className="setting-hint">{t.hardcoreHint}</p>}
+        {settings.difficulty === 'hardcore' && !isFactsToName(settings.mode) && <p className="setting-hint">{t.hardcoreHint}</p>}
 
-        <h2>{t.roundSize}</h2>
-        <div className="choice-grid is-3">
-          {ROUND_SIZES.map((roundSize) => (
-            <button
-              key={roundSize}
-              type="button"
-              className={`choice ${settings.roundSize === roundSize ? 'is-active' : ''}`}
-              aria-pressed={settings.roundSize === roundSize}
-              disabled={poolSize > 0 && roundSize > poolSize}
-              onClick={() => onChange({ ...settings, path: 'pool', roundSize })}
-            >
-              {roundSize}
-            </button>
-          ))}
-        </div>
+        {!isFactsToName(settings.mode) ? (
+          <>
+            <h2>{t.roundSize}</h2>
+            <div className="choice-grid is-3">
+              {ROUND_SIZES.map((roundSize) => (
+                <button
+                  key={roundSize}
+                  type="button"
+                  className={`choice ${settings.roundSize === roundSize ? 'is-active' : ''}`}
+                  aria-pressed={settings.roundSize === roundSize}
+                  disabled={poolSize > 0 && roundSize > poolSize}
+                  onClick={() => onChange({ ...settings, path: 'pool', roundSize })}
+                >
+                  {roundSize}
+                </button>
+              ))}
+            </div>
+          </>
+        ) : null}
       </section>
 
       {currentBest && (
@@ -221,10 +230,11 @@ export function HomeScreen({
         <DuelCreateModal
           lang={settings.lang}
           initialMode={settings.mode}
+          region={settings.region}
           onCancel={() => setDuelSetupOpen(false)}
-          onConfirm={(modes) => {
+          onConfirm={(modes, facts) => {
             setDuelSetupOpen(false)
-            onCreateDuel(modes)
+            onCreateDuel(modes, facts)
           }}
         />
       ) : null}

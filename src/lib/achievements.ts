@@ -95,6 +95,8 @@ export function listAchievements(
         (round.difficulty === 'hard' || round.difficulty === 'hardcore'),
     ),
     play10h: lifetime.playMs >= 10 * HOUR_MS,
+    recordBreak1: lifetime.recordBreaks >= 1,
+    recordBreak10: lifetime.recordBreaks >= 10,
   }
   return ACHIEVEMENTS.map((item) => ({ id: item.id, unlocked: unlocked[item.id] }))
 }

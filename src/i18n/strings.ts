@@ -29,6 +29,7 @@ export type Strings = {
   neighborsToName: string
   nameToMap: string
   mapToName: string
+  factsToName: string
   whoseNeighbors: string
   whichCountry: string
   founded: string
@@ -180,6 +181,12 @@ export type Strings = {
   ratingsLevelsHint: string
   ratingsHardcoreHint: string
   ratingsRecordHint: string
+  worldRecord: string
+  worldRecordBeat: string
+  worldRecordBonus: (amount: string) => string
+  worldRecordEmpty: string
+  worldRecordLine: (name: string, time: string) => string
+  worldRecordHint: string
   tapPassport: string
   capital: string
   population: string
@@ -218,6 +225,85 @@ export type Strings = {
   duelRematchHint: string
   duelRematchWaiting: string
   duelRematchOffered: string
+  factsHint: string
+  factOf: (i: number, total: number) => string
+  factUniqueness: (n: number) => string
+  factGuess: string
+  factWrong: string
+  factWrongs: (used: number, limit: number) => string
+  factFailed: string
+  factGuessedAt: (n: number) => string
+  factNext: string
+  factCapital: (name: string) => string
+  factCurrency: (name: string) => string
+  factRegionClue: (region: string) => string
+  factNoLandBorders: string
+  factLandlocked: string
+  factNeighborCount: (n: number) => string
+  factBorders: (name: string) => string
+  factFoundedYear: (year: number) => string
+  factPopulationExact: (n: string) => string
+  factFlagColor: (color: string) => string
+  factFlagHorizontal: string
+  factFlagVertical: string
+  factFlagDiagonal: string
+  factFlagCanton: string
+  factFlagNordic: string
+  factFlagCross: string
+  factFlagSaltire: string
+  factFlagTriangle: string
+  factFlagStar: string
+  factFlagCrescent: string
+  factFlagDisc: string
+  factFlagUnionJack: string
+  factPopTiny: string
+  factPopSmall: string
+  factPopMedium: string
+  factPopLarge: string
+  factPopHuge: string
+  factFoundedPre1800: string
+  factFounded1800s: string
+  factFounded1900: string
+  factFounded1945: string
+  factFounded1970: string
+  factNeighbors1: string
+  factNeighbors2to3: string
+  factNeighbors4to6: string
+  factNeighbors7plus: string
+  factDrivesLeft: string
+  factSouthernHemisphere: string
+  factLangEn: string
+  factLangFr: string
+  factLangEs: string
+  factLangAr: string
+  factLangPt: string
+  factWaterPacific: string
+  factWaterAtlantic: string
+  factWaterIndian: string
+  factWaterMediterranean: string
+  factWaterBlackSea: string
+  factWaterBaltic: string
+  factWaterCaribbean: string
+  factMonarchy: string
+  factFederal: string
+  factNato: string
+  flagColorRed: string
+  flagColorBlue: string
+  flagColorGreen: string
+  flagColorYellow: string
+  flagColorBlack: string
+  flagColorWhite: string
+  flagColorOrange: string
+  duelFactsRegion: string
+  duelFactsRules: string
+  duelFactsUntilCorrect: string
+  duelFactsUntilCorrectHint: string
+  duelFactsThreeWrong: string
+  duelFactsUnlimited: string
+  duelFactsMaxFive: string
+  duelFactsHardcore: string
+  duelFactsHardcoreHint: string
+  duelFactsSeries: string
 }
 
 export const STRINGS: Record<Lang, Strings> = {
@@ -234,6 +320,7 @@ export const STRINGS: Record<Lang, Strings> = {
     neighborsToName: 'Соседи → страна',
     nameToMap: 'Страна → карта',
     mapToName: 'Карта → страна',
+    factsToName: 'Факты → страна',
     whoseNeighbors: 'Чьи это сухопутные соседи?',
     whichCountry: 'Какая это страна?',
     founded: 'Основание',
@@ -392,6 +479,12 @@ export const STRINGS: Record<Lang, Strings> = {
     ratingsLevelsHint: 'По числу пройденных уровней. Ошибки и время не считаются.',
     ratingsHardcoreHint: 'Только прохождения в хардкоре',
     ratingsRecordHint: 'На каждом уровне — только лучший результат',
+    worldRecord: 'Мировой рекорд',
+    worldRecordBeat: 'Рекорд обновлён!',
+    worldRecordBonus: (amount) => `+${amount} опыта за рекорд`,
+    worldRecordEmpty: 'Пока нет рекорда',
+    worldRecordLine: (name, time) => `${name} · ${time}`,
+    worldRecordHint: 'Под номером уровня — лучший результат среди всех игроков.',
     tapPassport: 'Нажмите страну — откроется паспорт',
     capital: 'Столица',
     population: 'Население',
@@ -430,6 +523,85 @@ export const STRINGS: Record<Lang, Strings> = {
     duelRematchHint: 'Если оба нажмут — сыграете ещё раз в этой комнате.',
     duelRematchWaiting: 'Ждём, пока соперник примет реванш.',
     duelRematchOffered: 'Соперник предлагает реванш.',
+    factsHint: 'Не входит в уровни. Первые 5 фактов — 10 секунд, дальше — 15. 10 фактов, 3 ошибки — попытка проиграна.',
+    factOf: (i, total) => `Факт ${i} из ${total}`,
+    factUniqueness: (n) => `уникальность ${n}`,
+    factGuess: 'Название страны',
+    factWrong: 'Неверно',
+    factWrongs: (used, limit) => `Ошибки: ${used} из ${limit}`,
+    factFailed: 'Страна не отгадана',
+    factGuessedAt: (n) => `Ответ на факте ${n}`,
+    factNext: 'Дальше',
+    factCapital: (name) => `Столица — ${name}.`,
+    factCurrency: (name) => `Валюта — ${name}.`,
+    factRegionClue: (region) => `Эта страна находится в регионе: ${region}.`,
+    factNoLandBorders: 'У этой страны нет сухопутных границ с другими членами ООН.',
+    factLandlocked: 'Эта страна не имеет выхода к морю.',
+    factNeighborCount: (n) => `Число сухопутных соседей — ${n}.`,
+    factBorders: (name) => `Эта страна имеет сухопутную границу с: ${name}.`,
+    factFoundedYear: (year) => `Год основания или независимости — ${year}.`,
+    factPopulationExact: (n) => `Население — ${n} человек.`,
+    factFlagColor: (color) => `На флаге есть цвет: ${color}.`,
+    factFlagHorizontal: 'Флаг состоит из горизонтальных полос.',
+    factFlagVertical: 'Флаг состоит из вертикальных полос.',
+    factFlagDiagonal: 'На флаге есть диагональная полоса.',
+    factFlagCanton: 'У флага есть кантон в верхнем углу у древка.',
+    factFlagNordic: 'На флаге скандинавский крест.',
+    factFlagCross: 'На флаге есть прямой крест.',
+    factFlagSaltire: 'На флаге есть косой крест.',
+    factFlagTriangle: 'На флаге есть треугольник у древка.',
+    factFlagStar: 'На флаге есть звезда.',
+    factFlagCrescent: 'На флаге есть полумесяц.',
+    factFlagDisc: 'На флаге есть круг или диск.',
+    factFlagUnionJack: 'На флаге есть британский Union Jack.',
+    factPopTiny: 'Население меньше миллиона человек.',
+    factPopSmall: 'Население от 1 до 10 миллионов человек.',
+    factPopMedium: 'Население от 10 до 50 миллионов человек.',
+    factPopLarge: 'Население от 50 до 100 миллионов человек.',
+    factPopHuge: 'Население больше 100 миллионов человек.',
+    factFoundedPre1800: 'Страна основана или получила независимость до 1800 года.',
+    factFounded1800s: 'Страна основана или получила независимость в XIX веке.',
+    factFounded1900: 'Страна основана или получила независимость в 1900–1944 годах.',
+    factFounded1945: 'Страна основана или получила независимость в 1945–1969 годах.',
+    factFounded1970: 'Страна основана или получила независимость в 1970 году или позже.',
+    factNeighbors1: 'Ровно один сухопутный сосед.',
+    factNeighbors2to3: 'Два или три сухопутных соседа.',
+    factNeighbors4to6: 'От четырёх до шести сухопутных соседей.',
+    factNeighbors7plus: 'Больше шести сухопутных соседей.',
+    factDrivesLeft: 'В этой стране левостороннее движение.',
+    factSouthernHemisphere: 'Столица этой страны находится в Южном полушарии.',
+    factLangEn: 'Один из официальных языков — английский.',
+    factLangFr: 'Один из официальных языков — французский.',
+    factLangEs: 'Один из официальных языков — испанский.',
+    factLangAr: 'Один из официальных языков — арабский.',
+    factLangPt: 'Один из официальных языков — португальский.',
+    factWaterPacific: 'Эта страна имеет выход к Тихому океану.',
+    factWaterAtlantic: 'Эта страна имеет выход к Атлантическому океану.',
+    factWaterIndian: 'Эта страна имеет выход к Индийскому океану.',
+    factWaterMediterranean: 'Эта страна имеет выход к Средиземному морю.',
+    factWaterBlackSea: 'Эта страна имеет выход к Чёрному морю.',
+    factWaterBaltic: 'Эта страна имеет выход к Балтийскому морю.',
+    factWaterCaribbean: 'Эта страна имеет выход к Карибскому морю.',
+    factMonarchy: 'Эта страна — монархия.',
+    factFederal: 'Это федеративное государство.',
+    factNato: 'Эта страна входит в НАТО.',
+    flagColorRed: 'красный',
+    flagColorBlue: 'синий',
+    flagColorGreen: 'зелёный',
+    flagColorYellow: 'жёлтый',
+    flagColorBlack: 'чёрный',
+    flagColorWhite: 'белый',
+    flagColorOrange: 'оранжевый',
+    duelFactsRegion: 'Регион дуэли',
+    duelFactsRules: 'Условие игры',
+    duelFactsUntilCorrect: 'До правильного ответа',
+    duelFactsUntilCorrectHint: 'Лимит 10 фактов и ошибки не действуют',
+    duelFactsThreeWrong: 'До 3 неверных вводов',
+    duelFactsUnlimited: 'До последнего факта, без ограничений',
+    duelFactsMaxFive: 'Не более 5 фактов',
+    duelFactsHardcore: 'Хардкор',
+    duelFactsHardcoreHint: '7 фактов, без ошибок. Первые 5 — 10 секунд, дальше — 15. «Дальше» листает факт у обоих.',
+    duelFactsSeries: 'Стран за дуэль',
   },
   en: {
     title: 'Country Passport',
@@ -444,6 +616,7 @@ export const STRINGS: Record<Lang, Strings> = {
     neighborsToName: 'Neighbors → country',
     nameToMap: 'Country → map',
     mapToName: 'Map → country',
+    factsToName: 'Facts → country',
     whoseNeighbors: 'Whose land neighbors are these?',
     whichCountry: 'Which country is this?',
     founded: 'Founded',
@@ -596,6 +769,12 @@ export const STRINGS: Record<Lang, Strings> = {
     ratingsLevelsHint: 'By levels cleared. Mistakes and time do not count.',
     ratingsHardcoreHint: 'Hardcore clears only',
     ratingsRecordHint: 'Only the best result on each level',
+    worldRecord: 'World record',
+    worldRecordBeat: 'Record broken!',
+    worldRecordBonus: (amount) => `+${amount} XP for the record`,
+    worldRecordEmpty: 'No record yet',
+    worldRecordLine: (name, time) => `${name} · ${time}`,
+    worldRecordHint: 'Under each level — the best result among all players.',
     tapPassport: 'Tap a country to open its passport',
     capital: 'Capital',
     population: 'Population',
@@ -634,6 +813,85 @@ export const STRINGS: Record<Lang, Strings> = {
     duelRematchHint: 'If both accept, the same room starts another round.',
     duelRematchWaiting: 'Waiting for your opponent to accept the rematch.',
     duelRematchOffered: 'Your opponent wants a rematch.',
+    factsHint: 'Not in the campaign. First 5 facts are 10 seconds, then 15. 10 facts, 3 wrong guesses fail the attempt.',
+    factOf: (i, total) => `Fact ${i} of ${total}`,
+    factUniqueness: (n) => `uniqueness ${n}`,
+    factGuess: 'Country name',
+    factWrong: 'Wrong',
+    factWrongs: (used, limit) => `Wrong: ${used} of ${limit}`,
+    factFailed: 'Country not guessed',
+    factGuessedAt: (n) => `Guessed on fact ${n}`,
+    factNext: 'Next',
+    factCapital: (name) => `The capital is ${name}.`,
+    factCurrency: (name) => `The currency is the ${name}.`,
+    factRegionClue: (region) => `This country is in ${region}.`,
+    factNoLandBorders: 'This country has no land borders with other UN member states.',
+    factLandlocked: 'This country is landlocked.',
+    factNeighborCount: (n) => `This country has ${n} land neighbors.`,
+    factBorders: (name) => `This country shares a land border with ${name}.`,
+    factFoundedYear: (year) => `This country was founded or became independent in ${year}.`,
+    factPopulationExact: (n) => `The population is ${n}.`,
+    factFlagColor: (color) => `The flag contains the color ${color}.`,
+    factFlagHorizontal: 'The flag is made of horizontal stripes.',
+    factFlagVertical: 'The flag is made of vertical stripes.',
+    factFlagDiagonal: 'The flag has a diagonal stripe.',
+    factFlagCanton: 'The flag has a canton in the upper hoist corner.',
+    factFlagNordic: 'The flag has a Nordic cross.',
+    factFlagCross: 'The flag has a straight cross.',
+    factFlagSaltire: 'The flag has a saltire (diagonal cross).',
+    factFlagTriangle: 'The flag has a triangle at the hoist.',
+    factFlagStar: 'The flag has a star.',
+    factFlagCrescent: 'The flag has a crescent.',
+    factFlagDisc: 'The flag has a disc or circle.',
+    factFlagUnionJack: 'The flag includes the British Union Jack.',
+    factPopTiny: 'The population is under one million.',
+    factPopSmall: 'The population is between 1 and 10 million.',
+    factPopMedium: 'The population is between 10 and 50 million.',
+    factPopLarge: 'The population is between 50 and 100 million.',
+    factPopHuge: 'The population is over 100 million.',
+    factFoundedPre1800: 'This country was founded or became independent before 1800.',
+    factFounded1800s: 'This country was founded or became independent in the 19th century.',
+    factFounded1900: 'This country was founded or became independent in 1900–1944.',
+    factFounded1945: 'This country was founded or became independent in 1945–1969.',
+    factFounded1970: 'This country was founded or became independent in 1970 or later.',
+    factNeighbors1: 'This country has exactly one land neighbor.',
+    factNeighbors2to3: 'This country has two or three land neighbors.',
+    factNeighbors4to6: 'This country has four to six land neighbors.',
+    factNeighbors7plus: 'This country has more than six land neighbors.',
+    factDrivesLeft: 'This country drives on the left.',
+    factSouthernHemisphere: 'This country’s capital is in the Southern Hemisphere.',
+    factLangEn: 'English is an official language.',
+    factLangFr: 'French is an official language.',
+    factLangEs: 'Spanish is an official language.',
+    factLangAr: 'Arabic is an official language.',
+    factLangPt: 'Portuguese is an official language.',
+    factWaterPacific: 'This country has a Pacific coast.',
+    factWaterAtlantic: 'This country has an Atlantic coast.',
+    factWaterIndian: 'This country has an Indian Ocean coast.',
+    factWaterMediterranean: 'This country has a Mediterranean coast.',
+    factWaterBlackSea: 'This country has a Black Sea coast.',
+    factWaterBaltic: 'This country has a Baltic Sea coast.',
+    factWaterCaribbean: 'This country has a Caribbean coast.',
+    factMonarchy: 'This country is a monarchy.',
+    factFederal: 'This country is a federation.',
+    factNato: 'This country is a NATO member.',
+    flagColorRed: 'red',
+    flagColorBlue: 'blue',
+    flagColorGreen: 'green',
+    flagColorYellow: 'yellow',
+    flagColorBlack: 'black',
+    flagColorWhite: 'white',
+    flagColorOrange: 'orange',
+    duelFactsRegion: 'Duel region',
+    duelFactsRules: 'Win condition',
+    duelFactsUntilCorrect: 'Until a correct answer',
+    duelFactsUntilCorrectHint: 'The 10-fact cap and wrong-guess limit are off',
+    duelFactsThreeWrong: 'Until 3 wrong guesses',
+    duelFactsUnlimited: 'Until the last fact, no limits',
+    duelFactsMaxFive: 'At most 5 facts',
+    duelFactsHardcore: 'Hardcore',
+    duelFactsHardcoreHint: '7 facts, no mistakes. First 5 are 10 seconds, then 15. Next advances the fact for both players.',
+    duelFactsSeries: 'Countries per duel',
   },
   ...EXTRA_STRINGS,
 }

@@ -3,6 +3,8 @@ import { LEVEL_ISOS, isFinalLevel, isLevelNumber } from '../data/levels'
 import { isEasyForMode } from '../data/modeDifficulty'
 import { canAskNeighbors } from '../data/neighbors'
 import { localeTag, type Lang } from '../i18n/lang'
+import { clueSequence, type FactClue } from './countryFacts'
+import { FACTS_CLUE_TIME_MS } from './factsRules'
 
 export const QUIZ_MODES = [
   'flagToName',
@@ -14,11 +16,14 @@ export const QUIZ_MODES = [
   'neighborsToName',
   'nameToMap',
   'mapToName',
+  'factsToName',
 ] as const
 export type QuizMode = (typeof QUIZ_MODES)[number]
-export const LEVEL_MODES: QuizMode[] = QUIZ_MODES.filter((mode) => mode !== 'neighborsToName')
+export const LEVEL_MODES: QuizMode[] = QUIZ_MODES.filter(
+  (mode) => mode !== 'neighborsToName' && mode !== 'factsToName',
+)
 export const EASY_MIX_MODES: QuizMode[] = ['flagToName', 'nameToFlag', 'nameToCapital']
-export const HARD_MIX_MODES: QuizMode[] = [...QUIZ_MODES]
+export const HARD_MIX_MODES: QuizMode[] = QUIZ_MODES.filter((mode) => mode !== 'factsToName')
 
 export function isQuizMode(value: unknown): value is QuizMode {
   return typeof value === 'string' && (QUIZ_MODES as readonly string[]).includes(value)
@@ -59,8 +64,12 @@ export function isMapMode(mode: QuizMode): boolean {
   return mode === 'nameToMap' || mode === 'mapToName'
 }
 
+export function isFactsToName(mode: QuizMode): boolean {
+  return mode === 'factsToName'
+}
+
 export function hasLevels(mode: QuizMode): boolean {
-  return mode !== 'neighborsToName'
+  return mode !== 'neighborsToName' && mode !== 'factsToName'
 }
 export type PlayPath = 'pool' | 'levels' | 'learn'
 export type LearnFrom = 'region' | 'level'
@@ -138,6 +147,7 @@ export function fitRoundSize(size: number, poolSize: number): RoundSize {
 }
 export const QUESTION_TIME_MS = 10_000
 export const FACT_QUESTION_TIME_MS = 12_000
+export { FACTS_CLUE_TIME_MS }
 export const MAP_IDENTIFY_TIME_MS = 12_000
 export const NEIGHBORS_QUESTION_TIME_MS = 30_000
 export const MAP_FIND_REGION_TIME_MS = 15_000
@@ -156,6 +166,7 @@ export function questionLimitMs(
     return worldView ? MAP_FIND_WORLD_TIME_MS : MAP_FIND_REGION_TIME_MS
   }
   if (mode === 'mapToName') return MAP_IDENTIFY_TIME_MS
+  if (mode === 'factsToName') return FACTS_CLUE_TIME_MS
   if (isFactMode(mode)) return FACT_QUESTION_TIME_MS
   return QUESTION_TIME_MS
 }
@@ -189,6 +200,7 @@ export interface Question {
   country: Country
   options: Country[]
   mode?: QuizMode
+  facts?: FactClue[]
 }
 
 export interface RoundAnswer {
@@ -335,7 +347,7 @@ export function createRound(
 ): Question[] {
   const targets = shuffle(pool).slice(0, Math.min(count, pool.length))
 
-  return targets.map((country) => ({
+  return targets.map((country) => withFacts({
     country,
     mode,
     options: shuffle([country, ...pickDistractors(country, pool, 3, uniqueKey)]),
@@ -379,14 +391,19 @@ function questionForMode(
   const modePool = poolForMode(pool, mode, difficulty).filter((country) => !usedIso.has(country.iso))
   if (modePool.length === 0) return null
   const country = shuffle(modePool)[0]
-  return {
+  return withFacts({
     country,
     mode,
     options: shuffle([
       country,
       ...pickDistractors(country, modePool, 3, (item) => uniqueKey(item, mode)),
     ]),
-  }
+  })
+}
+
+function withFacts(question: Question): Question {
+  if (question.mode !== 'factsToName') return question
+  return { ...question, facts: clueSequence(question.country.iso) }
 }
 
 function pickDistractors(

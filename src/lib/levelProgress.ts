@@ -12,6 +12,7 @@ export interface LevelClear {
   livesLeft: number
   roundMs: number
   at: number
+  xp?: number
 }
 
 function livesKey(clear: Pick<LevelClear, 'hardcore' | 'livesLimit'>): number {
@@ -34,10 +35,15 @@ export function saveLevelClear(clear: LevelClear): LevelClear[] {
   const previous = loadLevelClears()
   if (!isLevelUnlocked(previous, clear.level, clear.mode)) return previous
   const current = findLevelClear(previous, clear.level, clear.mode)
-  const next =
-    current && !isBetterClear(clear, current)
-      ? previous
-      : [...previous.filter((item) => !(item.level === clear.level && item.mode === clear.mode)), clear]
+  const mergedXp = Math.max(current?.xp ?? 0, clear.xp ?? 0)
+  const sameSlot = (item: LevelClear) => item.level === clear.level && item.mode === clear.mode
+  if (current && !isBetterClear(clear, current)) {
+    if ((current.xp ?? 0) >= mergedXp) return previous
+    const next = previous.map((item) => (sameSlot(item) ? { ...item, xp: mergedXp } : item))
+    localStorage.setItem(LEVELS_KEY, JSON.stringify(next))
+    return next
+  }
+  const next = [...previous.filter((item) => !sameSlot(item)), { ...clear, ...(mergedXp > 0 ? { xp: mergedXp } : {}) }]
   localStorage.setItem(LEVELS_KEY, JSON.stringify(next))
   return next
 }
@@ -81,12 +87,12 @@ function keepConsecutive(clears: LevelClear[]): LevelClear[] {
     for (let level = 1; level <= CAMPAIGN_LEVELS; level++) {
       const hits = clears.filter((item) => item.level === level && item.mode === mode)
       if (hits.length === 0) break
-      chain.push(hits.reduce((best, item) => (isBetterClear(item, best) ? item : best)))
+      chain.push(pickKeptClear(hits))
     }
     if (chain.some((item) => item.level === CAMPAIGN_LEVELS)) {
       const finals = clears.filter((item) => item.level === FINAL_LEVEL && item.mode === mode)
       if (finals.length > 0) {
-        chain.push(finals.reduce((best, item) => (isBetterClear(item, best) ? item : best)))
+        chain.push(pickKeptClear(finals))
       }
     }
     kept.push(...chain)
@@ -94,7 +100,14 @@ function keepConsecutive(clears: LevelClear[]): LevelClear[] {
   return kept
 }
 
-function isBetterClear(candidate: LevelClear, current: LevelClear): boolean {
+function pickKeptClear(hits: LevelClear[]): LevelClear {
+  const best = hits.reduce((current, item) => (isBetterClear(item, current) ? item : current))
+  const xp = hits.reduce((max, item) => Math.max(max, item.xp ?? 0), 0)
+  if (xp <= 0 || best.xp === xp) return best
+  return { ...best, xp }
+}
+
+export function isBetterClear(candidate: LevelClear, current: LevelClear): boolean {
   if (candidate.hardcore !== current.hardcore) return candidate.hardcore
   if (!candidate.hardcore && candidate.livesLeft !== current.livesLeft) {
     return candidate.livesLeft > current.livesLeft
@@ -125,6 +138,7 @@ function isLevelClear(value: unknown): value is LevelClear {
     (record.livesLimit === undefined || typeof record.livesLimit === 'number') &&
     typeof record.livesLeft === 'number' &&
     typeof record.roundMs === 'number' &&
-    typeof record.at === 'number'
+    typeof record.at === 'number' &&
+    (record.xp === undefined || (typeof record.xp === 'number' && Number.isFinite(record.xp) && record.xp >= 0))
   )
 }

@@ -1,6 +1,6 @@
 import type { RoundRecord } from './history'
 import type { LevelClear } from './levelProgress'
-import { xpFromClear } from './xp'
+import { clearBestXp } from './xp'
 
 const LIFETIME_KEY = 'un-flag-quiz-lifetime'
 const XP_SCHEMA = 2
@@ -11,6 +11,7 @@ export interface LifetimeStats {
   xp: number
   playMs: number
   firstSeen: number
+  recordBreaks: number
 }
 
 export function countLifetimeSeed(history: RoundRecord[], clears: LevelClear[]): LifetimeStats {
@@ -20,11 +21,12 @@ export function countLifetimeSeed(history: RoundRecord[], clears: LevelClear[]):
   return {
     rounds: history.length + clears.length,
     completes: history.filter((round) => round.endedBy === 'complete').length + clears.length,
-    xp: clears.reduce((sum, clear) => sum + xpFromClear(clear), 0),
+    xp: clears.reduce((sum, clear) => sum + clearBestXp(clear), 0),
     playMs:
       history.reduce((sum, round) => sum + Math.max(0, round.roundMs), 0) +
       clears.reduce((sum, clear) => sum + Math.max(0, clear.roundMs), 0),
     firstSeen: stamps.length > 0 ? Math.min(...stamps) : Date.now(),
+    recordBreaks: 0,
   }
 }
 
@@ -40,6 +42,7 @@ export function loadLifetime(seedIfEmpty?: LifetimeStats): LifetimeStats {
       xp,
       playMs: play.playMs,
       firstSeen: play.firstSeen,
+      recordBreaks: stored.recordBreaks,
     }
     if (
       stored.xp !== next.xp ||
@@ -75,6 +78,7 @@ export function bumpLifetime(
     xp: current.xp + Math.max(0, Math.floor(xpGain)),
     playMs: current.playMs + Math.max(0, Math.floor(playMs)),
     firstSeen: current.firstSeen,
+    recordBreaks: current.recordBreaks,
   }
   writeLifetime(next)
   return next
@@ -90,8 +94,18 @@ export function addPlayMs(ms: number, seedIfEmpty: LifetimeStats): LifetimeStats
   return next
 }
 
+export function bumpRecordBreaks(seedIfEmpty: LifetimeStats): LifetimeStats {
+  const current = loadLifetime(seedIfEmpty)
+  const next: LifetimeStats = {
+    ...current,
+    recordBreaks: current.recordBreaks + 1,
+  }
+  writeLifetime(next)
+  return next
+}
+
 function emptyLifetime(): LifetimeStats {
-  return { rounds: 0, completes: 0, xp: 0, playMs: 0, firstSeen: Date.now() }
+  return { rounds: 0, completes: 0, xp: 0, playMs: 0, firstSeen: Date.now(), recordBreaks: 0 }
 }
 
 function mergePlay(
@@ -112,6 +126,7 @@ function readLifetime(): {
   schema: number
   playMs: number | null
   firstSeen: number | null
+  recordBreaks: number
 } | null {
   if (typeof window === 'undefined') return null
   try {
@@ -132,7 +147,11 @@ function readLifetime(): {
       typeof record.firstSeen === 'number' && Number.isFinite(record.firstSeen) && record.firstSeen > 0
         ? Math.floor(record.firstSeen)
         : null
-    return { rounds: record.rounds, completes: record.completes, xp, schema, playMs, firstSeen }
+    const recordBreaks =
+      typeof record.recordBreaks === 'number' && Number.isFinite(record.recordBreaks) && record.recordBreaks >= 0
+        ? Math.floor(record.recordBreaks)
+        : 0
+    return { rounds: record.rounds, completes: record.completes, xp, schema, playMs, firstSeen, recordBreaks }
   } catch {
     return null
   }

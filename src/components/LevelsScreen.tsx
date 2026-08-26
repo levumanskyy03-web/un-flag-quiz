@@ -1,10 +1,12 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { LEVEL_NUMBERS, isFinalLevel } from '../data/levels'
 import { STRINGS, modeLabel } from '../i18n/strings'
 import type { LevelClear } from '../lib/levelProgress'
 import { findLevelClear, isLevelUnlocked } from '../lib/levelProgress'
 import type { RoundRecord } from '../lib/history'
+import { fetchLevelBests, type LevelBest } from '../lib/leaderboard'
 import { MAX_LIVES, LEVEL_MODES, formatClock } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
 import { HubNav, type HubTab } from './HubNav'
@@ -25,6 +27,17 @@ interface LevelsScreenProps {
 
 export function LevelsScreen({ settings, levelClears, history, bests, xp = 0, xpReady = false, onChange, onPlay, onHub }: LevelsScreenProps) {
   const t = STRINGS[settings.lang]
+  const [worldBests, setWorldBests] = useState<Record<number, LevelBest>>({})
+
+  useEffect(() => {
+    let cancelled = false
+    void fetchLevelBests(settings.mode, settings.levelHardcore).then((records) => {
+      if (!cancelled) setWorldBests(records)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [settings.mode, settings.levelHardcore])
 
   return (
     <div className="screen levels-screen">
@@ -62,6 +75,7 @@ export function LevelsScreen({ settings, levelClears, history, bests, xp = 0, xp
             const cleared = findLevelClear(levelClears, level, settings.mode)
             const unlocked = isLevelUnlocked(levelClears, level, settings.mode)
             const canOpen = settings.levelLearn || unlocked
+            const world = worldBests[level]
             const livesLimit = cleared ? cleared.livesLimit ?? (cleared.hardcore ? 1 : MAX_LIVES) : MAX_LIVES
             return (
               <button
@@ -93,6 +107,13 @@ export function LevelsScreen({ settings, levelClears, history, bests, xp = 0, xp
                 ) : isFinalLevel(level) ? (
                   <span className="level-meta">193</span>
                 ) : null}
+                {world ? (
+                  <span className="level-world">
+                    {t.worldRecordLine(world.name, formatClock(world.roundMs))}
+                  </span>
+                ) : canOpen ? (
+                  <span className="level-world is-empty">{t.worldRecordEmpty}</span>
+                ) : null}
               </button>
             )
           })}
@@ -121,6 +142,7 @@ export function LevelsScreen({ settings, levelClears, history, bests, xp = 0, xp
         ) : settings.levelHardcore ? (
           <p className="setting-hint">{t.hardcoreHint}</p>
         ) : null}
+        <p className="setting-hint">{t.worldRecordHint}</p>
       </section>
     </div>
   )

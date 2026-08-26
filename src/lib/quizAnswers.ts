@@ -14,7 +14,13 @@ import { populationChoiceLabel } from './populationFakes'
 import { countryName, type Question, type QuizMode } from './quiz'
 
 export function answerKey(country: Country, mode: QuizMode): string {
-  if (mode === 'flagToName' || mode === 'nameToFlag' || mode === 'nameToMap' || mode === 'mapToName') {
+  if (
+    mode === 'flagToName' ||
+    mode === 'nameToFlag' ||
+    mode === 'nameToMap' ||
+    mode === 'mapToName' ||
+    mode === 'factsToName'
+  ) {
     return country.iso
   }
   if (mode === 'neighborsToName') return `neighbors:${neighborKey(country.iso)}`
@@ -27,7 +33,14 @@ export function answerKey(country: Country, mode: QuizMode): string {
 }
 
 export function optionLabel(country: Country, mode: QuizMode, lang: Lang, question?: Question): string {
-  if (mode === 'flagToName' || mode === 'nameToFlag' || mode === 'neighborsToName' || mode === 'nameToMap' || mode === 'mapToName') {
+  if (
+    mode === 'flagToName' ||
+    mode === 'nameToFlag' ||
+    mode === 'neighborsToName' ||
+    mode === 'nameToMap' ||
+    mode === 'mapToName' ||
+    mode === 'factsToName'
+  ) {
     return countryName(country, lang)
   }
   if (mode === 'nameToFounded') {

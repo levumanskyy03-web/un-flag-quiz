@@ -5,10 +5,20 @@ import { isPlayerId, sanitizeName } from './leaderboard'
 import { isNameAllowed } from './nameFilter'
 import type { DuelQuestionWire, DuelView } from './duelTypes'
 import { answerKey } from './quizAnswers'
+import { clueSequence, mulberry32, seedFrom } from './countryFacts'
+import {
+  factsClueTimeMs,
+  factsMaxFor,
+  factsWrongLimit,
+  isFactsDuelConfig,
+  parseFactsDuelConfig,
+  type FactsDuelConfig,
+} from './factsRules'
 import {
   answerPauseMs,
   createMixedRound,
   getRegionPool,
+  isFactsToName,
   isQuizDifficulty,
   isQuizMode,
   isRegionFilter,
@@ -18,7 +28,6 @@ import {
   type QuizDifficulty,
   type QuizMode,
   type RegionFilter,
-  type RoundSize,
 } from './quiz'
 
 export type { DuelQuestionWire, DuelView }
@@ -41,6 +50,7 @@ export interface DuelPlayer {
   id: string
   name: string
   answers: Array<DuelAnswer | null>
+  wrongs: number[]
 }
 
 export interface DuelRoom {
@@ -54,9 +64,11 @@ export interface DuelRoom {
   modes: QuizMode[]
   region: RegionFilter
   difficulty: QuizDifficulty
-  roundSize: RoundSize
+  roundSize: number
   questions: DuelQuestionWire[]
   index: number
+  factIndex: number
+  facts?: FactsDuelConfig
   phase: 'waiting' | 'question' | 'reveal' | 'done'
   questionStartedAt: number
   playStartedAt: number
@@ -84,16 +96,19 @@ export async function createDuelRoom(input: {
   modes: QuizMode[]
   region: RegionFilter
   difficulty: QuizDifficulty
-  roundSize: RoundSize
+  roundSize: number
+  facts?: FactsDuelConfig
 }): Promise<{ ok: true; room: DuelRoom } | { ok: false; error: 'offline' | 'empty' }> {
-  const modes = orderedModes(input.modes.length > 0 ? input.modes : [input.mode])
-  const questions = buildQuestions(modes, input.region, input.difficulty, input.roundSize)
-  if (questions.length === 0) return { ok: false, error: 'empty' }
+  const facts = input.facts && isFactsToName(input.modes[0] ?? input.mode) ? input.facts : undefined
+  const modes = facts ? (['factsToName'] as QuizMode[]) : orderedModes(input.modes.length > 0 ? input.modes : [input.mode])
+  const roundSize = facts ? facts.series : input.roundSize
   const now = Date.now()
   for (let attempt = 0; attempt < 8; attempt += 1) {
     const code = randomCode()
     const existing = await getRoom(code)
     if (existing && existing.expiresAt > now) continue
+    const questions = buildQuestions(modes, input.region, input.difficulty, roundSize, code, facts)
+    if (questions.length === 0) return { ok: false, error: 'empty' }
     const room: DuelRoom = {
       version: 1,
       code,
@@ -104,10 +119,12 @@ export async function createDuelRoom(input: {
       mode: modes[0] ?? input.mode,
       modes,
       region: input.region,
-      difficulty: input.difficulty,
-      roundSize: input.roundSize,
+      difficulty: facts ? 'hard' : input.difficulty,
+      roundSize,
       questions,
       index: 0,
+      factIndex: 0,
+      facts,
       phase: 'waiting',
       questionStartedAt: 0,
       playStartedAt: 0,
@@ -166,6 +183,30 @@ export async function answerDuel(
       const mode = isQuizMode(question?.mode) ? question.mode : ticked.mode
       const pick = acceptDuelIso(iso, question?.optionIsos ?? [], mode)
 
+      if (isFactsRoom(ticked)) {
+        if (ticked.phase !== 'question' || existing) return ticked
+        if (!pick) return ticked
+        if (pick === question.countryIso) {
+          player.answers[ticked.index] = {
+            iso: pick,
+            timeMs: Math.max(0, now - ticked.questionStartedAt),
+          }
+        } else {
+          player.wrongs[ticked.index] = (player.wrongs[ticked.index] ?? 0) + 1
+          if (player.wrongs[ticked.index] >= factsWrongLimit(ticked.facts)) {
+            player.answers[ticked.index] = {
+              iso: null,
+              timeMs: Math.max(0, now - ticked.questionStartedAt),
+            }
+          }
+        }
+        if (bothAnswered(ticked)) {
+          ticked.phase = 'reveal'
+          ticked.revealUntil = now + revealMs(ticked)
+        }
+        return ticked
+      }
+
       if (ticked.phase === 'question') {
         if (existing?.iso != null) return ticked
         player.answers[ticked.index] = {
@@ -185,6 +226,23 @@ export async function answerDuel(
           timeMs: Math.max(0, now - ticked.questionStartedAt),
         }
       }
+      return ticked
+    })
+  } catch (error) {
+    if (error instanceof DuelError) return null
+    throw error
+  }
+}
+
+export async function advanceDuelFact(code: string, playerId: string): Promise<DuelRoom | null> {
+  try {
+    return await mutateRoom(code, (current) => {
+      const now = Date.now()
+      const ticked = tickRoom(current, now)
+      if (!playerOf(ticked, playerId)) return 'forbidden'
+      if (!isFactsRoom(ticked) || !ticked.facts?.hardcore) return ticked
+      if (ticked.phase !== 'question') return ticked
+      advanceSharedFact(ticked, now)
       return ticked
     })
   } catch (error) {
@@ -247,7 +305,10 @@ export function viewFor(room: DuelRoom, playerId: string): DuelView | null {
   const youSlot = you.answers[room.index]
   const opponentSlot = opponent?.answers[room.index] ?? null
   const reveal = room.phase === 'reveal' || room.phase === 'done'
-  const limitMs = questionLimitMs(questionModeOf(room), { region: room.region })
+  const factsRoom = isFactsRoom(room)
+  const limitMs = factsRoom
+    ? factsClueTimeMs(room.facts, room.factIndex)
+    : questionLimitMs(questionModeOf(room), { region: room.region })
   const remainingMs =
     room.phase === 'question'
       ? Math.max(0, limitMs - (Date.now() - room.questionStartedAt))
@@ -280,7 +341,7 @@ export function viewFor(room: DuelRoom, playerId: string): DuelView | null {
     youAnswer: youSlot ? youSlot.iso : undefined,
     opponentReady: Boolean(opponentSlot),
     opponentAnswer: reveal ? (opponentSlot ? opponentSlot.iso : undefined) : undefined,
-    question: room.phase === 'waiting' ? null : (room.questions[room.index] ?? null),
+    question: room.phase === 'waiting' ? null : viewQuestion(room),
     youWon:
       room.phase === 'done' && opponentScore !== null
         ? youScore === opponentScore
@@ -289,6 +350,11 @@ export function viewFor(room: DuelRoom, playerId: string): DuelView | null {
         : null,
     youRematch,
     opponentRematch,
+    facts: room.facts,
+    factIndex: factsRoom ? room.factIndex : undefined,
+    youWrongs: factsRoom ? you.wrongs[room.index] ?? 0 : undefined,
+    factsMax: factsRoom ? factsMaxFor(room.facts) : undefined,
+    factsWrongLimit: factsRoom ? factsWrongLimit(room.facts) : undefined,
   }
 }
 
@@ -299,7 +365,8 @@ export function parseCreateBody(body: unknown): {
   modes: QuizMode[]
   region: RegionFilter
   difficulty: QuizDifficulty
-  roundSize: RoundSize
+  roundSize: number
+  facts?: FactsDuelConfig
 } | null {
   if (!body || typeof body !== 'object') return null
   const record = body as Record<string, unknown>
@@ -309,13 +376,28 @@ export function parseCreateBody(body: unknown): {
   if (!modes || !isRegionFilter(record.region) || !isQuizDifficulty(record.difficulty)) {
     return null
   }
+  const factsMode = modes.includes('factsToName')
+  const facts = factsMode ? parseFactsDuelConfig(record) : undefined
+  if (factsMode && !facts) return null
   const roundSize = typeof record.roundSize === 'number' ? record.roundSize : Number(record.roundSize)
+  if (facts) {
+    return {
+      playerId,
+      name: parseDuelName(record.name),
+      mode: 'factsToName',
+      modes: ['factsToName'],
+      region: record.region,
+      difficulty: record.difficulty,
+      roundSize: facts.series,
+      facts,
+    }
+  }
   if (!isRoundSize(roundSize)) return null
   return {
     playerId,
     name: parseDuelName(record.name),
     mode: modes[0],
-    modes,
+    modes: modes.filter((mode) => mode !== 'factsToName'),
     region: record.region,
     difficulty: record.difficulty,
     roundSize,
@@ -343,7 +425,12 @@ class DuelError extends Error {
 }
 
 function emptyPlayer(id: string, name: string, total: number): DuelPlayer {
-  return { id, name, answers: Array.from({ length: total }, () => null) }
+  return {
+    id,
+    name,
+    answers: Array.from({ length: total }, () => null),
+    wrongs: Array.from({ length: total }, () => 0),
+  }
 }
 
 function playerOf(room: DuelRoom, playerId: string): DuelPlayer | null {
@@ -366,16 +453,23 @@ function scoreOf(room: DuelRoom, player: DuelPlayer): number {
 
 function tickRoom(room: DuelRoom, now: number): DuelRoom {
   if (room.phase === 'waiting' || room.phase === 'done') return room
-  const limitMs = questionLimitMs(questionModeOf(room), { region: room.region })
-  if (room.phase === 'question' && now - room.questionStartedAt >= limitMs) {
-    for (const player of [room.host, room.guest]) {
-      if (!player) continue
-      if (!player.answers[room.index]) {
-        player.answers[room.index] = { iso: null, timeMs: limitMs }
-      }
+  if (isFactsRoom(room) && room.phase === 'question') {
+    const limitMs = factsClueTimeMs(room.facts, room.factIndex)
+    if (now - room.questionStartedAt >= limitMs) {
+      advanceSharedFact(room, now)
     }
-    room.phase = 'reveal'
-    room.revealUntil = now + revealMs(room)
+  } else {
+    const limitMs = questionLimitMs(questionModeOf(room), { region: room.region })
+    if (room.phase === 'question' && now - room.questionStartedAt >= limitMs) {
+      for (const player of [room.host, room.guest]) {
+        if (!player) continue
+        if (!player.answers[room.index]) {
+          player.answers[room.index] = { iso: null, timeMs: limitMs }
+        }
+      }
+      room.phase = 'reveal'
+      room.revealUntil = now + revealMs(room)
+    }
   }
   if (room.phase === 'reveal' && now >= room.revealUntil) {
     if (room.index >= room.questions.length - 1) {
@@ -383,6 +477,7 @@ function tickRoom(room: DuelRoom, now: number): DuelRoom {
       if (!room.playEndedAt) room.playEndedAt = now
     } else {
       room.index += 1
+      room.factIndex = 0
       room.phase = 'question'
       room.questionStartedAt = now
       room.revealUntil = 0
@@ -397,6 +492,9 @@ function playState(room: DuelRoom): string {
     index: room.index,
     revealUntil: room.revealUntil,
     questionStartedAt: room.questionStartedAt,
+    factIndex: room.factIndex,
+    hostWrongs: room.host.wrongs,
+    guestWrongs: room.guest?.wrongs ?? null,
     guest: room.guest?.id ?? null,
     hostAnswers: room.host.answers,
     guestAnswers: room.guest?.answers ?? null,
@@ -410,8 +508,28 @@ function buildQuestions(
   modes: QuizMode[],
   region: RegionFilter,
   difficulty: QuizDifficulty,
-  roundSize: RoundSize,
+  roundSize: number,
+  seed: string,
+  facts?: FactsDuelConfig,
 ): DuelQuestionWire[] {
+  if (facts || (modes.length === 1 && modes[0] === 'factsToName')) {
+    const pool = getRegionPool(region)
+    const count = Math.min(facts?.series ?? roundSize, pool.length)
+    const picked = [...pool].sort((a, b) => a.iso.localeCompare(b.iso))
+    const rng = mulberry32(seedFrom(seed + region))
+    const shuffled = [...picked]
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(rng() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    const max = factsMaxFor(facts)
+    return shuffled.slice(0, count).map((country, index) => ({
+      countryIso: country.iso,
+      optionIsos: [],
+      mode: 'factsToName' as const,
+      facts: clueSequence(country.iso, max, mulberry32(seedFrom(`${seed}:${country.iso}:${index}`))),
+    }))
+  }
   const round = createMixedRound(
     modes,
     getRegionPool(region),
@@ -427,11 +545,12 @@ function buildQuestions(
 }
 
 function restartRound(room: DuelRoom): DuelRoom {
-  const questions = buildQuestions(room.modes, room.region, room.difficulty, room.roundSize)
+  const questions = buildQuestions(room.modes, room.region, room.difficulty, room.roundSize, room.code, room.facts)
   if (questions.length === 0) return room
   const now = Date.now()
   room.questions = questions
   room.index = 0
+  room.factIndex = 0
   room.phase = 'question'
   room.questionStartedAt = now
   room.playStartedAt = now
@@ -440,7 +559,11 @@ function restartRound(room: DuelRoom): DuelRoom {
   room.hostRematch = false
   room.guestRematch = false
   room.host.answers = Array.from({ length: questions.length }, () => null)
-  if (room.guest) room.guest.answers = Array.from({ length: questions.length }, () => null)
+  room.host.wrongs = Array.from({ length: questions.length }, () => 0)
+  if (room.guest) {
+    room.guest.answers = Array.from({ length: questions.length }, () => null)
+    room.guest.wrongs = Array.from({ length: questions.length }, () => 0)
+  }
   room.expiresAt = now + ROOM_MS
   return room
 }
@@ -452,10 +575,38 @@ function questionModeOf(room: DuelRoom, index = room.index): QuizMode {
 
 function acceptDuelIso(iso: string | null, optionIsos: string[], mode: QuizMode): string | null {
   if (!iso) return null
-  if (mode === 'nameToMap') {
+  if (mode === 'nameToMap' || mode === 'factsToName') {
     return COUNTRIES.some((country) => country.iso === iso) ? iso : null
   }
   return optionIsos.includes(iso) ? iso : null
+}
+
+function isFactsRoom(room: DuelRoom): boolean {
+  return Boolean(room.facts) || questionModeOf(room) === 'factsToName'
+}
+
+function viewQuestion(room: DuelRoom): DuelQuestionWire | null {
+  const question = room.questions[room.index]
+  if (!question) return null
+  if (!isFactsRoom(room) || !question.facts) return question
+  return { ...question, facts: question.facts.slice(0, Math.max(1, room.factIndex + 1)) }
+}
+
+function advanceSharedFact(room: DuelRoom, now: number) {
+  const max = Math.min(factsMaxFor(room.facts), room.questions[room.index]?.facts?.length ?? factsMaxFor(room.facts))
+  if (room.factIndex + 1 >= max) {
+    for (const player of [room.host, room.guest]) {
+      if (!player) continue
+      if (!player.answers[room.index]) {
+        player.answers[room.index] = { iso: null, timeMs: Math.max(0, now - room.questionStartedAt) }
+      }
+    }
+    room.phase = 'reveal'
+    room.revealUntil = now + revealMs(room)
+    return
+  }
+  room.factIndex += 1
+  room.questionStartedAt = now
 }
 
 function randomCode(): string {
@@ -571,6 +722,16 @@ function parseRoom(value: unknown): DuelRoom | null {
     room.playEndedAt = typeof room.playEndedAt === 'number' ? room.playEndedAt : 0
     room.hostRematch = Boolean(room.hostRematch)
     room.guestRematch = Boolean(room.guestRematch)
+    room.factIndex = typeof room.factIndex === 'number' ? room.factIndex : 0
+    room.facts = isFactsDuelConfig(room.facts) ? room.facts : undefined
+    room.host.wrongs = Array.isArray(room.host.wrongs)
+      ? room.host.wrongs
+      : Array.from({ length: room.questions.length }, () => 0)
+    if (room.guest) {
+      room.guest.wrongs = Array.isArray(room.guest.wrongs)
+        ? room.guest.wrongs
+        : Array.from({ length: room.questions.length }, () => 0)
+    }
     return room
   } catch {
     return null

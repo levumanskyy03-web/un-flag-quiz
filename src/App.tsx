@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { DuelLobby } from "./components/DuelLobby";
 import { DuelResults } from "./components/DuelResults";
+import { FactsScreen } from "./components/FactsScreen";
 import { HomeScreen, type QuizSettings } from "./components/HomeScreen";
 import { type HubTab } from "./components/HubNav";
 import { LearnScreen } from "./components/LearnScreen";
@@ -11,16 +12,18 @@ import { Level20Screen } from "./components/Level20Screen";
 import { LevelsScreen } from "./components/LevelsScreen";
 import { QuizScreen } from "./components/QuizScreen";
 import { ResultsScreen } from "./components/ResultsScreen";
+import { RecordModal } from "./components/RecordModal";
 import { FINAL_LEVEL, LEVEL_COUNT, isFinalLevel } from "./data/levels";
 import { STRINGS, isLang, langDir, localeTag, type Lang } from "./i18n/strings";
 import { clearBests, clearHistory, loadBests, loadHistory, saveRound, type RoundRecord } from "./lib/history";
-import { loadLevelClears, saveLevelClear, isLevelUnlocked, type LevelClear } from "./lib/levelProgress";
-import { addPlayMs, bumpLifetime, countLifetimeSeed, seedLifetimeIfEmpty } from "./lib/lifetime";
-import { xpForAnswers } from "./lib/xp";
+import { loadLevelClears, saveLevelClear, findLevelClear, isLevelUnlocked, type LevelClear } from "./lib/levelProgress";
+import { addPlayMs, bumpLifetime, bumpRecordBreaks, countLifetimeSeed, seedLifetimeIfEmpty } from "./lib/lifetime";
+import { campaignXpDelta, WORLD_RECORD_XP, xpForAnswers, xpForFreePlay } from "./lib/xp";
 import { fetchAccount } from "./lib/account";
-import { submitRatings } from "./lib/leaderboard";
+import { submitLevelBest, submitRatings } from "./lib/leaderboard";
 import {
   answerDuel,
+  advanceDuelFact,
   createDuel,
   fetchDuel,
   joinDuel,
@@ -38,6 +41,8 @@ import {
   getLearnPool,
   getPool,
   isCorrect,
+  isFactsToName,
+  isRoundSize,
   livesFor,
   poolForMode,
   questionLimitMs,
@@ -46,6 +51,7 @@ import {
   type QuizMode,
   type RoundAnswer,
 } from "./lib/quiz";
+import type { FactsDuelConfig } from "./lib/factsRules";
 
 const LANG_KEY = "un-flag-quiz-lang";
 
@@ -90,6 +96,7 @@ export default function App() {
   const [levelClears, setLevelClears] = useState<LevelClear[]>([]);
   const [isNewBest, setIsNewBest] = useState(false);
   const [earnedXp, setEarnedXp] = useState(0);
+  const [worldRecord, setWorldRecord] = useState<{ previousName: string | null } | null>(null);
   const [xp, setXp] = useState(0);
   const [xpReady, setXpReady] = useState(false);
   const [resultTone, setResultTone] = useState<ResultTone | null>(null);
@@ -192,6 +199,7 @@ export default function App() {
 
   useEffect(() => {
     if (screen !== "quiz" || answered || isLearn || isDuel) return;
+    if (isFactsToName(currentMode)) return;
     const started = Date.now();
     questionStartRef.current = started;
     const limitMs = questionLimitMs(currentMode, {
@@ -232,7 +240,7 @@ export default function App() {
           savedRoundRef.current = true;
           if (quizSettings.path === "levels") {
             if (endedBy === "complete") {
-              const gained = xpForAnswers(answers, finishedMs, {
+              const runXp = xpForAnswers(answers, finishedMs, {
                 mode: quizSettings.mode,
                 path: "levels",
                 difficulty: quizSettings.levelHardcore ? "hardcore" : "hard",
@@ -241,32 +249,70 @@ export default function App() {
                 livesLimit,
                 region: quizSettings.region,
               });
-              setEarnedXp(gained);
-              const lifetime = bumpLifetime(true, countLifetimeSeed(loadHistory(), loadLevelClears()), gained, finishedMs);
-              setXp(lifetime.xp);
-              const nextClears = saveLevelClear({
-                level: quizSettings.level,
-                mode: quizSettings.mode,
-                hardcore: quizSettings.levelHardcore,
-                livesLimit: livesLimit,
-                livesLeft,
-                roundMs: finishedMs,
-                at: Date.now(),
-              });
-              setLevelClears(nextClears);
-              void submitRatings(nextClears, lifetime.xp);
+              const previousClear = findLevelClear(
+                loadLevelClears(),
+                quizSettings.level,
+                quizSettings.mode,
+              );
+              const { award: baseAward, bestXp } = campaignXpDelta(runXp, previousClear);
+              void (async () => {
+                const record = await submitLevelBest({
+                  mode: quizSettings.mode,
+                  level: quizSettings.level,
+                  hardcore: quizSettings.levelHardcore,
+                  roundMs: finishedMs,
+                  livesLeft,
+                });
+                const seed = countLifetimeSeed(loadHistory(), loadLevelClears());
+                let award = baseAward;
+                if (record.beat) {
+                  award += WORLD_RECORD_XP;
+                  bumpRecordBreaks(seed);
+                  setWorldRecord({ previousName: record.previousName });
+                } else {
+                  setWorldRecord(null);
+                }
+                setEarnedXp(award);
+                const lifetime = bumpLifetime(true, seed, award, finishedMs);
+                setXp(lifetime.xp);
+                const nextClears = saveLevelClear({
+                  level: quizSettings.level,
+                  mode: quizSettings.mode,
+                  hardcore: quizSettings.levelHardcore,
+                  livesLimit: livesLimit,
+                  livesLeft,
+                  roundMs: finishedMs,
+                  at: Date.now(),
+                  xp: bestXp,
+                });
+                setLevelClears(nextClears);
+                void submitRatings(nextClears, lifetime.xp);
+                const gold = quizSettings.levelHardcore || record.beat;
+                setResultTone(gold ? "gold" : "success");
+                setScreen("results");
+              })();
+              return;
             } else {
               setEarnedXp(0);
+              setWorldRecord(null);
               addPlayMs(finishedMs, countLifetimeSeed(loadHistory(), loadLevelClears()));
             }
           } else {
-            setEarnedXp(0);
-            bumpLifetime(
+            const gained =
+              quizSettings.path === "pool"
+                ? xpForFreePlay(answers, quizSettings.difficulty, quizSettings.mode)
+                : 0;
+            setEarnedXp(gained);
+            const lifetime = bumpLifetime(
               endedBy === "complete",
               countLifetimeSeed(loadHistory(), loadLevelClears()),
-              0,
+              gained,
               finishedMs,
             );
+            setXp(lifetime.xp);
+            if (gained > 0) {
+              void submitRatings(loadLevelClears(), lifetime.xp);
+            }
             const saved = saveRound({
               at: Date.now(),
               correct: answers.filter(isCorrect).length,
@@ -350,6 +396,7 @@ export default function App() {
     if (!duelCode || !duelView || duelView.phase !== "question") return;
     if (duelView.youAnswer !== undefined || selectedIso !== null) return;
     if (duelView.remainingMs > 0) return;
+    if (isFactsToName(duelView.question?.mode ?? duelView.mode)) return;
     void submitDuelPick(null);
   }, [duelCode, duelView, selectedIso]);
 
@@ -365,7 +412,7 @@ export default function App() {
       mode: view.mode,
       region: view.region,
       difficulty: view.difficulty,
-      roundSize: view.roundSize as QuizSettings["roundSize"],
+      roundSize: isRoundSize(view.roundSize) ? view.roundSize : prev.roundSize,
       path: "pool",
     }))
     if (view.youAnswer !== undefined) {
@@ -414,15 +461,16 @@ export default function App() {
     return quizSettings.lang === "ru" ? "Игрок" : "Player"
   }
 
-  async function handleCreateDuel(modes: QuizMode[]) {
+  async function handleCreateDuel(modes: QuizMode[], facts?: FactsDuelConfig) {
     setDuelError(null)
     const nextModes = modes.length > 0 ? modes : [quizSettings.mode]
     const result = await createDuel({
       name: await duelName(),
       modes: nextModes,
-      region: quizSettings.region,
-      difficulty: quizSettings.difficulty,
-      roundSize: quizSettings.roundSize,
+      region: facts?.region ?? quizSettings.region,
+      difficulty: facts ? "hard" : quizSettings.difficulty,
+      roundSize: facts ? facts.series : quizSettings.roundSize,
+      facts,
     })
     if (!result.ok) {
       setDuelError(duelErrorMessage(result.error))
@@ -492,6 +540,7 @@ export default function App() {
     savedRoundRef.current = false;
     setIsNewBest(false);
     setEarnedXp(0);
+    setWorldRecord(null);
     setResultTone(null);
     setQuestions(round);
     setIndex(0);
@@ -506,7 +555,12 @@ export default function App() {
 
   function startRound() {
     const pool = getPool(quizSettings.region, quizSettings.difficulty, quizSettings.mode);
-    beginRound(pool, quizSettings.roundSize, "pool", quizSettings.level);
+    beginRound(
+      pool,
+      isFactsToName(quizSettings.mode) ? 1 : quizSettings.roundSize,
+      "pool",
+      quizSettings.level,
+    );
   }
 
   function playLevel(level: number) {
@@ -556,7 +610,7 @@ export default function App() {
     setSettings((prev) => ({
       ...prev,
       path: "levels",
-      mode: prev.mode === "neighborsToName" ? "flagToName" : prev.mode,
+      mode: prev.mode === "neighborsToName" || prev.mode === "factsToName" ? "flagToName" : prev.mode,
     }));
     setScreen("levels");
   }
@@ -578,7 +632,7 @@ export default function App() {
       learnFrom: "level",
       level,
       levelLearn: true,
-      mode: prev.mode === "neighborsToName" ? "flagToName" : prev.mode,
+      mode: prev.mode === "neighborsToName" || prev.mode === "factsToName" ? "flagToName" : prev.mode,
     }));
     setScreen("learn");
   }
@@ -641,6 +695,22 @@ export default function App() {
   async function handleRematch() {
     if (!duelCode) return;
     const result = await rematchDuel(duelCode);
+    if (result.ok) applyDuelView(result.room);
+  }
+
+  function finishFacts(iso: string | null, timeMs: number) {
+    if (duelCode) return;
+    if (answered) return;
+    const question = questions[index];
+    if (!question) return;
+    setSelectedIso(iso);
+    setTimedOut(iso === null);
+    setAnswers((prev) => (prev.length > index ? prev : [...prev, { question, selectedIso: iso, timeMs }]));
+  }
+
+  async function handleAdvanceFact() {
+    if (!duelCode) return;
+    const result = await advanceDuelFact(duelCode);
     if (result.ok) applyDuelView(result.room);
   }
 
@@ -730,7 +800,7 @@ export default function App() {
           duelError={duelError}
           onChange={handleSettingsChange}
           onStart={startRound}
-          onCreateDuel={(modes) => void handleCreateDuel(modes)}
+          onCreateDuel={(modes, facts) => void handleCreateDuel(modes, facts)}
           onJoinDuel={(code) => void handleJoinDuel(code)}
           onHub={goHub}
           onClearHistory={handleClearHistory}
@@ -790,6 +860,43 @@ export default function App() {
         />
       )}
       {screen === "quiz" && (isDuel ? questionFromWire(duelView?.question ?? null) : questions[index]) && (
+        isFactsToName((isDuel && duelView ? duelView.question?.mode ?? duelView.mode : quizSettings.mode) as QuizMode) ? (
+        <FactsScreen
+          lang={quizSettings.lang}
+          question={(isDuel ? questionFromWire(duelView?.question ?? null) : questions[index])!}
+          index={isDuel && duelView ? duelView.index : index}
+          total={isDuel && duelView ? duelView.total : questions.length}
+          roundMs={roundMs}
+          livesLeft={isDuel ? 0 : livesLeft}
+          maxLives={isDuel || isLearn ? 0 : livesLimit}
+          practice={isLearn && !isDuel}
+          selectedIso={isDuel ? duelView?.youAnswer ?? selectedIso : selectedIso}
+          finished={answered && !isDuel}
+          duel={
+            isDuel && duelView
+              ? {
+                  opponentName: duelView.opponentName ?? STRINGS[quizSettings.lang].duelOpponent,
+                  opponentReady: duelView.opponentReady,
+                  youScore: duelView.youScore,
+                  opponentScore: duelView.opponentScore ?? 0,
+                  remainingMs: duelView.remainingMs,
+                  factIndex: duelView.factIndex ?? 0,
+                  facts: duelView.question?.facts ?? [],
+                  maxFacts: duelView.factsMax ?? 10,
+                  wrongs: duelView.youWrongs ?? 0,
+                  wrongLimit: duelView.factsWrongLimit ?? 3,
+                  hardcore: Boolean(duelView.facts?.hardcore),
+                  locked: duelView.youAnswer !== undefined,
+                }
+              : undefined
+          }
+          onFinish={(iso, timeMs) => finishFacts(iso, timeMs)}
+          onGuess={isDuel ? (iso) => void submitDuelPick(iso) : undefined}
+          onAdvance={isDuel ? () => void handleAdvanceFact() : undefined}
+          onCountryNext={isLearn ? handlePracticeNext : undefined}
+          onBack={goBackFromPlay}
+        />
+        ) : (
         <QuizScreen
           lang={quizSettings.lang}
           mode={isDuel && duelView ? duelView.mode : quizSettings.mode}
@@ -821,6 +928,7 @@ export default function App() {
           onNext={isLearn ? handlePracticeNext : undefined}
           onBack={goBackFromPlay}
         />
+        )
       )}
       {screen === "duel-results" && duelView && (
         <DuelResults
@@ -859,6 +967,14 @@ export default function App() {
           onMenu={goBackFromPlay}
         />
       )}
+      {screen === "results" && worldRecord ? (
+        <RecordModal
+          lang={quizSettings.lang}
+          previousName={worldRecord.previousName}
+          bonusXp={WORLD_RECORD_XP}
+          onClose={() => setWorldRecord(null)}
+        />
+      ) : null}
       <p className="credit">{STRINGS[quizSettings.lang].credit}</p>
     </div>
   );

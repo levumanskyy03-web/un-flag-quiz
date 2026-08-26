@@ -199,30 +199,35 @@ export async function dropSession(token: string | undefined): Promise<void> {
   await saveStore(store)
 }
 
+function cookieOptions(maxAge: number, expires?: Date) {
+  return {
+    httpOnly: true,
+    sameSite: 'lax' as const,
+    path: '/',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge,
+    ...(expires ? { expires } : {}),
+  }
+}
+
+function noStore(response: NextResponse) {
+  response.headers.set('Cache-Control', 'no-store, max-age=0')
+  return response
+}
+
 export function authResponse(body: unknown, token?: string, status = 200) {
   const response = NextResponse.json(body, { status })
   if (token) {
-    response.cookies.set(SESSION_COOKIE, token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: SESSION_MS / 1000,
-    })
+    response.cookies.set(SESSION_COOKIE, token, cookieOptions(SESSION_MS / 1000))
   }
-  return response
+  return noStore(response)
 }
 
 export function clearSessionResponse(body: unknown) {
   const response = NextResponse.json(body)
-  response.cookies.set(SESSION_COOKIE, '', {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 0,
-  })
-  return response
+  response.cookies.set(SESSION_COOKIE, '', cookieOptions(0, new Date(0)))
+  response.cookies.delete({ name: SESSION_COOKIE, path: '/' })
+  return noStore(response)
 }
 
 export function readCookie(request: Request, name: string) {
