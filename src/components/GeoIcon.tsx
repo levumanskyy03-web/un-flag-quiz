@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 type GeoIconName = 'compass' | 'globe' | 'map' | 'pin' | 'meridians' | 'trophy' | 'ball'
 
 interface GeoIconProps {
@@ -6,6 +8,8 @@ interface GeoIconProps {
 }
 
 export function GeoIcon({ name, size = 14 }: GeoIconProps) {
+  const clipId = useId().replace(/:/g, '')
+
   return (
     <svg
       className="geo-icon"
@@ -17,25 +21,22 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
     >
       {name === 'ball' ? (
         <>
-          <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.7" />
-          <path
-            d="M12 6.6 14.8 8.6 13.7 11.9H10.3L9.2 8.6Z"
-            stroke="currentColor"
-            strokeWidth="1.45"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M9.2 8.6 5.6 7.2M14.8 8.6 18.4 7.2M13.7 11.9 17.2 15.6M10.3 11.9 7.8 15.6"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-          />
-          <path
-            d="M5.6 7.2c.3 2.6-.4 5.2-1.6 7.1M18.4 7.2c-.3 2.6.4 5.2 1.6 7.1M7.8 15.6c1.3 1.6 2.7 2.5 4.2 2.8M17.2 15.6c-1.3 1.6-2.7 2.5-4.2 2.8"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            strokeLinecap="round"
-          />
+          <defs>
+            <clipPath id={clipId}>
+              <circle cx="12" cy="12" r="9.35" />
+            </clipPath>
+          </defs>
+          <circle cx="12" cy="12" r="9.35" stroke="currentColor" strokeWidth="1.75" />
+          <path fill="currentColor" d="M12 8.75 15.09 11 13.91 14.63 10.09 14.63 8.91 11Z" />
+          <g clipPath={`url(#${clipId})`}>
+            <path
+              d="M12 8.75 15.09 11l3.49-1.56.4-3.8-3.09-2.24-3.49 1.55ZM15.09 11 13.91 14.63l2.56 2.84 3.73-.8 1.18-3.63-2.55-2.84ZM13.91 14.63h-3.82L8.18 17.94l1.91 3.31h3.82l1.91-3.31ZM10.09 14.63 8.91 11l-3.74-.8-2.55 2.84 1.18 3.63 3.73.8ZM8.91 11 12 8.75l-.4-3.8-3.49-1.55-3.09 2.24.4 3.8Z"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </g>
         </>
       ) : null}
       {name === 'trophy' ? (

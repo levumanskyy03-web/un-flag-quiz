@@ -129,6 +129,12 @@ img {
     inset 0 0 0 7px color-mix(in srgb, #0f5a2c 35%, #3aa35c);
 }
 
+.app.is-football .home-header,
+.app.is-football .quiz-header {
+  position: relative;
+  z-index: 3;
+}
+
 .app.is-football .home-header h1 {
   color: #f4fff7;
 }
@@ -158,6 +164,22 @@ img {
   background: var(--card);
   color: var(--text);
   border-color: color-mix(in srgb, var(--text) 16%, var(--border));
+}
+
+.app.is-football .btn-primary,
+.app.is-football.is-success .btn-primary {
+  background: #f4fff7;
+  border-color: #fff;
+  color: #0c3d22;
+  box-shadow:
+    0 10px 22px rgba(8, 36, 18, 0.22),
+    inset 0 0 0 1px color-mix(in srgb, #0c3d22 14%, #fff);
+}
+
+.app.is-football .btn-primary:hover:not(:disabled),
+.app.is-football.is-success .btn-primary:hover:not(:disabled) {
+  background: #fff;
+  color: #082816;
 }
 
 .map-marks {
@@ -316,6 +338,7 @@ img {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-inline: 10px;
 }
 
 .home-top {
@@ -2806,7 +2829,7 @@ html[dir="rtl"] .worlds-back::before {
 @media (max-width: 639px) {
   .app {
     width: calc(100% - 16px);
-    padding: 12px 0 calc(24px + env(safe-area-inset-bottom, 0px));
+    padding: 12px 22px calc(24px + env(safe-area-inset-bottom, 0px));
   }
 
   .app:has(.map-screen) {
