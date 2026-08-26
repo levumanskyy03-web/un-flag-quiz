@@ -171,6 +171,9 @@ export default function App() {
     } else {
       delete document.documentElement.dataset.world;
     }
+    return () => {
+      delete document.documentElement.dataset.world;
+    };
   }, [world]);
 
   useEffect(() => {
@@ -1173,6 +1176,11 @@ export default function App() {
           onClose={() => setWorldRecord(null)}
         />
       ) : null}
+      <nav className="legal-links">
+        <a href="/about">{STRINGS[quizSettings.lang].legalAbout}</a>
+        <a href="/privacy">{STRINGS[quizSettings.lang].legalPrivacy}</a>
+        <a href="/contacts">{STRINGS[quizSettings.lang].legalContacts}</a>
+      </nav>
       <p className="credit">{STRINGS[quizSettings.lang].credit}</p>
     </div>
   );

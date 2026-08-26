@@ -5,6 +5,7 @@ import {
   publicAccountName,
   registerAccount,
 } from '../../../../lib/authStore'
+import { clientIp, consumeRateLimit } from '../../../../lib/rateLimit'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -20,6 +21,10 @@ export async function POST(request: Request) {
     return authResponse({ error: 'invalid' }, undefined, 400)
   }
   const record = body as Record<string, unknown>
+  const ipAllowed = await consumeRateLimit(`register:ip:${clientIp(request)}`, 5, 60 * 60)
+  if (!ipAllowed) {
+    return authResponse({ error: 'limited' }, undefined, 429)
+  }
   const parsed = publicAccountName(record.name)
   const password = parsePassword(record.password)
   if (!parsed.ok) {

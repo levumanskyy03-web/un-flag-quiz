@@ -12,7 +12,7 @@ export interface Account {
   createdAt?: number
 }
 
-export type AuthError = 'invalid' | 'taken' | 'auth' | 'offline' | 'mismatch' | 'cooldown' | 'blocked'
+export type AuthError = 'invalid' | 'taken' | 'auth' | 'offline' | 'mismatch' | 'cooldown' | 'blocked' | 'limited'
 
 export interface PublicPlayerProfile {
   id: string
@@ -204,13 +204,14 @@ function parseError(body: unknown, status: number): AuthError {
       error === 'offline' ||
       error === 'invalid' ||
       error === 'cooldown' ||
-      error === 'blocked'
+      error === 'blocked' ||
+      error === 'limited'
     ) {
       return error
     }
   }
   if (status === 409) return 'taken'
-  if (status === 429) return 'cooldown'
+  if (status === 429) return 'limited'
   if (status === 401) return 'auth'
   if (status === 503) return 'offline'
   return 'invalid'

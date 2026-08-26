@@ -580,6 +580,11 @@ export function SettingsModal({
             <p>{t.aboutBody}</p>
             <p>{t.aboutModes}</p>
             <p>{t.credit}</p>
+            <p className="legal-inline">
+              <a href="/about">{t.legalAbout}</a>
+              <a href="/privacy">{t.legalPrivacy}</a>
+              <a href="/contacts">{t.legalContacts}</a>
+            </p>
           </div>
         ) : null}
 
@@ -652,6 +657,7 @@ function authErrorText(error: AuthError, t: (typeof STRINGS)[Lang]) {
   if (error === 'cooldown') return t.authNameCooldown
   if (error === 'auth') return t.authBadCredentials
   if (error === 'offline') return t.authOffline
+  if (error === 'limited') return t.authTooMany
   if (error === 'mismatch') return t.authPasswordMismatch
   return t.authInvalid
 }

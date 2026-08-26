@@ -140,7 +140,8 @@ img {
 }
 
 .app.is-football .home-header .subtitle,
-.app.is-football .credit {
+.app.is-football .credit,
+.app.is-football .legal-links a {
   color: color-mix(in srgb, #f4fff7 82%, #0d4a24);
 }
 
@@ -325,6 +326,73 @@ img {
   font-style: italic;
   font-weight: 400;
   color: var(--muted);
+}
+
+.legal-links {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  margin: 22px 0 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.legal-links a,
+.legal-inline a,
+.legal-nav a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.legal-links a:hover,
+.legal-inline a:hover,
+.legal-nav a:hover {
+  text-decoration: underline;
+}
+
+.legal-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 12px 0 0;
+}
+
+.legal-app {
+  z-index: 3;
+}
+
+.legal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0 0 22px;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.legal-article h1 {
+  margin: 0 0 16px;
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  letter-spacing: -0.04em;
+}
+
+.legal-article h2 {
+  margin: 22px 0 8px;
+  font-size: 1.05rem;
+}
+
+.legal-article p,
+.legal-article li {
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.legal-article ul {
+  margin: 0 0 12px;
+  padding-inline-start: 1.2em;
 }
 
 .screen {

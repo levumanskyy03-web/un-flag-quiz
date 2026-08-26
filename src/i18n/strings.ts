@@ -154,6 +154,10 @@ export type Strings = {
   authPasswordSame: string
   authWrongPassword: string
   authOffline: string
+  authTooMany: string
+  legalAbout: string
+  legalPrivacy: string
+  legalContacts: string
   settings: string
   settingsAccount: string
   settingsAbout: string
@@ -445,7 +449,7 @@ export const STRINGS: Record<Lang, Strings> = {
     signOut: 'Выйти',
     password: 'Пароль',
     passwordRepeat: 'Повторите пароль',
-    passwordHint: 'Пароль — минимум 6 символов',
+    passwordHint: 'Пароль — минимум 8 символов',
     passwordCurrent: 'Текущий пароль',
     passwordNew: 'Новый пароль',
     passwordChange: 'Сменить пароль',
@@ -465,6 +469,7 @@ export const STRINGS: Record<Lang, Strings> = {
     authPasswordSame: 'Новый пароль должен отличаться от текущего',
     authWrongPassword: 'Неверный текущий пароль',
     authOffline: 'Аккаунты пока недоступны',
+    authTooMany: 'Слишком много попыток. Подождите несколько минут.',
     settings: 'Настройки',
     settingsAccount: 'Аккаунт',
     settingsAbout: 'О нас',
@@ -535,6 +540,9 @@ export const STRINGS: Record<Lang, Strings> = {
     noNeighbors: 'Нет сухопутных соседей',
     close: 'Закрыть',
     credit: 'Создано Львом Уманским',
+    legalAbout: 'О проекте',
+    legalPrivacy: 'Политика',
+    legalContacts: 'Контакты',
     duel: 'Дуэль',
     duelHint: 'Один на один: создайте комнату или введите код.',
     duelCreate: 'Создать комнату',
@@ -761,7 +769,7 @@ export const STRINGS: Record<Lang, Strings> = {
     signOut: 'Sign out',
     password: 'Password',
     passwordRepeat: 'Repeat password',
-    passwordHint: 'Password — at least 6 characters',
+    passwordHint: 'Password — at least 8 characters',
     passwordCurrent: 'Current password',
     passwordNew: 'New password',
     passwordChange: 'Change password',
@@ -781,6 +789,7 @@ export const STRINGS: Record<Lang, Strings> = {
     authPasswordSame: 'New password must be different',
     authWrongPassword: 'Current password is wrong',
     authOffline: 'Accounts are unavailable right now',
+    authTooMany: 'Too many attempts. Wait a few minutes.',
     settings: 'Settings',
     settingsAccount: 'Account',
     settingsAbout: 'About',
@@ -845,6 +854,9 @@ export const STRINGS: Record<Lang, Strings> = {
     noNeighbors: 'No land neighbors',
     close: 'Close',
     credit: 'Created by Lev Umansky',
+    legalAbout: 'About',
+    legalPrivacy: 'Privacy',
+    legalContacts: 'Contact',
     duel: 'Duel',
     duelHint: 'One on one: create a room or enter a code.',
     duelCreate: 'Create room',
