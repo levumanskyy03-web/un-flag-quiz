@@ -1,4 +1,4 @@
-export const LANGS = ['ru', 'en', 'zh', 'es', 'hi', 'ar', 'bn', 'pt', 'ja', 'he'] as const
+export const LANGS = ['ru', 'en', 'de', 'zh', 'es', 'hi', 'ar', 'bn', 'pt', 'ja', 'he'] as const
 export type Lang = (typeof LANGS)[number]
 
 const RTL_LANGS = new Set<Lang>(['ar', 'he'])
@@ -6,6 +6,7 @@ const RTL_LANGS = new Set<Lang>(['ar', 'he'])
 export const LANG_NATIVE: Record<Lang, string> = {
   ru: 'Русский',
   en: 'English',
+  de: 'Deutsch',
   zh: '中文',
   es: 'Español',
   hi: 'हिन्दी',
@@ -19,6 +20,7 @@ export const LANG_NATIVE: Record<Lang, string> = {
 export const LANG_SHORT: Record<Lang, string> = {
   ru: 'RU',
   en: 'EN',
+  de: 'DE',
   zh: '中文',
   es: 'ES',
   hi: 'HI',
@@ -32,6 +34,7 @@ export const LANG_SHORT: Record<Lang, string> = {
 const LOCALES: Record<Lang, string> = {
   ru: 'ru-RU',
   en: 'en-GB',
+  de: 'de-DE',
   zh: 'zh-CN',
   es: 'es',
   hi: 'hi-IN',

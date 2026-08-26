@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { DuelLobby } from "./components/DuelLobby";
 import { DuelResults } from "./components/DuelResults";
 import { FactsScreen } from "./components/FactsScreen";
+import { FootballScreen } from "./components/FootballScreen";
 import { HomeScreen, type QuizSettings } from "./components/HomeScreen";
 import { type HubTab } from "./components/HubNav";
 import { LearnScreen } from "./components/LearnScreen";
@@ -13,6 +14,7 @@ import { LevelsScreen } from "./components/LevelsScreen";
 import { QuizScreen } from "./components/QuizScreen";
 import { ResultsScreen } from "./components/ResultsScreen";
 import { RecordModal } from "./components/RecordModal";
+import { WorldPickScreen, type World } from "./components/WorldPickScreen";
 import { FINAL_LEVEL, LEVEL_COUNT, isFinalLevel } from "./data/levels";
 import { STRINGS, isLang, langDir, localeTag, type Lang } from "./i18n/strings";
 import { clearBests, clearHistory, loadBests, loadHistory, saveRound, type RoundRecord } from "./lib/history";
@@ -20,6 +22,7 @@ import { loadLevelClears, saveLevelClear, findLevelClear, isLevelUnlocked, type 
 import { addPlayMs, bumpLifetime, bumpRecordBreaks, countLifetimeSeed, seedLifetimeIfEmpty } from "./lib/lifetime";
 import { campaignXpDelta, WORLD_RECORD_XP, xpForAnswers, xpForFreePlay } from "./lib/xp";
 import { fetchAccount } from "./lib/account";
+import { unlockedAchievementIds } from "./lib/achievements";
 import { submitLevelBest, submitRatings } from "./lib/leaderboard";
 import {
   answerDuel,
@@ -36,14 +39,21 @@ import { answerKey } from "./lib/quizAnswers";
 import {
   answerPauseMs,
   QUESTION_TIME_MS,
+  createMixedRound,
   createRound,
+  createFootballRound,
   getLevelPool,
   getLearnPool,
   getPool,
+  getRegionPool,
   isCorrect,
+  footballHasDifficulty,
   isFactsToName,
+  isFootballMode,
   isRoundSize,
   livesFor,
+  MAX_LIVES,
+  modesForMix,
   poolForMode,
   questionLimitMs,
   type PlayPath,
@@ -68,11 +78,16 @@ function getStoredLang(): Lang {
   return isLang(stored) ? stored : "ru";
 }
 
+function publishRatings(clears: LevelClear[], xp: number, createdAt?: number) {
+  return submitRatings(clears, xp, unlockedAchievementIds(loadHistory(), loadBests(), clears, createdAt))
+}
+
 export default function App() {
   const storedLang = useSyncExternalStore(subscribeLang, getStoredLang, (): Lang => "ru");
   const [lang, setLang] = useState<Lang | null>(null);
   const [settings, setSettings] = useState<Omit<QuizSettings, "lang">>({
     mode: "flagToName",
+    mix: null,
     region: "all",
     difficulty: "easy",
     roundSize: 10,
@@ -84,6 +99,7 @@ export default function App() {
     learnFrom: "region",
   });
   const [screen, setScreen] = useState<Screen>("home");
+  const [world, setWorld] = useState<World | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
   const [selectedIso, setSelectedIso] = useState<string | null>(null);
@@ -117,13 +133,16 @@ export default function App() {
   const answered = selectedIso !== null || timedOut;
   const isDuel = duelCode !== null;
   const isLearn = quizSettings.path === "learn";
-  const livesLimit = livesFor(
-    quizSettings.path,
-    quizSettings.difficulty,
-    quizSettings.levelHardcore,
-    quizSettings.level,
-    quizSettings.levelLives,
-  );
+  const livesLimit =
+    isFootballMode(quizSettings.mode) && !footballHasDifficulty(quizSettings.mode)
+      ? MAX_LIVES
+      : livesFor(
+          quizSettings.path,
+          quizSettings.difficulty,
+          quizSettings.levelHardcore,
+          quizSettings.level,
+          quizSettings.levelLives,
+        );
   const mistakes = answers.filter((answer) => !isCorrect(answer)).length;
   const livesLeft = Math.max(0, livesLimit - mistakes);
   const endedBy = timedOut ? "timeout" : mistakes >= livesLimit ? "lives" : "complete";
@@ -157,7 +176,7 @@ export default function App() {
     void fetchAccount().then((user) => {
       if (!user) return
       const lifetime = seedLifetimeIfEmpty(countLifetimeSeed(nextHistory, nextClears))
-      void submitRatings(nextClears, lifetime.xp)
+      void publishRatings(nextClears, lifetime.xp, user.createdAt)
     })
   }, []);
 
@@ -286,7 +305,7 @@ export default function App() {
                   xp: bestXp,
                 });
                 setLevelClears(nextClears);
-                void submitRatings(nextClears, lifetime.xp);
+                void publishRatings(nextClears, lifetime.xp);
                 const gold = quizSettings.levelHardcore || record.beat;
                 setResultTone(gold ? "gold" : "success");
                 setScreen("results");
@@ -300,7 +319,13 @@ export default function App() {
           } else {
             const gained =
               quizSettings.path === "pool"
-                ? xpForFreePlay(answers, quizSettings.difficulty, quizSettings.mode)
+                ? xpForFreePlay(
+                    answers,
+                    isFootballMode(quizSettings.mode) && !footballHasDifficulty(quizSettings.mode)
+                      ? "easy"
+                      : quizSettings.difficulty,
+                    quizSettings.mode,
+                  )
                 : 0;
             setEarnedXp(gained);
             const lifetime = bumpLifetime(
@@ -311,7 +336,7 @@ export default function App() {
             );
             setXp(lifetime.xp);
             if (gained > 0) {
-              void submitRatings(loadLevelClears(), lifetime.xp);
+              void publishRatings(loadLevelClears(), lifetime.xp);
             }
             const saved = saveRound({
               at: Date.now(),
@@ -319,8 +344,12 @@ export default function App() {
               total: answers.length,
               roundMs: finishedMs,
               mode: quizSettings.mode,
-              region: quizSettings.region,
-              difficulty: quizSettings.difficulty,
+              mix: quizSettings.path === "pool" ? quizSettings.mix ?? undefined : undefined,
+              region: isFootballMode(quizSettings.mode) ? "all" : quizSettings.region,
+              difficulty:
+                isFootballMode(quizSettings.mode) && !footballHasDifficulty(quizSettings.mode)
+                  ? "easy"
+                  : quizSettings.difficulty,
               roundSize: questions.length,
               endedBy,
             });
@@ -356,6 +385,7 @@ export default function App() {
     quizSettings.levelLearn,
     quizSettings.levelLives,
     quizSettings.mode,
+    quizSettings.mix,
     quizSettings.path,
     quizSettings.region,
     currentMode,
@@ -509,6 +539,7 @@ export default function App() {
     setLang(next.lang);
     setSettings({
       mode: next.mode,
+      mix: next.mix,
       region: next.region,
       difficulty: next.difficulty,
       roundSize: next.roundSize,
@@ -528,12 +559,21 @@ export default function App() {
     level: number,
     extras?: Pick<QuizSettings, "levelHardcore" | "levelLives">,
   ) {
-    const round = createRound(
-      poolForMode(pool, quizSettings.mode),
-      size,
-      (country) => answerKey(country, quizSettings.mode),
-      quizSettings.mode,
-    );
+    const mix = path === "pool" ? quizSettings.mix : null;
+    const round = mix
+      ? createMixedRound(
+          modesForMix(mix),
+          getRegionPool(quizSettings.region),
+          size,
+          (country, mode) => answerKey(country, mode),
+          quizSettings.difficulty,
+        )
+      : createRound(
+          poolForMode(pool, quizSettings.mode),
+          size,
+          (country) => answerKey(country, quizSettings.mode),
+          quizSettings.mode,
+        );
     if (round.length === 0) return;
     roundStartRef.current = Date.now();
     questionStartRef.current = Date.now();
@@ -547,13 +587,21 @@ export default function App() {
     setSelectedIso(null);
     setTimedOut(false);
     setAnswers([]);
-    setRemainingMs(questionLimitMs(quizSettings.mode, { region: quizSettings.region, path }));
+    setRemainingMs(questionLimitMs(round[0]?.mode ?? quizSettings.mode, { region: quizSettings.region, path }));
     setRoundMs(0);
     setSettings((prev) => ({ ...prev, path, level, ...extras }));
     setScreen("quiz");
   }
 
   function startRound() {
+    if (world === "football" || isFootballMode(quizSettings.mode)) {
+      startFootballRound()
+      return
+    }
+    if (quizSettings.mix) {
+      beginRound(getRegionPool(quizSettings.region), quizSettings.roundSize, "pool", quizSettings.level)
+      return
+    }
     const pool = getPool(quizSettings.region, quizSettings.difficulty, quizSettings.mode);
     beginRound(
       pool,
@@ -561,6 +609,38 @@ export default function App() {
       "pool",
       quizSettings.level,
     );
+  }
+
+  function startFootballRound() {
+    const mode = isFootballMode(quizSettings.mode) ? quizSettings.mode : "wcWinners"
+    const difficulty = footballHasDifficulty(mode) ? quizSettings.difficulty : "easy"
+    const round = createFootballRound(mode, quizSettings.roundSize, difficulty)
+    if (round.length === 0) return
+    roundStartRef.current = Date.now()
+    questionStartRef.current = Date.now()
+    savedRoundRef.current = false
+    setIsNewBest(false)
+    setEarnedXp(0)
+    setWorldRecord(null)
+    setResultTone(null)
+    setQuestions(round)
+    setIndex(0)
+    setSelectedIso(null)
+    setTimedOut(false)
+    setAnswers([])
+    setRemainingMs(
+      questionLimitMs(round[0]?.mode ?? mode, { region: quizSettings.region, path: "pool" }),
+    )
+    setRoundMs(0)
+    setSettings((prev) => ({
+      ...prev,
+      mode,
+      mix: null,
+      path: "pool",
+      region: "all",
+      difficulty,
+    }))
+    setScreen("quiz")
   }
 
   function playLevel(level: number) {
@@ -754,6 +834,10 @@ export default function App() {
       return
     }
     roundStartRef.current = null;
+    if (world === "football") {
+      setScreen("home");
+      return;
+    }
     if (quizSettings.path === "learn") {
       setScreen("learn");
       return;
@@ -770,26 +854,120 @@ export default function App() {
   }
 
   function handleClearHistory() {
-    setHistory(clearHistory());
+    setHistory(clearHistory((item) => isFootballMode(item.mode)));
   }
 
   function handleClearBests() {
-    setBests(clearBests());
+    setBests(clearBests((item) => isFootballMode(item.mode)));
+  }
+
+  function handleClearFootballHistory() {
+    setHistory(clearHistory((item) => !isFootballMode(item.mode)));
+  }
+
+  function handleClearFootballBests() {
+    setBests(clearBests((item) => !isFootballMode(item.mode)));
   }
 
   return (
     <div className={`app${resultTone ? ` is-${resultTone}` : ""}`}>
-      <div className="map-marks" aria-hidden="true">
-        <span className="map-marks-n">N</span>
-        <span className="map-marks-e">E</span>
-        <span className="map-marks-s">S</span>
-        <span className="map-marks-w">W</span>
-        <span className="map-tick is-nw" />
-        <span className="map-tick is-ne" />
-        <span className="map-tick is-sw" />
-        <span className="map-tick is-se" />
-      </div>
-      {screen === "home" && (
+      {world === "geo" ? (
+        <div className="map-marks" aria-hidden="true">
+          <span className="map-marks-n">N</span>
+          <span className="map-marks-e">E</span>
+          <span className="map-marks-s">S</span>
+          <span className="map-marks-w">W</span>
+          <span className="map-tick is-nw" />
+          <span className="map-tick is-ne" />
+          <span className="map-tick is-sw" />
+          <span className="map-tick is-se" />
+        </div>
+      ) : null}
+      {world === null && (
+        <WorldPickScreen
+          settings={quizSettings}
+          history={history}
+          bests={bests}
+          levelClears={levelClears}
+          xp={xp}
+          xpReady={xpReady}
+          onChange={handleSettingsChange}
+          onPick={(next) => {
+            if (next === "football") {
+              const mode = isFootballMode(quizSettings.mode) ? quizSettings.mode : "wcWinners"
+              handleSettingsChange({
+                ...quizSettings,
+                mode,
+                mix: null,
+                path: "pool",
+                region: "all",
+                difficulty: footballHasDifficulty(mode) ? quizSettings.difficulty : "easy",
+              })
+            } else if (next === "geo" && isFootballMode(quizSettings.mode)) {
+              handleSettingsChange({
+                ...quizSettings,
+                mode: "flagToName",
+                mix: null,
+                path: "pool",
+              })
+            }
+            setWorld(next);
+            setScreen("home");
+          }}
+        />
+      )}
+      {world === "football" && screen === "home" && (
+        <FootballScreen
+          settings={quizSettings}
+          history={history.filter((item) => isFootballMode(item.mode))}
+          bests={bests.filter((item) => isFootballMode(item.mode))}
+          levelClears={levelClears}
+          xp={xp}
+          xpReady={xpReady}
+          onChange={handleSettingsChange}
+          onStart={startFootballRound}
+          onWorlds={() => setWorld(null)}
+          onClearHistory={handleClearFootballHistory}
+          onClearBests={handleClearFootballBests}
+        />
+      )}
+      {world === "football" && screen === "quiz" && questions[index] && (
+        <QuizScreen
+          lang={quizSettings.lang}
+          mode={currentMode}
+          region={quizSettings.region}
+          path="pool"
+          question={questions[index]}
+          index={index}
+          total={questions.length}
+          selectedIso={selectedIso}
+          timedOut={timedOut}
+          remainingMs={remainingMs}
+          roundMs={roundMs}
+          livesLeft={livesLeft}
+          maxLives={livesLimit}
+          practice={false}
+          onSelect={selectAnswer}
+          onBack={goBackFromPlay}
+        />
+      )}
+      {world === "football" && screen === "results" && (
+        <ResultsScreen
+          lang={quizSettings.lang}
+          mode={quizSettings.mode}
+          hardcore={footballHasDifficulty(quizSettings.mode) && quizSettings.difficulty === "hardcore"}
+          answers={answers}
+          roundMs={roundMs}
+          endedBy={endedBy}
+          isNewBest={isNewBest}
+          earnedXp={earnedXp}
+          totalXp={xp}
+          saveNote
+          onAgain={playAgain}
+          onMenu={goBackFromPlay}
+        />
+      )}
+      {world === "geo" && screen === "home" && (
         <HomeScreen
           settings={quizSettings}
           history={history}
@@ -803,11 +981,12 @@ export default function App() {
           onCreateDuel={(modes, facts) => void handleCreateDuel(modes, facts)}
           onJoinDuel={(code) => void handleJoinDuel(code)}
           onHub={goHub}
+          onWorlds={() => setWorld(null)}
           onClearHistory={handleClearHistory}
           onClearBests={handleClearBests}
         />
       )}
-      {screen === "levels" && (
+      {world === "geo" && screen === "levels" && (
         <LevelsScreen
           settings={quizSettings}
           levelClears={levelClears}
@@ -820,7 +999,7 @@ export default function App() {
           onHub={goHub}
         />
       )}
-      {screen === "level20" && (
+      {world === "geo" && screen === "level20" && (
         <Level20Screen
           settings={quizSettings}
           levelClears={levelClears}
@@ -828,7 +1007,7 @@ export default function App() {
           onBack={() => setScreen("levels")}
         />
       )}
-      {screen === "learn" && (
+      {world === "geo" && screen === "learn" && (
         <LearnScreen
           settings={quizSettings}
           onChange={handleSettingsChange}
@@ -837,14 +1016,14 @@ export default function App() {
           onPractice={startPractice}
         />
       )}
-      {screen === "map" && (
+      {world === "geo" && screen === "map" && (
         <MapScreen
           settings={quizSettings}
           onChange={handleSettingsChange}
           onHub={goHub}
         />
       )}
-      {screen === "duel-lobby" && duelView && (
+      {world === "geo" && screen === "duel-lobby" && duelView && (
         <DuelLobby
           lang={quizSettings.lang}
           room={duelView}
@@ -859,16 +1038,14 @@ export default function App() {
           onLeave={() => void handleLeaveDuel()}
         />
       )}
-      {screen === "quiz" && (isDuel ? questionFromWire(duelView?.question ?? null) : questions[index]) && (
-        isFactsToName((isDuel && duelView ? duelView.question?.mode ?? duelView.mode : quizSettings.mode) as QuizMode) ? (
+      {world === "geo" && screen === "quiz" && (isDuel ? questionFromWire(duelView?.question ?? null) : questions[index]) && (
+        isFactsToName(currentMode) ? (
         <FactsScreen
           lang={quizSettings.lang}
           question={(isDuel ? questionFromWire(duelView?.question ?? null) : questions[index])!}
           index={isDuel && duelView ? duelView.index : index}
           total={isDuel && duelView ? duelView.total : questions.length}
           roundMs={roundMs}
-          livesLeft={isDuel ? 0 : livesLeft}
-          maxLives={isDuel || isLearn ? 0 : livesLimit}
           practice={isLearn && !isDuel}
           selectedIso={isDuel ? duelView?.youAnswer ?? selectedIso : selectedIso}
           finished={answered && !isDuel}
@@ -899,7 +1076,7 @@ export default function App() {
         ) : (
         <QuizScreen
           lang={quizSettings.lang}
-          mode={isDuel && duelView ? duelView.mode : quizSettings.mode}
+          mode={currentMode}
           region={isDuel && duelView ? duelView.region : quizSettings.region}
           path={isDuel ? "pool" : quizSettings.path}
           question={(isDuel ? questionFromWire(duelView?.question ?? null) : questions[index])!}
@@ -930,7 +1107,7 @@ export default function App() {
         />
         )
       )}
-      {screen === "duel-results" && duelView && (
+      {world === "geo" && screen === "duel-results" && duelView && (
         <DuelResults
           lang={quizSettings.lang}
           room={duelView}
@@ -939,7 +1116,7 @@ export default function App() {
           onMenu={() => void handleLeaveDuel()}
         />
       )}
-      {screen === "results" && (
+      {world === "geo" && screen === "results" && (
         <ResultsScreen
           lang={quizSettings.lang}
           mode={quizSettings.mode}
@@ -967,7 +1144,7 @@ export default function App() {
           onMenu={goBackFromPlay}
         />
       )}
-      {screen === "results" && worldRecord ? (
+      {world === "geo" && screen === "results" && worldRecord ? (
         <RecordModal
           lang={quizSettings.lang}
           previousName={worldRecord.previousName}

@@ -2,17 +2,20 @@
 
 import { useState } from 'react'
 import { STRINGS, type Lang } from '../i18n/strings'
+import type { RoundRecord } from '../lib/history'
 import type { LevelClear } from '../lib/levelProgress'
 import { GeoIcon } from './GeoIcon'
 import { RatingsModal } from './RatingsModal'
 
 interface RatingsButtonProps {
   lang: Lang
+  history: RoundRecord[]
+  bests: RoundRecord[]
   levelClears: LevelClear[]
   xp: number
 }
 
-export function RatingsButton({ lang, levelClears, xp }: RatingsButtonProps) {
+export function RatingsButton({ lang, history, bests, levelClears, xp }: RatingsButtonProps) {
   const t = STRINGS[lang]
   const [open, setOpen] = useState(false)
 
@@ -22,7 +25,14 @@ export function RatingsButton({ lang, levelClears, xp }: RatingsButtonProps) {
         <GeoIcon name="trophy" size={18} />
       </button>
       {open ? (
-        <RatingsModal lang={lang} levelClears={levelClears} xp={xp} onClose={() => setOpen(false)} />
+        <RatingsModal
+          lang={lang}
+          history={history}
+          bests={bests}
+          levelClears={levelClears}
+          xp={xp}
+          onClose={() => setOpen(false)}
+        />
       ) : null}
     </>
   )

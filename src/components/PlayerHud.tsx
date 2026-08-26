@@ -15,6 +15,8 @@ export function PlayerHud({ xp, xpReady = false, ...settings }: PlayerHudProps) 
   const mark = accountLevelMark(rank.level)
   const fillId = useId().replace(/:/g, '')
   const edgeId = useId().replace(/:/g, '')
+  const history = settings.history ?? []
+  const bests = settings.bests ?? []
   const levelClears = settings.levelClears ?? []
 
   return (
@@ -77,7 +79,13 @@ export function PlayerHud({ xp, xpReady = false, ...settings }: PlayerHudProps) 
           <span className="coc-xp-label">{formatXp(rank.xp, settings.lang)}</span>
         </div>
       ) : null}
-      <RatingsButton lang={settings.lang} levelClears={levelClears} xp={xp} />
+      <RatingsButton
+        lang={settings.lang}
+        history={history}
+        bests={bests}
+        levelClears={levelClears}
+        xp={xp}
+      />
     </div>
   )
 }

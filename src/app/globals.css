@@ -451,6 +451,10 @@ html[dir="rtl"] .coc-level {
   border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
 }
 
+.player-profile-overlay {
+  z-index: 30;
+}
+
 .ratings-hint {
   margin: 0;
 }
@@ -561,6 +565,40 @@ html[dir="rtl"] .coc-level {
   flex-direction: column;
   gap: 8px;
   width: 100%;
+}
+
+.settings-auth {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--card) 82%, var(--bg));
+}
+
+.settings-auth .settings-sub,
+.settings-auth .setting-hint {
+  margin: 0;
+}
+
+.account-status {
+  margin: 2px 0 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.account-status.is-on {
+  color: var(--ok);
+}
+
+.account-registered {
+  margin: 2px 0 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--muted);
 }
 
 .avatar-crop {
@@ -833,6 +871,7 @@ html[dir="rtl"] .coc-level {
 .option,
 .btn-primary,
 .btn-secondary,
+.btn-sign-out,
 .btn-ghost {
   border: 1px solid var(--border);
   background: var(--card);
@@ -851,6 +890,8 @@ html[dir="rtl"] .coc-level {
 
 .chip {
   border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 600;
 }
 
 .lang-select-wrap {
@@ -1100,16 +1141,42 @@ html[dir="rtl"] .lang-select-mark {
   flex-direction: column;
 }
 
+.leaderboard-list > li {
+  margin: 0;
+  padding: 0;
+}
+
 .leaderboard-row {
   display: grid;
   grid-template-columns: 2rem 1fr auto;
   gap: 10px;
   align-items: baseline;
+  width: 100%;
+  margin: 0;
   padding: 10px 0;
+  border: 0;
   border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
 }
 
-.leaderboard-row:first-child {
+button.leaderboard-row {
+  cursor: pointer;
+}
+
+button.leaderboard-row:hover:not(:disabled),
+button.leaderboard-row:focus-visible {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+button.leaderboard-row:disabled {
+  cursor: default;
+}
+
+.leaderboard-list > li:first-child .leaderboard-row {
   border-top: 0;
   padding-top: 2px;
 }
@@ -1208,7 +1275,8 @@ html[dir="rtl"] .lang-select-mark {
 .chip,
 .option,
 .btn-primary,
-.btn-secondary {
+.btn-secondary,
+.btn-sign-out {
   min-height: 48px;
 }
 
@@ -1248,10 +1316,28 @@ html[dir="rtl"] .lang-select-mark {
   font-variant-numeric: tabular-nums;
 }
 
-.chip {
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-weight: 600;
+.option-team {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.flag-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.title-year-prompt {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+}
+
+.option-year {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.15rem;
 }
 
 .btn-primary {
@@ -1281,6 +1367,23 @@ html[dir="rtl"] .lang-select-mark {
 
 .btn-secondary:hover {
   background: var(--accent-soft);
+}
+
+.btn-sign-out {
+  width: 100%;
+  background: var(--bad-bg);
+  color: var(--bad);
+  border-color: var(--bad-border);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.btn-sign-out:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--bad-bg) 70%, var(--card));
+}
+
+.btn-sign-out:disabled {
+  opacity: 0.5;
 }
 
 .duel-join {
@@ -2130,6 +2233,39 @@ button.learn-card:hover {
   grid-column: 1 / -1;
 }
 
+.world-pick-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.world-pick {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 92px;
+  font-size: 1.2rem;
+}
+
+.world-pick-ball {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 30%, color-mix(in srgb, #fff 35%, transparent), transparent 42%),
+    color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.worlds-back {
+  width: fit-content;
+}
+
+.football-screen {
+  min-height: 40vh;
+}
+
 .app:has(.map-screen) {
   width: min(1100px, calc(100% - 24px));
 }
@@ -2645,6 +2781,12 @@ html[dir="rtl"] .map-zoom {
 html[dir="rtl"] .map-pan {
   left: auto;
   right: 20px;
+}
+
+.facts-header-end {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .facts-screen {

@@ -100,3 +100,14 @@ export function listAchievements(
   }
   return ACHIEVEMENTS.map((item) => ({ id: item.id, unlocked: unlocked[item.id] }))
 }
+
+export function unlockedAchievementIds(
+  history: RoundRecord[],
+  bests: RoundRecord[],
+  levelClears: LevelClear[],
+  createdAt?: number,
+): AchievementId[] {
+  return listAchievements(history, bests, levelClears, createdAt)
+    .filter((item) => item.unlocked)
+    .map((item) => item.id)
+}

@@ -4,6 +4,7 @@ import type { LevelClear } from './levelProgress'
 import {
   getLevelPool,
   hasLevels,
+  isFootballMode,
   questionLimitMs,
   type PlayPath,
   type QuizDifficulty,
@@ -76,7 +77,9 @@ export function xpForAnswers(
 }
 
 export function xpPerFreePlayCorrect(difficulty: QuizDifficulty, mode: QuizMode): number {
-  const base = difficulty === 'hardcore' ? 10 : difficulty === 'hard' ? 5 : 2
+  const base =
+    difficulty === 'hardcore' ? 10 : difficulty === 'hard' ? 5 : difficulty === 'medium' ? 3 : 2
+  if (isFootballMode(mode)) return base
   return hasLevels(mode) ? base : base * 10
 }
 
@@ -85,7 +88,9 @@ export function xpForFreePlay(
   difficulty: QuizDifficulty,
   mode: QuizMode,
 ): number {
-  return answers.filter(isCorrect).length * xpPerFreePlayCorrect(difficulty, mode)
+  return answers
+    .filter(isCorrect)
+    .reduce((sum, answer) => sum + xpPerFreePlayCorrect(difficulty, answer.question.mode ?? mode), 0)
 }
 
 export function clearBestXp(clear: LevelClear): number {

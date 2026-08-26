@@ -1,4 +1,5 @@
 import { LEVEL_COUNT, isLevelNumber } from '../../../data/levels'
+import { parseAchievementIds } from '../../../data/achievements'
 import {
   RATING_LEVEL_MAX,
   RATING_LEVELS_MAX,
@@ -7,7 +8,7 @@ import {
   parseRatingBoard,
   type RatingBoard,
 } from '../../../lib/leaderboard'
-import { accountFromRequest } from '../../../lib/authStore'
+import { accountFromRequest, publishPlayerStats } from '../../../lib/authStore'
 import { publicEntries, readLevelBests, readRating, upsertLevelBest, upsertRatings } from '../../../lib/leaderboardStore'
 import { isQuizMode, type QuizMode } from '../../../lib/quiz'
 
@@ -97,24 +98,35 @@ export async function POST(request: Request) {
     }
   }
   const parsed = parseBody(body)
-  if (parsed === null) {
+  const achievements = parseAchievementIds(
+    body && typeof body === 'object' ? (body as { achievements?: unknown }).achievements : undefined,
+  )
+  if (parsed === null && achievements === undefined) {
     return Response.json({ error: 'bad request' }, { status: 400 })
   }
   try {
-    const saved = await upsertRatings(
-      parsed.map((item) => ({
-        board: item.board,
-        incoming: {
-          id: session.id,
-          name: session.name,
-          at: Date.now(),
-          ...item.entry,
-        },
-      })),
-    )
-    if (!saved.configured) {
-      return Response.json({ configured: false }, { status: 503 })
+    if (parsed && parsed.length > 0) {
+      const saved = await upsertRatings(
+        parsed.map((item) => ({
+          board: item.board,
+          incoming: {
+            id: session.id,
+            name: session.name,
+            at: Date.now(),
+            ...item.entry,
+          },
+        })),
+      )
+      if (!saved.configured) {
+        return Response.json({ configured: false }, { status: 503 })
+      }
     }
+    const xpItem = parsed?.find((item) => item.board.kind === 'xp')
+    await publishPlayerStats(session.id, {
+      xp: xpItem?.entry.xp,
+      level: xpItem?.entry.level,
+      achievementIds: achievements,
+    })
     return Response.json({ ok: true })
   } catch {
     return Response.json({ configured: false }, { status: 503 })
@@ -137,7 +149,7 @@ function parseBody(body: unknown): null | Array<{
       if (parsed === null) return null
       items.push(parsed)
     }
-    return items.length > 0 ? items : null
+    return items
   }
   const single = parseEntry(body)
   return single ? [single] : null

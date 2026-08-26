@@ -312,6 +312,7 @@ export function publicEntries(
   entries: StoredEntry[],
   playerId?: string,
 ): Array<{
+  id: string
   name: string
   levelsCleared: number
   totalMs: number
@@ -320,6 +321,7 @@ export function publicEntries(
   you: boolean
 }> {
   return entries.slice(0, LEADERBOARD_LIMIT).map((entry) => ({
+    id: entry.id,
     name: entry.name,
     levelsCleared: entry.levelsCleared,
     totalMs: entry.totalMs,

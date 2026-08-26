@@ -1,8 +1,8 @@
-import { isQuizMode, isRegionFilter, type QuizDifficulty, type QuizMode, type RegionFilter, type RoundEnd } from './quiz'
+import { isFootballMode, isMixKind, isQuizMode, isRegionFilter, type MixKind, type QuizDifficulty, type QuizMode, type RegionFilter, type RoundEnd } from './quiz'
 
 export const HISTORY_KEY = 'un-flag-quiz-history'
 export const BESTS_KEY = 'un-flag-quiz-bests'
-export const HISTORY_LIMIT = 30
+export const HISTORY_LIMIT = 3
 
 export interface RoundRecord {
   id: string
@@ -15,16 +15,23 @@ export interface RoundRecord {
   difficulty: QuizDifficulty
   roundSize: number
   endedBy: RoundEnd
+  mix?: MixKind
+  wcYears?: string
 }
 
-export type ConfigKey = Pick<RoundRecord, 'mode' | 'region' | 'difficulty' | 'roundSize'>
+export type ConfigKey = Omit<Pick<RoundRecord, 'mode' | 'region' | 'difficulty' | 'roundSize' | 'mix'>, 'mix'> & {
+  mix?: MixKind | null
+}
 
 export function configKey(record: ConfigKey): string {
-  return `${record.mode}|${record.region}|${record.difficulty}|${record.roundSize}`
+  return `${record.mix ?? ''}|${record.mode}|${record.region}|${record.difficulty}|${record.roundSize}`
 }
 
 export function loadHistory(): RoundRecord[] {
-  return readRecordList(HISTORY_KEY) ?? []
+  const records = readRecordList(HISTORY_KEY) ?? []
+  const trimmed = capHistory(records)
+  if (trimmed.length !== records.length) writeRecordList(HISTORY_KEY, trimmed)
+  return trimmed
 }
 
 export function loadBests(): RoundRecord[] {
@@ -42,7 +49,7 @@ export function saveRound(input: Omit<RoundRecord, 'id'>): {
 } {
   const record: RoundRecord = { ...input, id: crypto.randomUUID() }
   const previousBests = loadBests()
-  const history = [record, ...loadHistory()].slice(0, HISTORY_LIMIT)
+  const history = capHistory([record, ...loadHistory()])
   writeRecordList(HISTORY_KEY, history)
 
   const current = findBest(previousBests, record)
@@ -60,14 +67,24 @@ export function saveRound(input: Omit<RoundRecord, 'id'>): {
   return { history, bests: nextBests, isNewBest }
 }
 
-export function clearHistory(): RoundRecord[] {
-  localStorage.removeItem(HISTORY_KEY)
-  return []
+export function clearHistory(keep?: (record: RoundRecord) => boolean): RoundRecord[] {
+  if (!keep) {
+    localStorage.removeItem(HISTORY_KEY)
+    return []
+  }
+  const next = capHistory(loadHistory().filter(keep))
+  writeRecordList(HISTORY_KEY, next)
+  return next
 }
 
-export function clearBests(): RoundRecord[] {
-  writeRecordList(BESTS_KEY, [])
-  return []
+export function clearBests(keep?: (record: RoundRecord) => boolean): RoundRecord[] {
+  if (!keep) {
+    writeRecordList(BESTS_KEY, [])
+    return []
+  }
+  const next = sortBests(uniqueBests(loadBests().filter(keep)))
+  writeRecordList(BESTS_KEY, next)
+  return next
 }
 
 export function findBest(bests: RoundRecord[], config: ConfigKey): RoundRecord | undefined {
@@ -84,6 +101,12 @@ export function isBetter(candidate: RoundRecord, current: RoundRecord): boolean 
   const currentComplete = current.endedBy === 'complete'
   if (nextComplete !== currentComplete) return nextComplete
   return candidate.roundMs < current.roundMs
+}
+
+function capHistory(records: RoundRecord[]): RoundRecord[] {
+  const football = records.filter((item) => isFootballMode(item.mode)).slice(0, HISTORY_LIMIT)
+  const geo = records.filter((item) => !isFootballMode(item.mode)).slice(0, HISTORY_LIMIT)
+  return [...football, ...geo].sort((a, b) => b.at - a.at)
 }
 
 function scorePercent(record: RoundRecord): number {
@@ -136,10 +159,15 @@ function isRoundRecord(value: unknown): value is RoundRecord {
     typeof record.roundMs === 'number' &&
     isQuizMode(record.mode) &&
     isRegionFilter(record.region) &&
-    (record.difficulty === 'easy' || record.difficulty === 'hard' || record.difficulty === 'hardcore') &&
+    (record.difficulty === 'easy' ||
+      record.difficulty === 'medium' ||
+      record.difficulty === 'hard' ||
+      record.difficulty === 'hardcore') &&
     typeof record.roundSize === 'number' &&
     (record.endedBy === 'complete' ||
       record.endedBy === 'timeout' ||
-      record.endedBy === 'lives')
+      record.endedBy === 'lives') &&
+    (record.mix === undefined || isMixKind(record.mix)) &&
+    (record.wcYears === undefined || typeof record.wcYears === 'string')
   )
 }

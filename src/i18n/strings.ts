@@ -6,6 +6,7 @@ import {
   parseRegions,
   QUIZ_MODES,
   sameModes,
+  type MixKind,
   type QuizDifficulty,
   type QuizMode,
   type RegionFilter,
@@ -19,6 +20,20 @@ export { LANGS, LANG_NATIVE, LANG_SHORT, isLang, isRtl, langDir, localeTag, type
 export type Strings = {
   title: string
   subtitle: string
+  worldsPick: string
+  geography: string
+  football: string
+  wcWinners: string
+  wcWinnerPrompt: (year: number) => string
+  wcFinalists: string
+  wcFinalistPrompt: (year: number) => string
+  wcHosts: string
+  wcHostPrompt: (year: number) => string
+  wcTitleYears: string
+  wcTitleYearPrompt: (name: string) => string
+  euroWinners: string
+  euroWinnerPrompt: (year: number) => string
+  worldsBack: string
   mode: string
   flagToName: string
   nameToFlag: string
@@ -42,6 +57,7 @@ export type Strings = {
   oceania: string
   difficulty: string
   easy: string
+  medium: string
   hard: string
   hardcore: string
   hardcoreHint: string
@@ -124,6 +140,9 @@ export type Strings = {
   nameChangeHint: string
   accountSignedIn: string
   accountNeeded: string
+  accountRegistered: (date: string) => string
+  playerProfile: string
+  playerProfileMissing: string
   authInvalid: string
   authNameTaken: string
   authNameBlocked: string
@@ -310,6 +329,20 @@ export const STRINGS: Record<Lang, Strings> = {
   ru: {
     title: 'Паспорт страны',
     subtitle: '193 страны. Без сокращений.',
+    worldsPick: 'Выберите тему',
+    geography: 'География',
+    football: 'Футбол',
+    wcWinners: 'Победители ЧМ',
+    wcWinnerPrompt: (year) => `Кто выиграл ЧМ ${year}?`,
+    wcFinalists: 'Финалисты ЧМ',
+    wcFinalistPrompt: (year) => `Кто проиграл финал ЧМ ${year}?`,
+    wcHosts: 'Хозяева ЧМ',
+    wcHostPrompt: (year) => `Где прошёл ЧМ ${year}?`,
+    wcTitleYears: 'Год титула',
+    wcTitleYearPrompt: (name) => `В каком году ${name} выиграла ЧМ?`,
+    euroWinners: 'Победители Евро',
+    euroWinnerPrompt: (year) => `Кто выиграл Евро ${year}?`,
+    worldsBack: 'К темам',
     mode: 'Режим',
     flagToName: 'Флаг → страна',
     nameToFlag: 'Страна → флаг',
@@ -332,8 +365,9 @@ export const STRINGS: Record<Lang, Strings> = {
     europe: 'Европа',
     oceania: 'Океания',
     difficulty: 'Сложность',
-    easy: 'Проще',
-    hard: 'Сложнее',
+    easy: 'Легкая',
+    medium: 'Средняя',
+    hard: 'Сложная',
     hardcore: 'Хардкор',
     hardcoreHint: 'Без права на ошибку',
     levels: 'Уровни',
@@ -413,8 +447,11 @@ export const STRINGS: Record<Lang, Strings> = {
     passwordChange: 'Сменить пароль',
     passwordChanged: 'Пароль обновлён',
     nameChangeHint: 'Ник можно сменить не чаще чем раз в месяц.',
-    accountSignedIn: 'Таблица лидеров пишет этот аккаунт',
+    accountSignedIn: 'Вы вошли в аккаунт',
     accountNeeded: 'Войдите, чтобы попасть в таблицу лидеров',
+    accountRegistered: (date) => `Регистрация: ${date}`,
+    playerProfile: 'Профиль',
+    playerProfileMissing: 'Игрок не найден',
     authInvalid: 'Проверьте имя и пароль',
     authNameTaken: 'Это имя уже занято',
     authNameBlocked: 'Это имя нельзя использовать',
@@ -441,7 +478,7 @@ export const STRINGS: Record<Lang, Strings> = {
     profileName: 'Имя',
     profileLanguage: 'Язык',
     guestName: 'Гость',
-    guestHint: 'Имя и аватар хранятся на этом устройстве. Войдите, чтобы синхронизировать аккаунт.',
+    guestHint: 'Чтобы попасть в рейтинг, войдите по имени и паролю.',
     saveProfile: 'Сохранить',
     profileSaved: 'Сохранено',
     xpTotal: (amount) => `${amount} опыта`,
@@ -606,6 +643,20 @@ export const STRINGS: Record<Lang, Strings> = {
   en: {
     title: 'Country Passport',
     subtitle: '193 countries. No shortcuts.',
+    worldsPick: 'Choose a topic',
+    geography: 'Geography',
+    football: 'Football',
+    wcWinners: 'World Cup winners',
+    wcWinnerPrompt: (year) => `Who won the ${year} World Cup?`,
+    wcFinalists: 'World Cup finalists',
+    wcFinalistPrompt: (year) => `Who lost the ${year} World Cup final?`,
+    wcHosts: 'World Cup hosts',
+    wcHostPrompt: (year) => `Who hosted the ${year} World Cup?`,
+    wcTitleYears: 'Title year',
+    wcTitleYearPrompt: (name) => `Which year did ${name} win the World Cup?`,
+    euroWinners: 'Euro winners',
+    euroWinnerPrompt: (year) => `Who won Euro ${year}?`,
+    worldsBack: 'Topics',
     mode: 'Mode',
     flagToName: 'Flag → country',
     nameToFlag: 'Country → flag',
@@ -629,6 +680,7 @@ export const STRINGS: Record<Lang, Strings> = {
     oceania: 'Oceania',
     difficulty: 'Difficulty',
     easy: 'Easier',
+    medium: 'Medium',
     hard: 'Harder',
     hardcore: 'Hardcore',
     hardcoreHint: 'No mistakes allowed',
@@ -709,8 +761,11 @@ export const STRINGS: Record<Lang, Strings> = {
     passwordChange: 'Change password',
     passwordChanged: 'Password updated',
     nameChangeHint: 'You can change your name once a month.',
-    accountSignedIn: 'The leaderboard uses this account',
+    accountSignedIn: 'You are signed in',
     accountNeeded: 'Sign in to appear on the leaderboard',
+    accountRegistered: (date) => `Registered: ${date}`,
+    playerProfile: 'Profile',
+    playerProfileMissing: 'Player not found',
     authInvalid: 'Check the name and password',
     authNameTaken: 'That name is taken',
     authNameBlocked: 'That name isn’t allowed',
@@ -737,7 +792,7 @@ export const STRINGS: Record<Lang, Strings> = {
     profileName: 'Name',
     profileLanguage: 'Language',
     guestName: 'Guest',
-    guestHint: 'Name and avatar stay on this device. Sign in to sync an account.',
+    guestHint: 'Sign in with your name and password to appear on the leaderboard.',
     saveProfile: 'Save',
     profileSaved: 'Saved',
     xpTotal: (amount) => `${amount} XP`,
@@ -919,6 +974,10 @@ export function modesLabel(modes: readonly QuizMode[], lang: Lang): string {
   if (sameModes(selected, HARD_MIX_MODES)) return t.hardMix
   if (selected.length === 0) return modeLabel('flagToName', lang)
   return selected.map((mode) => modeLabel(mode, lang)).join(' · ')
+}
+
+export function mixLabel(mix: MixKind, lang: Lang): string {
+  return mix === 'easy' ? STRINGS[lang].easyMix : STRINGS[lang].hardMix
 }
 
 function pluralRu(n: number, one: string, few: string, many: string): string {

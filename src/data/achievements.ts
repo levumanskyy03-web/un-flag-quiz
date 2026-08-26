@@ -44,6 +44,23 @@ export const ACHIEVEMENT_IDS = [
 
 export type AchievementId = (typeof ACHIEVEMENT_IDS)[number]
 
+export function isAchievementId(value: unknown): value is AchievementId {
+  return typeof value === 'string' && (ACHIEVEMENT_IDS as readonly string[]).includes(value)
+}
+
+export function parseAchievementIds(value: unknown): AchievementId[] | undefined {
+  if (!Array.isArray(value)) return undefined
+  const ids: AchievementId[] = []
+  const seen = new Set<string>()
+  for (const item of value) {
+    if (!isAchievementId(item) || seen.has(item)) continue
+    seen.add(item)
+    ids.push(item)
+    if (ids.length >= ACHIEVEMENT_IDS.length) break
+  }
+  return ids
+}
+
 export interface AchievementInfo {
   id: AchievementId
   tier: AchievementTier

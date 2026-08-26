@@ -8,6 +8,8 @@ import {
   isCorrect,
   isFactMode,
   isFactsToName,
+  isFootballTeamChoice,
+  isFootballYearChoice,
   isMapMode,
   slowestAnswer,
   type QuizMode,
@@ -16,7 +18,7 @@ import {
 } from '../lib/quiz'
 import { formatXp, accountProgress } from '../lib/xp'
 import { optionLabel } from '../lib/quizAnswers'
-import { Flag } from './Flag'
+import { TeamFlag } from './Flag'
 
 interface ResultsScreenProps {
   lang: Lang
@@ -110,33 +112,55 @@ export function ResultsScreen({
           <h2>{t.mistakes}</h2>
           <ul className="mistakes-list">
             {mistakes.map((answer) => {
+              const itemMode = answer.question.mode ?? mode
               const correct = answer.question.country
+              const yearChoice = isFootballYearChoice(itemMode)
               const chosen =
                 answer.selectedIso === null
                   ? null
-                  : answer.question.options.find((option) => option.iso === answer.selectedIso) ??
-                    COUNTRIES.find((country) => country.iso === answer.selectedIso) ??
-                    null
+                  : yearChoice
+                    ? answer.selectedIso
+                    : answer.question.options.find((option) => option.iso === answer.selectedIso) ??
+                      COUNTRIES.find((country) => country.iso === answer.selectedIso) ??
+                      null
+              const prompt =
+                itemMode === 'wcWinners' && answer.question.year
+                  ? t.wcWinnerPrompt(answer.question.year)
+                  : itemMode === 'wcFinalists' && answer.question.year
+                    ? t.wcFinalistPrompt(answer.question.year)
+                    : itemMode === 'wcHosts' && answer.question.year
+                      ? t.wcHostPrompt(answer.question.year)
+                      : itemMode === 'euroWinners' && answer.question.year
+                        ? t.euroWinnerPrompt(answer.question.year)
+                        : itemMode === 'wcTitleYears'
+                          ? t.wcTitleYearPrompt(countryName(correct, lang))
+                          : isFactMode(itemMode) || isFactsToName(itemMode)
+                            ? countryName(correct, lang)
+                            : null
               return (
-                <li key={`${correct.iso}-${answer.selectedIso ?? 'timeout'}`} className="mistake-row">
-                  {(mode === 'flagToName' ||
-                    mode === 'neighborsToName' ||
-                    isMapMode(mode) ||
-                    isFactMode(mode) ||
-                    isFactsToName(mode)) && (
-                    <Flag iso={correct.iso} name={countryName(correct, lang)} size="thumb" />
+                <li key={`${correct.iso}-${answer.question.year ?? ''}-${answer.selectedIso ?? 'timeout'}`} className="mistake-row">
+                  {(itemMode === 'flagToName' ||
+                    itemMode === 'neighborsToName' ||
+                    isFootballTeamChoice(itemMode) ||
+                    yearChoice ||
+                    isMapMode(itemMode) ||
+                    isFactMode(itemMode) ||
+                    isFactsToName(itemMode)) && (
+                    <TeamFlag iso={correct.iso} name={countryName(correct, lang)} size="thumb" />
                   )}
                   <div className="mistake-copy">
-                    {isFactMode(mode) || isFactsToName(mode) ? (
-                      <p className="mistake-country">{countryName(correct, lang)}</p>
-                    ) : null}
+                    {prompt ? <p className="mistake-country">{prompt}</p> : null}
                     <p>
                       <span className="mistake-label">{t.yourAnswer}</span>
-                      {chosen ? optionLabel(chosen, mode, lang, answer.question) : t.timedOut}
+                      {typeof chosen === 'string'
+                        ? chosen
+                        : chosen
+                          ? optionLabel(chosen, itemMode, lang, answer.question)
+                          : t.timedOut}
                     </p>
                     <p>
                       <span className="mistake-label">{t.correctAnswer}</span>
-                      {optionLabel(correct, mode, lang, answer.question)}
+                      {yearChoice ? String(answer.question.year) : optionLabel(correct, itemMode, lang, answer.question)}
                     </p>
                   </div>
                 </li>

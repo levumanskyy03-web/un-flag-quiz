@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
-import { ACHIEVEMENTS, achievementCopy } from '../data/achievements'
 import { type AvatarId } from '../data/avatars'
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import {
   checkNameAvailable,
   fetchAccount,
+  formatRegisteredAt,
   loginAccount,
   logoutAccount,
   registerAccount,
@@ -14,10 +14,10 @@ import {
   type Account,
   type AuthError,
 } from '../lib/account'
-import { listAchievements } from '../lib/achievements'
+import { unlockedAchievementIds } from '../lib/achievements'
 import type { RoundRecord } from '../lib/history'
 import type { LevelClear } from '../lib/levelProgress'
-import { NAME_MIN, PASSWORD_MIN } from '../lib/leaderboard'
+import { NAME_MIN, PASSWORD_MIN, submitRatings } from '../lib/leaderboard'
 import { isNameAllowed } from '../lib/nameFilter'
 import { isNameCooldown } from '../lib/nameRules'
 import { statsByMode } from '../lib/modeStats'
@@ -25,8 +25,8 @@ import { loadProfile, saveProfile } from '../lib/profile'
 import { formatClock, hasLevels } from '../lib/quiz'
 import { formatXp, accountProgress } from '../lib/xp'
 import { countLifetimeSeed, loadLifetime } from '../lib/lifetime'
+import { AchievementGallery } from './AchievementGallery'
 import { AvatarMark } from './AvatarMark'
-import { AchievementMark } from './AchievementMark'
 import { AvatarPicker } from './AvatarPicker'
 import { LanguageToggle } from './LanguageToggle'
 import { PasswordModal } from './PasswordModal'
@@ -63,6 +63,7 @@ export function SettingsModal({
   const [authReady, setAuthReady] = useState(false)
   const [profile, setProfile] = useState(loadProfile)
   const [name, setName] = useState(loadProfile().name)
+  const [loginName, setLoginName] = useState(loadProfile().name)
   const [password, setPassword] = useState('')
   const [repeat, setRepeat] = useState('')
   const [busy, setBusy] = useState(false)
@@ -75,16 +76,14 @@ export function SettingsModal({
   const [reportBody, setReportBody] = useState('')
   const [reportOpened, setReportOpened] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [focusAchievement, setFocusAchievement] = useState<(typeof ACHIEVEMENTS)[number]['id'] | null>(null)
   const authBlockRef = useRef<HTMLDivElement>(null)
   const stats = useMemo(() => statsByMode(history, bests, levelClears), [history, bests, levelClears])
   const xp = loadLifetime(countLifetimeSeed(history, levelClears)).xp
   const rank = accountProgress(xp)
-  const achievements = useMemo(
-    () => listAchievements(history, bests, levelClears, account?.createdAt),
+  const unlockedIds = useMemo(
+    () => unlockedAchievementIds(history, bests, levelClears, account?.createdAt),
     [history, bests, levelClears, account?.createdAt],
   )
-  const unlockedCount = achievements.filter((item) => item.unlocked).length
 
   useEffect(() => {
     let cancelled = false
@@ -95,6 +94,11 @@ export function SettingsModal({
         setName(user.name)
         const local = loadProfile()
         setProfile(local)
+        void submitRatings(
+          levelClears,
+          xp,
+          unlockedAchievementIds(history, bests, levelClears, user.createdAt),
+        )
         if (local.avatarId && local.avatarId !== user.avatarId) {
           const result = await updateAccountProfile({ avatarId: local.avatarId })
           if (!cancelled && result.ok) {
@@ -102,6 +106,11 @@ export function SettingsModal({
             onAuth?.(result.user)
           }
         }
+      } else {
+        const local = loadProfile()
+        setProfile(local)
+        setName(local.name)
+        setLoginName((current) => current.trim() || local.name)
       }
       if (!cancelled) setAuthReady(true)
     })
@@ -133,8 +142,12 @@ export function SettingsModal({
   }, [onClose, pickerOpen, passwordOpen])
 
   useEffect(() => {
+    if (!account) {
+      setNameFree(null)
+      return
+    }
     const trimmed = name.trim()
-    const current = account?.name ?? profile.name
+    const current = account.name
     if (trimmed.length < NAME_MIN || trimmed === current) {
       setNameFree(null)
       return
@@ -154,7 +167,7 @@ export function SettingsModal({
       })
     }, 350)
     return () => window.clearTimeout(id)
-  }, [name, account?.name, profile.name])
+  }, [name, account])
 
   async function pickAvatar(avatarId: AvatarId) {
     const next = saveProfile({
@@ -195,7 +208,7 @@ export function SettingsModal({
     setBusy(true)
     setError(null)
     setSaved(false)
-    if (trimmed !== current) {
+    if (account && trimmed !== current) {
       const taken = await checkNameAvailable(trimmed)
       if (taken.ok && !taken.available) {
         setBusy(false)
@@ -231,7 +244,7 @@ export function SettingsModal({
 
   async function submitAuth() {
     if (busy) return
-    const trimmed = name.trim()
+    const trimmed = loginName.trim()
     if (trimmed.length < NAME_MIN || password.length < PASSWORD_MIN) {
       setError('invalid')
       return
@@ -255,6 +268,7 @@ export function SettingsModal({
     }
     setAccount(result.user)
     setName(result.user.name)
+    setLoginName(result.user.name)
     setProfile(loadProfile())
     setPassword('')
     setRepeat('')
@@ -263,24 +277,23 @@ export function SettingsModal({
 
   async function signOut() {
     if (busy) return
+    const previousName = account?.name ?? name.trim()
     setBusy(true)
     setError(null)
     await logoutAccount()
-    const still = await fetchAccount()
     setBusy(false)
-    if (still) {
-      setAccount(still)
-      onAuth?.(still)
-      setError('offline')
-      return
-    }
+    const local = loadProfile()
     setAccount(null)
     setAuthTab('login')
+    setLoginName(previousName || local.name)
+    setName(local.name)
+    setProfile(local)
     setPassword('')
     setRepeat('')
     setPasswordOpen(false)
     setPasswordSaved(false)
-    setProfile(loadProfile())
+    setSaved(false)
+    setNameFree(null)
     onAuth?.(null)
     window.setTimeout(() => {
       authBlockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
@@ -344,67 +357,31 @@ export function SettingsModal({
                 <AvatarMark id={profile.avatarId} photo={profile.photo} size={64} />
               </button>
               <div>
-                <p className="account-signed-in">{name.trim() || t.guestName}</p>
+                <p className="account-signed-in">{account ? account.name : t.guestName}</p>
+                {authReady ? (
+                  <p className={`account-status ${account ? 'is-on' : ''}`}>
+                    {account ? t.accountSignedIn : t.accountNeeded}
+                  </p>
+                ) : null}
+                {account?.createdAt ? (
+                  <p className="account-registered">
+                    {t.accountRegistered(formatRegisteredAt(account.createdAt, lang))}
+                  </p>
+                ) : null}
                 <p className="account-level">{t.accountLevel(rank.level)}</p>
                 <p className="profile-xp">
                   {t.xpTotal(formatXp(xp, lang))} · {t.accountLevelNext(formatXp(rank.remain, lang))}
                 </p>
-                {authReady && !account ? <p className="setting-hint">{t.guestHint}</p> : null}
                 <button type="button" className="btn-ghost avatar-change-btn" onClick={() => setPickerOpen(true)}>
                   {t.avatarChange}
                 </button>
               </div>
             </div>
 
-            <label className="player-name">
-              <span>{t.profileName}</span>
-              <input
-                type="text"
-                name="profile-name"
-                maxLength={24}
-                autoComplete="nickname"
-                placeholder={t.playerNameHint}
-                value={name}
-                onChange={(event) => {
-                  setName(event.target.value)
-                  setSaved(false)
-                  setError(null)
-                }}
-              />
-            </label>
-            <p className="setting-hint">{t.nameChangeHint}</p>
-            {nameFree === false ? <p className="account-error">{t.authNameTaken}</p> : null}
-            {error === 'blocked' ? <p className="account-error">{t.authNameBlocked}</p> : null}
-            <button type="button" className="btn-secondary" onClick={() => void saveName()} disabled={busy}>
-              {t.saveProfile}
-            </button>
-            {saved ? <p className="settings-ok">{t.profileSaved}</p> : null}
-
-            <h3 className="settings-sub">{t.profileLanguage}</h3>
-            <LanguageToggle lang={lang} onChange={onLangChange} />
-
-            {authReady && account ? (
-              <div className="settings-account-actions">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => {
-                    setPasswordSaved(false)
-                    setPasswordOpen(true)
-                  }}
-                  disabled={busy}
-                >
-                  {t.passwordChange}
-                </button>
-                {passwordSaved ? <p className="settings-ok">{t.passwordChanged}</p> : null}
-                <button type="button" className="btn-secondary" onClick={() => void signOut()} disabled={busy}>
-                  {t.signOut}
-                </button>
-              </div>
-            ) : null}
             {authReady && !account ? (
-              <div ref={authBlockRef}>
+              <div ref={authBlockRef} className="settings-auth">
                 <h3 className="settings-sub">{t.account}</h3>
+                <p className="setting-hint">{t.guestHint}</p>
                 <div className="choice-grid">
                   <button
                     type="button"
@@ -437,13 +414,34 @@ export function SettingsModal({
                   }}
                 >
                   <label className="player-name">
+                    <span>{t.profileName}</span>
+                    <input
+                      type="text"
+                      name="username"
+                      maxLength={24}
+                      autoComplete="username"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      spellCheck={false}
+                      placeholder={t.playerNameHint}
+                      value={loginName}
+                      onChange={(event) => {
+                        setLoginName(event.target.value)
+                        setError(null)
+                      }}
+                    />
+                  </label>
+                  <label className="player-name">
                     <span>{t.password}</span>
                     <input
                       type="password"
                       name="password"
                       autoComplete={authTab === 'register' ? 'new-password' : 'current-password'}
                       value={password}
-                      onChange={(event) => setPassword(event.target.value)}
+                      onChange={(event) => {
+                        setPassword(event.target.value)
+                        setError(null)
+                      }}
                     />
                   </label>
                   {authTab === 'register' ? (
@@ -454,18 +452,98 @@ export function SettingsModal({
                         name="password-repeat"
                         autoComplete="new-password"
                         value={repeat}
-                        onChange={(event) => setRepeat(event.target.value)}
+                        onChange={(event) => {
+                          setRepeat(event.target.value)
+                          setError(null)
+                        }}
                       />
                     </label>
                   ) : null}
                   <p className="setting-hint">{t.passwordHint}</p>
+                  {error ? <p className="account-error">{authErrorText(error, t)}</p> : null}
                   <button type="submit" className="btn-primary" disabled={busy}>
                     {authTab === 'register' ? t.signUp : t.signIn}
                   </button>
                 </form>
               </div>
             ) : null}
-            {error && error !== 'blocked' ? <p className="account-error">{authErrorText(error, t)}</p> : null}
+
+            {account ? (
+              <>
+                <label className="player-name">
+                  <span>{t.profileName}</span>
+                  <input
+                    type="text"
+                    name="profile-name"
+                    maxLength={24}
+                    autoComplete="nickname"
+                    placeholder={t.playerNameHint}
+                    value={name}
+                    onChange={(event) => {
+                      setName(event.target.value)
+                      setSaved(false)
+                      setError(null)
+                    }}
+                  />
+                </label>
+                <p className="setting-hint">{t.nameChangeHint}</p>
+                {nameFree === false ? <p className="account-error">{t.authNameTaken}</p> : null}
+                {error ? <p className="account-error">{authErrorText(error, t)}</p> : null}
+                <button type="button" className="btn-secondary" onClick={() => void saveName()} disabled={busy}>
+                  {t.saveProfile}
+                </button>
+                {saved ? <p className="settings-ok">{t.profileSaved}</p> : null}
+              </>
+            ) : null}
+
+            <h3 className="settings-sub">{t.profileLanguage}</h3>
+            <LanguageToggle lang={lang} onChange={onLangChange} />
+
+            {authReady && account ? (
+              <div className="settings-account-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => {
+                    setPasswordSaved(false)
+                    setPasswordOpen(true)
+                  }}
+                  disabled={busy}
+                >
+                  {t.passwordChange}
+                </button>
+                {passwordSaved ? <p className="settings-ok">{t.passwordChanged}</p> : null}
+                <button type="button" className="btn-sign-out" onClick={() => void signOut()} disabled={busy}>
+                  {t.signOut}
+                </button>
+              </div>
+            ) : null}
+
+            {authReady && !account ? (
+              <>
+                <label className="player-name">
+                  <span>{t.profileName}</span>
+                  <input
+                    type="text"
+                    name="device-name"
+                    maxLength={24}
+                    autoComplete="nickname"
+                    placeholder={t.playerNameHint}
+                    value={name}
+                    onChange={(event) => {
+                      setName(event.target.value)
+                      setSaved(false)
+                      setError(null)
+                    }}
+                  />
+                </label>
+                <p className="setting-hint">{t.savedOnDevice}</p>
+                <button type="button" className="btn-secondary" onClick={() => void saveName()} disabled={busy}>
+                  {t.saveProfile}
+                </button>
+                {saved ? <p className="settings-ok">{t.profileSaved}</p> : null}
+              </>
+            ) : null}
 
             <h3 className="settings-sub">{t.modeStats}</h3>
             <ul className="mode-stats">
@@ -493,35 +571,7 @@ export function SettingsModal({
 
         {tab === 'achievements' ? (
           <div className="settings-pane">
-            <p className="setting-hint">
-              {t.achievementsUnlocked(unlockedCount, ACHIEVEMENTS.length)}
-            </p>
-            <div className="achievement-grid">
-              {ACHIEVEMENTS.map((info) => {
-                const item = achievements.find((entry) => entry.id === info.id)
-                const copy = achievementCopy(info.id, lang)
-                return (
-                  <button
-                    key={info.id}
-                    type="button"
-                    className={`achievement-pick ${item?.unlocked ? 'is-on' : ''} ${focusAchievement === info.id ? 'is-active' : ''}`}
-                    aria-pressed={item?.unlocked ?? false}
-                    aria-label={copy.title}
-                    onClick={() => setFocusAchievement(info.id)}
-                  >
-                    <AchievementMark id={info.id} />
-                  </button>
-                )
-              })}
-            </div>
-            {focusAchievement ? (
-              <div className="achievement-detail">
-                <p className="mode-stats-name">{achievementCopy(focusAchievement, lang).title}</p>
-                <p className="setting-hint">{achievementCopy(focusAchievement, lang).hint}</p>
-              </div>
-            ) : (
-              <p className="setting-hint">{t.achievementTap}</p>
-            )}
+            <AchievementGallery lang={lang} unlockedIds={unlockedIds} />
           </div>
         ) : null}
 

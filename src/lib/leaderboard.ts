@@ -1,3 +1,4 @@
+import type { AchievementId } from '../data/achievements'
 import { LEVEL_COUNT } from '../data/levels'
 import type { LevelClear } from './levelProgress'
 import { LEVEL_MODES, hasLevels, isQuizMode, type QuizMode } from './quiz'
@@ -19,6 +20,7 @@ export interface Player {
 }
 
 export interface LeaderboardEntry {
+  id?: string
   name: string
   levelsCleared: number
   totalMs: number
@@ -174,7 +176,11 @@ export async function submitCampaign(clears: LevelClear[], mode: QuizMode): Prom
   await submitRatings(clears, 0)
 }
 
-export async function submitRatings(clears: LevelClear[], xp: number): Promise<void> {
+export async function submitRatings(
+  clears: LevelClear[],
+  xp: number,
+  achievements?: AchievementId[],
+): Promise<void> {
   const player = loadPlayer()
   if (player.name.length < NAME_MIN) return
   const items: unknown[] = []
@@ -200,13 +206,16 @@ export async function submitRatings(clears: LevelClear[], xp: number): Promise<v
       })
     }
   }
-  if (items.length === 0) return
+  if (items.length === 0 && achievements === undefined) return
   await fetch('/api/leaderboard', {
     method: 'POST',
     credentials: 'include',
     cache: 'no-store',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items }),
+    body: JSON.stringify({
+      items,
+      ...(achievements !== undefined ? { achievements } : {}),
+    }),
   })
 }
 
@@ -294,6 +303,7 @@ function isPublicEntry(value: unknown): value is LeaderboardEntry {
   const record = value as Record<string, unknown>
   if (typeof record.name !== 'string' || typeof record.levelsCleared !== 'number') return false
   if (typeof record.totalMs !== 'number') return false
+  if (record.id !== undefined && (typeof record.id !== 'string' || !isPlayerId(record.id))) return false
   if (record.xp !== undefined && typeof record.xp !== 'number') return false
   if (record.level !== undefined && typeof record.level !== 'number') return false
   return true

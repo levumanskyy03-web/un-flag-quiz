@@ -4,6 +4,8 @@ import { landNeighbors } from '../data/neighbors'
 import {
   countryName,
   formatClock,
+  isFootballTeamChoice,
+  isFootballYearChoice,
   isFactMode,
   questionLimitMs,
   quizMapRegion,
@@ -13,7 +15,7 @@ import {
   type RegionFilter,
 } from '../lib/quiz'
 import { optionLabel } from '../lib/quizAnswers'
-import { Flag } from './Flag'
+import { Flag, TeamFlag } from './Flag'
 import { Lives } from './Lives'
 import { QuizMap } from './QuizMap'
 
@@ -159,6 +161,19 @@ export function QuizScreen({
         <section className="card question-card">
           {activeMode === 'flagToName' ? (
             <Flag iso={question.country.iso} name={correctName} size="hero" />
+          ) : activeMode === 'wcWinners' ? (
+            <h2 className="prompt-name">{t.wcWinnerPrompt(question.year ?? 0)}</h2>
+          ) : activeMode === 'wcFinalists' ? (
+            <h2 className="prompt-name">{t.wcFinalistPrompt(question.year ?? 0)}</h2>
+          ) : activeMode === 'wcHosts' ? (
+            <h2 className="prompt-name">{t.wcHostPrompt(question.year ?? 0)}</h2>
+          ) : activeMode === 'euroWinners' ? (
+            <h2 className="prompt-name">{t.euroWinnerPrompt(question.year ?? 0)}</h2>
+          ) : activeMode === 'wcTitleYears' ? (
+            <div className="title-year-prompt">
+              <TeamFlag iso={question.country.iso} name={correctName} size="hero" />
+              <h2 className="prompt-name">{t.wcTitleYearPrompt(correctName)}</h2>
+            </div>
           ) : activeMode === 'neighborsToName' ? (
             <div className="neighbors-prompt">
               <p className="neighbors-prompt-label">{t.whoseNeighbors}</p>
@@ -193,7 +208,32 @@ export function QuizScreen({
         />
       ) : (
         <div className={`options ${activeMode === 'nameToFlag' ? 'options-flags' : 'options-names'}`}>
-          {question.options.map((option) => {
+          {isFootballYearChoice(activeMode)
+            ? (question.yearOptions ?? []).map((year) => {
+                const key = String(year)
+                const isCorrectOption = year === question.year
+                const isSelected = key === selectedIso
+                const isOpponent = Boolean(duel?.reveal && duel.opponentAnswer === key)
+                const stateClass = answered
+                  ? isCorrectOption
+                    ? 'is-correct'
+                    : isSelected
+                      ? 'is-wrong'
+                      : 'is-muted'
+                  : ''
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    className={`option option-year ${stateClass}${isOpponent ? ' is-duel-opponent' : ''}`}
+                    disabled={answered}
+                    onClick={() => onSelect(key)}
+                  >
+                    {year}
+                  </button>
+                )
+              })
+            : question.options.map((option) => {
             const name = countryName(option, lang)
             const isCorrectOption = option.iso === question.country.iso
             const isSelected = option.iso === selectedIso
@@ -219,6 +259,11 @@ export function QuizScreen({
                     <Flag iso={option.iso} name={name} size="option" />
                     {answered && <span className="option-caption">{name}</span>}
                   </>
+                ) : isFootballTeamChoice(activeMode) ? (
+                  <span className="option-team">
+                    <TeamFlag iso={option.iso} name={name} size="thumb" />
+                    <span>{optionLabel(option, activeMode, lang, question)}</span>
+                  </span>
                 ) : (
                   optionLabel(option, activeMode, lang, question)
                 )}

@@ -1,9 +1,20 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { NextResponse } from 'next/server'
-import { NAME_MAX, NAME_MIN, PASSWORD_MAX, PASSWORD_MIN, isPlayerId, sanitizeName } from './leaderboard'
+import { isAchievementId, type AchievementId } from '../data/achievements'
+import {
+  NAME_MAX,
+  NAME_MIN,
+  PASSWORD_MAX,
+  PASSWORD_MIN,
+  RATING_LEVEL_MAX,
+  RATING_XP_MAX,
+  isPlayerId,
+  sanitizeName,
+} from './leaderboard'
 import { isNameAllowed } from './nameFilter'
 import { isNameCooldown } from './nameRules'
+import { accountLevel } from './xp'
 
 export const SESSION_COOKIE = 'pq-session'
 
@@ -19,9 +30,22 @@ export interface PublicAccount {
   createdAt?: number
 }
 
+export interface PublicPlayerProfile {
+  id: string
+  name: string
+  avatarId?: string
+  createdAt: number
+  xp: number
+  level: number
+  achievementIds: AchievementId[]
+}
+
 interface AccountRecord extends PublicAccount {
   hash: string
   createdAt: number
+  xp?: number
+  level?: number
+  achievementIds?: AchievementId[]
 }
 
 interface SessionRecord {
@@ -175,6 +199,51 @@ function toPublic(user: AccountRecord): PublicAccount {
   }
 }
 
+export async function publicProfileById(id: string): Promise<PublicPlayerProfile | null> {
+  if (!isPlayerId(id)) return null
+  const store = await loadStore()
+  if (store === null) return null
+  const user = Object.values(store.users).find((item) => item.id === id)
+  if (!user) return null
+  const xp = typeof user.xp === 'number' && Number.isFinite(user.xp) ? Math.max(0, Math.floor(user.xp)) : 0
+  const storedLevel =
+    typeof user.level === 'number' && Number.isFinite(user.level) ? Math.max(0, Math.floor(user.level)) : 0
+  return {
+    id: user.id,
+    name: user.name,
+    avatarId: user.avatarId,
+    createdAt: user.createdAt,
+    xp,
+    level: storedLevel >= 1 ? storedLevel : accountLevel(xp),
+    achievementIds: Array.isArray(user.achievementIds)
+      ? user.achievementIds.filter(isAchievementId)
+      : [],
+  }
+}
+
+export async function publishPlayerStats(
+  userId: string,
+  stats: { xp?: number; level?: number; achievementIds?: AchievementId[] },
+): Promise<void> {
+  if (!isPlayerId(userId)) return
+  const store = await loadStore()
+  if (store === null) return
+  const user = Object.values(store.users).find((item) => item.id === userId)
+  if (!user) return
+  if (typeof stats.xp === 'number' && Number.isFinite(stats.xp) && stats.xp >= 0) {
+    user.xp = Math.min(RATING_XP_MAX, Math.max(0, Math.floor(stats.xp)))
+  }
+  if (typeof stats.level === 'number' && Number.isFinite(stats.level) && stats.level >= 1) {
+    user.level = Math.min(RATING_LEVEL_MAX, Math.floor(stats.level))
+  } else if (typeof user.xp === 'number') {
+    user.level = accountLevel(user.xp)
+  }
+  if (stats.achievementIds) {
+    user.achievementIds = stats.achievementIds.filter(isAchievementId)
+  }
+  await saveStore(store)
+}
+
 export async function accountFromRequest(request: Request): Promise<PublicAccount | null> {
   const token = readCookie(request, SESSION_COOKIE)
   if (!token) return null
@@ -218,15 +287,32 @@ function noStore(response: NextResponse) {
 export function authResponse(body: unknown, token?: string, status = 200) {
   const response = NextResponse.json(body, { status })
   if (token) {
-    response.cookies.set(SESSION_COOKIE, token, cookieOptions(SESSION_MS / 1000))
+    response.cookies.set(
+      SESSION_COOKIE,
+      token,
+      cookieOptions(SESSION_MS / 1000, new Date(Date.now() + SESSION_MS)),
+    )
   }
   return noStore(response)
 }
 
 export function clearSessionResponse(body: unknown) {
   const response = NextResponse.json(body)
-  response.cookies.set(SESSION_COOKIE, '', cookieOptions(0, new Date(0)))
-  response.cookies.delete({ name: SESSION_COOKIE, path: '/' })
+  const expired = new Date(0).toUTCString()
+  for (const secure of [true, false]) {
+    response.headers.append(
+      'Set-Cookie',
+      [
+        `${SESSION_COOKIE}=`,
+        'Path=/',
+        'HttpOnly',
+        'SameSite=Lax',
+        'Max-Age=0',
+        `Expires=${expired}`,
+        ...(secure ? ['Secure'] : []),
+      ].join('; '),
+    )
+  }
   return noStore(response)
 }
 
@@ -300,17 +386,34 @@ function redisConfig() {
 
 async function loadStore(): Promise<AccountStore | null> {
   const redis = redisConfig()
+  let store: AccountStore | null
   if (redis) {
     const result = await redisCommand(redis, ['GET', REDIS_KEY])
     if (typeof result !== 'string' || result.length === 0) return { users: {}, sessions: {} }
-    return parseStore(result)
+    store = parseStore(result)
+  } else if (process.env.VERCEL === '1') {
+    return null
+  } else {
+    try {
+      store = parseStore(await readFile(filePath(), 'utf8'))
+    } catch {
+      return { users: {}, sessions: {} }
+    }
   }
-  if (process.env.VERCEL === '1') return null
-  try {
-    return parseStore(await readFile(filePath(), 'utf8'))
-  } catch {
-    return { users: {}, sessions: {} }
+  if (backfillCreatedAt(store)) await saveStore(store)
+  return store
+}
+
+function backfillCreatedAt(store: AccountStore): boolean {
+  const now = Date.now()
+  let dirty = false
+  for (const user of Object.values(store.users)) {
+    if (typeof user.createdAt !== 'number' || !Number.isFinite(user.createdAt) || user.createdAt <= 0) {
+      user.createdAt = now
+      dirty = true
+    }
   }
+  return dirty
 }
 
 async function saveStore(store: AccountStore): Promise<void> {

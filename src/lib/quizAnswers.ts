@@ -19,7 +19,11 @@ export function answerKey(country: Country, mode: QuizMode): string {
     mode === 'nameToFlag' ||
     mode === 'nameToMap' ||
     mode === 'mapToName' ||
-    mode === 'factsToName'
+    mode === 'factsToName' ||
+    mode === 'wcWinners' ||
+    mode === 'wcFinalists' ||
+    mode === 'wcHosts' ||
+    mode === 'euroWinners'
   ) {
     return country.iso
   }
@@ -39,7 +43,11 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
     mode === 'neighborsToName' ||
     mode === 'nameToMap' ||
     mode === 'mapToName' ||
-    mode === 'factsToName'
+    mode === 'factsToName' ||
+    mode === 'wcWinners' ||
+    mode === 'wcFinalists' ||
+    mode === 'wcHosts' ||
+    mode === 'euroWinners'
   ) {
     return countryName(country, lang)
   }

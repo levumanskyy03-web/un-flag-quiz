@@ -1,4 +1,5 @@
 import { COUNTRIES, type Country } from './countries'
+import { LEVEL_ISOS } from './levels'
 
 const KNOWN = new Set(COUNTRIES.map((country) => country.iso))
 
@@ -471,4 +472,38 @@ export function isEasyForMode(country: Country, mode: string): boolean {
   const easy = EASY_BY_MODE[mode]
   if (!easy || easy === 'flag') return country.difficulty === 'easy'
   return easy.has(country.iso)
+}
+
+export type FactsDifficulty = 'easy' | 'medium' | 'hard'
+
+const FACTS_FAME = new Map(LEVEL_ISOS.flat().map((iso, index) => [iso, index]))
+
+function factsFame(iso: string): number {
+  return FACTS_FAME.get(iso) ?? 999
+}
+
+function byFactsFame(a: Country, b: Country): number {
+  return factsFame(a.iso) - factsFame(b.iso)
+}
+
+const FACTS_TIER = buildFactsTiers()
+
+function buildFactsTiers(): Record<string, FactsDifficulty> {
+  const easy = COUNTRIES.filter((country) => country.difficulty === 'easy').sort(byFactsFame)
+  const hard = COUNTRIES.filter((country) => country.difficulty === 'hard').sort(byFactsFame)
+  const easyKeep = Math.max(20, Math.round(easy.length * 0.4))
+  const fromEasy = easy.slice(easyKeep)
+  const mediumSize = Math.round(fromEasy.length / 0.85)
+  const fromHardCount = Math.max(0, mediumSize - fromEasy.length)
+  const fromHard = hard.slice(0, fromHardCount)
+  const tier: Record<string, FactsDifficulty> = {}
+  for (const country of easy.slice(0, easyKeep)) tier[country.iso] = 'easy'
+  for (const country of fromEasy) tier[country.iso] = 'medium'
+  for (const country of fromHard) tier[country.iso] = 'medium'
+  for (const country of hard.slice(fromHardCount)) tier[country.iso] = 'hard'
+  return tier
+}
+
+export function factsDifficultyOf(country: Country): FactsDifficulty {
+  return FACTS_TIER[country.iso] ?? (country.difficulty === 'easy' ? 'easy' : 'hard')
 }

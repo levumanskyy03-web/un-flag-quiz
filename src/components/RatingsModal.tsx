@@ -4,6 +4,8 @@ import { useEffect, useId, useMemo, useState } from 'react'
 import { LEVEL_COUNT } from '../data/levels'
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import { fetchAccount } from '../lib/account'
+import { unlockedAchievementIds } from '../lib/achievements'
+import type { RoundRecord } from '../lib/history'
 import {
   RATING_LEVELS_MAX,
   fetchRating,
@@ -16,9 +18,12 @@ import type { LevelClear } from '../lib/levelProgress'
 import { LEVEL_MODES, type QuizMode } from '../lib/quiz'
 import { formatXp } from '../lib/xp'
 import { GeoIcon } from './GeoIcon'
+import { PlayerProfileModal } from './PlayerProfileModal'
 
 interface RatingsModalProps {
   lang: Lang
+  history: RoundRecord[]
+  bests: RoundRecord[]
   levelClears: LevelClear[]
   xp: number
   onClose: () => void
@@ -27,7 +32,7 @@ interface RatingsModalProps {
 type Tab = 'xp' | 'levels'
 type ModeFilter = 'all' | QuizMode
 
-export function RatingsModal({ lang, levelClears, xp, onClose }: RatingsModalProps) {
+export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }: RatingsModalProps) {
   const t = STRINGS[lang]
   const titleId = useId()
   const [tab, setTab] = useState<Tab>('xp')
@@ -37,6 +42,7 @@ export function RatingsModal({ lang, levelClears, xp, onClose }: RatingsModalPro
   const [posted, setPosted] = useState(false)
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [boardReady, setBoardReady] = useState(true)
+  const [profileId, setProfileId] = useState<string | null>(null)
 
   const board = useMemo<RatingBoard>(() => {
     if (tab === 'xp') return { kind: 'xp' }
@@ -47,6 +53,10 @@ export function RatingsModal({ lang, levelClears, xp, onClose }: RatingsModalPro
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
       if (event.key !== 'Escape') return
+      if (profileId) {
+        setProfileId(null)
+        return
+      }
       onClose()
     }
     window.addEventListener('keydown', onKey)
@@ -56,7 +66,7 @@ export function RatingsModal({ lang, levelClears, xp, onClose }: RatingsModalPro
       window.removeEventListener('keydown', onKey)
       document.body.style.overflow = previous
     }
-  }, [onClose])
+  }, [onClose, profileId])
 
   useEffect(() => {
     let cancelled = false
@@ -64,7 +74,13 @@ export function RatingsModal({ lang, levelClears, xp, onClose }: RatingsModalPro
       .then(async (user) => {
         if (cancelled) return
         setSignedIn(Boolean(user))
-        if (user) await submitRatings(levelClears, xp)
+        if (user) {
+          await submitRatings(
+            levelClears,
+            xp,
+            unlockedAchievementIds(history, bests, levelClears, user.createdAt),
+          )
+        }
         if (!cancelled) setPosted(true)
       })
       .catch(() => {
@@ -73,7 +89,7 @@ export function RatingsModal({ lang, levelClears, xp, onClose }: RatingsModalPro
     return () => {
       cancelled = true
     }
-  }, [levelClears, xp])
+  }, [levelClears, xp, history, bests])
 
   useEffect(() => {
     if (!posted) return
@@ -186,20 +202,43 @@ export function RatingsModal({ lang, levelClears, xp, onClose }: RatingsModalPro
           <p className="leaderboard-empty">{t.leaderboardEmpty}</p>
         ) : (
           <ol className="leaderboard-list">
-            {entries.map((entry, index) => (
-              <li key={`${entry.name}-${index}`} className={`leaderboard-row${entry.you ? ' is-you' : ''}`}>
-                <span className="leaderboard-rank">{index + 1}</span>
-                <span className="leaderboard-name">{entry.name}</span>
-                <span className="leaderboard-score">
-                  {tab === 'xp'
-                    ? `${t.accountLevel(entry.level || 1)} · ${formatXp(entry.xp ?? 0, lang)}`
-                    : t.leaderboardProgress(entry.levelsCleared, total)}
-                </span>
-              </li>
-            ))}
+            {entries.map((entry, index) => {
+              const openProfile = entry.id
+                ? () => setProfileId(entry.id ?? null)
+                : undefined
+              return (
+                <li key={entry.id ?? `${entry.name}-${index}`}>
+                  <button
+                    type="button"
+                    className={`leaderboard-row${entry.you ? ' is-you' : ''}`}
+                    onClick={openProfile}
+                    disabled={!openProfile}
+                    aria-label={openProfile ? `${t.playerProfile}: ${entry.name}` : entry.name}
+                  >
+                    <span className="leaderboard-rank">{index + 1}</span>
+                    <span className="leaderboard-name">{entry.name}</span>
+                    <span className="leaderboard-score">
+                      {tab === 'xp'
+                        ? `${t.accountLevel(entry.level || 1)} · ${formatXp(entry.xp ?? 0, lang)}`
+                        : t.leaderboardProgress(entry.levelsCleared, total)}
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
           </ol>
         )}
       </div>
+      {profileId ? (
+        <PlayerProfileModal
+          lang={lang}
+          playerId={profileId}
+          previewName={entries.find((entry) => entry.id === profileId)?.name}
+          previewXp={entries.find((entry) => entry.id === profileId)?.xp}
+          previewLevel={entries.find((entry) => entry.id === profileId)?.level}
+          onClose={() => setProfileId(null)}
+        />
+      ) : null}
     </div>
   )
 }

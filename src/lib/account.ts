@@ -1,5 +1,7 @@
+import { isAchievementId, type AchievementId } from '../data/achievements'
 import { isAvatarId, type AvatarId } from '../data/avatars'
-import { NAME_MAX, type Player, savePlayer } from './leaderboard'
+import { localeTag, type Lang } from '../i18n/lang'
+import { NAME_MAX, isPlayerId, type Player, savePlayer } from './leaderboard'
 import { loadProfile, saveProfile } from './profile'
 
 export interface Account {
@@ -11,6 +13,24 @@ export interface Account {
 }
 
 export type AuthError = 'invalid' | 'taken' | 'auth' | 'offline' | 'mismatch' | 'cooldown' | 'blocked'
+
+export interface PublicPlayerProfile {
+  id: string
+  name: string
+  avatarId?: AvatarId
+  createdAt: number
+  xp: number
+  level: number
+  achievementIds: AchievementId[]
+}
+
+export function formatRegisteredAt(at: number, lang: Lang): string {
+  return new Date(at).toLocaleDateString(localeTag(lang), {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
 
 function authFetch(url: string, init?: RequestInit) {
   return fetch(url, { credentials: 'include', cache: 'no-store', ...init })
@@ -24,6 +44,18 @@ export async function fetchAccount(): Promise<Account | null> {
     const user = parseAccount(body)
     if (user) rememberAccount(user)
     return user
+  } catch {
+    return null
+  }
+}
+
+export async function fetchPlayerProfile(id: string): Promise<PublicPlayerProfile | null> {
+  if (!isPlayerId(id)) return null
+  try {
+    const response = await authFetch(`/api/players/${encodeURIComponent(id)}`)
+    if (!response.ok) return null
+    const body: unknown = await response.json()
+    return parsePublicProfile(body)
   } catch {
     return null
   }
@@ -86,6 +118,10 @@ export async function logoutAccount(): Promise<void> {
   } catch {
     /* still drop the local session copy */
   }
+  forgetLocalSession()
+}
+
+function forgetLocalSession() {
   savePlayer({ id: crypto.randomUUID(), name: loadProfile().name })
 }
 
@@ -133,6 +169,29 @@ function parseAccount(body: unknown): Account | null {
     avatarId: isAvatarId(record.avatarId) ? record.avatarId : undefined,
     nameChangedAt: typeof record.nameChangedAt === 'number' ? record.nameChangedAt : undefined,
     createdAt: typeof record.createdAt === 'number' ? record.createdAt : undefined,
+  }
+}
+
+function parsePublicProfile(body: unknown): PublicPlayerProfile | null {
+  if (!body || typeof body !== 'object') return null
+  const player = (body as { player?: unknown }).player
+  if (!player || typeof player !== 'object') return null
+  const record = player as Record<string, unknown>
+  if (typeof record.id !== 'string' || !isPlayerId(record.id) || typeof record.name !== 'string') return null
+  if (typeof record.createdAt !== 'number' || !Number.isFinite(record.createdAt)) return null
+  const xp = typeof record.xp === 'number' && Number.isFinite(record.xp) ? Math.max(0, record.xp) : 0
+  const level = typeof record.level === 'number' && Number.isFinite(record.level) ? Math.max(1, record.level) : 1
+  const achievementIds = Array.isArray(record.achievementIds)
+    ? record.achievementIds.filter(isAchievementId)
+    : []
+  return {
+    id: record.id,
+    name: record.name,
+    avatarId: isAvatarId(record.avatarId) ? record.avatarId : undefined,
+    createdAt: record.createdAt,
+    xp,
+    level,
+    achievementIds,
   }
 }
 

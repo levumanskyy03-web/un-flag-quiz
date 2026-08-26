@@ -19,14 +19,14 @@ export function statsByMode(
   levelClears: LevelClear[],
 ): ModeStat[] {
   return QUIZ_MODES.map((mode) => {
-    const modeBests = bests.filter((item) => item.mode === mode)
+    const modeBests = bests.filter((item) => item.mode === mode && !item.mix)
     const best = modeBests.reduce<RoundRecord | null>((current, item) => {
       if (!current || isBetter(item, current)) return item
       return current
     }, null)
     return {
       mode,
-      rounds: history.filter((item) => item.mode === mode).length,
+      rounds: history.filter((item) => item.mode === mode && !item.mix).length,
       best,
       campaign: hasLevels(mode) ? campaignStats(levelClears, mode, false).levelsCleared : 0,
       campaignTotal: hasLevels(mode) ? LEVEL_COUNT : 0,

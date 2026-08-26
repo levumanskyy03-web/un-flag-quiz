@@ -16,8 +16,6 @@ interface FactsScreenProps {
   index: number
   total: number
   roundMs: number
-  livesLeft: number
-  maxLives: number
   practice?: boolean
   selectedIso?: string | null
   finished?: boolean
@@ -48,8 +46,6 @@ export function FactsScreen({
   index,
   total,
   roundMs,
-  livesLeft,
-  maxLives,
   practice = false,
   selectedIso = null,
   finished = false,
@@ -84,6 +80,8 @@ export function FactsScreen({
   const urgent = !locked && activeRemaining <= 3000
   const timerWidth = `${Math.max(0, (activeRemaining / limitMs) * 100)}%`
   const suggestions = useMemo(() => searchCountries(query, lang), [query, lang])
+  const factLivesTotal = Number.isFinite(wrongLimit) ? wrongLimit : 0
+  const factLivesLeft = factLivesTotal > 0 ? Math.max(0, factLivesTotal - activeWrongs) : 0
   const canAdvance = activeIndex + 1 < maxFacts
   const showSkip = !locked && canAdvance && (duel ? Boolean(duel.hardcore && onAdvance) : true)
   const showCountryNext = Boolean(locked && onCountryNext)
@@ -157,15 +155,29 @@ export function FactsScreen({
         </button>
         <div className="progress-copy">{t.questionOf(index + 1, total)}</div>
         {duel ? (
-          <div className="duel-score" aria-label={t.duel}>
-            {duel.youScore}:{duel.opponentScore}
+          <div className="facts-header-end">
+            {factLivesTotal > 0 ? (
+              <Lives
+                filled={factLivesLeft}
+                total={factLivesTotal}
+                size="sm"
+                gold={factLivesTotal >= 3 && factLivesLeft === factLivesTotal}
+                label={t.lives}
+              />
+            ) : null}
+            <div className="duel-score" aria-label={t.duel}>
+              {duel.youScore}:{duel.opponentScore}
+            </div>
           </div>
-        ) : practice ? (
+        ) : practice || factLivesTotal === 0 ? (
           <span className="levels-header-spacer" aria-hidden="true" />
-        ) : maxLives <= 3 ? (
-          <Lives filled={livesLeft} total={maxLives} gold={maxLives >= 3 && livesLeft === maxLives} label={t.lives} />
         ) : (
-          <span className="levels-header-spacer" aria-hidden="true" />
+          <Lives
+            filled={factLivesLeft}
+            total={factLivesTotal}
+            gold={factLivesTotal >= 3 && factLivesLeft === factLivesTotal}
+            label={t.lives}
+          />
         )}
       </header>
 
@@ -178,7 +190,6 @@ export function FactsScreen({
 
       <p className="facts-meta">
         {t.factOf(Math.min(activeIndex + 1, maxFacts), maxFacts)}
-        {Number.isFinite(wrongLimit) ? ` · ${t.factWrongs(activeWrongs, wrongLimit)}` : ''}
         {` · ${formatClock(roundMs)}`}
       </p>
 
