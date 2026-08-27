@@ -14,6 +14,10 @@ export default function AboutPage() {
         соседи и карты. Есть кампания, обучение, дуэль и футбольный раздел (чемпионаты мира и Европы).
       </p>
       <p>На каждой карточке страны — короткий факт. Откроете паспорт снова — увидите другой.</p>
+      <p>
+        У каждой страны есть открытый паспорт: каталог на <a href="/countries">/countries</a>, сегодняшняя
+        страна — <a href="/today">/today</a>.
+      </p>
       <p>Сайт сделал Лев Уманский. Игра бесплатная, без обязательной регистрации.</p>
       <p lang="en">
         Country Passport is a quiz on the 193 UN member states: flags, capitals, maps, and a football section.

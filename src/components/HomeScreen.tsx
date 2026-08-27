@@ -28,6 +28,7 @@ import type { FactsDuelConfig } from '../lib/factsRules'
 import { AppChrome } from './AppChrome'
 import { HubNav, type HubTab } from './HubNav'
 import { DuelCreateModal } from './DuelCreateModal'
+import { WorldsBack } from './WorldsBack'
 
 export interface QuizSettings {
   lang: Lang
@@ -112,9 +113,7 @@ export function HomeScreen({
           xpReady={xpReady}
           onChange={onChange}
         />
-        <button type="button" className="btn-ghost worlds-back" onClick={onWorlds}>
-          {t.worldsBack}
-        </button>
+        <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1>{t.title}</h1>
         <p className="subtitle">{t.subtitle}</p>
       </header>

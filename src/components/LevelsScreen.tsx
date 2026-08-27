@@ -12,6 +12,7 @@ import type { QuizSettings } from './HomeScreen'
 import { HubNav, type HubTab } from './HubNav'
 import { PlayerHud } from './PlayerHud'
 import { Lives } from './Lives'
+import { WorldsBack } from './WorldsBack'
 
 interface LevelsScreenProps {
   settings: QuizSettings
@@ -23,9 +24,10 @@ interface LevelsScreenProps {
   onChange: (settings: QuizSettings) => void
   onPlay: (level: number) => void
   onHub: (tab: HubTab) => void
+  onWorlds: () => void
 }
 
-export function LevelsScreen({ settings, levelClears, history, bests, xp = 0, xpReady = false, onChange, onPlay, onHub }: LevelsScreenProps) {
+export function LevelsScreen({ settings, levelClears, history, bests, xp = 0, xpReady = false, onChange, onPlay, onHub, onWorlds }: LevelsScreenProps) {
   const t = STRINGS[settings.lang]
   const [worldBests, setWorldBests] = useState<Record<number, LevelBest>>({})
 
@@ -41,6 +43,7 @@ export function LevelsScreen({ settings, levelClears, history, bests, xp = 0, xp
 
   return (
     <div className="screen levels-screen">
+      <WorldsBack lang={settings.lang} onClick={onWorlds} />
       <header className="quiz-header is-hub">
         <HubNav lang={settings.lang} active="levels" onSelect={onHub} />
       </header>

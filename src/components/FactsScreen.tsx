@@ -9,6 +9,7 @@ import {
 } from '../lib/factsRules'
 import { countryName, formatClock, type Question } from '../lib/quiz'
 import { Lives } from './Lives'
+import { WorldsBack } from './WorldsBack'
 
 interface FactsScreenProps {
   lang: Lang
@@ -38,6 +39,7 @@ interface FactsScreenProps {
   onAdvance?: () => void
   onCountryNext?: () => void
   onBack: () => void
+  onWorlds?: () => void
 }
 
 export function FactsScreen({
@@ -55,6 +57,7 @@ export function FactsScreen({
   onAdvance,
   onCountryNext,
   onBack,
+  onWorlds,
 }: FactsScreenProps) {
   const t = STRINGS[lang]
   const facts = duel?.facts ?? question.facts ?? []
@@ -149,6 +152,7 @@ export function FactsScreen({
 
   return (
     <div className="screen quiz-screen facts-screen">
+      {onWorlds ? <WorldsBack lang={lang} onClick={onWorlds} /> : null}
       <header className="quiz-header">
         <button type="button" className="btn-ghost" onClick={onBack}>
           {t.back}

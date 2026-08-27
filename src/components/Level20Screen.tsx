@@ -7,19 +7,22 @@ import { findLevelClear } from '../lib/levelProgress'
 import { MAX_LIVES, formatClock } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
 import { Lives } from './Lives'
+import { WorldsBack } from './WorldsBack'
 
 interface Level20ScreenProps {
   settings: QuizSettings
   levelClears: LevelClear[]
   onPlay: (lives: number) => void
   onBack: () => void
+  onWorlds: () => void
 }
 
-export function Level20Screen({ settings, levelClears, onPlay, onBack }: Level20ScreenProps) {
+export function Level20Screen({ settings, levelClears, onPlay, onBack, onWorlds }: Level20ScreenProps) {
   const t = STRINGS[settings.lang]
 
   return (
     <div className="screen levels-screen">
+      <WorldsBack lang={settings.lang} onClick={onWorlds} />
       <header className="quiz-header">
         <button type="button" className="btn-ghost" onClick={onBack}>
           {t.back}

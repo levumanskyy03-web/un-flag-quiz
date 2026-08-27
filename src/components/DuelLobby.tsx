@@ -1,5 +1,6 @@
 import { STRINGS, difficultyLabel, modesLabel, regionLabel, type Lang } from '../i18n/strings'
 import type { DuelView } from '../lib/duelTypes'
+import { WorldsBack } from './WorldsBack'
 
 interface DuelLobbyProps {
   lang: Lang
@@ -8,12 +9,14 @@ interface DuelLobbyProps {
   onCopy: () => void
   copied: boolean
   onLeave: () => void
+  onWorlds: () => void
 }
 
-export function DuelLobby({ lang, room, error, onCopy, copied, onLeave }: DuelLobbyProps) {
+export function DuelLobby({ lang, room, error, onCopy, copied, onLeave, onWorlds }: DuelLobbyProps) {
   const t = STRINGS[lang]
   return (
     <div className="screen duel-lobby">
+      <WorldsBack lang={lang} onClick={onWorlds} />
       <header className="quiz-header">
         <button type="button" className="btn-ghost" onClick={onLeave}>
           {t.back}

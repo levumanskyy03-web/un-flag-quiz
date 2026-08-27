@@ -580,6 +580,10 @@ export function SettingsModal({
             <p>{t.aboutBody}</p>
             <p>{t.aboutModes}</p>
             <p>{t.credit}</p>
+            <p className="legal-inline catalog-inline">
+              <a href="/countries">{t.legalCountries}</a>
+              <a href="/today">{t.legalToday}</a>
+            </p>
             <p className="legal-inline">
               <a href="/about">{t.legalAbout}</a>
               <a href="/privacy">{t.legalPrivacy}</a>

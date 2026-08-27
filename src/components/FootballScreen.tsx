@@ -13,6 +13,7 @@ import {
 import { xpPerFootballCorrect } from '../lib/xp'
 import { AppChrome } from './AppChrome'
 import { GeoIcon } from './GeoIcon'
+import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
 
 interface FootballScreenProps {
@@ -64,9 +65,7 @@ export function FootballScreen({
           xpReady={xpReady}
           onChange={onChange}
         />
-        <button type="button" className="btn-ghost worlds-back" onClick={onWorlds}>
-          {t.worldsBack}
-        </button>
+        <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1 className="football-title">
           <GeoIcon name="ball" size={34} />
           {t.football}

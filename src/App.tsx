@@ -843,6 +843,13 @@ export default function App() {
     playLevel(quizSettings.level + 1);
   }
 
+  function goToWorlds() {
+    roundStartRef.current = null
+    if (isDuel) void handleLeaveDuel()
+    setWorld(null)
+    setScreen('home')
+  }
+
   function goBackFromPlay() {
     if (isDuel) {
       void handleLeaveDuel()
@@ -950,7 +957,7 @@ export default function App() {
           xpReady={xpReady}
           onChange={handleSettingsChange}
           onStart={startFootballRound}
-          onWorlds={() => setWorld(null)}
+          onWorlds={goToWorlds}
           onClearHistory={handleClearFootballHistory}
           onClearBests={handleClearFootballBests}
         />
@@ -973,6 +980,7 @@ export default function App() {
           practice={false}
           onSelect={selectAnswer}
           onBack={goBackFromPlay}
+          onWorlds={goToWorlds}
         />
       )}
       {world === "football" && screen === "results" && (
@@ -989,6 +997,7 @@ export default function App() {
           saveNote
           onAgain={playAgain}
           onMenu={goBackFromPlay}
+          onWorlds={goToWorlds}
         />
       )}
       {world === "geo" && screen === "home" && (
@@ -1005,7 +1014,7 @@ export default function App() {
           onCreateDuel={(modes, facts) => void handleCreateDuel(modes, facts)}
           onJoinDuel={(code) => void handleJoinDuel(code)}
           onHub={goHub}
-          onWorlds={() => setWorld(null)}
+          onWorlds={goToWorlds}
           onClearHistory={handleClearHistory}
           onClearBests={handleClearBests}
         />
@@ -1021,6 +1030,7 @@ export default function App() {
           onChange={handleSettingsChange}
           onPlay={playLevel}
           onHub={goHub}
+          onWorlds={goToWorlds}
         />
       )}
       {world === "geo" && screen === "level20" && (
@@ -1029,6 +1039,7 @@ export default function App() {
           levelClears={levelClears}
           onPlay={playFinalLevel}
           onBack={() => setScreen("levels")}
+          onWorlds={goToWorlds}
         />
       )}
       {world === "geo" && screen === "learn" && (
@@ -1038,6 +1049,7 @@ export default function App() {
           onBack={leaveLearn}
           onHub={goHub}
           onPractice={startPractice}
+          onWorlds={goToWorlds}
         />
       )}
       {world === "geo" && screen === "map" && (
@@ -1045,6 +1057,7 @@ export default function App() {
           settings={quizSettings}
           onChange={handleSettingsChange}
           onHub={goHub}
+          onWorlds={goToWorlds}
         />
       )}
       {world === "geo" && screen === "duel-lobby" && duelView && (
@@ -1060,6 +1073,7 @@ export default function App() {
             })
           }}
           onLeave={() => void handleLeaveDuel()}
+          onWorlds={goToWorlds}
         />
       )}
       {world === "geo" && screen === "quiz" && (isDuel ? questionFromWire(duelView?.question ?? null) : questions[index]) && (
@@ -1096,6 +1110,7 @@ export default function App() {
           onAdvance={isDuel ? () => void handleAdvanceFact() : undefined}
           onCountryNext={isLearn ? handlePracticeNext : undefined}
           onBack={goBackFromPlay}
+          onWorlds={goToWorlds}
         />
         ) : (
         <QuizScreen
@@ -1128,6 +1143,7 @@ export default function App() {
           onSelect={selectAnswer}
           onNext={isLearn ? handlePracticeNext : undefined}
           onBack={goBackFromPlay}
+          onWorlds={goToWorlds}
         />
         )
       )}
@@ -1138,6 +1154,7 @@ export default function App() {
           roundMs={roundMs}
           onRematch={() => void handleRematch()}
           onMenu={() => void handleLeaveDuel()}
+          onWorlds={goToWorlds}
         />
       )}
       {world === "geo" && screen === "results" && (
@@ -1166,6 +1183,7 @@ export default function App() {
               : undefined
           }
           onMenu={goBackFromPlay}
+          onWorlds={goToWorlds}
         />
       )}
       {world === "geo" && screen === "results" && worldRecord ? (
@@ -1176,12 +1194,18 @@ export default function App() {
           onClose={() => setWorldRecord(null)}
         />
       ) : null}
-      <nav className="legal-links">
-        <a href="/about">{STRINGS[quizSettings.lang].legalAbout}</a>
-        <a href="/privacy">{STRINGS[quizSettings.lang].legalPrivacy}</a>
-        <a href="/contacts">{STRINGS[quizSettings.lang].legalContacts}</a>
+      <nav className="catalog-links">
+        <a href="/countries">{STRINGS[quizSettings.lang].legalCountries}</a>
+        <a href="/today">{STRINGS[quizSettings.lang].legalToday}</a>
       </nav>
-      <p className="credit">{STRINGS[quizSettings.lang].credit}</p>
+      <footer className="legal-footer">
+        <nav className="legal-links">
+          <a href="/about">{STRINGS[quizSettings.lang].legalAbout}</a>
+          <a href="/privacy">{STRINGS[quizSettings.lang].legalPrivacy}</a>
+          <a href="/contacts">{STRINGS[quizSettings.lang].legalContacts}</a>
+        </nav>
+        <p className="credit">{STRINGS[quizSettings.lang].credit}</p>
+      </footer>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import { optionLabel } from '../lib/quizAnswers'
 import { Flag, TeamFlag } from './Flag'
 import { Lives } from './Lives'
 import { QuizMap } from './QuizMap'
+import { WorldsBack } from './WorldsBack'
 
 interface QuizScreenProps {
   lang: Lang
@@ -45,6 +46,7 @@ interface QuizScreenProps {
   onSelect: (iso: string) => void
   onNext?: () => void
   onBack: () => void
+  onWorlds?: () => void
 }
 
 export function QuizScreen({
@@ -66,6 +68,7 @@ export function QuizScreen({
   onSelect,
   onNext,
   onBack,
+  onWorlds,
 }: QuizScreenProps) {
   const t = STRINGS[lang]
   const activeMode = question.mode ?? mode
@@ -86,6 +89,7 @@ export function QuizScreen({
 
   return (
     <div className={`screen quiz-screen${activeMode === 'nameToMap' ? ' is-map-find' : ''}`}>
+      {onWorlds ? <WorldsBack lang={lang} onClick={onWorlds} /> : null}
       <header className="quiz-header">
         <button type="button" className="btn-ghost" onClick={onBack}>
           {t.back}

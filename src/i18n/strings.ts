@@ -158,6 +158,8 @@ export type Strings = {
   legalAbout: string
   legalPrivacy: string
   legalContacts: string
+  legalCountries: string
+  legalToday: string
   settings: string
   settingsAccount: string
   settingsAbout: string
@@ -543,6 +545,8 @@ export const STRINGS: Record<Lang, Strings> = {
     legalAbout: 'О проекте',
     legalPrivacy: 'Политика',
     legalContacts: 'Контакты',
+    legalCountries: 'Страны',
+    legalToday: 'Страна дня',
     duel: 'Дуэль',
     duelHint: 'Один на один: создайте комнату или введите код.',
     duelCreate: 'Создать комнату',
@@ -857,6 +861,8 @@ export const STRINGS: Record<Lang, Strings> = {
     legalAbout: 'About',
     legalPrivacy: 'Privacy',
     legalContacts: 'Contact',
+    legalCountries: 'Countries',
+    legalToday: 'Country of the day',
     duel: 'Duel',
     duelHint: 'One on one: create a room or enter a code.',
     duelCreate: 'Create room',

@@ -19,6 +19,7 @@ import {
 import { formatXp, accountProgress } from '../lib/xp'
 import { optionLabel } from '../lib/quizAnswers'
 import { TeamFlag } from './Flag'
+import { WorldsBack } from './WorldsBack'
 
 interface ResultsScreenProps {
   lang: Lang
@@ -35,6 +36,7 @@ interface ResultsScreenProps {
   onAgain: () => void
   onNextLevel?: () => void
   onMenu: () => void
+  onWorlds?: () => void
 }
 
 export function ResultsScreen({
@@ -52,6 +54,7 @@ export function ResultsScreen({
   onAgain,
   onNextLevel,
   onMenu,
+  onWorlds,
 }: ResultsScreenProps) {
   const t = STRINGS[lang]
   const correctCount = answers.filter(isCorrect).length
@@ -79,6 +82,7 @@ export function ResultsScreen({
 
   return (
     <div className={`screen results-screen ${success ? 'is-success' : 'is-fail'}`}>
+      {onWorlds ? <WorldsBack lang={lang} onClick={onWorlds} /> : null}
       <section className={`card score-card ${success ? 'is-success' : 'is-fail'}`}>
         <p className="score-kicker">{t.results}</p>
         <p className="score-value">{t.score(correctCount, total)}</p>

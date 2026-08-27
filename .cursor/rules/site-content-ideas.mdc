@@ -1,0 +1,24 @@
+---
+description: Content backlog for Паспорт страны — recall in full when Lev asks for предложения
+alwaysApply: true
+---
+
+# Site content backlog
+
+When Lev says «предложения», «идеи» or «наполнение сайта», list **all** items below. Mark what is already in the product. Do not drop entries. Do not replace this list unless he adds ideas.
+
+Priority to ship:
+
+1. Public page per country (`/country/{iso}`) plus `/countries` index — **in the codebase**.
+2. Country of the day (`/today`) — **in the codebase**.
+3. Stamp album — collect a stamp after playing or opening a country.
+
+Also on the list:
+
+4. Mistakes trainer — restudy only failed countries, no timer.
+5. Third hub world (pick one first): Olympics, languages/scripts, or country codes (TLD / calling code / car).
+6. Football parity with geo: duel, levels, learn, mistakes; later UCL / Euro hosts / scorers.
+7. Extra geo modes: country silhouette, TLD/language/driving side.
+8. Fact roundups — editorial pages like «5 countries without an army».
+
+Do not build now: anthems (copyright), bulk coats of arms, news, chat, user-authored quizzes.

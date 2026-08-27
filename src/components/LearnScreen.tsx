@@ -16,6 +16,7 @@ import { HubNav, type HubTab } from './HubNav'
 import { Flag } from './Flag'
 import { LanguageToggle } from './LanguageToggle'
 import { PassportModal } from './PassportModal'
+import { WorldsBack } from './WorldsBack'
 
 interface LearnScreenProps {
   settings: QuizSettings
@@ -23,9 +24,10 @@ interface LearnScreenProps {
   onBack: () => void
   onHub: (tab: HubTab) => void
   onPractice: () => void
+  onWorlds: () => void
 }
 
-export function LearnScreen({ settings, onChange, onBack, onHub, onPractice }: LearnScreenProps) {
+export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onWorlds }: LearnScreenProps) {
   const t = STRINGS[settings.lang]
   const pool = getLearnPool(settings.learnFrom, settings.region, settings.level, settings.mode)
   const countries =
@@ -49,6 +51,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice }: L
 
   return (
     <div className="screen learn-screen">
+      <WorldsBack lang={settings.lang} onClick={onWorlds} />
       <header className={`quiz-header${settings.learnFrom === 'level' ? '' : ' is-hub'}`}>
         {settings.learnFrom === 'level' ? (
           <button type="button" className="btn-ghost" onClick={onBack}>
