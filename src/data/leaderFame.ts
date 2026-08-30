@@ -1,4 +1,4 @@
-export type LeaderKind = 'us' | 'pope' | 'rus'
+export type LeaderKind = 'us' | 'pope' | 'rus' | 'uk'
 export type LeaderTier = 'easy' | 'medium' | 'hard'
 
 const US_EASY = new Set([
@@ -79,6 +79,48 @@ const RUS_MEDIUM = new Set([
   'brezhnev',
 ])
 
+const UK_EASY = new Set([
+  'william1',
+  'richard1',
+  'john',
+  'henry2',
+  'henry5',
+  'henry8',
+  'richard3',
+  'elizabeth1',
+  'charles1',
+  'george3',
+  'victoria',
+  'elizabeth2',
+  'charles3',
+])
+
+const UK_MEDIUM = new Set([
+  'stephen',
+  'henry3',
+  'edward1',
+  'edward3',
+  'henry4',
+  'henry6',
+  'edward4',
+  'henry7',
+  'edward6',
+  'jane',
+  'mary1',
+  'james1',
+  'charles2',
+  'james2',
+  'william3',
+  'mary2',
+  'anne',
+  'george4',
+  'william4',
+  'edward7',
+  'george5',
+  'edward8',
+  'george6',
+])
+
 export function leaderFame(kind: LeaderKind, personId: string, n: number, from: number): LeaderTier {
   if (kind === 'us') {
     if (US_EASY.has(personId)) return 'easy'
@@ -91,8 +133,17 @@ export function leaderFame(kind: LeaderKind, personId: string, n: number, from: 
     if (from < 1500) return 'hard'
     return 'hard'
   }
+  if (kind === 'uk') {
+    if (UK_EASY.has(personId)) return 'easy'
+    if (UK_MEDIUM.has(personId)) return 'medium'
+    return 'hard'
+  }
   if (RUS_EASY.has(personId)) return 'easy'
   if (RUS_MEDIUM.has(personId)) return 'medium'
   if (from < 1500) return 'hard'
   return 'hard'
+}
+
+export function leaderShowsNumber(kind: LeaderKind): boolean {
+  return kind === 'us' || kind === 'pope'
 }

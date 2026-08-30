@@ -18,7 +18,7 @@ export default function TodayPage() {
   const day = utcDayLabel()
 
   return (
-    <LegalShell>
+    <LegalShell catalogBack>
       <CountryPassportView country={country} kicker={`Страна дня · ${day}`} />
       <p>
         Завтра будет другая. Все паспорта — в <a href="/countries">каталоге стран</a>, эта страница:{' '}

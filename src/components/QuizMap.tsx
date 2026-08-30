@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
-import { COUNTRIES, type Region } from '../data/countries'
+import { type Region } from '../data/countries'
+import { findCountry } from '../data/extras'
 import {
   HOLDOUT_BY_ISO,
   TERRITORY_BY_ISO,
@@ -44,6 +45,7 @@ interface QuizMapProps {
   revealed: boolean
   disabled?: boolean
   waterId?: string
+  includeExtras?: boolean
   onPick?: (iso: string) => void
 }
 
@@ -56,6 +58,7 @@ export function QuizMap({
   revealed,
   disabled = false,
   waterId,
+  includeExtras = false,
   onPick,
 }: QuizMapProps) {
   const t = STRINGS[lang]
@@ -129,20 +132,20 @@ export function QuizMap({
   const mapLocations = useMemo(() => {
     if (!world) return []
     return [...world.locations].sort((a, b) => {
-      const askA = quizIsoFromMapId(a.id) === focusIso ? 1 : 0
-      const askB = quizIsoFromMapId(b.id) === focusIso ? 1 : 0
+      const askA = quizIsoFromMapId(a.id, includeExtras) === focusIso ? 1 : 0
+      const askB = quizIsoFromMapId(b.id, includeExtras) === focusIso ? 1 : 0
       return askA - askB
     })
-  }, [focusIso, world])
+  }, [focusIso, includeExtras, world])
   const markers = useMemo(() => (world ? markersFor(world.locations) : []), [world])
 
   const focusBox = useMemo(() => {
     const direct = boxes[focusIso]
     if (direct && Math.max(direct.width, direct.height) >= 2) return direct
-    const marker = markers.find((item) => quizIsoFromMapId(item.iso) === focusIso)
+    const marker = markers.find((item) => quizIsoFromMapId(item.iso, includeExtras) === focusIso)
     if (marker) return { x: marker.x - 4, y: marker.y - 4, width: 8, height: 8 }
     return direct
-  }, [boxes, focusIso, markers])
+  }, [boxes, focusIso, includeExtras, markers])
 
   const coastalIsos = useMemo(() => (waterId ? new Set(isosForWater(waterId)) : new Set<string>()), [waterId])
   const waterKind = waterId ? WATER_BODIES[waterId]?.kind : undefined
@@ -250,7 +253,7 @@ export function QuizMap({
 
   function pickIso(id: string | null) {
     if (revealed || disabled || !id) return
-    const iso = quizIsoFromMapId(id)
+    const iso = quizIsoFromMapId(id, includeExtras)
     if (!iso) return
     if (scoped && !countryInRegion(iso, regions as Region[])) return
     onPick?.(iso)
@@ -366,7 +369,7 @@ export function QuizMap({
   const canZoomOut = camera.w < bounds.w - 1 || camera.h < bounds.h - 1
   const selectedName =
     revealed && selectedIso
-      ? COUNTRIES.find((country) => country.iso === selectedIso)
+      ? findCountry(selectedIso)
       : null
   const waterLine = waterMode && waterKind === 'river'
   const waterUnderLand = Boolean(waterMode && !waterLine && waterCutsLand(waterId ?? ''))
@@ -422,7 +425,7 @@ export function QuizMap({
         >
           {waterUnderLand ? overlay : null}
           {mapLocations.map((location) => {
-            const quizIso = quizIsoFromMapId(location.id)
+            const quizIso = quizIsoFromMapId(location.id, includeExtras)
             const inScope = !scoped || regionIsos.has(location.id)
             const clickable = Boolean(quizIso) && inScope && isClickableIso(location.id) && !HOLDOUT_BY_ISO.has(location.id)
             const isCoast = waterMode && quizIso !== null && coastalIsos.has(quizIso)
@@ -445,7 +448,7 @@ export function QuizMap({
           })}
           {waterOverLand || waterLine ? overlay : null}
           {waterMode ? null : markers.map((marker) => {
-            const quizIso = quizIsoFromMapId(marker.iso)
+            const quizIso = quizIsoFromMapId(marker.iso, includeExtras)
             const inScope = !scoped || regionIsos.has(marker.iso)
             if (!quizIso || !inScope || HOLDOUT_BY_ISO.has(marker.iso)) return null
             const isAsk = variant === 'identify' && !revealed && quizIso === focusIso
@@ -480,7 +483,7 @@ export function QuizMap({
 }
 
 function countryInRegion(iso: string, regions: readonly Region[]) {
-  const country = COUNTRIES.find((item) => item.iso === iso)
+  const country = findCountry(iso)
   return Boolean(country && regions.includes(country.region))
 }
 

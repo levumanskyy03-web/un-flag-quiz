@@ -1,4 +1,5 @@
-import { COUNTRIES, type Region } from '../data/countries'
+import { type Region } from '../data/countries'
+import { ALL_COUNTRIES } from '../data/extras'
 import { flagTraits, type FlagColor, type FlagMotif } from '../data/flagTraits'
 import {
   ATLANTIC,
@@ -23,7 +24,7 @@ import {
 } from '../data/geoTraits'
 import { foundedYear } from '../data/founded'
 import { landNeighbors } from '../data/neighbors'
-import { PASSPORTS } from '../data/passports'
+import { getPassport } from '../data/passports'
 import { FACTS_MAX } from './factsRules'
 
 export type PopulationBand = 'tiny' | 'small' | 'medium' | 'large' | 'huge'
@@ -101,9 +102,9 @@ function buildBank(): { byIso: Map<string, FactClue[]>; byKey: Map<string, Set<s
     uniq.set(key, set)
   }
 
-  for (const country of COUNTRIES) {
+  for (const country of ALL_COUNTRIES) {
     const iso = country.iso
-    const passport = PASSPORTS[iso]
+    const passport = getPassport(iso)
     const neighbors = landNeighbors(iso)
     const traits = flagTraits(iso)
 
@@ -222,7 +223,7 @@ export function isosMatching(clue: FactClue): Set<string> {
 }
 
 export function intersectionIsos(clues: FactClue[]): Set<string> {
-  if (clues.length === 0) return new Set(COUNTRIES.map((country) => country.iso))
+  if (clues.length === 0) return new Set(ALL_COUNTRIES.map((country) => country.iso))
   let set = isosMatching(clues[0])
   for (let i = 1; i < clues.length; i += 1) {
     const next = isosMatching(clues[i])

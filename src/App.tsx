@@ -20,6 +20,7 @@ import { ResultsScreen } from "./components/ResultsScreen";
 import { RecordModal } from "./components/RecordModal";
 import { WorldPickScreen, type World } from "./components/WorldPickScreen";
 import { footballLevelYears } from "./data/footballLevels";
+import { termById } from "./data/leaders";
 import { FINAL_LEVEL, isFinalLevel } from "./data/levels";
 import { STRINGS, isLang, langDir, localeTag, type Lang } from "./i18n/strings";
 import { clearBests, clearHistory, loadBests, loadHistory, saveRound, type RoundRecord } from "./lib/history";
@@ -64,6 +65,7 @@ import {
   isFactsToName,
   isCodesMode,
   isFootballMode,
+  isLeaderPhotoMode,
   isLeadersMode,
   isRankingMode,
   isRoundSize,
@@ -82,8 +84,9 @@ import {
 } from "./lib/quiz";
 import type { FactsDuelConfig } from "./lib/factsRules";
 import { bumpTrainerComplete, clearMistakes, loadMistakes, recordMistakes, clearCorrected, type MistakeEntry } from "./lib/mistakes";
-import { collectStamps, loadStamps } from "./lib/stamps";
+import { awardRoundStamps, loadStamps, type StampAlbum } from "./lib/stamps";
 import { playSfx } from "./lib/sfx";
+import { prefetchWikiPortraits } from "./lib/wikiThumb";
 
 const LANG_KEY = "un-flag-quiz-lang";
 
@@ -119,6 +122,7 @@ export default function App() {
     levelLives: 3,
     levelLearn: false,
     learnFrom: "region",
+    includeExtras: false,
   });
   const [screen, setScreen] = useState<Screen>("home");
   const [world, setWorld] = useState<World | null>(null);
@@ -142,7 +146,7 @@ export default function App() {
   const [duelView, setDuelView] = useState<DuelView | null>(null);
   const [duelError, setDuelError] = useState<string | null>(null);
   const [duelCopied, setDuelCopied] = useState(false);
-  const [stamps, setStamps] = useState<string[]>([]);
+  const [stamps, setStamps] = useState<StampAlbum>({});
   const [mistakeList, setMistakeList] = useState<MistakeEntry[]>([]);
   const roundStartRef = useRef<number | null>(null);
   const questionStartRef = useRef<number | null>(null);
@@ -247,6 +251,20 @@ export default function App() {
     }, 200);
     return () => window.clearInterval(id);
   }, [isDuel, duelView, screen]);
+
+  useEffect(() => {
+    const titles: string[] = [];
+    const add = (question: Question | null | undefined) => {
+      if (!question) return;
+      const mode = question.mode ?? quizSettings.mode;
+      if (!isLeaderPhotoMode(mode)) return;
+      const wiki = termById(question.country.iso)?.wiki;
+      if (wiki) titles.push(wiki);
+    };
+    for (const question of questions) add(question);
+    if (isDuel) add(questionFromWire(duelView?.question ?? null));
+    if (titles.length > 0) prefetchWikiPortraits(titles);
+  }, [questions, isDuel, duelView?.question, quizSettings.mode]);
 
   useEffect(() => {
     if (!isDuel || !duelView || screen !== "quiz" || duelView.phase !== "question") return;
@@ -400,6 +418,10 @@ export default function App() {
               difficulty: footballDifficulty,
               roundSize: questions.length,
               endedBy,
+              includeExtras:
+                quizSettings.path === "pool" && !isFootballMode(quizSettings.mode) && !isLeadersMode(quizSettings.mode)
+                  ? quizSettings.includeExtras
+                  : undefined,
             });
             setHistory(saved.history);
             setBests(saved.bests);
@@ -561,6 +583,7 @@ export default function App() {
       difficulty: facts ? "hard" : quizSettings.difficulty,
       roundSize: facts ? facts.series : quizSettings.roundSize,
       facts,
+      includeExtras: quizSettings.includeExtras,
     })
     if (!result.ok) {
       setDuelError(duelErrorMessage(result.error))
@@ -593,7 +616,19 @@ export default function App() {
   }
 
   function rememberRound(roundAnswers: RoundAnswer[]) {
-    setStamps(collectStamps(roundAnswers.map((answer) => answer.question.country.iso)));
+    setStamps(
+      awardRoundStamps(roundAnswers, {
+        path: quizSettings.path,
+        modeFallback: quizSettings.mode,
+        difficulty:
+          quizSettings.path === "levels"
+            ? quizSettings.levelHardcore
+              ? "hardcore"
+              : "hard"
+            : quizSettings.difficulty,
+        endedBy,
+      }),
+    );
     const wrong = roundAnswers
       .filter((answer) => !isCorrect(answer))
       .map((answer) => ({
@@ -630,6 +665,7 @@ export default function App() {
       levelLives: next.levelLives,
       levelLearn: next.levelLearn,
       learnFrom: next.learnFrom,
+      includeExtras: next.includeExtras,
     });
   }
 
@@ -644,7 +680,7 @@ export default function App() {
     const round = mix
       ? createMixedRound(
           modesForMix(mix),
-          getRegionPool(quizSettings.region),
+          getRegionPool(quizSettings.region, quizSettings.includeExtras),
           size,
           (country, mode) => answerKey(country, mode),
           quizSettings.difficulty,
@@ -688,10 +724,10 @@ export default function App() {
       return;
     }
     if (quizSettings.mix) {
-      beginRound(getRegionPool(quizSettings.region), quizSettings.roundSize, "pool", quizSettings.level)
+      beginRound(getRegionPool(quizSettings.region, quizSettings.includeExtras), quizSettings.roundSize, "pool", quizSettings.level)
       return
     }
-    const pool = getPool(quizSettings.region, quizSettings.difficulty, quizSettings.mode);
+    const pool = getPool(quizSettings.region, quizSettings.difficulty, quizSettings.mode, quizSettings.includeExtras);
     beginRound(
       pool,
       isFactsToName(quizSettings.mode) ? 1 : quizSettings.roundSize,
@@ -715,7 +751,7 @@ export default function App() {
 
   function startCodesRound(path: PlayPath = "pool") {
     const mode = isCodesMode(quizSettings.mode) ? quizSettings.mode : "tldToName";
-    const round = createCodesRound(mode, quizSettings.roundSize);
+    const round = createCodesRound(mode, quizSettings.roundSize, quizSettings.includeExtras);
     if (round.length === 0) return;
     beginPreparedRound(round, path, quizSettings.level, {
       mode,
@@ -897,6 +933,7 @@ export default function App() {
               quizSettings.region,
               quizSettings.level,
               quizSettings.mode,
+              quizSettings.includeExtras,
             ).map((country) => country.iso)
           : undefined;
       startLeadersRound("learn", isos);
@@ -911,6 +948,7 @@ export default function App() {
       quizSettings.region,
       quizSettings.level,
       quizSettings.mode,
+      quizSettings.includeExtras,
     );
     beginRound(pool, pool.length, "learn", quizSettings.level);
   }
@@ -930,7 +968,7 @@ export default function App() {
     }
     if (isCodesMode(quizSettings.mode)) {
       const isos = new Set(mistakeList.filter((item) => item.mode === quizSettings.mode).map((item) => item.iso));
-      const pool = getRegionPool("all").filter((country) => isos.has(country.iso));
+      const pool = getRegionPool("all", true).filter((country) => isos.has(country.iso));
       if (pool.length === 0) return;
       const mode = quizSettings.mode;
       beginPreparedRound(
@@ -940,8 +978,8 @@ export default function App() {
       );
       return;
     }
-    const pool = getRegionPool(quizSettings.region).filter((country) =>
-      mistakeList.some((item) => item.iso === country.iso && !isFootballMode(item.mode)),
+    const pool = getRegionPool(quizSettings.region, true).filter((country) =>
+      mistakeList.some((item) => item.iso === country.iso && worldOfMode(item.mode) === "geo"),
     );
     if (pool.length === 0) return;
     beginRound(poolForMode(pool, quizSettings.mode), Math.min(quizSettings.roundSize, pool.length), "mistakes", quizSettings.level);
@@ -1716,6 +1754,7 @@ export default function App() {
               ? (duelView?.modes.length ?? 0) > 1
               : Boolean(quizSettings.mix && quizSettings.path === "pool")
           }
+          includeExtras={isDuel ? Boolean(duelView?.includeExtras) : quizSettings.includeExtras}
           duel={
             isDuel && duelView
               ? {

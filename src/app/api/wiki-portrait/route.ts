@@ -15,19 +15,19 @@ export async function GET(request: Request) {
 
   const key = `${CACHE_VER}:${title.trim().replace(/_/g, ' ')}`
   const cached = memory.get(key)
+  const cacheHeaders = {
+    'Content-Type': 'application/json',
+    'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+  }
   if (cached && Date.now() - cached.at < MEMORY_MS) {
-    return new Response(cached.body, {
-      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=86400' },
-    })
+    return new Response(cached.body, { headers: cacheHeaders })
   }
 
   try {
     const portrait = await lookupWikiPortrait(title)
     const body = JSON.stringify({ portrait })
     memory.set(key, { at: Date.now(), body })
-    return new Response(body, {
-      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=86400' },
-    })
+    return new Response(body, { headers: cacheHeaders })
   } catch {
     return Response.json({ portrait: null }, { status: 503 })
   }

@@ -192,6 +192,14 @@ export const LAND_NEIGHBORS: Record<string, string[]> = {
   za: ['bw', 'ls', 'mz', 'na', 'sz', 'zw'],
   zm: ['ao', 'bw', 'cd', 'mw', 'mz', 'na', 'tz', 'zw'],
   zw: ['bw', 'mz', 'za', 'zm'],
+  eh: ['dz', 'ma', 'mr'],
+  ea: ['ma'],
+  gf: ['br', 'sr'],
+  gi: ['es'],
+  hk: ['cn'],
+  mo: ['cn'],
+  va: ['it'],
+  xk: ['al', 'me', 'mk', 'rs'],
 }
 
 export function landNeighbors(iso: string): string[] {

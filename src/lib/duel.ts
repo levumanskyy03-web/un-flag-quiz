@@ -1,4 +1,5 @@
-import { COUNTRIES, type Country } from '../data/countries'
+import { findCountry } from '../data/extras'
+import { type Country } from '../data/countries'
 import { footballTeamCountry, isNamedFootballTeam } from '../data/worldCup'
 import type { DuelQuestionWire, DuelView } from './duelTypes'
 import type { FactsDuelConfig } from './factsRules'
@@ -23,9 +24,8 @@ export function duelPlayerId(): string {
 
 export function questionFromWire(wire: DuelQuestionWire | null): Question | null {
   if (!wire) return null
-  const byIso = new Map(COUNTRIES.map((country) => [country.iso, country]))
   const country =
-    byIso.get(wire.countryIso) ??
+    findCountry(wire.countryIso) ??
     (isFootballMode(wire.mode) || isNamedFootballTeam(wire.countryIso) || wire.countryIso.includes('+')
       ? footballTeamCountry(wire.countryIso)
       : undefined)
@@ -48,7 +48,7 @@ export function questionFromWire(wire: DuelQuestionWire | null): Question | null
     }
   }
   const options = wire.optionIsos
-    .map((iso) => byIso.get(iso) ?? (isNamedFootballTeam(iso) || iso.includes('+') ? footballTeamCountry(iso) : undefined))
+    .map((iso) => findCountry(iso) ?? (isNamedFootballTeam(iso) || iso.includes('+') ? footballTeamCountry(iso) : undefined))
     .filter((item): item is Country => item !== undefined)
   if (options.length < 2 && !(wire.waterOptions && wire.waterOptions.length >= 2)) return null
   return {
@@ -68,6 +68,7 @@ export async function createDuel(input: {
   difficulty: DuelView['difficulty']
   roundSize: number
   facts?: FactsDuelConfig
+  includeExtras?: boolean
 }): Promise<{ ok: true; room: DuelView } | { ok: false; error: string }> {
   return post('/api/duel/create', {
     ...input,

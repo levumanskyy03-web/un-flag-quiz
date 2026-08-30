@@ -1,12 +1,10 @@
 import { foundedYear } from '../data/founded'
-import { countryFacts } from '../data/facts'
 import { landNeighbors } from '../data/neighbors'
 import {
   formatPopulation,
   getPassport,
   passportCapital,
   passportCurrency,
-  passportFact,
 } from '../data/passports'
 import { STRINGS, regionLabel } from '../i18n/strings'
 import {
@@ -15,11 +13,11 @@ import {
   neighborCountries,
 } from '../lib/countryCatalog'
 import type { Country } from '../data/countries'
-import { StampCollector } from './StampCollector'
 import { Flag } from './Flag'
 import { FitText } from './FitText'
 import { RankingPlaces } from './RankingPlaces'
 import { PassportLanguages } from './PassportLanguages'
+import { PassportRotatingFact } from './PassportRotatingFact'
 
 interface CountryPassportViewProps {
   country: Country
@@ -33,16 +31,10 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
 
   const founded = foundedYear(country.iso)
   const neighbors = neighborCountries(country.iso, landNeighbors(country.iso))
-  const mainFact = passportFact(passport, 'ru')
-  const extras = countryFacts(country.iso)
-    .map((fact) => fact.ru)
-    .filter((text) => text !== mainFact)
-    .slice(0, 4)
   const adjacent = adjacentCountries(country.iso)
 
   return (
     <div className="country-passport">
-      <StampCollector iso={country.iso} />
       {kicker ? <p className="country-kicker">{kicker}</p> : null}
       <Flag iso={country.iso} name={country.nameRu} size="hero" />
       <h1 className="country-title">{country.nameRu}</h1>
@@ -94,17 +86,11 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
           </div>
         )}
       </section>
-      <p className="passport-fact">
-        <span className="passport-fact-label">{t.fact}</span>
-        {passportFact(passport, 'ru')}
-      </p>
-      {extras.length > 0 ? (
-        <ul className="country-facts">
-          {extras.map((fact) => (
-            <li key={fact}>{fact}</li>
-          ))}
-        </ul>
-      ) : null}
+      <PassportRotatingFact
+        iso={country.iso}
+        lang="ru"
+        fallback={{ en: passport.factEn, ru: passport.factRu }}
+      />
       <p className="country-actions">
         <a className="btn-primary country-play" href="/">
           Играть в викторину

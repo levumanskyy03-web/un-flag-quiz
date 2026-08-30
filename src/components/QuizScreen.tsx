@@ -1,5 +1,6 @@
 import { STRINGS, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
-import { COUNTRIES, type Country } from '../data/countries'
+import { type Country } from '../data/countries'
+import { findCountry } from '../data/extras'
 import { landNeighbors } from '../data/neighbors'
 import {
   codePromptLabel,
@@ -50,6 +51,7 @@ interface QuizScreenProps {
   maxLives: number
   practice?: boolean
   mix?: boolean
+  includeExtras?: boolean
   duel?: {
     opponentName: string
     opponentReady: boolean
@@ -80,6 +82,7 @@ export function QuizScreen({
   maxLives,
   practice = false,
   mix = false,
+  includeExtras = false,
   duel,
   onSelect,
   onNext,
@@ -101,7 +104,7 @@ export function QuizScreen({
   const promptNeighbors =
     activeMode === 'neighborsToName'
       ? landNeighbors(question.country.iso)
-          .map((iso) => COUNTRIES.find((country) => country.iso === iso))
+          .map((iso) => findCountry(iso))
           .filter((country): country is Country => country !== undefined)
           .sort((a, b) => countryName(a, lang).localeCompare(countryName(b, lang), localeTag(lang)))
       : []
@@ -186,6 +189,7 @@ export function QuizScreen({
             waterId={question.waterId}
             selectedIso={selectedIso}
             revealed={answered}
+            includeExtras={includeExtras}
           />
         </section>
       ) : (
@@ -238,9 +242,7 @@ export function QuizScreen({
               <p className="neighbors-prompt-label">
                 {activeMode === 'popeNumberToName'
                   ? t.popeNumberPrompt(leaderTerm?.n ?? 0)
-                  : activeMode === 'rusNumberToName'
-                    ? t.rusNumberPrompt(leaderTerm?.n ?? 0)
-                    : t.usNumberPrompt(leaderTerm?.n ?? 0)}
+                  : t.usNumberPrompt(leaderTerm?.n ?? 0)}
               </p>
               <h2 className="prompt-name code-prompt">{leaderTerm?.n ?? ''}</h2>
             </div>
@@ -251,7 +253,9 @@ export function QuizScreen({
                   ? t.popeYearsPrompt(leaderRange)
                   : activeMode === 'rusYearsToName'
                     ? t.askoldPrompt(leaderRange)
-                    : t.usYearsPrompt(leaderRange)}
+                    : activeMode === 'ukYearsToName'
+                      ? t.ukYearsPrompt(leaderRange)
+                      : t.usYearsPrompt(leaderRange)}
               </p>
               <h2 className="prompt-name">{leaderRange}</h2>
             </div>
@@ -313,6 +317,7 @@ export function QuizScreen({
           focusIso={question.country.iso}
           selectedIso={selectedIso}
           revealed={answered}
+          includeExtras={includeExtras}
           onPick={onSelect}
         />
       ) : (

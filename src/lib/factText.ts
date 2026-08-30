@@ -1,4 +1,5 @@
-import { COUNTRIES, type Country } from '../data/countries'
+import { ALL_COUNTRIES, findCountry } from '../data/extras'
+import { type Country } from '../data/countries'
 import type { FlagColor, FlagMotif } from '../data/flagTraits'
 import { type Lang } from '../i18n/lang'
 import { STRINGS, regionLabel } from '../i18n/strings'
@@ -23,7 +24,7 @@ export function factLabel(clue: FactClue, lang: Lang): string {
     case 'neighborBand':
       return neighborBandLabel(clue.neighborBand, lang)
     case 'borders': {
-      const neighbor = COUNTRIES.find((country) => country.iso === clue.neighborIso)
+      const neighbor = findCountry(clue.neighborIso ?? '')
       return t.factBorders(neighbor ? countryName(neighbor, lang) : clue.neighborIso ?? '')
     }
     case 'founded':
@@ -126,7 +127,7 @@ export function searchCountries(query: string, lang: Lang, limit = 8): Country[]
   const needle = query.trim().toLowerCase()
   if (needle.length === 0) return []
   const scored: Array<{ country: Country; score: number }> = []
-  for (const country of COUNTRIES) {
+  for (const country of ALL_COUNTRIES) {
     const names = [country.nameEn, country.nameRu, countryName(country, lang)]
     let score = 0
     for (const name of names) {

@@ -2,9 +2,11 @@ import type { Country } from './countries'
 import type { LeaderKind, LeaderTier } from './leaderFame'
 import { POPES } from './popes'
 import { US_PRESIDENTS } from './usPresidents'
+import { UK_MONARCHS } from './englishMonarchs'
 import { RUS_LEADERS } from './varangianLeaders'
 
 export type { LeaderKind, LeaderTier } from './leaderFame'
+export { leaderShowsNumber } from './leaderFame'
 
 export interface LeaderTerm {
   id: string
@@ -19,7 +21,7 @@ export interface LeaderTerm {
   tier: LeaderTier
 }
 
-export const ALL_LEADER_TERMS: LeaderTerm[] = [...US_PRESIDENTS, ...POPES, ...RUS_LEADERS]
+export const ALL_LEADER_TERMS: LeaderTerm[] = [...US_PRESIDENTS, ...POPES, ...RUS_LEADERS, ...UK_MONARCHS]
 
 const BY_ID = new Map(ALL_LEADER_TERMS.map((term) => [term.id, term]))
 
@@ -74,5 +76,24 @@ export function neighborsByNumber(terms: LeaderTerm[], term: LeaderTerm, take = 
 export function termsForKind(kind: LeaderKind): LeaderTerm[] {
   if (kind === 'us') return US_PRESIDENTS
   if (kind === 'pope') return POPES
+  if (kind === 'uk') return UK_MONARCHS
   return RUS_LEADERS
+}
+
+export function personNumbers(term: LeaderTerm): number[] {
+  return [...new Set(termsForKind(term.kind).filter((item) => item.personId === term.personId).map((item) => item.n))].sort(
+    (a, b) => a - b,
+  )
+}
+
+export function formatLeaderNumbers(term: LeaderTerm): string {
+  return `№ ${personNumbers(term).join(' · ')}`
+}
+
+export function personYearsLabel(term: LeaderTerm, present: string): string {
+  const spans = termsForKind(term.kind)
+    .filter((item) => item.personId === term.personId)
+    .sort((a, b) => a.n - b.n)
+    .map((item) => yearsLabel(item.from, item.to, present))
+  return [...new Set(spans)].join(', ')
 }

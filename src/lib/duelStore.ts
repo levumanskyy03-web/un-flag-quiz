@@ -68,6 +68,7 @@ export interface DuelRoom {
   region: RegionFilter
   difficulty: QuizDifficulty
   roundSize: number
+  includeExtras?: boolean
   questions: DuelQuestionWire[]
   index: number
   factIndex: number
@@ -101,6 +102,7 @@ export async function createDuelRoom(input: {
   difficulty: QuizDifficulty
   roundSize: number
   facts?: FactsDuelConfig
+  includeExtras?: boolean
 }): Promise<{ ok: true; room: DuelRoom } | { ok: false; error: 'offline' | 'empty' }> {
   const facts = input.facts && isFactsToName(input.modes[0] ?? input.mode) ? input.facts : undefined
   const modes = facts ? (['factsToName'] as QuizMode[]) : orderedModes(input.modes.length > 0 ? input.modes : [input.mode])
@@ -110,7 +112,7 @@ export async function createDuelRoom(input: {
     const code = randomCode()
     const existing = await getRoom(code)
     if (existing && existing.expiresAt > now) continue
-    const questions = buildQuestions(modes, input.region, input.difficulty, roundSize, code, facts)
+    const questions = buildQuestions(modes, input.region, input.difficulty, roundSize, code, facts, input.includeExtras)
     if (questions.length === 0) return { ok: false, error: 'empty' }
     const room: DuelRoom = {
       version: 1,
@@ -124,6 +126,7 @@ export async function createDuelRoom(input: {
       region: input.region,
       difficulty: facts ? 'hard' : input.difficulty,
       roundSize,
+      includeExtras: Boolean(input.includeExtras),
       questions,
       index: 0,
       factIndex: 0,
@@ -353,6 +356,7 @@ export function viewFor(room: DuelRoom, playerId: string): DuelView | null {
         : null,
     youRematch,
     opponentRematch,
+    includeExtras: Boolean(room.includeExtras),
     facts: room.facts,
     factIndex: factsRoom ? room.factIndex : undefined,
     youWrongs: factsRoom ? you.wrongs[room.index] ?? 0 : undefined,
@@ -370,6 +374,7 @@ export function parseCreateBody(body: unknown): {
   difficulty: QuizDifficulty
   roundSize: number
   facts?: FactsDuelConfig
+  includeExtras?: boolean
 } | null {
   if (!body || typeof body !== 'object') return null
   const record = body as Record<string, unknown>
@@ -393,6 +398,7 @@ export function parseCreateBody(body: unknown): {
       difficulty: record.difficulty,
       roundSize: facts.series,
       facts,
+      includeExtras: record.includeExtras === true,
     }
   }
   if (!isRoundSize(roundSize)) return null
@@ -404,6 +410,7 @@ export function parseCreateBody(body: unknown): {
     region: record.region,
     difficulty: record.difficulty,
     roundSize,
+    includeExtras: record.includeExtras === true,
   }
 }
 
@@ -523,9 +530,10 @@ function buildQuestions(
   roundSize: number,
   seed: string,
   facts?: FactsDuelConfig,
+  includeExtras = false,
 ): DuelQuestionWire[] {
   if (facts || (modes.length === 1 && modes[0] === 'factsToName')) {
-    const pool = getRegionPool(region)
+    const pool = getRegionPool(region, includeExtras)
     const count = Math.min(facts?.series ?? roundSize, pool.length)
     const picked = [...pool].sort((a, b) => a.iso.localeCompare(b.iso))
     const rng = mulberry32(seedFrom(seed + region))
@@ -554,7 +562,7 @@ function buildQuestions(
   }
   const round = createMixedRound(
     modes,
-    getRegionPool(region),
+    getRegionPool(region, includeExtras),
     roundSize,
     (country, mode) => answerKey(country, mode),
     difficulty,
@@ -569,7 +577,15 @@ function buildQuestions(
 }
 
 function restartRound(room: DuelRoom): DuelRoom {
-  const questions = buildQuestions(room.modes, room.region, room.difficulty, room.roundSize, room.code, room.facts)
+  const questions = buildQuestions(
+    room.modes,
+    room.region,
+    room.difficulty,
+    room.roundSize,
+    room.code,
+    room.facts,
+    room.includeExtras,
+  )
   if (questions.length === 0) return room
   const now = Date.now()
   room.questions = questions

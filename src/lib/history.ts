@@ -17,14 +17,16 @@ export interface RoundRecord {
   endedBy: RoundEnd
   mix?: MixKind
   wcYears?: string
+  includeExtras?: boolean
 }
 
 export type ConfigKey = Omit<Pick<RoundRecord, 'mode' | 'region' | 'difficulty' | 'roundSize' | 'mix'>, 'mix'> & {
   mix?: MixKind | null
+  includeExtras?: boolean
 }
 
 export function configKey(record: ConfigKey): string {
-  return `${record.mix ?? ''}|${record.mode}|${record.region}|${record.difficulty}|${record.roundSize}`
+  return `${record.mix ?? ''}|${record.mode}|${record.region}|${record.difficulty}|${record.roundSize}|${record.includeExtras ? 'x' : ''}`
 }
 
 export function loadHistory(): RoundRecord[] {
@@ -172,6 +174,7 @@ function isRoundRecord(value: unknown): value is RoundRecord {
       record.endedBy === 'timeout' ||
       record.endedBy === 'lives') &&
     (record.mix === undefined || isMixKind(record.mix)) &&
-    (record.wcYears === undefined || typeof record.wcYears === 'string')
+    (record.wcYears === undefined || typeof record.wcYears === 'string') &&
+    (record.includeExtras === undefined || typeof record.includeExtras === 'boolean')
   )
 }

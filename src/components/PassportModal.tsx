@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
-import { COUNTRIES, type Country } from '../data/countries'
+import { useEffect } from 'react'
+import { type Country } from '../data/countries'
+import { findCountry } from '../data/extras'
 import { foundedYear } from '../data/founded'
 import { landNeighbors } from '../data/neighbors'
-import { factText, pickFactIndex } from '../data/facts'
 import {
   formatPopulation,
   getPassport,
@@ -11,11 +11,11 @@ import {
 } from '../data/passports'
 import { STRINGS, localeTag, regionLabel, type Lang } from '../i18n/strings'
 import { countryName } from '../lib/quiz'
-import { collectStamp } from '../lib/stamps'
 import { Flag } from './Flag'
 import { FitText } from './FitText'
 import { RankingPlaces } from './RankingPlaces'
 import { PassportLanguages } from './PassportLanguages'
+import { PassportRotatingFact } from './PassportRotatingFact'
 
 interface PassportModalProps {
   country: Country
@@ -32,19 +32,9 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
   const name = countryName(country, lang)
   const founded = foundedYear(country.iso)
   const neighbors = landNeighbors(country.iso)
-    .map((iso) => COUNTRIES.find((item) => item.iso === iso))
+    .map((iso) => findCountry(iso))
     .filter((item): item is Country => item !== undefined)
     .sort((a, b) => countryName(a, lang).localeCompare(countryName(b, lang), localeTag(lang)))
-  const [factKey, setFactKey] = useState(country.iso)
-  const [factIndex, setFactIndex] = useState(() => pickFactIndex(country.iso))
-  if (factKey !== country.iso) {
-    setFactKey(country.iso)
-    setFactIndex(pickFactIndex(country.iso))
-  }
-
-  useEffect(() => {
-    collectStamp(country.iso)
-  }, [country.iso])
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -140,10 +130,11 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
             )}
           </section>
         )}
-        <p className="passport-fact">
-          <span className="passport-fact-label">{t.fact}</span>
-          {factText(country.iso, factIndex, lang, { en: passport.factEn, ru: passport.factRu })}
-        </p>
+        <PassportRotatingFact
+          iso={country.iso}
+          lang={lang}
+          fallback={{ en: passport.factEn, ru: passport.factRu }}
+        />
       </div>
     </div>
   )

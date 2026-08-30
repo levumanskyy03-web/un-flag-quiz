@@ -1,5 +1,9 @@
 import { COUNTRIES, REGIONS, type Country, type Difficulty, type Region } from '../data/countries'
 import { COUNTRY_CODES, formatCalling, formatCar, formatTld } from '../data/countryCodes'
+import { countriesForPool, isExtraIso } from '../data/extras'
+import { foundedYear } from '../data/founded'
+import { getPassport } from '../data/passports'
+import { HOLDOUT_BY_ISO, TERRITORY_BY_ISO } from '../data/territories'
 import { footballCampaignLevels, footballLevelYears } from '../data/footballLevels'
 import { LEVEL_COUNT, LEVEL_ISOS, isFinalLevel, isLevelNumber } from '../data/levels'
 import { isEasyForMode, factsDifficultyOf, languageDifficultyOf } from '../data/modeDifficulty'
@@ -24,6 +28,7 @@ import {
 } from '../data/water'
 import {
   leaderCountry,
+  leaderShowsNumber,
   neighborsByNumber,
   termsForKind,
   uniquePersons,
@@ -90,13 +95,14 @@ export const LEADERS_MODES = [
   'popeNumberToName',
   'popePhotoToName',
   'rusYearsToName',
-  'rusNumberToName',
   'rusPhotoToName',
+  'ukYearsToName',
+  'ukPhotoToName',
 ] as const
 export type FootballMode = (typeof FOOTBALL_MODES)[number]
 export type CodesMode = (typeof CODES_MODES)[number]
 export type LeadersMode = (typeof LEADERS_MODES)[number]
-export const LEADERS_TOPICS = ['us', 'pope', 'rus'] as const
+export const LEADERS_TOPICS = ['us', 'pope', 'rus', 'uk'] as const
 export const LEADERS_ASKS = ['years', 'number', 'photo'] as const
 export type LeaderAsk = (typeof LEADERS_ASKS)[number]
 export type QuizMode = (typeof QUIZ_MODES)[number] | FootballMode | CodesMode | LeadersMode | RankingMode
@@ -150,7 +156,10 @@ export function isCodesMode(value: unknown): value is CodesMode {
 }
 
 export function isLeadersMode(value: unknown): value is LeadersMode {
-  return typeof value === 'string' && (LEADERS_MODES as readonly string[]).includes(value)
+  return (
+    typeof value === 'string' &&
+    ((LEADERS_MODES as readonly string[]).includes(value) || value === 'rusNumberToName')
+  )
 }
 
 export const QUIZ_WORLDS = ['geo', 'football', 'codes', 'leaders'] as const
@@ -170,6 +179,7 @@ export function worldOfMode(mode: QuizMode): QuizWorld {
 export function leaderKindOf(mode: QuizMode): LeaderKind | null {
   if (mode.startsWith('rus')) return 'rus'
   if (mode.startsWith('pope')) return 'pope'
+  if (mode.startsWith('uk')) return 'uk'
   if (mode.startsWith('us')) return 'us'
   return null
 }
@@ -180,32 +190,52 @@ export function leadersAskOf(mode: QuizMode): LeaderAsk {
   return 'years'
 }
 
+export function leadersAsksOf(kind: LeaderKind): LeaderAsk[] {
+  if (kind === 'rus' || kind === 'uk') return ['years', 'photo']
+  return ['years', 'number', 'photo']
+}
+
 export function leadersModeOf(kind: LeaderKind, ask: LeaderAsk): LeadersMode {
+  const allowed = leadersAsksOf(kind)
+  const safe: LeaderAsk = allowed.includes(ask) ? ask : 'years'
   if (kind === 'us') {
-    if (ask === 'number') return 'usNumberToName'
-    if (ask === 'photo') return 'usPhotoToName'
+    if (safe === 'number') return 'usNumberToName'
+    if (safe === 'photo') return 'usPhotoToName'
     return 'usYearsToName'
   }
   if (kind === 'pope') {
-    if (ask === 'number') return 'popeNumberToName'
-    if (ask === 'photo') return 'popePhotoToName'
+    if (safe === 'number') return 'popeNumberToName'
+    if (safe === 'photo') return 'popePhotoToName'
     return 'popeYearsToName'
   }
-  if (ask === 'number') return 'rusNumberToName'
-  if (ask === 'photo') return 'rusPhotoToName'
+  if (kind === 'uk') {
+    if (safe === 'photo') return 'ukPhotoToName'
+    return 'ukYearsToName'
+  }
+  if (safe === 'photo') return 'rusPhotoToName'
   return 'rusYearsToName'
 }
 
 export function isLeaderPhotoMode(mode: QuizMode): boolean {
-  return mode === 'usPhotoToName' || mode === 'popePhotoToName' || mode === 'rusPhotoToName'
+  return (
+    mode === 'usPhotoToName' ||
+    mode === 'popePhotoToName' ||
+    mode === 'rusPhotoToName' ||
+    mode === 'ukPhotoToName'
+  )
 }
 
 export function isLeaderYearsPrompt(mode: QuizMode): boolean {
-  return mode === 'usYearsToName' || mode === 'popeYearsToName' || mode === 'rusYearsToName'
+  return (
+    mode === 'usYearsToName' ||
+    mode === 'popeYearsToName' ||
+    mode === 'rusYearsToName' ||
+    mode === 'ukYearsToName'
+  )
 }
 
 export function isLeaderNumberPrompt(mode: QuizMode): boolean {
-  return mode === 'usNumberToName' || mode === 'popeNumberToName' || mode === 'rusNumberToName'
+  return mode === 'usNumberToName' || mode === 'popeNumberToName'
 }
 
 export function isCodePromptMode(mode: QuizMode): boolean {
@@ -571,7 +601,35 @@ export function flagUrl(iso: string): string {
   return `https://flagcdn.com/${iso}.svg`
 }
 
-export function getPool(region: RegionFilter, difficulty: QuizDifficulty, mode: QuizMode): Country[] {
+function extraHasMap(iso: string): boolean {
+  if (iso === 'ps') return false
+  return HOLDOUT_BY_ISO.has(iso) || TERRITORY_BY_ISO.has(iso)
+}
+
+function extraFitsMode(country: Country, mode: QuizMode): boolean {
+  if (!isExtraIso(country.iso)) return true
+  if (isWaterMode(mode) || isRankingMode(mode) || isNameToLanguage(mode)) return false
+  if (mode === 'neighborsToName') return canAskNeighbors(country.iso)
+  if (
+    mode === 'nameToCapital' ||
+    mode === 'nameToCurrency' ||
+    mode === 'nameToPopulation' ||
+    mode === 'factsToName'
+  ) {
+    return Boolean(getPassport(country.iso))
+  }
+  if (mode === 'nameToFounded') return foundedYear(country.iso) !== undefined
+  if (mode === 'nameToMap' || mode === 'mapToName') return extraHasMap(country.iso)
+  if (isCodesMode(mode)) return Boolean(COUNTRY_CODES[country.iso])
+  return true
+}
+
+export function getPool(
+  region: RegionFilter,
+  difficulty: QuizDifficulty,
+  mode: QuizMode,
+  includeExtras = false,
+): Country[] {
   const regions = parseRegions(region)
   if (isWaterMapMode(mode)) {
     const ids = waterIdsForMode(mode).filter((id) => {
@@ -592,8 +650,9 @@ export function getPool(region: RegionFilter, difficulty: QuizDifficulty, mode: 
       .map((id) => countryForWater(id, mode))
       .filter((country): country is Country => Boolean(country))
   }
-  return COUNTRIES.filter((country) => {
+  return countriesForPool(includeExtras).filter((country) => {
     if (!regions.includes(country.region)) return false
+    if (!extraFitsMode(country, mode)) return false
     if (mode === 'neighborsToName' && !canAskNeighbors(country.iso)) return false
     if (isWaterMode(mode) && !canAskWater(country.iso, mode)) return false
     if (isRankingMode(mode) && rankingPlaceOf(mode, country.iso) === null) return false
@@ -601,9 +660,9 @@ export function getPool(region: RegionFilter, difficulty: QuizDifficulty, mode: 
   })
 }
 
-export function getRegionPool(region: RegionFilter): Country[] {
+export function getRegionPool(region: RegionFilter, includeExtras = false): Country[] {
   const regions = parseRegions(region)
-  return COUNTRIES.filter((country) => regions.includes(country.region))
+  return countriesForPool(includeExtras).filter((country) => regions.includes(country.region))
 }
 
 const FAME_INDEX = new Map(LEVEL_ISOS.flat().map((iso, index) => [iso, index]))
@@ -678,13 +737,20 @@ export function getLearnPool(
   region: RegionFilter,
   level: number,
   mode: QuizMode = 'flagToName',
+  includeExtras = false,
 ): Country[] {
-  if (isFootballMode(mode)) return footballLearnCountries(mode)
-  if (isCodesMode(mode)) return getRegionPool(region)
+  if (isFootballMode(mode)) {
+    const years = learnFrom === 'level' ? footballLevelYears(mode, level) : undefined
+    return footballLearnCountries(mode, years)
+  }
+  if (isCodesMode(mode)) {
+    return getRegionPool(region, includeExtras).filter((country) => COUNTRY_CODES[country.iso])
+  }
   if (isLeadersMode(mode)) {
     return learnFrom === 'level' ? getLevelPool(level, mode) : leaderLearnCountries(mode)
   }
-  const pool = learnFrom === 'level' ? getLevelPool(level, mode) : getRegionPool(region)
+  const extras = learnFrom === 'level' ? false : includeExtras
+  const pool = learnFrom === 'level' ? getLevelPool(level, mode) : getRegionPool(region, extras)
   if (isWaterMapMode(mode)) {
     const used = new Set<string>()
     const countries: Country[] = []
@@ -696,29 +762,56 @@ export function getLearnPool(
     }
     return countries
   }
-  return isWaterMode(mode)
+  const filtered = isWaterMode(mode)
     ? pool.filter((country) => canAskWater(country.iso, mode))
     : isRankingMode(mode)
       ? pool.filter((country) => rankingPlaceOf(mode, country.iso) !== null)
       : isNameToLanguage(mode)
         ? pool.filter((country) => quizLanguageId(country.iso))
         : pool
+  return filtered.filter((country) => extraFitsMode(country, mode))
 }
 
-export function footballLearnCountries(mode: FootballMode): Country[] {
+export function footballLearnCountries(mode: FootballMode, years?: readonly number[]): Country[] {
+  const allow = years && years.length > 0 ? new Set(years) : null
+  const yearOk = (year: number) => !allow || allow.has(year)
   const ids = new Set<string>()
   if (mode === 'wcWinners' || mode === 'wcTitleYears') {
-    for (const item of WORLD_CUP_WINNERS) ids.add(item.winnerId)
+    for (const item of WORLD_CUP_WINNERS) {
+      if (yearOk(item.year)) ids.add(item.winnerId)
+    }
   } else if (mode === 'wcFinalists') {
-    for (const item of WORLD_CUP_WINNERS) ids.add(item.runnerUpId)
+    for (const item of WORLD_CUP_WINNERS) {
+      if (yearOk(item.year)) ids.add(item.runnerUpId)
+    }
   } else if (mode === 'wcHosts') {
     for (const item of WORLD_CUP_HOSTS) {
-      ids.add(wcHostAnswerId(item.hostIds))
+      if (yearOk(item.year)) ids.add(wcHostAnswerId(item.hostIds))
     }
   } else {
-    for (const item of EURO_WINNERS) ids.add(item.winnerId)
+    for (const item of EURO_WINNERS) {
+      if (yearOk(item.year)) ids.add(item.winnerId)
+    }
   }
   return [...ids].map((id) => footballTeamCountry(id))
+}
+
+export function footballLearnYears(mode: FootballMode, teamId: string, years?: readonly number[]): number[] {
+  let list: number[]
+  if (mode === 'wcWinners' || mode === 'wcTitleYears') {
+    list = wcWinYearsFor(teamId)
+  } else if (mode === 'wcFinalists') {
+    list = WORLD_CUP_WINNERS.filter((item) => item.runnerUpId === teamId).map((item) => item.year)
+  } else if (mode === 'wcHosts') {
+    list = WORLD_CUP_HOSTS.filter((item) => wcHostAnswerId(item.hostIds) === teamId).map((item) => item.year)
+  } else {
+    list = EURO_WINNERS.filter((item) => item.winnerId === teamId).map((item) => item.year)
+  }
+  if (years && years.length > 0) {
+    const allow = new Set(years)
+    return list.filter((year) => allow.has(year))
+  }
+  return list
 }
 
 function footballCountryForYear(mode: FootballMode, year: number): Country[] {
@@ -741,7 +834,7 @@ export function poolForMode(
   mode: QuizMode,
   difficulty?: QuizDifficulty,
 ): Country[] {
-  let next = pool
+  let next = pool.filter((country) => extraFitsMode(country, mode))
   if (mode === 'neighborsToName') {
     next = pool.filter((country) => canAskNeighbors(country.iso))
     if (next.length < 4) next = COUNTRIES.filter((country) => canAskNeighbors(country.iso))
@@ -880,8 +973,12 @@ export function createFootballRound(
   return createWcWinnersRound(count, years, avoid)
 }
 
-export function createCodesRound(mode: CodesMode, count = QUESTIONS_PER_ROUND): Question[] {
-  const pool = COUNTRIES.filter((country) => COUNTRY_CODES[country.iso])
+export function createCodesRound(
+  mode: CodesMode,
+  count = QUESTIONS_PER_ROUND,
+  includeExtras = false,
+): Question[] {
+  const pool = countriesForPool(includeExtras).filter((country) => COUNTRY_CODES[country.iso])
   const targets = shuffle(pool).slice(0, Math.min(count, pool.length))
   const questions: Question[] = []
   const avoidKeys: string[] = []
@@ -913,7 +1010,10 @@ export function leaderPoolSize(mode: LeadersMode, difficulty?: QuizDifficulty): 
 export const LEADERS_LEVEL_SIZE = 10
 
 export function leaderLearnCountries(mode: LeadersMode): Country[] {
-  return leaderPoolTerms(mode).map(leaderCountry)
+  const terms = leaderPoolTerms(mode)
+  const kind = leaderKindOf(mode)
+  const list = kind && !leaderShowsNumber(kind) ? uniquePersons(terms) : terms
+  return list.map(leaderCountry)
 }
 
 function rankLeaderTerms(terms: LeaderTerm[]): LeaderTerm[] {

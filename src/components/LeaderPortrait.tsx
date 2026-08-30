@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { fetchWikiPortrait, type WikiPortrait } from '../lib/wikiThumb'
+import { fetchWikiPortrait, peekWikiPortrait, type WikiPortrait } from '../lib/wikiThumb'
 
 interface LeaderPortraitProps {
   name: string
@@ -17,13 +17,21 @@ function initials(name: string) {
 }
 
 export function LeaderPortrait({ name, wiki, size = 'card', compact = false }: LeaderPortraitProps) {
-  const [portrait, setPortrait] = useState<WikiPortrait | null>(null)
+  const [portrait, setPortrait] = useState<WikiPortrait | null>(() => peekWikiPortrait(wiki) ?? null)
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     let live = true
-    setPortrait(null)
+    const cached = peekWikiPortrait(wiki)
     setFailed(false)
+    if (cached !== undefined) {
+      setPortrait(cached)
+      if (cached) return () => {
+        live = false
+      }
+    } else {
+      setPortrait(null)
+    }
     if (!wiki) return
     void fetchWikiPortrait(wiki).then((next) => {
       if (live) setPortrait(next)
@@ -49,6 +57,8 @@ export function LeaderPortrait({ name, wiki, size = 'card', compact = false }: L
         className={`leader-photo is-${size}`}
         src={portrait.url}
         alt=""
+        decoding="async"
+        fetchPriority={size === 'hero' ? 'high' : 'low'}
         onError={() => setFailed(true)}
       />
       <figcaption className="leader-credit">

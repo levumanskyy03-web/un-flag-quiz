@@ -1,17 +1,20 @@
+import { useEffect } from 'react'
 import { STRINGS, difficultyLabel, localeTag, modeLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import type { LevelClear } from '../lib/levelProgress'
 import {
-  LEADERS_ASKS,
   LEADERS_DIFFICULTIES,
   LEADERS_MODES,
   LEADERS_TOPICS,
   ROUND_SIZES,
   fitRoundSize,
   formatClock,
+  isLeaderPhotoMode,
   leaderKindOf,
   leaderPoolSize,
+  leaderPoolTerms,
   leadersAskOf,
+  leadersAsksOf,
   leadersModeOf,
   type LeaderAsk,
   type LeadersMode,
@@ -22,6 +25,7 @@ import { GeoIcon } from './GeoIcon'
 import { HubNav, type HubTab } from './HubNav'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
+import { prefetchWikiPortraits } from '../lib/wikiThumb'
 
 interface LeadersScreenProps {
   settings: QuizSettings
@@ -56,6 +60,11 @@ export function LeadersScreen({
   const currentBest = findBest(bests, settings)
   const mode = defaultLeadersMode(settings.mode)
   const poolSize = leaderPoolSize(mode, settings.difficulty)
+
+  useEffect(() => {
+    if (!isLeaderPhotoMode(mode)) return
+    prefetchWikiPortraits(leaderPoolTerms(mode, settings.difficulty).map((term) => term.wiki).slice(0, 24))
+  }, [mode, settings.difficulty])
 
   function update(patch: Partial<QuizSettings>) {
     const next = { ...settings, ...patch }
@@ -161,7 +170,7 @@ export function LeadersSetup({
   return (
     <>
       <h2>{t.leaderTopic}</h2>
-      <div className="choice-grid is-3">
+      <div className="choice-grid is-4">
         {LEADERS_TOPICS.map((kind) => (
           <button
             key={kind}
@@ -170,14 +179,20 @@ export function LeadersSetup({
             aria-pressed={topic === kind}
             onClick={() => setTopic(kind)}
           >
-            {kind === 'pope' ? t.popesLeaders : kind === 'rus' ? t.askoldToUnion : t.usPresidents}
+            {kind === 'pope'
+              ? t.popesLeaders
+              : kind === 'rus'
+                ? t.askoldToUnion
+                : kind === 'uk'
+                  ? t.ukMonarchs
+                  : t.usPresidents}
           </button>
         ))}
       </div>
 
       <h2>{t.leaderAsk}</h2>
-      <div className="choice-grid is-3">
-        {LEADERS_ASKS.map((item) => (
+      <div className={`choice-grid${leadersAsksOf(topic).length === 3 ? ' is-3' : ''}`}>
+        {leadersAsksOf(topic).map((item) => (
           <button
             key={item}
             type="button"
@@ -245,7 +260,7 @@ function formatPlayedAt(at: number, lang: Lang): string {
 }
 
 export function defaultLeadersMode(mode: string): LeadersMode {
-  if (mode === 'askoldToUnion') return 'rusYearsToName'
+  if (mode === 'askoldToUnion' || mode === 'rusNumberToName') return 'rusYearsToName'
   if (mode === 'usNameToYears') return 'usYearsToName'
   if (mode === 'popeNameToYears') return 'popeYearsToName'
   return LEADERS_MODES.includes(mode as LeadersMode) ? (mode as LeadersMode) : 'usYearsToName'

@@ -1,4 +1,5 @@
 import { localeTag, type Lang } from '../i18n/lang'
+import { EXTRA_PASSPORTS } from './extrasPassports'
 
 export interface Passport {
   capitalEn: string
@@ -219,7 +220,7 @@ export const PASSPORTS: Record<string, Passport> = {
 }
 
 export function getPassport(iso: string): Passport | undefined {
-  return PASSPORTS[iso]
+  return PASSPORTS[iso] ?? EXTRA_PASSPORTS[iso]
 }
 
 export function formatPopulation(population: number, lang: Lang): string {

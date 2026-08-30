@@ -29,7 +29,7 @@ export default function CountriesPage() {
             {countries.map((country) => (
               <a key={country.iso} className="country-index-item" href={countryPath(country.iso)}>
                 <Flag iso={country.iso} name={country.nameRu} size="thumb" />
-                <span>{country.nameRu}</span>
+                <span className="country-index-name">{country.nameRu}</span>
               </a>
             ))}
           </div>

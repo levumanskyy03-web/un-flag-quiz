@@ -1,12 +1,13 @@
 import { STRINGS, localeTag, modeLabel, type Lang } from '../i18n/strings'
+import { COUNTRY_CODES } from '../data/countryCodes'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import type { LevelClear } from '../lib/levelProgress'
-import { CODES_MODES, ROUND_SIZES, fitRoundSize, formatClock, type CodesMode } from '../lib/quiz'
+import { CODES_MODES, ROUND_SIZES, fitRoundSize, formatClock, getRegionPool, type CodesMode } from '../lib/quiz'
 import { AppChrome } from './AppChrome'
 import { GeoIcon } from './GeoIcon'
 import { HubNav, type HubTab } from './HubNav'
 import { WorldsBack } from './WorldsBack'
-import type { QuizSettings } from './HomeScreen'
+import { ExtrasToggle, type QuizSettings } from './HomeScreen'
 
 interface CodesScreenProps {
   settings: QuizSettings
@@ -39,10 +40,12 @@ export function CodesScreen({
 }: CodesScreenProps) {
   const t = STRINGS[settings.lang]
   const currentBest = findBest(bests, settings)
+  const poolSize = getRegionPool('all', settings.includeExtras).filter((country) => COUNTRY_CODES[country.iso]).length
 
   function update(patch: Partial<QuizSettings>) {
     const next = { ...settings, ...patch }
-    onChange({ ...next, roundSize: fitRoundSize(next.roundSize, 193) })
+    const nextPool = getRegionPool('all', next.includeExtras).filter((country) => COUNTRY_CODES[country.iso]).length
+    onChange({ ...next, roundSize: fitRoundSize(next.roundSize, nextPool) })
   }
 
   return (
@@ -84,6 +87,8 @@ export function CodesScreen({
           ))}
         </div>
 
+        <ExtrasToggle settings={settings} onChange={(includeExtras) => update({ includeExtras })} />
+
         <h2>{t.roundSize}</h2>
         <div className="choice-grid is-3">
           {ROUND_SIZES.map((roundSize) => (
@@ -92,6 +97,7 @@ export function CodesScreen({
               type="button"
               className={`choice ${settings.roundSize === roundSize ? 'is-active' : ''}`}
               aria-pressed={settings.roundSize === roundSize}
+              disabled={poolSize > 0 && roundSize > poolSize}
               onClick={() => onChange({ ...settings, path: 'pool', roundSize })}
             >
               {roundSize}

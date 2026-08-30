@@ -153,6 +153,7 @@ async function wikiJson(url: string): Promise<unknown> {
   const response = await fetch(url, {
     headers: { 'User-Agent': WIKI_UA, Accept: 'application/json' },
     next: { revalidate: 86_400 },
+    signal: AbortSignal.timeout(8_000),
   })
   if (!response.ok) throw new Error('wiki')
   return response.json()
@@ -178,11 +179,17 @@ async function readFileInfo(fileName: string): Promise<MediaWikiPage['imageinfo'
     iiprop: 'url|extmetadata|mediatype',
     iiurlwidth: String(THUMB_WIDTH),
   })
-  for (const origin of ['https://commons.wikimedia.org/w/api.php', 'https://en.wikipedia.org/w/api.php']) {
-    const page = firstPage(await wikiJson(`${origin}?${params}`))
-    if (page?.imageinfo?.[0]) return page.imageinfo
-  }
-  return undefined
+  const origins = ['https://commons.wikimedia.org/w/api.php', 'https://en.wikipedia.org/w/api.php']
+  const pages = await Promise.all(
+    origins.map(async (origin) => {
+      try {
+        return firstPage(await wikiJson(`${origin}?${params}`))
+      } catch {
+        return null
+      }
+    }),
+  )
+  return pages.find((page) => page?.imageinfo?.[0])?.imageinfo
 }
 
 export async function lookupWikiPortrait(title: string): Promise<WikiPortrait | null> {

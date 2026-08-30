@@ -1,4 +1,5 @@
-import { COUNTRIES } from '../data/countries'
+import { ALL_COUNTRIES } from '../data/extras'
+import { type Country } from '../data/countries'
 import { isCodesMode, isFootballMode, isLeadersMode, isQuizMode, type QuizMode } from './quiz'
 
 export const MISTAKES_KEY = 'un-flag-quiz-mistakes'
@@ -66,13 +67,13 @@ export function clearMistakes(keep?: (entry: MistakeEntry) => boolean): MistakeE
   return next
 }
 
-export function geoMistakeCountries(mistakes: MistakeEntry[]): typeof COUNTRIES {
+export function geoMistakeCountries(mistakes: MistakeEntry[]): Country[] {
   const isos = new Set(
     mistakes
       .filter((item) => !isFootballMode(item.mode) && !isCodesMode(item.mode) && !isLeadersMode(item.mode))
       .map((item) => item.iso),
   )
-  return COUNTRIES.filter((country) => isos.has(country.iso))
+  return ALL_COUNTRIES.filter((country) => isos.has(country.iso))
 }
 
 export function footballMistakes(mistakes: MistakeEntry[], mode: QuizMode): MistakeEntry[] {

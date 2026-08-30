@@ -35,7 +35,7 @@ export default async function CountryPage({ params }: { params: Promise<{ iso: s
   if (!country || !getPassport(country.iso)) notFound()
 
   return (
-    <LegalShell>
+    <LegalShell catalogBack>
       <CountryPassportView country={country} />
     </LegalShell>
   )

@@ -39,6 +39,7 @@ export interface DuelView {
   youWon: boolean | null
   youRematch: boolean
   opponentRematch: boolean
+  includeExtras?: boolean
   facts?: FactsDuelConfig
   factIndex?: number
   youWrongs?: number

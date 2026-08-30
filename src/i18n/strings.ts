@@ -67,9 +67,12 @@ export type Strings = {
   rusYearsToName: string
   rusNumberToName: string
   rusPhotoToName: string
+  ukYearsToName: string
+  ukPhotoToName: string
   usPresidents: string
   popesLeaders: string
   askoldToUnion: string
+  ukMonarchs: string
   leaderTopic: string
   leaderAsk: string
   leaderAskYears: string
@@ -81,10 +84,11 @@ export type Strings = {
   popeNumberPrompt: (n: number) => string
   rusNumberPrompt: (n: number) => string
   askoldPrompt: (range: string) => string
+  ukYearsPrompt: (range: string) => string
   leaderPhotoPrompt: string
   album: string
   albumHint: string
-  albumCount: (n: number, total: number) => string
+  albumCount: (copies: number, countries: number, countryTotal: number) => string
   albumEmpty: string
   stampNew: string
   mistakesTrain: string
@@ -93,6 +97,17 @@ export type Strings = {
   mistakesClear: string
   noTimerHint: string
   footballLearnHint: string
+  footballTableYear: string
+  footballTableWinner: string
+  footballTableRunnerUp: string
+  footballTableMatch: string
+  footballTableScore: string
+  footballTableHost: string
+  footballTableVenue: string
+  footballAet: string
+  footballPens: string
+  footballReplay: string
+  footballGolden: string
   mode: string
   flagToName: string
   nameToFlag: string
@@ -165,6 +180,8 @@ export type Strings = {
   asia: string
   europe: string
   oceania: string
+  includeExtras: string
+  includeExtrasHint: string
   difficulty: string
   easy: string
   medium: string
@@ -509,7 +526,7 @@ export const STRINGS: Record<Lang, Strings> = {
     nameToCallingAsk: (name) => `Какой телефонный код у страны ${name}?`,
     nameToCarAsk: (name) => `Какой автомобильный код у страны ${name}?`,
     leaders: 'Лидеры стран',
-    leadersSubtitle: 'Президенты США, папы римские и правители от Аскольда до Союза. Портреты — Wikimedia Commons, только свободные лицензии.',
+    leadersSubtitle: 'Президенты США, папы римские, правители от Аскольда до Союза и короли Англии. Портреты — Wikimedia Commons, только свободные лицензии.',
     present: 'н. в.',
     usYearsToName: 'США · годы',
     usNumberToName: 'США · номер',
@@ -520,9 +537,12 @@ export const STRINGS: Record<Lang, Strings> = {
     rusYearsToName: 'От Аскольда · годы',
     rusNumberToName: 'От Аскольда · номер',
     rusPhotoToName: 'От Аскольда · фото',
+    ukYearsToName: 'Короли Англии · годы',
+    ukPhotoToName: 'Короли Англии · фото',
     usPresidents: 'Президенты США',
     popesLeaders: 'Папы римские',
     askoldToUnion: 'От Аскольда до Союза',
+    ukMonarchs: 'Короли Англии',
     leaderTopic: 'Тема',
     leaderAsk: 'Вопрос',
     leaderAskYears: 'Годы',
@@ -534,11 +554,12 @@ export const STRINGS: Record<Lang, Strings> = {
     popeNumberPrompt: (n) => `Кто был ${n}-м папой римским?`,
     rusNumberPrompt: (n) => `Кто был ${n}-м правителем?`,
     askoldPrompt: (range) => `Кто правил в ${range}?`,
+    ukYearsPrompt: (range) => `Кто был королём Англии в ${range}?`,
     leaderPhotoPrompt: 'Кто на фото?',
     album: 'Марки',
-    albumHint: 'Марка появляется, когда вы открываете паспорт или играете страну.',
-    albumCount: (n, total) => `${n} из ${total}`,
-    albumEmpty: 'Пока пусто. Откройте страну или сыграйте раунд.',
+    albumHint: 'До 5 марок на страну. Первая — верный ответ в зачётном раунде. Дальше: другой режим, сложно или хардкор, идеальный раунд, хардкор до конца.',
+    albumCount: (copies, countries, total) => `${copies} марок · ${countries} из ${total} стран`,
+    albumEmpty: 'Пока пусто. Ответьте верно в свободной игре или кампании.',
     stampNew: 'Новая марка',
     mistakesTrain: 'Ошибки',
     mistakesHint: 'Только страны, где вы ошиблись. Без таймера.',
@@ -546,6 +567,17 @@ export const STRINGS: Record<Lang, Strings> = {
     mistakesClear: 'Очистить список',
     noTimerHint: 'Без таймера и жизней.',
     footballLearnHint: 'Карточки команд. Потом можно себя проверить.',
+    footballTableYear: 'Год',
+    footballTableWinner: 'Чемпион',
+    footballTableRunnerUp: 'Финалист',
+    footballTableMatch: 'Финал',
+    footballTableScore: 'Счёт',
+    footballTableHost: 'Хозяева',
+    footballTableVenue: 'Где',
+    footballAet: 'д.в.',
+    footballPens: 'пен.',
+    footballReplay: 'переигровка',
+    footballGolden: 'золот. гол',
     mode: 'Режим',
     flagToName: 'Флаг → страна',
     nameToFlag: 'Страна → флаг',
@@ -619,6 +651,8 @@ export const STRINGS: Record<Lang, Strings> = {
     asia: 'Азия',
     europe: 'Европа',
     oceania: 'Океания',
+    includeExtras: 'Все государства и территории',
+    includeExtrasHint: 'Включая зависимые и не члены ООН.',
     difficulty: 'Сложность',
     easy: 'Легкая',
     medium: 'Средняя',
@@ -961,7 +995,7 @@ export const STRINGS: Record<Lang, Strings> = {
     nameToCallingAsk: (name) => `What is the calling code for ${name}?`,
     nameToCarAsk: (name) => `What is the car code for ${name}?`,
     leaders: 'Country leaders',
-    leadersSubtitle: 'U.S. presidents, popes, and rulers from Askold to the Union. Portraits from Wikimedia Commons, free licenses only.',
+    leadersSubtitle: 'U.S. presidents, popes, rulers from Askold to the Union, and kings of England. Portraits from Wikimedia Commons, free licenses only.',
     present: 'present',
     usYearsToName: 'USA · years',
     usNumberToName: 'USA · number',
@@ -972,9 +1006,12 @@ export const STRINGS: Record<Lang, Strings> = {
     rusYearsToName: 'Askold · years',
     rusNumberToName: 'Askold · number',
     rusPhotoToName: 'Askold · photo',
+    ukYearsToName: 'Kings of England · years',
+    ukPhotoToName: 'Kings of England · photo',
     usPresidents: 'U.S. presidents',
     popesLeaders: 'Popes',
     askoldToUnion: 'From Askold to the Union',
+    ukMonarchs: 'Kings of England',
     leaderTopic: 'Topic',
     leaderAsk: 'Question',
     leaderAskYears: 'Years',
@@ -986,11 +1023,12 @@ export const STRINGS: Record<Lang, Strings> = {
     popeNumberPrompt: (n) => `Who was the ${ordinalEn(n)} pope?`,
     rusNumberPrompt: (n) => `Who was the ${ordinalEn(n)} ruler?`,
     askoldPrompt: (range) => `Who ruled in ${range}?`,
+    ukYearsPrompt: (range) => `Who was king of England in ${range}?`,
     leaderPhotoPrompt: 'Who is this?',
     album: 'Stamps',
-    albumHint: 'A stamp appears when you open a passport or play that country.',
-    albumCount: (n, total) => `${n} of ${total}`,
-    albumEmpty: 'Empty so far. Open a country or play a round.',
+    albumHint: 'Up to 5 stamps per country. The first is a correct answer in scored play. Then: a new mode, Hard or Hardcore, a perfect round, and a finished Hardcore round.',
+    albumCount: (copies, countries, total) => `${copies} stamps · ${countries} of ${total} countries`,
+    albumEmpty: 'Empty so far. Answer correctly in free play or the campaign.',
     stampNew: 'New stamp',
     mistakesTrain: 'Mistakes',
     mistakesHint: 'Only countries you missed. No timer.',
@@ -998,6 +1036,17 @@ export const STRINGS: Record<Lang, Strings> = {
     mistakesClear: 'Clear list',
     noTimerHint: 'No timer and no lives.',
     footballLearnHint: 'Team cards. Then you can test yourself.',
+    footballTableYear: 'Year',
+    footballTableWinner: 'Winner',
+    footballTableRunnerUp: 'Runner-up',
+    footballTableMatch: 'Final',
+    footballTableScore: 'Score',
+    footballTableHost: 'Host',
+    footballTableVenue: 'Where',
+    footballAet: 'a.e.t.',
+    footballPens: 'pens',
+    footballReplay: 'replay',
+    footballGolden: 'golden goal',
     mode: 'Mode',
     flagToName: 'Flag → country',
     nameToFlag: 'Country → flag',
@@ -1071,6 +1120,8 @@ export const STRINGS: Record<Lang, Strings> = {
     asia: 'Asia',
     europe: 'Europe',
     oceania: 'Oceania',
+    includeExtras: 'All states and territories',
+    includeExtrasHint: 'Including dependencies and non-UN members.',
     difficulty: 'Difficulty',
     easy: 'Easier',
     medium: 'Medium',
@@ -1392,7 +1443,14 @@ export function modeLabel(mode: QuizMode, lang: Lang): string {
   if (isLeadersMode(mode)) {
     const t = STRINGS[lang]
     const kind = leaderKindOf(mode)
-    const topic = kind === 'pope' ? t.popesLeaders : kind === 'rus' ? t.askoldToUnion : t.usPresidents
+    const topic =
+      kind === 'pope'
+        ? t.popesLeaders
+        : kind === 'rus'
+          ? t.askoldToUnion
+          : kind === 'uk'
+            ? t.ukMonarchs
+            : t.usPresidents
     const ask = leadersAskOf(mode)
     const askLabel = ask === 'photo' ? t.leaderAskPhoto : ask === 'number' ? t.leaderAskNumber : t.leaderAskYears
     return `${topic} · ${askLabel}`

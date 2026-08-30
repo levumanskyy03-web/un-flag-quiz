@@ -1,4 +1,4 @@
-import { COUNTRIES } from '../data/countries'
+import { findCountry } from '../data/extras'
 import { STRINGS, type Lang } from '../i18n/strings'
 import {
   averageTimeMs,
@@ -131,7 +131,7 @@ export function ResultsScreen({
                       ? waterName(answer.selectedIso, lang)
                       : answer.selectedIso
                     : answer.question.options.find((option) => option.iso === answer.selectedIso) ??
-                      COUNTRIES.find((country) => country.iso === answer.selectedIso) ??
+                      findCountry(answer.selectedIso) ??
                       null
               const prompt =
                 itemMode === 'wcWinners' && answer.question.year

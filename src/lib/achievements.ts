@@ -23,7 +23,7 @@ import {
   type QuizDifficulty,
   type QuizMode,
 } from './quiz'
-import { loadStamps, STAMP_TOTAL } from './stamps'
+import { loadStamps, stampCopyCount, stampCountryCount, STAMP_TOTAL } from './stamps'
 import { accountLevel } from './xp'
 
 const MINUTE_MS = 60_000
@@ -52,10 +52,11 @@ function perfect(round: RoundRecord, total: number) {
   return finished(round, total) && round.total === total && round.correct === total
 }
 
-function leaderFamily(mode: QuizMode): 'us' | 'pope' | 'rus' | null {
+function leaderFamily(mode: QuizMode): 'us' | 'pope' | 'rus' | 'uk' | null {
   if (!isLeadersMode(mode)) return null
   if (mode.startsWith('us')) return 'us'
   if (mode.startsWith('pope')) return 'pope'
+  if (mode.startsWith('uk')) return 'uk'
   return 'rus'
 }
 
@@ -113,9 +114,11 @@ export function listAchievements(
   const rankingModes = new Set(completedPool.filter((round) => isRankingMode(round.mode)).map((round) => round.mode))
   const leaderModes = new Set(completedPool.filter((round) => isLeadersMode(round.mode)).map((round) => round.mode))
   const leaderFamilies = new Set(
-    [...leaderModes].map(leaderFamily).filter((item): item is 'us' | 'pope' | 'rus' => item !== null),
+    [...leaderModes].map(leaderFamily).filter((item): item is 'us' | 'pope' | 'rus' | 'uk' => item !== null),
   )
-  const stamps = loadStamps().length
+  const album = loadStamps()
+  const stamps = stampCopyCount(album)
+  const stampCountries = stampCountryCount(album)
   const trainer = loadTrainerStats()
   const rank = accountLevel(lifetime.xp)
   const bornAt = createdAt && createdAt > 0 ? createdAt : lifetime.firstSeen
@@ -201,7 +204,7 @@ export function listAchievements(
     stFirst: stamps >= 1,
     stTen: stamps >= 20,
     stFifty: stamps >= 75,
-    stAlbum: stamps >= STAMP_TOTAL,
+    stAlbum: stampCountries >= STAMP_TOTAL,
     msFirst: trainer.completes >= 1,
     msPerfect: trainer.perfects >= 1,
     seaCoast: completedPool.some((round) => round.mode === 'seaToName'),
@@ -211,7 +214,7 @@ export function listAchievements(
       (round) => round.mode === 'nameToLanguage' && perfect(round, 10) && hardPlus(round.difficulty),
     ),
     rankAtlas: rankingModes.size >= 10,
-    ldThree: leaderFamilies.size >= 3,
+    ldThree: leaderFamilies.size >= 4,
     mixIron: anyComplete((round) => round.mix === 'hard' && perfect(round, 10)),
     stampsCentury: stamps >= 100,
     geoHardTen: anyComplete(

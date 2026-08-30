@@ -1,7 +1,8 @@
-import { COUNTRIES } from '../data/countries'
+import { findCountry } from '../data/extras'
 import { termById, yearsLabel } from '../data/leaders'
+import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS, modeLabel } from '../i18n/strings'
-import { countryName, isFootballMode, isLeadersMode, type QuizMode } from '../lib/quiz'
+import { codePromptLabel, countryName, isCodesMode, isFootballMode, isLeadersMode, type QuizMode } from '../lib/quiz'
 import { GeoModeGrids } from './GeoModeGrids'
 import { geoMistakeCountries, type MistakeEntry } from '../lib/mistakes'
 import type { QuizSettings } from './HomeScreen'
@@ -37,27 +38,25 @@ export function MistakesScreen({
 }: MistakesScreenProps) {
   const t = STRINGS[settings.lang]
   const football = isFootballMode(settings.mode)
+  const codes = isCodesMode(settings.mode)
   const leaders = isLeadersMode(settings.mode)
-  const list = football || leaders
-    ? mistakes.filter((item) => item.mode === settings.mode)
-    : geoMistakeCountries(mistakes)
-  const empty = football ? list.length === 0 : list.length === 0
+  const byMode = football || codes || leaders
+  const list = byMode ? mistakes.filter((item) => item.mode === settings.mode) : geoMistakeCountries(mistakes)
+  const empty = list.length === 0
+  const hubTabs = tabs ?? (football || leaders ? (['free', 'levels', 'learn', 'mistakes'] as HubTab[]) : undefined)
 
   return (
     <div className="screen mistakes-screen">
       <WorldsBack lang={settings.lang} onClick={onWorlds} />
       <header className="quiz-header is-hub">
-        <HubNav
-          lang={settings.lang}
-          active="mistakes"
-          tabs={tabs ?? (football ? ['free', 'levels', 'learn', 'mistakes'] : undefined)}
-          onSelect={onHub}
-        />
+        <HubNav lang={settings.lang} active="mistakes" tabs={hubTabs} onSelect={onHub} />
       </header>
+
+      <p className="setting-hint">{t.mistakesHint}</p>
 
       {leaders ? (
         <LeadersSetup settings={settings} onChange={(next) => onChange({ ...next, path: 'mistakes', mix: null })} />
-      ) : football || !modes.includes('flagToName') ? (
+      ) : football || codes ? (
         <div className="choice-grid is-modes">
           {modes.map((mode) => (
             <button
@@ -85,9 +84,9 @@ export function MistakesScreen({
         <>
           <p className="learn-copy">{t.countriesCount(list.length)}</p>
           <section className="learn-grid">
-            {football || leaders
+            {byMode
               ? (list as MistakeEntry[]).map((item) => {
-                  const country = COUNTRIES.find((entry) => entry.iso === item.iso)
+                  const country = football ? footballTeamCountry(item.iso) : findCountry(item.iso)
                   const term = leaders ? termById(item.iso) : undefined
                   const name = term
                     ? settings.lang === 'ru'
@@ -96,12 +95,15 @@ export function MistakesScreen({
                     : country
                       ? countryName(country, settings.lang)
                       : item.iso
+                  const codeLabel = codes && country ? codePromptLabel(country, item.mode) : ''
                   return (
                     <div key={`${item.mode}:${item.iso}:${item.year ?? ''}`} className="learn-card">
                       {leaders && term ? (
                         <LeaderPortrait name={name} wiki={term.wiki} size="card" />
-                      ) : (
+                      ) : football ? (
                         <TeamFlag iso={item.iso} name={name} size="card" />
+                      ) : (
+                        <Flag iso={item.iso} name={name} size="card" />
                       )}
                       <p className="learn-card-name">
                         <FitText>
@@ -114,10 +116,11 @@ export function MistakesScreen({
                           }`}
                         </FitText>
                       </p>
+                      {codeLabel ? <p className="learn-card-meta is-code">{codeLabel}</p> : null}
                     </div>
                   )
                 })
-              : (list as typeof COUNTRIES).map((country) => {
+              : (list as ReturnType<typeof geoMistakeCountries>).map((country) => {
                   const name = countryName(country, settings.lang)
                   return (
                     <div key={country.iso} className="learn-card">

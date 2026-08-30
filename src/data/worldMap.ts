@@ -1,4 +1,5 @@
 import { COUNTRIES } from './countries'
+import { EXTRA_COUNTRIES } from './extras'
 import { HOLDOUT_BY_ISO, TERRITORIES, TERRITORY_BY_ISO } from './territories'
 
 export interface WorldLocation {
@@ -20,6 +21,7 @@ export interface WorldMarker {
 
 const CLICKABLE_ISOS = new Set([
   ...COUNTRIES.map((country) => country.iso),
+  ...EXTRA_COUNTRIES.map((country) => country.iso),
   ...TERRITORY_BY_ISO.keys(),
   ...HOLDOUT_BY_ISO.keys(),
 ])

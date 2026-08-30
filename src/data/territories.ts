@@ -1,4 +1,5 @@
 import { COUNTRIES, type Region } from './countries'
+import { EXTRA_ISOS } from './extras'
 import type { Lang } from '../i18n/lang'
 
 export interface MapTerritory {
@@ -246,6 +247,7 @@ export function resolveMapLocation(id: string) {
   return { country: parent, territory, holdout: undefined }
 }
 
-export function quizIsoFromMapId(id: string): string | null {
+export function quizIsoFromMapId(id: string, includeExtras = false): string | null {
+  if (includeExtras && EXTRA_ISOS.has(id)) return id
   return resolveMapLocation(id)?.country?.iso ?? null
 }

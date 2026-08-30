@@ -598,8 +598,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     tier: 1,
     en: 'First stamp',
     ru: 'Первая марка',
-    enHint: 'Collect a stamp',
-    ruHint: 'Соберите марку',
+    enHint: 'Earn a stamp with a correct scored answer',
+    ruHint: 'Заработайте марку верным ответом в зачётном раунде',
   },
   {
     id: 'stTen',
@@ -684,10 +684,10 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     id: 'ldThree',
     tier: 5,
-    en: 'Three courts',
-    ru: 'Три двора',
-    enHint: 'Hard. Finish a leaders round for US presidents, popes, and Rus',
-    ruHint: 'Сложно. Пройдите раунд лидеров по США, папам и Руси',
+    en: 'Four courts',
+    ru: 'Четыре двора',
+    enHint: 'Hard. Finish a leaders round for US presidents, popes, Rus, and English monarchs',
+    ruHint: 'Сложно. Пройдите раунд лидеров по США, папам, Руси и королям Англии',
   },
   {
     id: 'mixIron',
@@ -798,8 +798,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     tier: 6,
     en: 'Full cabinet',
     ru: 'Весь кабинет',
-    enHint: 'Very hard. Finish all nine leaders modes',
-    ruHint: 'Очень сложно. Пройдите все девять режимов лидеров',
+    enHint: 'Very hard. Finish every leaders mode',
+    ruHint: 'Очень сложно. Пройдите все режимы лидеров',
   },
   {
     id: 'veteranYear',

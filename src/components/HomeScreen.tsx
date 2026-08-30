@@ -47,6 +47,7 @@ export interface QuizSettings {
   levelLives: number
   levelLearn: boolean
   learnFrom: LearnFrom
+  includeExtras: boolean
 }
 
 interface HomeScreenProps {
@@ -88,8 +89,8 @@ export function HomeScreen({
   const factsMode = !settings.mix && isFactsToName(settings.mode)
   const languageMode = !settings.mix && isNameToLanguage(settings.mode)
   const poolSize = settings.mix
-    ? getRegionPool(settings.region).length
-    : getPool(settings.region, settings.difficulty, settings.mode).length
+    ? getRegionPool(settings.region, settings.includeExtras).length
+    : getPool(settings.region, settings.difficulty, settings.mode, settings.includeExtras).length
   const regions: Array<Region | 'all'> = ['all', ...REGIONS]
   const difficulties = languageMode
     ? LANGUAGE_DIFFICULTIES
@@ -104,8 +105,8 @@ export function HomeScreen({
   function update(patch: Partial<QuizSettings>) {
     const next = { ...settings, ...patch }
     const nextPool = next.mix
-      ? getRegionPool(next.region).length
-      : getPool(next.region, next.difficulty, next.mode).length
+      ? getRegionPool(next.region, next.includeExtras).length
+      : getPool(next.region, next.difficulty, next.mode, next.includeExtras).length
     onChange({ ...next, roundSize: fitRoundSize(next.roundSize, nextPool) })
   }
 
@@ -179,6 +180,8 @@ export function HomeScreen({
             </button>
           ))}
         </div>
+
+        <ExtrasToggle settings={settings} onChange={(includeExtras) => update({ includeExtras })} />
 
         <h2>{t.difficulty}</h2>
         <div className={`choice-grid ${difficulties.length === 4 ? 'is-4' : 'is-3'}`}>
@@ -339,6 +342,32 @@ function formatPlayedAt(at: number, lang: Lang): string {
     hour: '2-digit',
     minute: '2-digit',
   })
+}
+
+export function ExtrasToggle({
+  settings,
+  onChange,
+}: {
+  settings: QuizSettings
+  onChange: (includeExtras: boolean) => void
+}) {
+  const t = STRINGS[settings.lang]
+  return (
+    <>
+      <h2>{t.includeExtras}</h2>
+      <div className="choice-wrap">
+        <button
+          type="button"
+          className={`chip ${settings.includeExtras ? 'is-active' : ''}`}
+          aria-pressed={settings.includeExtras}
+          onClick={() => onChange(!settings.includeExtras)}
+        >
+          {t.includeExtras}
+        </button>
+      </div>
+      <p className="setting-hint extras-hint">{t.includeExtrasHint}</p>
+    </>
+  )
 }
 
 function nextDifficultyForMode(mode: QuizMode, difficulty: QuizDifficulty): QuizDifficulty {
