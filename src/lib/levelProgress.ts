@@ -1,5 +1,6 @@
+import { footballCampaignLevels } from '../data/footballLevels'
 import { CAMPAIGN_LEVELS, FINAL_LEVEL, isFinalLevel } from '../data/levels'
-import { QUIZ_MODES, isQuizMode, type QuizMode } from './quiz'
+import { FOOTBALL_MODES, LEADERS_MODES, QUIZ_MODES, isFootballMode, isLeadersMode, isQuizMode, isWaterMode, waterCampaignLevels, leaderCampaignLevels, type QuizMode } from './quiz'
 
 export const LEVELS_KEY = 'un-flag-quiz-levels'
 const LEVELS_WIPE_KEY = 'un-flag-quiz-levels-wipe-1'
@@ -66,6 +67,9 @@ export function findLevelClear(
 
 export function isLevelUnlocked(clears: LevelClear[], level: number, mode: QuizMode): boolean {
   if (level <= 1) return true
+  if (isFootballMode(mode) || isWaterMode(mode) || isLeadersMode(mode)) {
+    return findLevelClear(clears, level - 1, mode) !== undefined
+  }
   if (isFinalLevel(level)) {
     return findLevelClear(clears, CAMPAIGN_LEVELS, mode) !== undefined
   }
@@ -83,6 +87,17 @@ function wipeLegacyClears() {
 function keepConsecutive(clears: LevelClear[]): LevelClear[] {
   const kept: LevelClear[] = []
   for (const mode of QUIZ_MODES) {
+    if (isWaterMode(mode)) {
+      const total = waterCampaignLevels(mode)
+      const chain: LevelClear[] = []
+      for (let level = 1; level <= total; level++) {
+        const hits = clears.filter((item) => item.level === level && item.mode === mode)
+        if (hits.length === 0) break
+        chain.push(pickKeptClear(hits))
+      }
+      kept.push(...chain)
+      continue
+    }
     const chain: LevelClear[] = []
     for (let level = 1; level <= CAMPAIGN_LEVELS; level++) {
       const hits = clears.filter((item) => item.level === level && item.mode === mode)
@@ -94,6 +109,26 @@ function keepConsecutive(clears: LevelClear[]): LevelClear[] {
       if (finals.length > 0) {
         chain.push(pickKeptClear(finals))
       }
+    }
+    kept.push(...chain)
+  }
+  for (const mode of FOOTBALL_MODES) {
+    const total = footballCampaignLevels(mode)
+    const chain: LevelClear[] = []
+    for (let level = 1; level <= total; level++) {
+      const hits = clears.filter((item) => item.level === level && item.mode === mode)
+      if (hits.length === 0) break
+      chain.push(pickKeptClear(hits))
+    }
+    kept.push(...chain)
+  }
+  for (const mode of LEADERS_MODES) {
+    const total = leaderCampaignLevels(mode)
+    const chain: LevelClear[] = []
+    for (let level = 1; level <= total; level++) {
+      const hits = clears.filter((item) => item.level === level && item.mode === mode)
+      if (hits.length === 0) break
+      chain.push(pickKeptClear(hits))
     }
     kept.push(...chain)
   }

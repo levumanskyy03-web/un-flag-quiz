@@ -1,35 +1,41 @@
 import { STRINGS, type Lang } from '../i18n/strings'
 import { GeoIcon } from './GeoIcon'
 
-export type HubTab = 'free' | 'levels' | 'learn' | 'map'
+export type HubTab = 'free' | 'levels' | 'learn' | 'map' | 'mistakes' | 'album'
 
 interface HubNavProps {
   lang: Lang
   active: HubTab
+  tabs?: HubTab[]
   onSelect: (tab: HubTab) => void
 }
 
-const TABS: HubTab[] = ['free', 'levels', 'learn', 'map']
-const ICONS = {
+const GEO_TABS: HubTab[] = ['free', 'levels', 'learn', 'map', 'mistakes', 'album']
+const ICONS: Record<HubTab, 'compass' | 'map' | 'meridians' | 'pin' | 'stamp' | 'hash'> = {
   free: 'compass',
   levels: 'map',
   learn: 'meridians',
   map: 'pin',
-} as const
+  mistakes: 'hash',
+  album: 'stamp',
+}
 
-export function HubNav({ lang, active, onSelect }: HubNavProps) {
+export function HubNav({ lang, active, tabs = GEO_TABS, onSelect }: HubNavProps) {
   const t = STRINGS[lang]
   const labels: Record<HubTab, string> = {
     free: t.freePlay,
     levels: t.levels,
     learn: t.learn,
     map: t.map,
+    mistakes: t.mistakesTrain,
+    album: t.album,
   }
+  const columns = tabs.length <= 3 ? 3 : tabs.length <= 4 ? 4 : 3
 
   return (
     <nav className="hub-nav" aria-label={t.explore}>
-      <div className="choice-grid is-hub">
-        {TABS.map((tab) => (
+      <div className={`choice-grid is-hub is-hub-${columns}`}>
+        {tabs.map((tab) => (
           <button
             key={tab}
             type="button"

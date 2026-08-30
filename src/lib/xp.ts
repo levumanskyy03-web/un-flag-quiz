@@ -3,9 +3,11 @@ import { localeTag, type Lang } from '../i18n/lang'
 import type { LevelClear } from './levelProgress'
 import {
   footballHasDifficulty,
-  getLevelPool,
-  hasLevels,
+  levelQuestionCount,
+  isCodesMode,
   isFootballMode,
+  isLeadersMode,
+  isRankingMode,
   questionLimitMs,
   type FootballMode,
   type PlayPath,
@@ -55,6 +57,10 @@ const BONUS_MODES = new Set<QuizMode>([
   'nameToMap',
   'mapToName',
   'neighborsToName',
+  'seaToName',
+  'riverToName',
+  'mapToSea',
+  'mapToRiver',
 ])
 
 export function xpForComplete(round: XpRound): number {
@@ -80,19 +86,32 @@ export function xpForAnswers(
 }
 
 const FOOTBALL_MODE_XP: Record<FootballMode, number> = {
-  wcWinners: 4,
-  wcFinalists: 5,
-  wcHosts: 5,
-  wcTitleYears: 6,
-  euroWinners: 5,
+  wcWinners: 1,
+  wcFinalists: 1,
+  wcHosts: 1,
+  wcTitleYears: 2,
+  euroWinners: 1,
 }
+
+const HARD_FREE_MODES = new Set<QuizMode>([
+  'nameToPopulation',
+  'nameToFounded',
+  'nameToMap',
+  'mapToName',
+  'neighborsToName',
+  'factsToName',
+  'seaToName',
+  'riverToName',
+  'mapToSea',
+  'mapToRiver',
+])
 
 export function xpPerFootballCorrect(mode: QuizMode, difficulty: QuizDifficulty): number {
   if (!isFootballMode(mode)) return xpPerFreePlayCorrect(difficulty, mode)
   const base = FOOTBALL_MODE_XP[mode]
   if (!footballHasDifficulty(mode)) return base
-  if (difficulty === 'hardcore') return 12
-  if (difficulty === 'hard') return 8
+  if (difficulty === 'hardcore') return 4
+  if (difficulty === 'hard') return 2
   return base
 }
 
@@ -107,17 +126,22 @@ export function xpForFootballRound(
   const per = xpPerFootballCorrect(mode, difficulty)
   let xp = correct * per
   if (endedBy === 'complete') {
-    xp += 2 * answers.length
-    if (correct === answers.length) xp += 5 * answers.length
+    xp += answers.length
+    if (correct === answers.length) xp += 2 * answers.length
   }
   return Math.max(0, Math.round(xp))
 }
 
 export function xpPerFreePlayCorrect(difficulty: QuizDifficulty, mode: QuizMode): number {
   if (isFootballMode(mode)) return xpPerFootballCorrect(mode, difficulty)
-  const base =
-    difficulty === 'hardcore' ? 10 : difficulty === 'hard' ? 5 : difficulty === 'medium' ? 3 : 2
-  return hasLevels(mode) ? base : base * 10
+  if (isCodesMode(mode)) return 1
+  if (isLeadersMode(mode)) {
+    if (difficulty === 'hardcore') return 4
+    if (difficulty === 'hard') return 2
+    return 1
+  }
+  const byDifficulty = difficulty === 'hardcore' ? 4 : difficulty === 'hard' ? 2 : 1
+  return HARD_FREE_MODES.has(mode) || isRankingMode(mode) ? byDifficulty + 1 : byDifficulty
 }
 
 export function xpForFreePlay(
@@ -150,7 +174,7 @@ export function campaignXpDelta(
 }
 
 export function xpFromClear(clear: LevelClear): number {
-  const questions = getLevelPool(clear.level, clear.mode).length
+  const questions = levelQuestionCount(clear.level, clear.mode)
   const livesLimit = clear.livesLimit && clear.livesLimit > 0 ? clear.livesLimit : clear.hardcore ? 1 : 3
   const mistakes = Math.max(0, livesLimit - clear.livesLeft)
   return xpForComplete({

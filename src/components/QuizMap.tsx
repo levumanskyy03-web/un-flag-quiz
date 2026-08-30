@@ -10,6 +10,8 @@ import {
   visibleIsosForRegions,
 } from '../data/territories'
 import { isClickableIso, markersFor, type WorldMapData } from '../data/worldMap'
+import { WATER_BODIES, WATER_VIEW, isosForWater } from '../data/water'
+import { waterCutsLand, waterShapeCamera, waterShapePath } from '../data/waterShapes'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { countryName } from '../lib/quiz'
 import {
@@ -24,6 +26,7 @@ import {
   viewBoxFromBoxes,
   WORLD,
   zoomCamera,
+  type Box,
   type Camera,
 } from '../lib/mapCamera'
 import { isAllRegions, parseRegions, type RegionFilter } from '../lib/quiz'
@@ -34,12 +37,13 @@ const worldPromise = import('@svg-maps/world')
 
 interface QuizMapProps {
   lang: Lang
-  variant: 'find' | 'identify'
+  variant: 'find' | 'identify' | 'water'
   region: RegionFilter
   focusIso: string
   selectedIso: string | null
   revealed: boolean
   disabled?: boolean
+  waterId?: string
   onPick?: (iso: string) => void
 }
 
@@ -51,6 +55,7 @@ export function QuizMap({
   selectedIso,
   revealed,
   disabled = false,
+  waterId,
   onPick,
 }: QuizMapProps) {
   const t = STRINGS[lang]
@@ -73,7 +78,8 @@ export function QuizMap({
   cameraRef.current = camera
 
   const canPan = variant === 'find'
-  const scoped = !isAllRegions(region)
+  const waterMode = variant === 'water'
+  const scoped = !waterMode && !isAllRegions(region)
   const regions = scoped ? parseRegions(region) : []
   const regionIsos = useMemo(
     () => (scoped ? visibleIsosForRegions(regions as Region[]) : new Set<string>()),
@@ -138,7 +144,25 @@ export function QuizMap({
     return direct
   }, [boxes, focusIso, markers])
 
+  const coastalIsos = useMemo(() => (waterId ? new Set(isosForWater(waterId)) : new Set<string>()), [waterId])
+  const waterKind = waterId ? WATER_BODIES[waterId]?.kind : undefined
+
   useEffect(() => {
+    if (variant === 'water') {
+      const shapeCam = waterId ? waterShapeCamera(waterId) : undefined
+      if (shapeCam) {
+        setCamera(placeCamera(shapeCam))
+        return
+      }
+      const override = waterId ? WATER_VIEW[waterId] : undefined
+      if (override) {
+        setCamera(placeCamera(override))
+        return
+      }
+      const selected = [...coastalIsos].map((iso) => boxes[iso]).filter(Boolean)
+      if (selected.length > 0) setCamera(placeCamera(viewBoxFromBoxes(selected)))
+      return
+    }
     if (variant === 'identify') {
       if (focusBox) setCamera(placeCamera(cameraForCountry(focusBox)))
       return
@@ -157,7 +181,7 @@ export function QuizMap({
       return
     }
     setCamera(insetCamera(startBounds, REGION_START_ZOOM, bounds))
-  }, [bounds, boxes, focusBox, focusIso, revealed, selectedIso, startBounds, variant])
+  }, [bounds, boxes, coastalIsos, focusBox, focusIso, revealed, selectedIso, startBounds, variant, waterId])
 
   useEffect(() => {
     const frame = frameRef.current
@@ -344,11 +368,18 @@ export function QuizMap({
     revealed && selectedIso
       ? COUNTRIES.find((country) => country.iso === selectedIso)
       : null
+  const waterLine = waterMode && waterKind === 'river'
+  const waterUnderLand = Boolean(waterMode && !waterLine && waterCutsLand(waterId ?? ''))
+  const waterOverLand = Boolean(waterMode && !waterLine && waterId && !waterCutsLand(waterId))
+  const waterBoxes = [...coastalIsos].map((iso) => boxes[iso]).filter(Boolean)
+  const overlay = (waterLine || waterUnderLand || waterOverLand) && (
+    <WaterOverlay waterId={waterId} kind={waterKind} boxes={waterBoxes} revealed={revealed} />
+  )
 
   return (
     <div
       ref={frameRef}
-      className={`map-frame quiz-map-frame${variant === 'identify' ? ' is-round' : ' is-find'}${panning ? ' is-panning' : ''}${canPan ? '' : ' is-locked'}`}
+      className={`map-frame quiz-map-frame${variant === 'identify' ? ' is-round' : variant === 'water' ? ' is-water' : ' is-find'}${panning ? ' is-panning' : ''}${canPan ? '' : ' is-locked'}`}
       onPointerDown={onFramePointerDown}
       onPointerMove={onFramePointerMove}
       onPointerUp={onFramePointerUp}
@@ -387,22 +418,24 @@ export function QuizMap({
           viewBox={`${camera.x} ${camera.y} ${camera.w} ${camera.h}`}
           preserveAspectRatio="xMidYMid meet"
           role="group"
-          aria-label={variant === 'find' ? t.nameToMap : t.mapToName}
+          aria-label={variant === 'find' ? t.nameToMap : variant === 'water' ? t.whichCountry : t.mapToName}
         >
+          {waterUnderLand ? overlay : null}
           {mapLocations.map((location) => {
             const quizIso = quizIsoFromMapId(location.id)
             const inScope = !scoped || regionIsos.has(location.id)
             const clickable = Boolean(quizIso) && inScope && isClickableIso(location.id) && !HOLDOUT_BY_ISO.has(location.id)
-            const isAsk = variant === 'identify' && !revealed && quizIso === focusIso
-            const isCorrect = revealed && quizIso === focusIso
-            const isWrong = revealed && selectedIso !== null && selectedIso !== focusIso && quizIso === selectedIso
+            const isCoast = waterMode && quizIso !== null && coastalIsos.has(quizIso)
+            const isAsk = !waterMode && variant === 'identify' && !revealed && quizIso === focusIso
+            const isCorrect = !waterMode && revealed && quizIso === focusIso
+            const isWrong = !waterMode && revealed && selectedIso !== null && selectedIso !== focusIso && quizIso === selectedIso
             const isHover = canPan && location.id === hoverId
             return (
               <path
                 key={location.id}
                 data-iso={location.id}
                 d={location.path}
-                className={`map-country${clickable ? '' : ' is-other'}${isAsk ? ' is-quiz-ask' : ''}${isCorrect ? ' is-quiz-correct' : ''}${isWrong ? ' is-quiz-wrong' : ''}${isHover ? ' is-hover' : ''}`}
+                className={`map-country${clickable ? '' : ' is-other'}${isCoast ? ' is-water-coast' : ''}${isAsk ? ' is-quiz-ask' : ''}${isCorrect ? ' is-quiz-correct' : ''}${isWrong ? ' is-quiz-wrong' : ''}${isHover ? ' is-hover' : ''}`}
                 onMouseEnter={() => {
                   if (clickable) setHoverId(location.id)
                 }}
@@ -410,7 +443,8 @@ export function QuizMap({
               />
             )
           })}
-          {markers.map((marker) => {
+          {waterOverLand || waterLine ? overlay : null}
+          {waterMode ? null : markers.map((marker) => {
             const quizIso = quizIsoFromMapId(marker.iso)
             const inScope = !scoped || regionIsos.has(marker.iso)
             if (!quizIso || !inScope || HOLDOUT_BY_ISO.has(marker.iso)) return null
@@ -448,4 +482,38 @@ export function QuizMap({
 function countryInRegion(iso: string, regions: readonly Region[]) {
   const country = COUNTRIES.find((item) => item.iso === iso)
   return Boolean(country && regions.includes(country.region))
+}
+
+function WaterOverlay({
+  waterId,
+  kind,
+  boxes,
+  revealed,
+}: {
+  waterId?: string
+  kind?: string
+  boxes: Box[]
+  revealed: boolean
+}) {
+  const line = kind === 'river'
+  const cls = `map-water${line ? ' is-line' : ''}${revealed ? ' is-revealed' : ''}`
+  if (line && boxes.length > 0) {
+    const points = [...boxes]
+      .map((box) => ({ x: box.x + box.width / 2, y: box.y + box.height / 2 }))
+      .sort((a, b) => a.x - b.x || a.y - b.y)
+      .map((point) => `${point.x},${point.y}`)
+      .join(' ')
+    return <polyline className={cls} points={points} fill="none" />
+  }
+  const shape = waterId ? waterShapePath(waterId) : ''
+  const fallback =
+    !shape && boxes.length > 0
+      ? (() => {
+          const view = viewBoxFromBoxes(boxes)
+          return `M ${view.x} ${view.y} h ${view.w} v ${view.h} h ${-view.w} Z`
+        })()
+      : ''
+  const d = shape || fallback
+  if (!d) return null
+  return <path className={cls} d={d} />
 }

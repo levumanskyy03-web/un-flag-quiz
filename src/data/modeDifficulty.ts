@@ -1,5 +1,6 @@
 import { COUNTRIES, type Country } from './countries'
 import { LEVEL_ISOS } from './levels'
+import { isEasyWaterCountry, isWaterMode } from './water'
 
 const KNOWN = new Set(COUNTRIES.map((country) => country.iso))
 
@@ -469,6 +470,7 @@ const EASY_BY_MODE: Record<string, ReadonlySet<string> | 'flag'> = {
 }
 
 export function isEasyForMode(country: Country, mode: string): boolean {
+  if (isWaterMode(mode)) return isEasyWaterCountry(country.iso, mode)
   const easy = EASY_BY_MODE[mode]
   if (!easy || easy === 'flag') return country.difficulty === 'easy'
   return easy.has(country.iso)

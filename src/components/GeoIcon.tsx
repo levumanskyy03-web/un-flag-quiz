@@ -1,6 +1,6 @@
 import { useId } from 'react'
 
-type GeoIconName = 'compass' | 'globe' | 'map' | 'pin' | 'meridians' | 'trophy' | 'ball'
+type GeoIconName = 'compass' | 'globe' | 'map' | 'pin' | 'meridians' | 'trophy' | 'ball' | 'stamp' | 'hash' | 'crown'
 
 interface GeoIconProps {
   name: GeoIconName
@@ -107,6 +107,39 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
             strokeLinecap="round"
           />
           <path d="M8 1.85v12.3" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round" />
+        </>
+      ) : null}
+      {name === 'stamp' ? (
+        <>
+          <rect x="2.4" y="2.6" width="11.2" height="10.8" rx="0.6" stroke="currentColor" strokeWidth="1.2" />
+          <path
+            d="M2.4 4.4h11.2M2.4 11.6h11.2"
+            stroke="currentColor"
+            strokeWidth="1.1"
+            strokeDasharray="1.2 1.1"
+          />
+        </>
+      ) : null}
+      {name === 'hash' ? (
+        <>
+          <path d="M6.1 2.8 5 13.2M11.1 2.8 10 13.2M2.6 6.2h10.8M2.6 9.8h10.8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+        </>
+      ) : null}
+      {name === 'crown' ? (
+        <>
+          <path
+            d="M2.4 11.6h11.2V13c0 .6-.5 1.1-1.1 1.1H3.5c-.6 0-1.1-.5-1.1-1.1v-1.4Z"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M2.6 11.4 4.2 6.4 8 9.1l3.8-4.7 1.6 7"
+            stroke="currentColor"
+            strokeWidth="1.25"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
         </>
       ) : null}
     </svg>

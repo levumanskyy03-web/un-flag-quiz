@@ -1,23 +1,37 @@
-import { STRINGS, localeTag, type Lang } from '../i18n/strings'
+import { STRINGS, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
 import { COUNTRIES, type Country } from '../data/countries'
 import { landNeighbors } from '../data/neighbors'
 import {
+  codePromptLabel,
   countryName,
   formatClock,
+  isCodeOptionMode,
+  isCodePromptMode,
   isFootballTeamChoice,
   isFootballYearChoice,
   isFactMode,
+  isLeaderNumberPrompt,
+  isLeaderPhotoMode,
+  isLeaderYearsPrompt,
+  isRankingMode,
+  isWaterMapMode,
+  isWaterMode,
   questionLimitMs,
   quizMapRegion,
+  waterName,
   type PlayPath,
   type Question,
   type QuizMode,
   type RegionFilter,
 } from '../lib/quiz'
+import { rankingPlaceOf } from '../data/rankings'
 import { optionLabel } from '../lib/quizAnswers'
+import { termById, yearsLabel } from '../data/leaders'
 import { Flag, TeamFlag } from './Flag'
+import { LeaderPortrait } from './LeaderPortrait'
 import { Lives } from './Lives'
 import { QuizMap } from './QuizMap'
+import { RankingFootnote } from './GeoModeGrids'
 import { WorldsBack } from './WorldsBack'
 
 interface QuizScreenProps {
@@ -35,6 +49,7 @@ interface QuizScreenProps {
   livesLeft: number
   maxLives: number
   practice?: boolean
+  mix?: boolean
   duel?: {
     opponentName: string
     opponentReady: boolean
@@ -64,6 +79,7 @@ export function QuizScreen({
   livesLeft,
   maxLives,
   practice = false,
+  mix = false,
   duel,
   onSelect,
   onNext,
@@ -79,6 +95,9 @@ export function QuizScreen({
   const limitMs = questionLimitMs(activeMode, { region, path })
   const timerWidth = `${Math.max(0, (remainingMs / limitMs) * 100)}%`
   const mapRegion = quizMapRegion(path, region)
+  const mixHint = mix ? mixAskHint(activeMode, lang) : null
+  const leaderTerm = termById(question.country.iso)
+  const leaderRange = leaderTerm ? yearsLabel(leaderTerm.from, leaderTerm.to, t.present) : ''
   const promptNeighbors =
     activeMode === 'neighborsToName'
       ? landNeighbors(question.country.iso)
@@ -148,21 +167,30 @@ export function QuizScreen({
         </>
       )}
 
-      {activeMode === 'mapToName' ? (
+      {activeMode === 'mapToName' || isWaterMapMode(activeMode) ? (
         <section className="card question-card is-map">
-          <p className="quiz-map-ask">{t.whichCountry}</p>
+          <p className={mixHint ? 'mix-ask-hint' : 'quiz-map-ask'}>
+            {mixHint ??
+              (isWaterMapMode(activeMode)
+                ? activeMode === 'mapToSea'
+                  ? t.seaMapPrompt
+                  : t.riverMapPrompt
+                : t.whichCountry)}
+          </p>
           <QuizMap
-            key={`${question.country.iso}-id`}
+            key={`${question.country.iso}-${question.waterId ?? 'id'}`}
             lang={lang}
-            variant="identify"
-            region={mapRegion}
+            variant={isWaterMapMode(activeMode) ? 'water' : 'identify'}
+            region={isWaterMapMode(activeMode) ? 'all' : mapRegion}
             focusIso={question.country.iso}
+            waterId={question.waterId}
             selectedIso={selectedIso}
             revealed={answered}
           />
         </section>
       ) : (
-        <section className="card question-card">
+        <section className={`card question-card${mixHint ? ' has-mix-ask' : ''}`}>
+          {mixHint ? <p className="mix-ask-hint">{mixHint}</p> : null}
           {activeMode === 'flagToName' ? (
             <Flag iso={question.country.iso} name={correctName} size="hero" />
           ) : activeMode === 'wcWinners' ? (
@@ -178,9 +206,78 @@ export function QuizScreen({
               <TeamFlag iso={question.country.iso} name={correctName} size="hero" />
               <h2 className="prompt-name">{t.wcTitleYearPrompt(correctName)}</h2>
             </div>
+          ) : isCodePromptMode(activeMode) ? (
+            <div className="code-prompt-block">
+              <p className="neighbors-prompt-label">
+                {activeMode === 'tldToName' ? t.tldPrompt : activeMode === 'callingToName' ? t.callingPrompt : t.carPrompt}
+              </p>
+              <h2 className={`prompt-name code-prompt${activeMode === 'carToName' ? ' is-car' : ''}`}>
+                {codePromptLabel(question.country, activeMode)}
+              </h2>
+            </div>
+          ) : isCodeOptionMode(activeMode) ? (
+            <h2 className="prompt-name">
+              {activeMode === 'nameToTld'
+                ? t.nameToTldAsk(correctName)
+                : activeMode === 'nameToCalling'
+                  ? t.nameToCallingAsk(correctName)
+                  : t.nameToCarAsk(correctName)}
+            </h2>
+          ) : isLeaderPhotoMode(activeMode) ? (
+            <div className="leader-prompt">
+              <p className="neighbors-prompt-label">{t.leaderPhotoPrompt}</p>
+              <LeaderPortrait
+                name={correctName}
+                wiki={leaderTerm?.wiki ?? ''}
+                size="hero"
+                compact={!answered}
+              />
+            </div>
+          ) : isLeaderNumberPrompt(activeMode) ? (
+            <div className="code-prompt-block">
+              <p className="neighbors-prompt-label">
+                {activeMode === 'popeNumberToName'
+                  ? t.popeNumberPrompt(leaderTerm?.n ?? 0)
+                  : activeMode === 'rusNumberToName'
+                    ? t.rusNumberPrompt(leaderTerm?.n ?? 0)
+                    : t.usNumberPrompt(leaderTerm?.n ?? 0)}
+              </p>
+              <h2 className="prompt-name code-prompt">{leaderTerm?.n ?? ''}</h2>
+            </div>
+          ) : isLeaderYearsPrompt(activeMode) ? (
+            <div className="code-prompt-block">
+              <p className="neighbors-prompt-label">
+                {activeMode === 'popeYearsToName'
+                  ? t.popeYearsPrompt(leaderRange)
+                  : activeMode === 'rusYearsToName'
+                    ? t.askoldPrompt(leaderRange)
+                    : t.usYearsPrompt(leaderRange)}
+              </p>
+              <h2 className="prompt-name">{leaderRange}</h2>
+            </div>
+          ) : isRankingMode(activeMode) ? (
+            <div className="code-prompt-block">
+              {mixHint ? null : (
+                <p className="neighbors-prompt-label">
+                  {t.rankingAsk(modeLabel(activeMode, lang), rankingPlaceOf(activeMode, question.country.iso) ?? 0)}
+                </p>
+              )}
+              <h2 className="prompt-name code-prompt">
+                {rankingPlaceOf(activeMode, question.country.iso) ?? ''}
+              </h2>
+            </div>
+          ) : isWaterMode(activeMode) && question.waterId ? (
+            <div className="code-prompt-block">
+              {mixHint ? null : (
+                <p className="neighbors-prompt-label">
+                  {activeMode === 'seaToName' ? t.seaPrompt : t.riverPrompt}
+                </p>
+              )}
+              <h2 className="prompt-name">{waterName(question.waterId, lang)}</h2>
+            </div>
           ) : activeMode === 'neighborsToName' ? (
             <div className="neighbors-prompt">
-              <p className="neighbors-prompt-label">{t.whoseNeighbors}</p>
+              {mixHint ? null : <p className="neighbors-prompt-label">{t.whoseNeighbors}</p>}
               <ul className="neighbors-prompt-list">
                 {promptNeighbors.map((neighbor) => {
                   const name = countryName(neighbor, lang)
@@ -199,6 +296,8 @@ export function QuizScreen({
         </section>
       )}
 
+      {isRankingMode(activeMode) ? <RankingFootnote mode={activeMode} lang={lang} /> : null}
+
       {activeMode === 'nameToMap' ? (
         <QuizMap
           key={`${question.country.iso}-find`}
@@ -212,7 +311,31 @@ export function QuizScreen({
         />
       ) : (
         <div className={`options ${activeMode === 'nameToFlag' ? 'options-flags' : 'options-names'}`}>
-          {isFootballYearChoice(activeMode)
+          {isWaterMapMode(activeMode)
+            ? (question.waterOptions ?? []).map((id) => {
+                const isCorrectOption = id === question.waterId
+                const isSelected = id === selectedIso
+                const isOpponent = Boolean(duel?.reveal && duel.opponentAnswer === id)
+                const stateClass = answered
+                  ? isCorrectOption
+                    ? 'is-correct'
+                    : isSelected
+                      ? 'is-wrong'
+                      : 'is-muted'
+                  : ''
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    className={`option ${stateClass}${isOpponent ? ' is-duel-opponent' : ''}`}
+                    disabled={answered}
+                    onClick={() => onSelect(id)}
+                  >
+                    {waterName(id, lang)}
+                  </button>
+                )
+              })
+            : isFootballYearChoice(activeMode)
             ? (question.yearOptions ?? []).map((year) => {
                 const key = String(year)
                 const isCorrectOption = year === question.year
@@ -254,7 +377,7 @@ export function QuizScreen({
               <button
                 key={option.iso}
                 type="button"
-                className={`option ${stateClass}${isFactMode(activeMode) ? ' option-fact' : ''}${isOpponent ? ' is-duel-opponent' : ''}`}
+                className={`option ${stateClass}${isFactMode(activeMode) ? ' option-fact' : ''}${isCodeOptionMode(activeMode) ? ' option-code' : ''}${isOpponent ? ' is-duel-opponent' : ''}`}
                 disabled={answered}
                 onClick={() => onSelect(option.iso)}
               >

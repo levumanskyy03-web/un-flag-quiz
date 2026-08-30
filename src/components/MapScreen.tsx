@@ -356,8 +356,6 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
         />
       </header>
 
-      <p className="learn-copy">{t.mapHint}</p>
-
       <div className="map-toolbar">
         <label className="map-search">
           <span className="sr-only">{t.mapSearch}</span>

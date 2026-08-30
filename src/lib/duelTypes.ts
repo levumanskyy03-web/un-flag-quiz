@@ -7,6 +7,10 @@ export interface DuelQuestionWire {
   optionIsos: string[]
   mode?: QuizMode
   facts?: FactClue[]
+  year?: number
+  yearOptions?: number[]
+  waterId?: string
+  waterOptions?: string[]
 }
 
 export interface DuelView {

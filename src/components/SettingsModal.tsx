@@ -33,7 +33,7 @@ import { PasswordModal } from './PasswordModal'
 
 const REPORT_EMAIL = 'levumanskyy03@gmail.com'
 
-type Tab = 'account' | 'achievements' | 'about' | 'report'
+type Tab = 'account' | 'achievements' | 'xp' | 'about' | 'report'
 type AuthTab = 'login' | 'register'
 
 interface SettingsModalProps {
@@ -326,7 +326,7 @@ export function SettingsModal({
         </header>
 
         <div className="choice-grid settings-tabs">
-          {(['account', 'achievements', 'about', 'report'] as const).map((item) => (
+          {(['account', 'achievements', 'xp', 'about', 'report'] as const).map((item) => (
             <button
               key={item}
               type="button"
@@ -338,9 +338,11 @@ export function SettingsModal({
                 ? t.settingsAccount
                 : item === 'achievements'
                   ? t.settingsAchievements
-                  : item === 'about'
-                    ? t.settingsAbout
-                    : t.settingsReport}
+                  : item === 'xp'
+                    ? t.settingsXp
+                    : item === 'about'
+                      ? t.settingsAbout
+                      : t.settingsReport}
             </button>
           ))}
         </div>
@@ -572,6 +574,20 @@ export function SettingsModal({
         {tab === 'achievements' ? (
           <div className="settings-pane">
             <AchievementGallery lang={lang} unlockedIds={unlockedIds} />
+          </div>
+        ) : null}
+
+        {tab === 'xp' ? (
+          <div className="settings-pane settings-copy">
+            <p>{t.xpHowLead}</p>
+            <h3 className="settings-sub">{t.xpHowFreeTitle}</h3>
+            <p>{t.xpHowFree}</p>
+            <h3 className="settings-sub">{t.xpHowFootballTitle}</h3>
+            <p>{t.xpHowFootball}</p>
+            <h3 className="settings-sub">{t.xpHowLevelsTitle}</h3>
+            <p>{t.xpHowLevels}</p>
+            <p>{t.xpHowRecord}</p>
+            <p>{t.xpHowRank}</p>
           </div>
         ) : null}
 

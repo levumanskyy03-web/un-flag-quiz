@@ -1,16 +1,17 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { LEVEL_COUNT } from '../data/levels'
 import {
   LEADERBOARD_LIMIT,
+  RATING_CLEARS_MAX,
   RATING_LEVEL_MAX,
-  RATING_LEVELS_MAX,
   RATING_XP_MAX,
   isBetterCampaign,
   isBetterXp,
+  ratingPeriodStamp,
   type RatingBoard,
+  type RatingWorld,
 } from './leaderboard'
-import { LEVEL_MODES, type QuizMode } from './quiz'
+import { FOOTBALL_MODES, LEADERS_MODES, LEVEL_MODES, type QuizMode } from './quiz'
 
 export interface StoredEntry {
   id: string
@@ -30,8 +31,18 @@ const REDIS_KEY = 'passport-country-leaderboard'
 let writeChain: Promise<void> = Promise.resolve()
 
 export function ratingKey(board: RatingBoard): string {
-  if (board.kind === 'xp') return 'xp'
-  if (board.kind === 'clears') return `clears:${board.hardcore ? '1' : '0'}`
+  if (board.kind === 'xp') {
+    const world: RatingWorld = board.world ?? 'all'
+    const period = board.period ?? 'all'
+    if (world === 'all' && period === 'all') return 'xp'
+    if (period === 'all') return `xp:${world}:all`
+    return `xp:${world}:${period}:${ratingPeriodStamp(period)}`
+  }
+  if (board.kind === 'clears') {
+    const world = board.world
+    if (!world || world === 'geo') return `clears:${board.hardcore ? '1' : '0'}`
+    return `clears:${world}:${board.hardcore ? '1' : '0'}`
+  }
   if (board.kind === 'levelBest') return levelBestKey(board.mode, board.level, board.hardcore)
   return `${board.mode}:${board.hardcore ? '1' : '0'}`
 }
@@ -120,7 +131,7 @@ export async function readLevelBests(
   const store = await loadStore()
   if (store === null) return { records: {}, configured: false }
   const records: Record<number, StoredEntry> = {}
-  for (let level = 1; level <= LEVEL_COUNT; level += 1) {
+  for (let level = 1; level <= RATING_LEVEL_MAX; level += 1) {
     const entry = store[levelBestKey(mode, level, hardcore)]?.[0]
     if (entry) records[level] = entry
   }
@@ -128,29 +139,66 @@ export async function readLevelBests(
 }
 
 function applyUpsert(store: BoardMap, board: RatingBoard, incoming: StoredEntry): void {
+  if (board.kind === 'xp' && (board.period ?? 'all') !== 'all') return
   if (!isValidEntry(board, incoming)) return
   const key = ratingKey(board)
   const current = store[key] ?? []
   const existing = current.find((item) => item.id === incoming.id)
+  const previousXp = existing?.xp ?? 0
   const nextEntry =
     existing && !isBetterEntry(board, incoming, existing)
       ? { ...existing, name: incoming.name }
       : incoming
   store[key] = sortBoard(board, [...current.filter((item) => item.id !== incoming.id), nextEntry]).slice(0, 200)
+  if (board.kind !== 'xp') return
+  const nextXp = nextEntry.xp ?? 0
+  if (!existing || nextXp <= previousXp) return
+  addPeriodXp(store, board.world ?? 'all', nextXp - previousXp, incoming)
+}
+
+function addPeriodXp(store: BoardMap, world: RatingWorld, delta: number, incoming: StoredEntry): void {
+  if (delta <= 0) return
+  for (const period of ['day', 'week', 'month'] as const) {
+    const board: RatingBoard = { kind: 'xp', world, period }
+    const key = ratingKey(board)
+    const current = store[key] ?? []
+    const existing = current.find((item) => item.id === incoming.id)
+    const next: StoredEntry = {
+      id: incoming.id,
+      name: incoming.name,
+      at: incoming.at,
+      levelsCleared: 0,
+      totalMs: 0,
+      xp: (existing?.xp ?? 0) + delta,
+      level: incoming.level,
+    }
+    store[key] = sortBoard({ kind: 'xp' }, [...current.filter((item) => item.id !== incoming.id), next]).slice(
+      0,
+      200,
+    )
+  }
 }
 
 function withRolledClears(store: BoardMap): BoardMap {
   const next = { ...store }
   for (const hardcore of [false, true]) {
-    const key = `clears:${hardcore ? '1' : '0'}`
-    next[key] = mergeClears(store[key] ?? [], rollupModes(store, hardcore))
+    const geoKey = `clears:${hardcore ? '1' : '0'}`
+    next[geoKey] = mergeClears(store[geoKey] ?? [], rollupModes(store, hardcore, LEVEL_MODES))
+    next[`clears:football:${hardcore ? '1' : '0'}`] = mergeClears(
+      store[`clears:football:${hardcore ? '1' : '0'}`] ?? [],
+      rollupModes(store, hardcore, FOOTBALL_MODES),
+    )
+    next[`clears:leaders:${hardcore ? '1' : '0'}`] = mergeClears(
+      store[`clears:leaders:${hardcore ? '1' : '0'}`] ?? [],
+      rollupModes(store, hardcore, LEADERS_MODES),
+    )
   }
-  return next
+  return prunePeriodBoards(next)
 }
 
-function rollupModes(store: BoardMap, hardcore: boolean): StoredEntry[] {
+function rollupModes(store: BoardMap, hardcore: boolean, modes: readonly QuizMode[]): StoredEntry[] {
   const byId = new Map<string, StoredEntry>()
-  for (const mode of LEVEL_MODES) {
+  for (const mode of modes) {
     for (const entry of store[`${mode}:${hardcore ? '1' : '0'}`] ?? []) {
       const current = byId.get(entry.id)
       byId.set(entry.id, {
@@ -164,7 +212,7 @@ function rollupModes(store: BoardMap, hardcore: boolean): StoredEntry[] {
       })
     }
   }
-  return [...byId.values()].filter((item) => item.levelsCleared >= 1 && item.levelsCleared <= RATING_LEVELS_MAX)
+  return [...byId.values()].filter((item) => item.levelsCleared >= 1 && item.levelsCleared <= RATING_CLEARS_MAX)
 }
 
 function mergeClears(current: StoredEntry[], rolled: StoredEntry[]): StoredEntry[] {
@@ -181,6 +229,44 @@ function mergeClears(current: StoredEntry[], rolled: StoredEntry[]): StoredEntry
   return sortBoard({ kind: 'clears', hardcore: false }, [...byId.values()]).slice(0, 200)
 }
 
+function prunePeriodBoards(store: BoardMap): BoardMap {
+  const now = Date.now()
+  const keepDay = ratingPeriodStamp('day', now)
+  const keepWeek = ratingPeriodStamp('week', now)
+  const keepMonth = ratingPeriodStamp('month', now)
+  const next: BoardMap = { ...store }
+  for (const key of Object.keys(next)) {
+    const match = key.match(/^xp:[^:]+:(day|week|month):(.+)$/)
+    if (!match) continue
+    const period = match[1]
+    const stamp = match[2]
+    if (period === 'day' && stamp < olderDayStamp(now, 10) && stamp !== keepDay) {
+      delete next[key]
+    } else if (period === 'month' && stamp < olderMonthStamp(now, 14) && stamp !== keepMonth) {
+      delete next[key]
+    } else if (period === 'week' && weekRank(stamp) < weekRank(keepWeek) - 8) {
+      delete next[key]
+    }
+  }
+  return next
+}
+
+function olderDayStamp(at: number, days: number): string {
+  return ratingPeriodStamp('day', at - days * 86_400_000)
+}
+
+function olderMonthStamp(at: number, months: number): string {
+  const date = new Date(at)
+  date.setUTCMonth(date.getUTCMonth() - months)
+  return ratingPeriodStamp('month', date.getTime())
+}
+
+function weekRank(stamp: string): number {
+  const match = stamp.match(/^(\d{4})-W(\d{2})$/)
+  if (!match) return 0
+  return Number(match[1]) * 100 + Number(match[2])
+}
+
 function isValidEntry(board: RatingBoard, incoming: StoredEntry): boolean {
   if (board.kind === 'xp') {
     const xp = incoming.xp ?? 0
@@ -195,7 +281,7 @@ function isValidEntry(board: RatingBoard, incoming: StoredEntry): boolean {
       (incoming.livesLeft ?? 0) <= 200
     )
   }
-  const max = board.kind === 'clears' ? RATING_LEVELS_MAX : LEVEL_COUNT
+  const max = board.kind === 'clears' ? RATING_CLEARS_MAX : RATING_LEVEL_MAX
   return incoming.levelsCleared >= 1 && incoming.levelsCleared <= max
 }
 

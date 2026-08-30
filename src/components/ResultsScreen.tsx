@@ -10,8 +10,12 @@ import {
   isFactsToName,
   isFootballTeamChoice,
   isFootballYearChoice,
+  isLeadersMode,
   isMapMode,
+  isWaterMapMode,
+  isWaterMode,
   slowestAnswer,
+  waterName,
   type QuizMode,
   type RoundAnswer,
   type RoundEnd,
@@ -122,8 +126,10 @@ export function ResultsScreen({
               const chosen =
                 answer.selectedIso === null
                   ? null
-                  : yearChoice
-                    ? answer.selectedIso
+                  : yearChoice || isWaterMapMode(itemMode)
+                    ? isWaterMapMode(itemMode)
+                      ? waterName(answer.selectedIso, lang)
+                      : answer.selectedIso
                     : answer.question.options.find((option) => option.iso === answer.selectedIso) ??
                       COUNTRIES.find((country) => country.iso === answer.selectedIso) ??
                       null
@@ -138,9 +144,13 @@ export function ResultsScreen({
                         ? t.euroWinnerPrompt(answer.question.year)
                         : itemMode === 'wcTitleYears'
                           ? t.wcTitleYearPrompt(countryName(correct, lang))
+                          : isLeadersMode(itemMode)
+                            ? countryName(correct, lang)
                           : isFactMode(itemMode) || isFactsToName(itemMode)
                             ? countryName(correct, lang)
-                            : null
+                            : isWaterMode(itemMode) && answer.question.waterId
+                              ? waterName(answer.question.waterId, lang)
+                              : null
               return (
                 <li key={`${correct.iso}-${answer.question.year ?? ''}-${answer.selectedIso ?? 'timeout'}`} className="mistake-row">
                   {(itemMode === 'flagToName' ||
@@ -149,7 +159,8 @@ export function ResultsScreen({
                     yearChoice ||
                     isMapMode(itemMode) ||
                     isFactMode(itemMode) ||
-                    isFactsToName(itemMode)) && (
+                    isFactsToName(itemMode) ||
+                    (isWaterMode(itemMode) && !isWaterMapMode(itemMode))) && (
                     <TeamFlag iso={correct.iso} name={countryName(correct, lang)} size="thumb" />
                   )}
                   <div className="mistake-copy">
@@ -164,7 +175,11 @@ export function ResultsScreen({
                     </p>
                     <p>
                       <span className="mistake-label">{t.correctAnswer}</span>
-                      {yearChoice ? String(answer.question.year) : optionLabel(correct, itemMode, lang, answer.question)}
+                      {yearChoice
+                        ? String(answer.question.year)
+                          : isWaterMapMode(itemMode) && answer.question.waterId
+                          ? waterName(answer.question.waterId, lang)
+                          : optionLabel(correct, itemMode, lang, answer.question)}
                     </p>
                   </div>
                 </li>

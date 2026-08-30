@@ -1,8 +1,36 @@
 import { COUNTRIES, REGIONS, type Country, type Difficulty, type Region } from '../data/countries'
-import { LEVEL_ISOS, isFinalLevel, isLevelNumber } from '../data/levels'
+import { COUNTRY_CODES, formatCalling, formatCar, formatTld } from '../data/countryCodes'
+import { footballCampaignLevels, footballLevelYears } from '../data/footballLevels'
+import { LEVEL_COUNT, LEVEL_ISOS, isFinalLevel, isLevelNumber } from '../data/levels'
 import { isEasyForMode, factsDifficultyOf } from '../data/modeDifficulty'
 import { canAskNeighbors } from '../data/neighbors'
-import { euroPool, euroRelatedTeamIds, euroTeamCountries } from '../data/euros'
+import {
+  canAskWater,
+  countryForWater,
+  isEasyWaterBody,
+  isosForWater,
+  isWaterMapMode,
+  isWaterMode,
+  neighboringWaters,
+  pickWaterId,
+  WATER_LEVEL_SIZE,
+  waterDataMode,
+  waterIdsForMode,
+  waterLevelChunks,
+  waterCampaignLevels,
+  watersFor,
+  type WaterMapMode,
+  type WaterMode,
+} from '../data/water'
+import {
+  leaderCountry,
+  neighborsByNumber,
+  termsForKind,
+  uniquePersons,
+  type LeaderKind,
+  type LeaderTerm,
+} from '../data/leaders'
+import { euroPool, euroRelatedTeamIds, euroTeamCountries, EURO_WINNERS } from '../data/euros'
 import {
   footballTeamCountry,
   footballOptionClashes,
@@ -16,11 +44,23 @@ import {
   wcHostRelatedIds,
   wcRelatedTeamIds,
   wcWinYearsFor,
+  WORLD_CUP_HOSTS,
   WORLD_CUP_WINNERS,
 } from '../data/worldCup'
+import {
+  isRankingEasy,
+  isRankingMode,
+  nearbyRankingCountries,
+  rankingCountries,
+  rankingPlaceOf,
+  RANKING_MODES,
+  type RankingMode,
+} from '../data/rankings'
 import { localeTag, type Lang } from '../i18n/lang'
 import { clueSequence, type FactClue } from './countryFacts'
 import { FACTS_CLUE_TIME_MS } from './factsRules'
+
+export { isRankingMode, RANKING_MODES, type RankingMode } from '../data/rankings'
 
 export const QUIZ_MODES = [
   'flagToName',
@@ -33,15 +73,50 @@ export const QUIZ_MODES = [
   'nameToMap',
   'mapToName',
   'factsToName',
+  'mapToSea',
+  'mapToRiver',
+  'seaToName',
+  'riverToName',
 ] as const
 export const FOOTBALL_MODES = ['wcWinners', 'wcFinalists', 'wcHosts', 'wcTitleYears', 'euroWinners'] as const
+export const CODES_MODES = ['tldToName', 'nameToTld', 'callingToName', 'nameToCalling', 'carToName', 'nameToCar'] as const
+export const LEADERS_MODES = [
+  'usYearsToName',
+  'usNumberToName',
+  'usPhotoToName',
+  'popeYearsToName',
+  'popeNumberToName',
+  'popePhotoToName',
+  'rusYearsToName',
+  'rusNumberToName',
+  'rusPhotoToName',
+] as const
 export type FootballMode = (typeof FOOTBALL_MODES)[number]
-export type QuizMode = (typeof QUIZ_MODES)[number] | FootballMode
+export type CodesMode = (typeof CODES_MODES)[number]
+export type LeadersMode = (typeof LEADERS_MODES)[number]
+export const LEADERS_TOPICS = ['us', 'pope', 'rus'] as const
+export const LEADERS_ASKS = ['years', 'number', 'photo'] as const
+export type LeaderAsk = (typeof LEADERS_ASKS)[number]
+export type QuizMode = (typeof QUIZ_MODES)[number] | FootballMode | CodesMode | LeadersMode | RankingMode
 export const LEVEL_MODES: QuizMode[] = QUIZ_MODES.filter(
   (mode) => mode !== 'neighborsToName' && mode !== 'factsToName',
 )
 export const EASY_MIX_MODES: QuizMode[] = ['flagToName', 'nameToFlag', 'nameToCapital']
-export const HARD_MIX_MODES: QuizMode[] = QUIZ_MODES.filter((mode) => mode !== 'factsToName')
+export const HARD_MIX_MODES: QuizMode[] = [
+  'flagToName',
+  'nameToFlag',
+  'nameToCapital',
+  'nameToCurrency',
+  'nameToPopulation',
+  'nameToFounded',
+  'neighborsToName',
+  'nameToMap',
+  'mapToName',
+  'mapToSea',
+  'mapToRiver',
+  'seaToName',
+  'riverToName',
+]
 export const MIX_KINDS = ['easy', 'hard'] as const
 export type MixKind = (typeof MIX_KINDS)[number]
 
@@ -56,12 +131,87 @@ export function modesForMix(mix: MixKind): QuizMode[] {
 export function isQuizMode(value: unknown): value is QuizMode {
   return (
     typeof value === 'string' &&
-    ((QUIZ_MODES as readonly string[]).includes(value) || (FOOTBALL_MODES as readonly string[]).includes(value))
+    ((QUIZ_MODES as readonly string[]).includes(value) ||
+      (FOOTBALL_MODES as readonly string[]).includes(value) ||
+      (CODES_MODES as readonly string[]).includes(value) ||
+      (LEADERS_MODES as readonly string[]).includes(value) ||
+      isRankingMode(value))
   )
 }
 
 export function isFootballMode(value: unknown): value is FootballMode {
   return typeof value === 'string' && (FOOTBALL_MODES as readonly string[]).includes(value)
+}
+
+export function isCodesMode(value: unknown): value is CodesMode {
+  return typeof value === 'string' && (CODES_MODES as readonly string[]).includes(value)
+}
+
+export function isLeadersMode(value: unknown): value is LeadersMode {
+  return typeof value === 'string' && (LEADERS_MODES as readonly string[]).includes(value)
+}
+
+export const QUIZ_WORLDS = ['geo', 'football', 'codes', 'leaders'] as const
+export type QuizWorld = (typeof QUIZ_WORLDS)[number]
+
+export function isQuizWorld(value: unknown): value is QuizWorld {
+  return typeof value === 'string' && (QUIZ_WORLDS as readonly string[]).includes(value)
+}
+
+export function worldOfMode(mode: QuizMode): QuizWorld {
+  if (isFootballMode(mode)) return 'football'
+  if (isCodesMode(mode)) return 'codes'
+  if (isLeadersMode(mode)) return 'leaders'
+  return 'geo'
+}
+
+export function leaderKindOf(mode: QuizMode): LeaderKind | null {
+  if (mode.startsWith('rus')) return 'rus'
+  if (mode.startsWith('pope')) return 'pope'
+  if (mode.startsWith('us')) return 'us'
+  return null
+}
+
+export function leadersAskOf(mode: QuizMode): LeaderAsk {
+  if (isLeaderPhotoMode(mode)) return 'photo'
+  if (isLeaderNumberPrompt(mode)) return 'number'
+  return 'years'
+}
+
+export function leadersModeOf(kind: LeaderKind, ask: LeaderAsk): LeadersMode {
+  if (kind === 'us') {
+    if (ask === 'number') return 'usNumberToName'
+    if (ask === 'photo') return 'usPhotoToName'
+    return 'usYearsToName'
+  }
+  if (kind === 'pope') {
+    if (ask === 'number') return 'popeNumberToName'
+    if (ask === 'photo') return 'popePhotoToName'
+    return 'popeYearsToName'
+  }
+  if (ask === 'number') return 'rusNumberToName'
+  if (ask === 'photo') return 'rusPhotoToName'
+  return 'rusYearsToName'
+}
+
+export function isLeaderPhotoMode(mode: QuizMode): boolean {
+  return mode === 'usPhotoToName' || mode === 'popePhotoToName' || mode === 'rusPhotoToName'
+}
+
+export function isLeaderYearsPrompt(mode: QuizMode): boolean {
+  return mode === 'usYearsToName' || mode === 'popeYearsToName' || mode === 'rusYearsToName'
+}
+
+export function isLeaderNumberPrompt(mode: QuizMode): boolean {
+  return mode === 'usNumberToName' || mode === 'popeNumberToName' || mode === 'rusNumberToName'
+}
+
+export function isCodePromptMode(mode: QuizMode): boolean {
+  return mode === 'tldToName' || mode === 'callingToName' || mode === 'carToName'
+}
+
+export function isCodeOptionMode(mode: QuizMode): boolean {
+  return mode === 'nameToTld' || mode === 'nameToCalling' || mode === 'nameToCar'
 }
 
 export function footballHasDifficulty(mode: QuizMode): boolean {
@@ -96,7 +246,13 @@ export function uniqueModes(modes: readonly unknown[]): QuizMode[] {
 
 export function orderedModes(modes: readonly unknown[]): QuizMode[] {
   const set = new Set(uniqueModes(modes))
-  return QUIZ_MODES.filter((mode) => set.has(mode))
+  const geo = [...QUIZ_MODES, ...RANKING_MODES].filter((mode) => set.has(mode))
+  if (geo.length > 0) return geo
+  const football = FOOTBALL_MODES.filter((mode) => set.has(mode))
+  if (football.length > 0) return football
+  const codes = CODES_MODES.filter((mode) => set.has(mode))
+  if (codes.length > 0) return codes
+  return LEADERS_MODES.filter((mode) => set.has(mode))
 }
 
 export function sameModes(a: readonly QuizMode[], b: readonly QuizMode[]): boolean {
@@ -122,16 +278,55 @@ export function isFactsToName(mode: QuizMode): boolean {
   return mode === 'factsToName'
 }
 
+export { isWaterMapMode, isWaterMode, waterCampaignLevels, waterLevelNumbers, waterName } from '../data/water'
+
 export function hasLevels(mode: QuizMode): boolean {
-  return !isFootballMode(mode) && mode !== 'neighborsToName' && mode !== 'factsToName'
+  return (
+    isFootballMode(mode) ||
+    isLeadersMode(mode) ||
+    (!isCodesMode(mode) && !isRankingMode(mode) && mode !== 'neighborsToName' && mode !== 'factsToName')
+  )
 }
-export type PlayPath = 'pool' | 'levels' | 'learn'
+
+export function hasGeoFinale(mode: QuizMode): boolean {
+  return (
+    !isFootballMode(mode) &&
+    !isWaterMode(mode) &&
+    !isLeadersMode(mode) &&
+    !isCodesMode(mode) &&
+    !isRankingMode(mode)
+  )
+}
+
+export function campaignLevelCount(mode: QuizMode): number {
+  if (isFootballMode(mode)) return footballCampaignLevels(mode)
+  if (isWaterMode(mode)) return waterCampaignLevels(mode)
+  if (isLeadersMode(mode)) return leaderCampaignLevels(mode)
+  return LEVEL_COUNT
+}
+
+export function campaignLevelNumbers(mode: QuizMode): number[] {
+  return Array.from({ length: campaignLevelCount(mode) }, (_, index) => index + 1)
+}
+
+export function campaignModesForWorld(world: QuizWorld): QuizMode[] {
+  if (world === 'football') return [...FOOTBALL_MODES]
+  if (world === 'leaders') return [...LEADERS_MODES]
+  if (world === 'codes') return []
+  return [...LEVEL_MODES]
+}
+
+export function campaignMaxForWorld(world: QuizWorld): number {
+  return campaignModesForWorld(world).reduce((sum, mode) => sum + campaignLevelCount(mode), 0)
+}
+export type PlayPath = 'pool' | 'levels' | 'learn' | 'mistakes'
 export type LearnFrom = 'region' | 'level'
 export type RegionFilter = string
 export type RoundEnd = 'complete' | 'timeout' | 'lives'
 export type QuizDifficulty = 'easy' | 'medium' | 'hard' | 'hardcore'
 export const PLAY_DIFFICULTIES: QuizDifficulty[] = ['easy', 'hard', 'hardcore']
 export const FACTS_DIFFICULTIES: QuizDifficulty[] = ['easy', 'medium', 'hard']
+export const LEADERS_DIFFICULTIES: QuizDifficulty[] = ['easy', 'medium', 'hard', 'hardcore']
 export const QUESTIONS_PER_ROUND = 10
 export const ROUND_SIZES = [5, 10, 20] as const
 export type RoundSize = (typeof ROUND_SIZES)[number]
@@ -207,6 +402,7 @@ export const MAP_IDENTIFY_TIME_MS = 12_000
 export const NEIGHBORS_QUESTION_TIME_MS = 30_000
 export const MAP_FIND_REGION_TIME_MS = 15_000
 export const MAP_FIND_WORLD_TIME_MS = 20_000
+export const WATER_QUESTION_TIME_MS = 12_000
 export const ANSWER_PAUSE_MS = 900
 export const MAP_ANSWER_PAUSE_MS = 1_400
 export const MAX_LIVES = 3
@@ -222,6 +418,8 @@ export function questionLimitMs(
   }
   if (mode === 'mapToName') return MAP_IDENTIFY_TIME_MS
   if (mode === 'factsToName') return FACTS_CLUE_TIME_MS
+  if (isWaterMode(mode)) return WATER_QUESTION_TIME_MS
+  if (isRankingMode(mode)) return FACT_QUESTION_TIME_MS
   if (isFactMode(mode)) return FACT_QUESTION_TIME_MS
   return QUESTION_TIME_MS
 }
@@ -240,10 +438,11 @@ export function livesFor(
   levelHardcore: boolean,
   level = 1,
   levelLives = MAX_LIVES,
+  mode: QuizMode = 'flagToName',
 ): number {
-  if (path === 'learn') return Number.MAX_SAFE_INTEGER
+  if (path === 'learn' || path === 'mistakes') return Number.MAX_SAFE_INTEGER
   if (path !== 'levels') return maxLives(difficulty)
-  if (isFinalLevel(level)) return levelHardcore ? 1 : levelLives
+  if (isFinalLevel(level) && hasGeoFinale(mode)) return levelHardcore ? 1 : levelLives
   return levelHardcore ? 1 : MAX_LIVES
 }
 
@@ -258,6 +457,7 @@ export function matchesPlayDifficulty(country: Country, mode: QuizMode, difficul
     if (difficulty === 'medium') return tier === 'medium'
     return tier === 'hard'
   }
+  if (isRankingMode(mode)) return isRankingEasy(country.iso, mode) === (difficulty === 'easy')
   return isEasyForMode(country, mode) === (difficulty === 'easy')
 }
 
@@ -268,6 +468,8 @@ export interface Question {
   mode?: QuizMode
   facts?: FactClue[]
   year?: number
+  waterId?: string
+  waterOptions?: string[]
 }
 
 export interface RoundAnswer {
@@ -279,6 +481,9 @@ export interface RoundAnswer {
 export function isCorrect(answer: RoundAnswer): boolean {
   if (answer.question.mode === 'wcTitleYears') {
     return answer.selectedIso === String(answer.question.year)
+  }
+  if (isWaterMapMode(answer.question.mode) && answer.question.waterId) {
+    return answer.selectedIso === answer.question.waterId
   }
   return answer.selectedIso === answer.question.country.iso
 }
@@ -337,9 +542,30 @@ export function flagUrl(iso: string): string {
 
 export function getPool(region: RegionFilter, difficulty: QuizDifficulty, mode: QuizMode): Country[] {
   const regions = parseRegions(region)
+  if (isWaterMapMode(mode)) {
+    const ids = waterIdsForMode(mode).filter((id) => {
+      const inRegion = isosForWater(id, waterDataMode(mode)).some((iso) => {
+        const country = COUNTRIES.find((item) => item.iso === iso)
+        return Boolean(country && regions.includes(country.region))
+      })
+      if (!inRegion) return false
+      return isEasyWaterBody(id) === (difficulty === 'easy')
+    })
+    const fallback = ids.length > 0 ? ids : waterIdsForMode(mode).filter((id) =>
+      isosForWater(id, waterDataMode(mode)).some((iso) => {
+        const country = COUNTRIES.find((item) => item.iso === iso)
+        return Boolean(country && regions.includes(country.region))
+      }),
+    )
+    return fallback
+      .map((id) => countryForWater(id, mode))
+      .filter((country): country is Country => Boolean(country))
+  }
   return COUNTRIES.filter((country) => {
     if (!regions.includes(country.region)) return false
     if (mode === 'neighborsToName' && !canAskNeighbors(country.iso)) return false
+    if (isWaterMode(mode) && !canAskWater(country.iso, mode)) return false
+    if (isRankingMode(mode) && rankingPlaceOf(mode, country.iso) === null) return false
     return matchesPlayDifficulty(country, mode, difficulty)
   })
 }
@@ -363,6 +589,11 @@ function rankedForMode(mode: QuizMode): Country[] {
 function levelChunksFor(mode: QuizMode): Country[][] {
   const cached = LEVEL_CHUNKS.get(mode)
   if (cached) return cached
+  if (isWaterMode(mode)) {
+    const chunks = waterLevelChunks(mode)
+    LEVEL_CHUNKS.set(mode, chunks)
+    return chunks
+  }
   if (mode === 'flagToName' || mode === 'nameToFlag') {
     const byIso = new Map(COUNTRIES.map((country) => [country.iso, country]))
     const chunks = LEVEL_ISOS.map((group) =>
@@ -386,9 +617,24 @@ function levelChunksFor(mode: QuizMode): Country[][] {
 }
 
 export function getLevelPool(level: number, mode: QuizMode = 'flagToName'): Country[] {
+  if (isFootballMode(mode)) {
+    const years = footballLevelYears(mode, level)
+    return years.flatMap((year) => footballCountryForYear(mode, year)).filter(Boolean)
+  }
+  if (isWaterMode(mode)) {
+    return waterLevelChunks(mode)[level - 1] ?? []
+  }
+  if (isLeadersMode(mode)) {
+    return leaderLevelChunks(mode)[level - 1] ?? []
+  }
   if (!isLevelNumber(level)) return []
   if (isFinalLevel(level)) return [...COUNTRIES]
   return levelChunksFor(mode)[level - 1] ?? []
+}
+
+export function levelQuestionCount(level: number, mode: QuizMode): number {
+  if (isFootballMode(mode)) return footballLevelYears(mode, level).length
+  return getLevelPool(level, mode).length
 }
 
 export function sortCountriesByName(countries: Country[], lang: Lang): Country[] {
@@ -402,7 +648,59 @@ export function getLearnPool(
   level: number,
   mode: QuizMode = 'flagToName',
 ): Country[] {
-  return learnFrom === 'level' ? getLevelPool(level, mode) : getRegionPool(region)
+  if (isFootballMode(mode)) return footballLearnCountries(mode)
+  if (isCodesMode(mode)) return getRegionPool(region)
+  if (isLeadersMode(mode)) {
+    return learnFrom === 'level' ? getLevelPool(level, mode) : leaderLearnCountries(mode)
+  }
+  const pool = learnFrom === 'level' ? getLevelPool(level, mode) : getRegionPool(region)
+  if (isWaterMapMode(mode)) {
+    const used = new Set<string>()
+    const countries: Country[] = []
+    for (const country of pool.filter((item) => canAskWater(item.iso, mode))) {
+      const id = watersFor(country.iso, mode)[0]
+      if (!id || used.has(id)) continue
+      used.add(id)
+      countries.push(countryForWater(id, mode) ?? country)
+    }
+    return countries
+  }
+  return isWaterMode(mode)
+    ? pool.filter((country) => canAskWater(country.iso, mode))
+    : isRankingMode(mode)
+      ? pool.filter((country) => rankingPlaceOf(mode, country.iso) !== null)
+      : pool
+}
+
+export function footballLearnCountries(mode: FootballMode): Country[] {
+  const ids = new Set<string>()
+  if (mode === 'wcWinners' || mode === 'wcTitleYears') {
+    for (const item of WORLD_CUP_WINNERS) ids.add(item.winnerId)
+  } else if (mode === 'wcFinalists') {
+    for (const item of WORLD_CUP_WINNERS) ids.add(item.runnerUpId)
+  } else if (mode === 'wcHosts') {
+    for (const item of WORLD_CUP_HOSTS) {
+      ids.add(wcHostAnswerId(item.hostIds))
+    }
+  } else {
+    for (const item of EURO_WINNERS) ids.add(item.winnerId)
+  }
+  return [...ids].map((id) => footballTeamCountry(id))
+}
+
+function footballCountryForYear(mode: FootballMode, year: number): Country[] {
+  if (mode === 'wcHosts') {
+    const item = WORLD_CUP_HOSTS.find((host) => host.year === year)
+    return item ? [footballTeamCountry(wcHostAnswerId(item.hostIds))] : []
+  }
+  if (mode === 'euroWinners') {
+    const item = EURO_WINNERS.find((cup) => cup.year === year)
+    return item ? [footballTeamCountry(item.winnerId)] : []
+  }
+  const item = WORLD_CUP_WINNERS.find((cup) => cup.year === year)
+  if (!item) return []
+  if (mode === 'wcFinalists') return [footballTeamCountry(item.runnerUpId)]
+  return [footballTeamCountry(item.winnerId)]
 }
 
 export function poolForMode(
@@ -410,10 +708,16 @@ export function poolForMode(
   mode: QuizMode,
   difficulty?: QuizDifficulty,
 ): Country[] {
-  let next =
-    mode === 'neighborsToName' ? pool.filter((country) => canAskNeighbors(country.iso)) : pool
-  if (mode === 'neighborsToName' && next.length < 4) {
-    next = COUNTRIES.filter((country) => canAskNeighbors(country.iso))
+  let next = pool
+  if (mode === 'neighborsToName') {
+    next = pool.filter((country) => canAskNeighbors(country.iso))
+    if (next.length < 4) next = COUNTRIES.filter((country) => canAskNeighbors(country.iso))
+  } else if (isWaterMode(mode)) {
+    next = pool.filter((country) => canAskWater(country.iso, mode))
+    if (next.length < 4) next = COUNTRIES.filter((country) => canAskWater(country.iso, mode))
+  } else if (isRankingMode(mode)) {
+    next = pool.filter((country) => rankingPlaceOf(mode, country.iso) !== null)
+    if (next.length < 4) next = rankingCountries(mode)
   }
   if (!difficulty) return next
   const filtered = next.filter((country) => matchesPlayDifficulty(country, mode, difficulty))
@@ -426,6 +730,9 @@ export function createRound(
   uniqueKey: (country: Country) => string = (country) => country.iso,
   mode?: QuizMode,
 ): Question[] {
+  if (mode && isWaterMapMode(mode)) return createWaterMapRound(pool, count, mode)
+  if (mode && isWaterMode(mode)) return createWaterRound(pool, count, mode, pool.length > WATER_LEVEL_SIZE)
+  if (mode && isRankingMode(mode)) return createRankingRound(pool, count, mode)
   const targets = shuffle(pool).slice(0, Math.min(count, pool.length))
 
   return targets.map((country) => withFacts({
@@ -435,20 +742,224 @@ export function createRound(
   }))
 }
 
+export function createWaterRound(
+  pool: Country[],
+  count: number,
+  mode: WaterMode,
+  uniqueWaters = true,
+): Question[] {
+  const eligible = pool.filter((country) => canAskWater(country.iso, mode))
+  const used = new Set<string>()
+  const questions: Question[] = []
+  for (const country of shuffle(eligible)) {
+    const waterId = uniqueWaters ? pickWaterId(country.iso, mode, used) : watersFor(country.iso, mode)[0]
+    if (!waterId) continue
+    if (uniqueWaters && used.has(waterId)) continue
+    used.add(waterId)
+    const others = eligible.filter(
+      (item) => item.iso !== country.iso && !watersFor(item.iso, mode).includes(waterId),
+    )
+    questions.push({
+      country,
+      mode,
+      waterId,
+      options: shuffle([
+        country,
+        ...pickDistractors(country, others.length >= 3 ? others : eligible, 3, (item) => item.iso),
+      ]),
+    })
+    if (questions.length >= count) break
+  }
+  return questions
+}
+
+function pickWaterMapOptions(correctId: string, mode: WaterMode): string[] {
+  const adjacent = shuffle(neighboringWaters(correctId, mode))
+  const neighborTake = adjacent.length >= 2 ? (Math.random() < 0.55 ? 2 : 1) : adjacent.length
+  const neighbors = adjacent.slice(0, neighborTake)
+  const taken = new Set([correctId, ...neighbors])
+  const filler = shuffle(waterIdsForMode(mode).filter((id) => !taken.has(id))).slice(
+    0,
+    Math.max(0, 3 - neighbors.length),
+  )
+  return shuffle([correctId, ...neighbors, ...filler])
+}
+
+export function createWaterMapRound(pool: Country[], count: number, mode: WaterMapMode): Question[] {
+  const eligible = pool.filter((country) => canAskWater(country.iso, mode))
+  const used = new Set<string>()
+  const questions: Question[] = []
+  for (const country of shuffle(eligible)) {
+    const waterId = pickWaterId(country.iso, mode, used)
+    if (!waterId || used.has(waterId)) continue
+    used.add(waterId)
+    const waterOptions = pickWaterMapOptions(waterId, mode)
+    questions.push({
+      country,
+      mode,
+      waterId,
+      waterOptions,
+      options: [country],
+    })
+    if (questions.length >= count) break
+  }
+  return questions
+}
+
 export function createFootballRound(
   mode: QuizMode,
   count = QUESTIONS_PER_ROUND,
   difficulty: QuizDifficulty = 'easy',
+  years?: number[],
 ): Question[] {
-  if (mode === 'wcFinalists') return createWcFinalistsRound(count)
-  if (mode === 'wcHosts') return createWcHostsRound(count, difficulty)
-  if (mode === 'wcTitleYears') return createWcTitleYearsRound(count)
-  if (mode === 'euroWinners') return createEuroWinnersRound(count, difficulty)
-  return createWcWinnersRound(count)
+  if (mode === 'wcFinalists') return createWcFinalistsRound(count, years)
+  if (mode === 'wcHosts') return createWcHostsRound(count, difficulty, years)
+  if (mode === 'wcTitleYears') return createWcTitleYearsRound(count, years)
+  if (mode === 'euroWinners') return createEuroWinnersRound(count, difficulty, years)
+  return createWcWinnersRound(count, years)
 }
 
-export function createWcWinnersRound(count = QUESTIONS_PER_ROUND): Question[] {
-  const picked = shuffle(WORLD_CUP_WINNERS).slice(0, Math.min(count, WORLD_CUP_WINNERS.length))
+export function createCodesRound(mode: CodesMode, count = QUESTIONS_PER_ROUND): Question[] {
+  const pool = COUNTRIES.filter((country) => COUNTRY_CODES[country.iso])
+  const targets = shuffle(pool).slice(0, Math.min(count, pool.length))
+  return targets.map((country) => ({
+    country,
+    mode,
+    options: shuffle([country, ...pickDistractors(country, pool, 3, (item) => codeAnswerKey(item, mode))]),
+  }))
+}
+
+export function leaderPoolTerms(mode: LeadersMode, difficulty?: QuizDifficulty): LeaderTerm[] {
+  const kind = leaderKindOf(mode)
+  if (!kind) return []
+  const terms = difficulty ? filterLeaderTerms(termsForKind(kind), difficulty) : termsForKind(kind)
+  return isLeaderPhotoMode(mode) ? uniquePersons(terms) : terms
+}
+
+export function leaderPoolSize(mode: LeadersMode, difficulty?: QuizDifficulty): number {
+  return leaderPoolTerms(mode, difficulty).length
+}
+
+export const LEADERS_LEVEL_SIZE = 10
+
+export function leaderLearnCountries(mode: LeadersMode): Country[] {
+  return leaderPoolTerms(mode).map(leaderCountry)
+}
+
+function rankLeaderTerms(terms: LeaderTerm[]): LeaderTerm[] {
+  const order = { easy: 0, medium: 1, hard: 2 }
+  return [...terms].sort((a, b) => {
+    const byTier = order[a.tier] - order[b.tier]
+    if (byTier !== 0) return byTier
+    return a.n - b.n
+  })
+}
+
+export function leaderLevelChunks(mode: LeadersMode): Country[][] {
+  const ranked = rankLeaderTerms(leaderPoolTerms(mode))
+  const chunks: Country[][] = []
+  for (let index = 0; index < ranked.length; index += LEADERS_LEVEL_SIZE) {
+    chunks.push(ranked.slice(index, index + LEADERS_LEVEL_SIZE).map(leaderCountry))
+  }
+  return chunks
+}
+
+export function leaderCampaignLevels(mode: LeadersMode): number {
+  return leaderLevelChunks(mode).length
+}
+
+export function leaderLevelNumbers(mode: LeadersMode): number[] {
+  return leaderLevelChunks(mode).map((_, index) => index + 1)
+}
+
+export function createLeadersRound(
+  mode: LeadersMode,
+  count = QUESTIONS_PER_ROUND,
+  difficulty?: QuizDifficulty,
+  isos?: string[],
+): Question[] {
+  const full = leaderPoolTerms(mode)
+  const pool = isos?.length ? full.filter((term) => isos.includes(term.id)) : leaderPoolTerms(mode, difficulty)
+  const distractors = isos?.length ? full : pool
+  const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
+  return picked.map((term) => ({
+    country: leaderCountry(term),
+    mode,
+    options: pickLeaderNameOptions(term, distractors),
+    year: term.from,
+  }))
+}
+
+function filterLeaderTerms(terms: LeaderTerm[], difficulty: QuizDifficulty): LeaderTerm[] {
+  const wanted = difficulty === 'easy' ? 'easy' : difficulty === 'medium' ? 'medium' : 'hard'
+  const match = terms.filter((term) => term.tier === wanted)
+  if (uniquePersons(match).length >= 4) return match
+  const order = ['easy', 'medium', 'hard'] as const
+  const start = order.indexOf(wanted)
+  for (let span = 1; span < order.length; span += 1) {
+    const from = Math.max(0, start - span)
+    const to = Math.min(order.length - 1, start + span)
+    const allowed = new Set(order.slice(from, to + 1))
+    const expanded = terms.filter((term) => allowed.has(term.tier))
+    if (uniquePersons(expanded).length >= 4) return expanded
+  }
+  return terms
+}
+
+function pickLeaderNameOptions(term: LeaderTerm, pool: LeaderTerm[]): Country[] {
+  const nearby = neighborsByNumber(pool, term, 2)
+  const seen = new Set<string>([term.personId, ...nearby.map((item) => item.personId)])
+  const fillers = shuffle(pool.filter((item) => !seen.has(item.personId)))
+  const picks: LeaderTerm[] = [term, ...nearby]
+  for (const item of fillers) {
+    if (picks.length === 4) break
+    picks.push(item)
+    seen.add(item.personId)
+  }
+  return shuffle(picks.slice(0, 4).map(leaderCountry))
+}
+
+export function codeAnswerKey(country: Country, mode: QuizMode): string {
+  const codes = COUNTRY_CODES[country.iso]
+  if (!codes) return country.iso
+  if (mode === 'tldToName' || mode === 'nameToTld') return `tld:${codes.tld}`
+  if (mode === 'callingToName' || mode === 'nameToCalling') return `call:${codes.calling}`
+  if (mode === 'carToName' || mode === 'nameToCar') return `car:${codes.car}`
+  return country.iso
+}
+
+export function codePromptLabel(country: Country, mode: QuizMode): string {
+  if (mode === 'tldToName' || mode === 'nameToTld') return formatTld(country.iso)
+  if (mode === 'callingToName' || mode === 'nameToCalling') return formatCalling(country.iso)
+  if (mode === 'carToName' || mode === 'nameToCar') return formatCar(country.iso)
+  return country.iso
+}
+
+export function createFootballMixedRound(
+  modes: readonly FootballMode[],
+  count: number,
+  difficulty: QuizDifficulty,
+): Question[] {
+  if (modes.length === 0 || count <= 0) return []
+  const questions: Question[] = []
+  const used = new Set<string>()
+  for (let i = 0; i < count * 6 && questions.length < count; i += 1) {
+    const mode = modes[i % modes.length]
+    const [question] = createFootballRound(mode, 1, difficulty)
+    if (!question) continue
+    const key = `${question.mode}:${question.year}:${question.country.iso}`
+    if (used.has(key)) continue
+    used.add(key)
+    questions.push(question)
+  }
+  return questions
+}
+
+export function createWcWinnersRound(count = QUESTIONS_PER_ROUND, years?: number[]): Question[] {
+  const source = years?.length
+    ? WORLD_CUP_WINNERS.filter((item) => years.includes(item.year))
+    : WORLD_CUP_WINNERS
+  const picked = shuffle(source).slice(0, Math.min(count, source.length))
   return picked.map((item) => {
     const winner = footballTeamCountry(item.winnerId)
     return {
@@ -460,8 +971,11 @@ export function createWcWinnersRound(count = QUESTIONS_PER_ROUND): Question[] {
   })
 }
 
-function createWcFinalistsRound(count: number): Question[] {
-  const picked = shuffle(WORLD_CUP_WINNERS).slice(0, Math.min(count, WORLD_CUP_WINNERS.length))
+function createWcFinalistsRound(count: number, years?: number[]): Question[] {
+  const source = years?.length
+    ? WORLD_CUP_WINNERS.filter((item) => years.includes(item.year))
+    : WORLD_CUP_WINNERS
+  const picked = shuffle(source).slice(0, Math.min(count, source.length))
   return picked.map((item) => {
     const finalist = footballTeamCountry(item.runnerUpId)
     return {
@@ -473,8 +987,10 @@ function createWcFinalistsRound(count: number): Question[] {
   })
 }
 
-function createWcHostsRound(count: number, difficulty: QuizDifficulty): Question[] {
-  const pool = wcHostPool(difficulty)
+function createWcHostsRound(count: number, difficulty: QuizDifficulty, years?: number[]): Question[] {
+  const pool = years?.length
+    ? WORLD_CUP_HOSTS.filter((item) => years.includes(item.year))
+    : wcHostPool(difficulty)
   const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
   return picked.map((item) => {
     const host = footballTeamCountry(wcHostAnswerId(item.hostIds))
@@ -487,8 +1003,11 @@ function createWcHostsRound(count: number, difficulty: QuizDifficulty): Question
   })
 }
 
-function createWcTitleYearsRound(count: number): Question[] {
-  const picked = shuffle(WORLD_CUP_WINNERS).slice(0, Math.min(count, WORLD_CUP_WINNERS.length))
+function createWcTitleYearsRound(count: number, years?: number[]): Question[] {
+  const source = years?.length
+    ? WORLD_CUP_WINNERS.filter((item) => years.includes(item.year))
+    : WORLD_CUP_WINNERS
+  const picked = shuffle(source).slice(0, Math.min(count, source.length))
   const allYears = WORLD_CUP_WINNERS.map((item) => item.year)
   return picked.map((item) => {
     const winner = footballTeamCountry(item.winnerId)
@@ -523,8 +1042,8 @@ function createWcTitleYearsRound(count: number): Question[] {
   })
 }
 
-function createEuroWinnersRound(count: number, difficulty: QuizDifficulty): Question[] {
-  const pool = euroPool(difficulty)
+function createEuroWinnersRound(count: number, difficulty: QuizDifficulty, years?: number[]): Question[] {
+  const pool = years?.length ? EURO_WINNERS.filter((item) => years.includes(item.year)) : euroPool(difficulty)
   const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
   const fillers = euroTeamCountries()
   return picked.map((item) => {
@@ -581,17 +1100,19 @@ export function createMixedRound(
   const cycle = orderedModes(modes)
   if (cycle.length === 0 || count <= 0) return []
   const usedIso = new Set<string>()
+  const usedWater = new Set<string>()
   const questions: Question[] = []
 
   for (let i = 0; i < count; i += 1) {
     let picked: Question | null = null
     for (let offset = 0; offset < cycle.length; offset += 1) {
       const mode = cycle[(i + offset) % cycle.length]
-      picked = questionForMode(mode, pool, usedIso, uniqueKey, difficulty)
+      picked = questionForMode(mode, pool, usedIso, uniqueKey, difficulty, usedWater)
       if (picked) break
     }
     if (!picked) break
     usedIso.add(picked.country.iso)
+    if (picked.waterId) usedWater.add(picked.waterId)
     questions.push(picked)
   }
 
@@ -604,10 +1125,52 @@ function questionForMode(
   usedIso: Set<string>,
   uniqueKey: (country: Country, mode: QuizMode) => string,
   difficulty?: QuizDifficulty,
+  usedWater?: Set<string>,
 ): Question | null {
   const modePool = poolForMode(pool, mode, difficulty).filter((country) => !usedIso.has(country.iso))
   if (modePool.length === 0) return null
+  if (isWaterMapMode(mode)) {
+    const candidates = modePool.filter((country) => {
+      const waterId = watersFor(country.iso, mode)[0]
+      return Boolean(waterId && !usedWater?.has(waterId))
+    })
+    if (candidates.length === 0) return null
+    const country = shuffle(candidates)[0]
+    const waterId = watersFor(country.iso, mode)[0]
+    if (!waterId) return null
+    return {
+      country,
+      mode,
+      waterId,
+      waterOptions: pickWaterMapOptions(waterId, mode),
+      options: [country],
+    }
+  }
   const country = shuffle(modePool)[0]
+  if (isRankingMode(mode)) {
+    return {
+      country,
+      mode,
+      options: shuffle([
+        country,
+        ...pickRankingDistractors(country, modePool, mode),
+      ]),
+    }
+  }
+  if (isWaterMode(mode)) {
+    const waterId = watersFor(country.iso, mode)[0]
+    if (!waterId) return null
+    const others = modePool.filter((item) => item.iso !== country.iso && !watersFor(item.iso, mode).includes(waterId))
+    return {
+      country,
+      mode,
+      waterId,
+      options: shuffle([
+        country,
+        ...pickDistractors(country, others.length >= 3 ? others : modePool, 3, (item) => item.iso),
+      ]),
+    }
+  }
   return withFacts({
     country,
     mode,
@@ -621,6 +1184,25 @@ function questionForMode(
 function withFacts(question: Question): Question {
   if (question.mode !== 'factsToName') return question
   return { ...question, facts: clueSequence(question.country.iso) }
+}
+
+function createRankingRound(pool: Country[], count: number, mode: RankingMode): Question[] {
+  const eligible = poolForMode(pool, mode)
+  const targets = shuffle(eligible).slice(0, Math.min(count, eligible.length))
+  return targets.map((country) => ({
+    country,
+    mode,
+    options: shuffle([country, ...pickRankingDistractors(country, eligible, mode)]),
+  }))
+}
+
+function pickRankingDistractors(correct: Country, pool: Country[], mode: RankingMode): Country[] {
+  const nearby = nearbyRankingCountries(mode, correct.iso, pool, 3)
+  if (nearby.length >= 3) return nearby
+  const extra = pickDistractors(correct, pool, 3 - nearby.length, (item) => item.iso).filter(
+    (item) => !nearby.some((near) => near.iso === item.iso),
+  )
+  return [...nearby, ...extra].slice(0, 3)
 }
 
 function pickDistractors(

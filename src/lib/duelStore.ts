@@ -16,9 +16,12 @@ import {
 } from './factsRules'
 import {
   answerPauseMs,
+  createFootballMixedRound,
   createMixedRound,
   getRegionPool,
   isFactsToName,
+  isFootballMode,
+  isFootballYearChoice,
   isQuizDifficulty,
   isQuizMode,
   isRegionFilter,
@@ -181,12 +184,12 @@ export async function answerDuel(
       const existing = player.answers[ticked.index]
       const question = ticked.questions[ticked.index]
       const mode = isQuizMode(question?.mode) ? question.mode : ticked.mode
-      const pick = acceptDuelIso(iso, question?.optionIsos ?? [], mode)
+      const pick = acceptDuelIso(iso, question?.optionIsos ?? [], mode, question)
 
       if (isFactsRoom(ticked)) {
         if (ticked.phase !== 'question' || existing) return ticked
         if (!pick) return ticked
-        if (pick === question.countryIso) {
+        if (pick === duelCorrectIso(question)) {
           player.answers[ticked.index] = {
             iso: pick,
             timeMs: Math.max(0, now - ticked.questionStartedAt),
@@ -446,9 +449,18 @@ function bothAnswered(room: DuelRoom): boolean {
 
 function scoreOf(room: DuelRoom, player: DuelPlayer): number {
   return player.answers.reduce((sum, answer, index) => {
-    const correct = room.questions[index]?.countryIso
-    return sum + (answer && answer.iso === correct ? 1 : 0)
+    const question = room.questions[index]
+    if (!answer || !question) return sum
+    return sum + (answer.iso === duelCorrectIso(question) ? 1 : 0)
   }, 0)
+}
+
+function duelCorrectIso(question: DuelQuestionWire): string {
+  if (isFootballYearChoice(question.mode ?? 'flagToName') && question.year !== undefined) {
+    return String(question.year)
+  }
+  if (question.waterOptions && question.waterId) return question.waterId
+  return question.countryIso
 }
 
 function tickRoom(room: DuelRoom, now: number): DuelRoom {
@@ -530,6 +542,16 @@ function buildQuestions(
       facts: clueSequence(country.iso, max, mulberry32(seedFrom(`${seed}:${country.iso}:${index}`))),
     }))
   }
+  const footballModes = modes.filter(isFootballMode)
+  if (footballModes.length === modes.length && footballModes.length > 0) {
+    return createFootballMixedRound(footballModes, roundSize, difficulty).map((question) => ({
+      countryIso: question.country.iso,
+      optionIsos: question.options.map((option) => option.iso),
+      mode: question.mode ?? footballModes[0],
+      year: question.year,
+      yearOptions: question.yearOptions,
+    }))
+  }
   const round = createMixedRound(
     modes,
     getRegionPool(region),
@@ -539,8 +561,10 @@ function buildQuestions(
   )
   return round.map((question) => ({
     countryIso: question.country.iso,
-    optionIsos: question.options.map((option) => option.iso),
+    optionIsos: question.waterOptions ?? question.options.map((option) => option.iso),
     mode: question.mode ?? modes[0],
+    waterId: question.waterId,
+    waterOptions: question.waterOptions,
   }))
 }
 
@@ -573,8 +597,17 @@ function questionModeOf(room: DuelRoom, index = room.index): QuizMode {
   return isQuizMode(mode) ? mode : room.mode
 }
 
-function acceptDuelIso(iso: string | null, optionIsos: string[], mode: QuizMode): string | null {
+function acceptDuelIso(
+  iso: string | null,
+  optionIsos: string[],
+  mode: QuizMode,
+  question?: DuelQuestionWire | null,
+): string | null {
   if (!iso) return null
+  if (isFootballYearChoice(mode)) {
+    const years = (question?.yearOptions ?? []).map(String)
+    return years.includes(iso) ? iso : null
+  }
   if (mode === 'nameToMap' || mode === 'factsToName') {
     return COUNTRIES.some((country) => country.iso === iso) ? iso : null
   }

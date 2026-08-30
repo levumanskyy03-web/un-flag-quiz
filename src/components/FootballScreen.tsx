@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { STRINGS, difficultyLabel, localeTag, modeLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import type { LevelClear } from '../lib/levelProgress'
@@ -10,9 +11,10 @@ import {
   footballPoolSize,
   formatClock,
 } from '../lib/quiz'
-import { xpPerFootballCorrect } from '../lib/xp'
 import { AppChrome } from './AppChrome'
+import { DuelCreateModal } from './DuelCreateModal'
 import { GeoIcon } from './GeoIcon'
+import { HubNav, type HubTab } from './HubNav'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
 
@@ -25,7 +27,11 @@ interface FootballScreenProps {
   xpReady?: boolean
   onChange: (settings: QuizSettings) => void
   onStart: () => void
+  onHub: (tab: HubTab) => void
   onWorlds: () => void
+  onCreateDuel: (modes: QuizSettings['mode'][]) => void
+  onJoinDuel: (code: string) => void
+  duelError?: string | null
   onClearHistory: () => void
   onClearBests: () => void
 }
@@ -39,7 +45,11 @@ export function FootballScreen({
   xpReady = false,
   onChange,
   onStart,
+  onHub,
   onWorlds,
+  onCreateDuel,
+  onJoinDuel,
+  duelError,
   onClearHistory,
   onClearBests,
 }: FootballScreenProps) {
@@ -47,6 +57,8 @@ export function FootballScreen({
   const showDifficulty = footballHasDifficulty(settings.mode)
   const poolSize = footballPoolSize(settings.mode, settings.difficulty)
   const currentBest = findBest(bests, settings)
+  const [joinCode, setJoinCode] = useState('')
+  const [duelSetupOpen, setDuelSetupOpen] = useState(false)
 
   function update(patch: Partial<QuizSettings>) {
     const next = { ...settings, ...patch }
@@ -70,10 +82,9 @@ export function FootballScreen({
           <GeoIcon name="ball" size={34} />
           {t.football}
         </h1>
-        <p className="subtitle football-xp-hint">
-          {t.footballXpHint(xpPerFootballCorrect(settings.mode, settings.difficulty))}
-        </p>
       </header>
+
+      <HubNav lang={settings.lang} active="free" tabs={['free', 'levels', 'learn', 'mistakes']} onSelect={onHub} />
 
       <section className="card settings-card">
         <h2>{t.mode}</h2>
@@ -118,7 +129,6 @@ export function FootballScreen({
                 </button>
               ))}
             </div>
-            {settings.difficulty === 'hardcore' ? <p className="setting-hint">{t.hardcoreHint}</p> : null}
           </>
         ) : null}
 
@@ -148,6 +158,49 @@ export function FootballScreen({
       <button type="button" className="btn-primary" onClick={onStart}>
         {t.start}
       </button>
+
+      <section className="card settings-card">
+        <h2>{t.duel}</h2>
+        <button type="button" className="btn-secondary" onClick={() => setDuelSetupOpen(true)}>
+          {t.duelCreate}
+        </button>
+        <form
+          className="duel-join"
+          onSubmit={(event) => {
+            event.preventDefault()
+            onJoinDuel(joinCode)
+          }}
+        >
+          <input
+            value={joinCode}
+            onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
+            placeholder={t.duelCode}
+            autoComplete="off"
+            maxLength={4}
+            spellCheck={false}
+            aria-label={t.duelCode}
+          />
+          <button type="submit" className="choice" disabled={joinCode.trim().length !== 4}>
+            {t.duelJoin}
+          </button>
+        </form>
+        {duelError ? <p className="account-error">{duelError}</p> : null}
+      </section>
+
+      {duelSetupOpen ? (
+        <DuelCreateModal
+          lang={settings.lang}
+          initialMode={settings.mode}
+          region="all"
+          modeCatalog={FOOTBALL_MODES}
+          showMix={false}
+          onCancel={() => setDuelSetupOpen(false)}
+          onConfirm={(modes) => {
+            setDuelSetupOpen(false)
+            onCreateDuel(modes)
+          }}
+        />
+      ) : null}
 
       {bests.length > 0 ? (
         <section className="card history-card">

@@ -375,5 +375,141 @@ function Icon({ id }: { id: AchievementId }) {
           <path d="M12.4 8.2 9.8 12.4h2.1L11.3 16" />
         </>
       )
+    case 'fbLevel':
+      return (
+        <>
+          <path d="M5 18.5h14" />
+          <path d="M7 18.5V12h3.2v6.5M13.8 18.5V8h3.2v10.5" />
+        </>
+      )
+    case 'fbCampaign':
+      return (
+        <>
+          <path d="M8 5h8v4.2a4 4 0 0 1-8 0z" />
+          <path d="M8 5H5.5a3.2 3.2 0 0 0 3.2 3.2M16 5h2.5A3.2 3.2 0 0 1 15.3 8.2" />
+          <circle cx="12" cy="17.2" r="3" />
+        </>
+      )
+    case 'cdKickoff':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M8.2 12h7.6M12 8.2v7.6" />
+          <path d="M9.2 9.2h5.6v5.6H9.2z" />
+        </>
+      )
+    case 'cdTld':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M12 8.5v0.01" />
+          <circle cx="12" cy="8.5" r="1.1" fill="currentColor" stroke="none" />
+          <path d="M8 15.2h8" />
+        </>
+      )
+    case 'cdCalling':
+      return (
+        <>
+          <rect x="7" y="3.8" width="10" height="16.4" rx="2.2" />
+          <path d="M10 6.2h4M10 17.6h4" />
+        </>
+      )
+    case 'cdCar':
+      return (
+        <>
+          <rect x="3.5" y="9" width="17" height="7.2" rx="1.6" />
+          <path d="M6.5 9 8.2 6.2h7.6L17.5 9" />
+          <circle cx="7.5" cy="16.6" r="1.4" />
+          <circle cx="16.5" cy="16.6" r="1.4" />
+        </>
+      )
+    case 'cdAllModes':
+      return (
+        <>
+          <rect x="4" y="5" width="16" height="14" rx="1.8" />
+          <path d="M7 9h10M7 12h10M7 15h6" />
+        </>
+      )
+    case 'cdPerfect':
+      return (
+        <>
+          <rect x="5" y="4.5" width="14" height="15" rx="1.6" />
+          <path d="M8.2 12.2 10.6 14.6 15.6 9.2" />
+        </>
+      )
+    case 'cdTen':
+      return (
+        <>
+          <path d="M6 6.5h12M6 12h12M6 17.5h8" />
+          <path d="M4.2 6.5l1.2 1.2 2-2.2M4.2 12l1.2 1.2 2-2.2" />
+        </>
+      )
+    case 'stFirst':
+      return (
+        <>
+          <rect x="5" y="5" width="14" height="14" rx="1.4" />
+          <path d="M5 9h14M9 5v14" />
+        </>
+      )
+    case 'stTen':
+      return (
+        <>
+          <rect x="3.5" y="6" width="12" height="12" rx="1.2" />
+          <rect x="8.5" y="6" width="12" height="12" rx="1.2" />
+        </>
+      )
+    case 'stFifty':
+      return (
+        <>
+          <rect x="4.2" y="5" width="15.6" height="14" rx="1.4" />
+          <path d="M8 12.2 10.4 14.6 16 8.8" />
+        </>
+      )
+    case 'stAlbum':
+      return (
+        <>
+          <path d="M6 4.5h12v15H6z" />
+          <path d="M6 4.5C7.8 4.5 9 5.6 9 7v12.5" />
+          <path d="M11 9h5M11 12h5M11 15h3.5" />
+        </>
+      )
+    case 'msFirst':
+      return (
+        <>
+          <path d="M4.8 12a7.2 7.2 0 1 0 2.1-5.1" />
+          <path d="M4.8 6.2v4.2H9" />
+        </>
+      )
+    case 'msPerfect':
+      return (
+        <>
+          <path d="M4.8 12a7.2 7.2 0 1 0 2.1-5.1" />
+          <path d="M4.8 6.2v4.2H9" />
+          <path d="M9.2 12.4 11.2 14.4 15.4 10" />
+        </>
+      )
+    case 'seaCoast':
+      return (
+        <>
+          <path d="M3.5 10.5c1.6 1.6 3.2 1.6 4.8 0s3.2-1.6 4.8 0 3.2 1.6 4.8 0" />
+          <path d="M3.5 15c1.6 1.6 3.2 1.6 4.8 0s3.2-1.6 4.8 0 3.2 1.6 4.8 0" />
+          <path d="M12 4.5 14.2 8H9.8z" />
+        </>
+      )
+    case 'riverBank':
+      return (
+        <>
+          <path d="M8 4.5c2.4 2.2 2.4 4.6 0 6.8 2.4 2.2 2.4 4.6 0 8.2" />
+          <path d="M14 4.5c2.4 2.2 2.4 4.6 0 6.8 2.4 2.2 2.4 4.6 0 8.2" />
+        </>
+      )
+    case 'waterLevel':
+      return (
+        <>
+          <path d="M5 18h14" />
+          <path d="M7.5 14h9" />
+          <path d="M3.5 9.5c1.6 1.6 3.2 1.6 4.8 0s3.2-1.6 4.8 0 3.2 1.6 4.8 0" />
+        </>
+      )
   }
 }

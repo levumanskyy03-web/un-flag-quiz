@@ -1,8 +1,9 @@
 import { COUNTRIES, type Country } from '../data/countries'
+import { footballTeamCountry, isNamedFootballTeam } from '../data/worldCup'
 import type { DuelQuestionWire, DuelView } from './duelTypes'
 import type { FactsDuelConfig } from './factsRules'
 import { isPlayerId } from './leaderboard'
-import { isFactsToName, isQuizMode, type Question } from './quiz'
+import { isFactsToName, isFootballMode, isFootballYearChoice, isQuizMode, type Question } from './quiz'
 
 const DUEL_ID_KEY = 'pq-duel-player'
 
@@ -23,7 +24,11 @@ export function duelPlayerId(): string {
 export function questionFromWire(wire: DuelQuestionWire | null): Question | null {
   if (!wire) return null
   const byIso = new Map(COUNTRIES.map((country) => [country.iso, country]))
-  const country = byIso.get(wire.countryIso)
+  const country =
+    byIso.get(wire.countryIso) ??
+    (isFootballMode(wire.mode) || isNamedFootballTeam(wire.countryIso) || wire.countryIso.includes('+')
+      ? footballTeamCountry(wire.countryIso)
+      : undefined)
   if (!country) return null
   if (isFactsToName(wire.mode ?? 'flagToName')) {
     return {
@@ -33,11 +38,27 @@ export function questionFromWire(wire: DuelQuestionWire | null): Question | null
       facts: wire.facts ?? [],
     }
   }
+  if (isFootballYearChoice(wire.mode ?? 'flagToName')) {
+    return {
+      country,
+      options: [],
+      yearOptions: wire.yearOptions,
+      mode: wire.mode,
+      year: wire.year,
+    }
+  }
   const options = wire.optionIsos
-    .map((iso) => byIso.get(iso))
+    .map((iso) => byIso.get(iso) ?? (isNamedFootballTeam(iso) || iso.includes('+') ? footballTeamCountry(iso) : undefined))
     .filter((item): item is Country => item !== undefined)
-  if (options.length < 2) return null
-  return { country, options, mode: isQuizMode(wire.mode) ? wire.mode : undefined }
+  if (options.length < 2 && !(wire.waterOptions && wire.waterOptions.length >= 2)) return null
+  return {
+    country,
+    options: options.length > 0 ? options : [country],
+    mode: isQuizMode(wire.mode) ? wire.mode : undefined,
+    year: wire.year,
+    waterId: wire.waterId,
+    waterOptions: wire.waterOptions,
+  }
 }
 
 export async function createDuel(input: {

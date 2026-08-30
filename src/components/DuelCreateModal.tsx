@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { REGIONS, STRINGS, modeLabel, regionLabel, type Lang } from '../i18n/strings'
+import { GeoModeGrids } from './GeoModeGrids'
 import {
   EASY_MIX_MODES,
   HARD_MIX_MODES,
@@ -24,11 +25,21 @@ interface DuelCreateModalProps {
   lang: Lang
   initialMode: QuizMode
   region: RegionFilter
+  modeCatalog?: readonly QuizMode[]
+  showMix?: boolean
   onCancel: () => void
   onConfirm: (modes: QuizMode[], facts?: FactsDuelConfig) => void
 }
 
-export function DuelCreateModal({ lang, initialMode, region, onCancel, onConfirm }: DuelCreateModalProps) {
+export function DuelCreateModal({
+  lang,
+  initialMode,
+  region,
+  modeCatalog = QUIZ_MODES,
+  showMix = true,
+  onCancel,
+  onConfirm,
+}: DuelCreateModalProps) {
   const t = STRINGS[lang]
   const [step, setStep] = useState<'modes' | 'facts'>('modes')
   const [selected, setSelected] = useState<QuizMode[]>(() => orderedModes([initialMode]))
@@ -93,7 +104,7 @@ export function DuelCreateModal({ lang, initialMode, region, onCancel, onConfirm
             <h2 id="duel-setup-title" className="passport-title">
               {t.duelPickModes}
             </h2>
-            <p className="duel-setup-hint">{t.duelPickModesHint}</p>
+            {showMix ? (
             <div className="choice-grid">
               <button
                 type="button"
@@ -114,8 +125,17 @@ export function DuelCreateModal({ lang, initialMode, region, onCancel, onConfirm
                 <span className="choice-note">{t.hardMixNote}</span>
               </button>
             </div>
+            ) : null}
+            {showMix ? (
+              <GeoModeGrids
+                lang={lang}
+                activeMode={selected[0] ?? 'flagToName'}
+                selectedModes={selected}
+                onPick={toggleMode}
+              />
+            ) : (
             <div className="choice-grid is-modes">
-              {QUIZ_MODES.map((mode) => {
+              {modeCatalog.map((mode) => {
                 const active = selected.includes(mode)
                 return (
                   <button
@@ -130,6 +150,7 @@ export function DuelCreateModal({ lang, initialMode, region, onCancel, onConfirm
                 )
               })}
             </div>
+            )}
             <button type="button" className="btn-primary" disabled={modes.length === 0} onClick={confirmModes}>
               {factsOnly ? t.duelFactsRegion : t.duelCreate}
             </button>

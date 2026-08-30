@@ -1,6 +1,6 @@
 import type { RoundRecord } from './history'
 import type { LevelClear } from './levelProgress'
-import { FOOTBALL_MODES, isFootballMode, type FootballMode } from './quiz'
+import { FOOTBALL_MODES, isFootballMode, type FootballMode, type QuizWorld } from './quiz'
 import { clearBestXp } from './xp'
 
 const LIFETIME_KEY = 'un-flag-quiz-lifetime'
@@ -18,10 +18,15 @@ export interface LifetimeStats {
   rounds: number
   completes: number
   xp: number
+  xpByWorld: Record<QuizWorld, number>
   playMs: number
   firstSeen: number
   recordBreaks: number
   football: FootballLifetime
+}
+
+export function emptyXpByWorld(): Record<QuizWorld, number> {
+  return { geo: 0, football: 0, codes: 0, leaders: 0 }
 }
 
 export function emptyFootballLifetime(): FootballLifetime {
@@ -36,6 +41,7 @@ export function countLifetimeSeed(history: RoundRecord[], clears: LevelClear[]):
     rounds: history.length + clears.length,
     completes: history.filter((round) => round.endedBy === 'complete').length + clears.length,
     xp: clears.reduce((sum, clear) => sum + clearBestXp(clear), 0),
+    xpByWorld: emptyXpByWorld(),
     playMs:
       history.reduce((sum, round) => sum + Math.max(0, round.roundMs), 0) +
       clears.reduce((sum, clear) => sum + Math.max(0, clear.roundMs), 0),
@@ -55,6 +61,7 @@ export function loadLifetime(seedIfEmpty?: LifetimeStats): LifetimeStats {
       rounds: stored.rounds,
       completes: stored.completes,
       xp,
+      xpByWorld: stored.xpByWorld,
       playMs: play.playMs,
       firstSeen: play.firstSeen,
       recordBreaks: stored.recordBreaks,
@@ -86,12 +93,17 @@ export function bumpLifetime(
   seedIfEmpty: LifetimeStats,
   xpGain = 0,
   playMs = 0,
+  world?: QuizWorld,
 ): LifetimeStats {
   const current = loadLifetime(seedIfEmpty)
+  const gain = Math.max(0, Math.floor(xpGain))
+  const xpByWorld = { ...current.xpByWorld }
+  if (world && gain > 0) xpByWorld[world] += gain
   const next: LifetimeStats = {
     rounds: current.rounds + 1,
     completes: current.completes + (complete ? 1 : 0),
-    xp: current.xp + Math.max(0, Math.floor(xpGain)),
+    xp: current.xp + gain,
+    xpByWorld,
     playMs: current.playMs + Math.max(0, Math.floor(playMs)),
     firstSeen: current.firstSeen,
     recordBreaks: current.recordBreaks,
@@ -152,6 +164,7 @@ function emptyLifetime(): LifetimeStats {
     rounds: 0,
     completes: 0,
     xp: 0,
+    xpByWorld: emptyXpByWorld(),
     playMs: 0,
     firstSeen: Date.now(),
     recordBreaks: 0,
@@ -174,6 +187,7 @@ function readLifetime(): {
   rounds: number
   completes: number
   xp: number | null
+  xpByWorld: Record<QuizWorld, number>
   schema: number
   playMs: number | null
   firstSeen: number | null
@@ -207,6 +221,7 @@ function readLifetime(): {
       rounds: record.rounds,
       completes: record.completes,
       xp,
+      xpByWorld: parseXpByWorld(record.xpByWorld),
       schema,
       playMs,
       firstSeen,
@@ -216,6 +231,19 @@ function readLifetime(): {
   } catch {
     return null
   }
+}
+
+function parseXpByWorld(value: unknown): Record<QuizWorld, number> {
+  const next = emptyXpByWorld()
+  if (!value || typeof value !== 'object') return next
+  const record = value as Record<string, unknown>
+  for (const world of ['geo', 'football', 'codes', 'leaders'] as const) {
+    const amount = record[world]
+    if (typeof amount === 'number' && Number.isFinite(amount) && amount >= 0) {
+      next[world] = Math.floor(amount)
+    }
+  }
+  return next
 }
 
 function parseFootball(value: unknown): FootballLifetime {

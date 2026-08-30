@@ -5,16 +5,34 @@ import { REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
 import {
   QUIZ_MODES,
   LEVEL_MODES,
+  FOOTBALL_MODES,
+  CODES_MODES,
   countryName,
   getLearnPool,
+  hasGeoFinale,
+  isCodesMode,
+  isFootballMode,
+  isLeadersMode,
+  isRankingMode,
   isRegionSelected,
+  isWaterMapMode,
+  isWaterMode,
   sortCountriesByName,
   toggleRegion,
+  waterName,
 } from '../lib/quiz'
+import { watersFor } from '../data/water'
+import { termById, yearsLabel } from '../data/leaders'
+import { collectStamp } from '../lib/stamps'
+import { getPassport } from '../data/passports'
+import { rankingCount, rankingPlaceOf } from '../data/rankings'
 import type { QuizSettings } from './HomeScreen'
 import { HubNav, type HubTab } from './HubNav'
+import { GeoModeGrids } from './GeoModeGrids'
 import { Flag } from './Flag'
+import { LeaderPortrait } from './LeaderPortrait'
 import { LanguageToggle } from './LanguageToggle'
+import { LeadersSetup } from './LeadersScreen'
 import { PassportModal } from './PassportModal'
 import { WorldsBack } from './WorldsBack'
 
@@ -29,25 +47,41 @@ interface LearnScreenProps {
 
 export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onWorlds }: LearnScreenProps) {
   const t = STRINGS[settings.lang]
+  const football = isFootballMode(settings.mode)
+  const codes = isCodesMode(settings.mode)
+  const leaders = isLeadersMode(settings.mode)
   const pool = getLearnPool(settings.learnFrom, settings.region, settings.level, settings.mode)
   const countries =
-    settings.learnFrom === 'level' ? pool : sortCountriesByName(pool, settings.lang)
-  const modes = settings.learnFrom === 'level' ? LEVEL_MODES : QUIZ_MODES
+    settings.learnFrom === 'level' || football || leaders ? pool : sortCountriesByName(pool, settings.lang)
+  const modes = football
+    ? FOOTBALL_MODES
+    : codes
+      ? CODES_MODES
+      : settings.learnFrom === 'level'
+        ? LEVEL_MODES
+        : QUIZ_MODES
   const regions: Array<Region | 'all'> = ['all', ...REGIONS]
   const [openIso, setOpenIso] = useState<string | null>(null)
   const openCountry = COUNTRIES.find((country) => country.iso === openIso)
-  const title =
-    settings.learnFrom === 'level'
-      ? isFinalLevel(settings.level)
-        ? t.finalLevel
-        : t.levelLabel(settings.level)
-      : t.learn
+  const geoFinale = settings.learnFrom === 'level' && isFinalLevel(settings.level) && hasGeoFinale(settings.mode)
+  const title = settings.learnFrom === 'level' ? (geoFinale ? t.finalLevel : t.levelLabel(settings.level)) : t.learn
   const subtitle =
     settings.learnFrom === 'level'
-      ? isFinalLevel(settings.level)
+      ? geoFinale
         ? t.finalLevelHint
         : undefined
-      : regionLabel(settings.region, settings.lang)
+      : football
+        ? undefined
+        : codes
+          ? t.codesSubtitle
+          : leaders
+            ? t.leadersSubtitle
+            : regionLabel(settings.region, settings.lang)
+  const hubTabs = football || leaders
+    ? (['free', 'levels', 'learn', 'mistakes'] as const)
+    : codes
+      ? (['free', 'learn', 'mistakes'] as const)
+      : undefined
 
   return (
     <div className="screen learn-screen">
@@ -58,7 +92,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
             {t.back}
           </button>
         ) : (
-          <HubNav lang={settings.lang} active="learn" onSelect={onHub} />
+          <HubNav lang={settings.lang} active="learn" tabs={hubTabs ? [...hubTabs] : undefined} onSelect={onHub} />
         )}
         {settings.learnFrom === 'level' ? <h1 className="levels-title">{title}</h1> : null}
         <LanguageToggle
@@ -72,7 +106,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         {t.countriesCount(countries.length)}
       </p>
 
-      {settings.learnFrom === 'region' && (
+      {settings.learnFrom === 'region' && !football && !codes && !leaders && (
         <div className="choice-wrap">
           {regions.map((region) => (
             <button
@@ -93,34 +127,62 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         </div>
       )}
 
-      <div className="choice-grid is-modes">
-        {modes.map((mode) => (
-          <button
-            key={mode}
-            type="button"
-            className={`choice ${settings.mode === mode ? 'is-active' : ''}`}
-            aria-pressed={settings.mode === mode}
-            onClick={() => onChange({ ...settings, mode })}
-          >
-            {modeLabel(mode, settings.lang)}
-          </button>
-        ))}
-      </div>
-
-      <p className="learn-copy">{t.tapPassport}</p>
+      {leaders ? (
+        <LeadersSetup settings={settings} onChange={onChange} />
+      ) : football || codes || settings.learnFrom === 'level' ? (
+        <div className="choice-grid is-modes">
+          {modes.map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              className={`choice ${settings.mode === mode ? 'is-active' : ''}`}
+              aria-pressed={settings.mode === mode}
+              onClick={() => onChange({ ...settings, mode })}
+            >
+              {modeLabel(mode, settings.lang)}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <GeoModeGrids
+          lang={settings.lang}
+          activeMode={settings.mode}
+          onPick={(mode) => onChange({ ...settings, mode, mix: null })}
+        />
+      )}
 
       <section className="learn-grid">
         {countries.map((country) => {
           const name = countryName(country, settings.lang)
+          const waterId = isWaterMode(settings.mode) ? watersFor(country.iso, settings.mode)[0] : undefined
+          const waterLabel = waterId ? waterName(waterId, settings.lang) : null
+          const mapWater = isWaterMapMode(settings.mode)
+          const rankingPlace =
+            isRankingMode(settings.mode) ? rankingPlaceOf(settings.mode, country.iso) : null
+          const rankingTotal = isRankingMode(settings.mode) ? rankingCount(settings.mode) : 0
+          const term = leaders ? termById(country.iso) : undefined
+          if (leaders && term) {
+            return (
+              <div key={country.iso} className="learn-card">
+                <LeaderPortrait name={name} wiki={term.wiki} size="card" />
+                <p className="learn-card-name">{name}</p>
+                <p className="learn-card-meta">{yearsLabel(term.from, term.to, t.present)}</p>
+              </div>
+            )
+          }
           return (
             <button
-              key={country.iso}
+              key={waterId ? `${settings.mode}:${waterId}` : country.iso}
               type="button"
               className="learn-card is-passport"
-              onClick={() => setOpenIso(country.iso)}
+              onClick={() => {
+                collectStamp(country.iso)
+                if (getPassport(country.iso)) setOpenIso(country.iso)
+              }}
             >
               <Flag iso={country.iso} name={name} size="card" />
-              <p className="learn-card-name">{name}</p>
+              <p className="learn-card-name">{mapWater && waterLabel ? waterLabel : name}</p>
+              {mapWater ? <p className="learn-card-meta">{name}</p> : waterLabel ? <p className="learn-card-meta">{waterLabel}</p> : rankingPlace !== null ? <p className="learn-card-meta">{t.rankingPlace(rankingPlace, rankingTotal)}</p> : null}
             </button>
           )
         })}

@@ -11,7 +11,9 @@ import {
 } from '../data/passports'
 import { STRINGS, localeTag, regionLabel, type Lang } from '../i18n/strings'
 import { countryName } from '../lib/quiz'
+import { collectStamp } from '../lib/stamps'
 import { Flag } from './Flag'
+import { RankingPlaces } from './RankingPlaces'
 
 interface PassportModalProps {
   country: Country
@@ -37,6 +39,10 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
     setFactKey(country.iso)
     setFactIndex(pickFactIndex(country.iso))
   }
+
+  useEffect(() => {
+    collectStamp(country.iso)
+  }, [country.iso])
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -105,6 +111,7 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
             </div>
           ) : null}
         </dl>
+        <RankingPlaces iso={country.iso} lang={lang} />
         {territoryNote ? null : (
           <section className="passport-neighbors">
             <h3>{t.neighbors}</h3>

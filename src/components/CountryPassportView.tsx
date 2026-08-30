@@ -15,7 +15,9 @@ import {
   neighborCountries,
 } from '../lib/countryCatalog'
 import type { Country } from '../data/countries'
+import { StampCollector } from './StampCollector'
 import { Flag } from './Flag'
+import { RankingPlaces } from './RankingPlaces'
 
 interface CountryPassportViewProps {
   country: Country
@@ -38,6 +40,7 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
 
   return (
     <div className="country-passport">
+      <StampCollector iso={country.iso} />
       {kicker ? <p className="country-kicker">{kicker}</p> : null}
       <Flag iso={country.iso} name={country.nameRu} size="hero" />
       <h1 className="country-title">{country.nameRu}</h1>
@@ -72,6 +75,7 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
           </div>
         ) : null}
       </dl>
+      <RankingPlaces iso={country.iso} lang="ru" />
       <section className="passport-neighbors">
         <h2>{t.neighbors}</h2>
         {neighbors.length === 0 ? (

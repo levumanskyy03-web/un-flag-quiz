@@ -5,7 +5,7 @@ import { AppChrome } from './AppChrome'
 import { GeoIcon } from './GeoIcon'
 import type { QuizSettings } from './HomeScreen'
 
-export type World = 'geo' | 'football'
+export type World = 'geo' | 'football' | 'codes' | 'leaders'
 
 interface WorldPickScreenProps {
   settings: QuizSettings
@@ -53,6 +53,14 @@ export function WorldPickScreen({
         <button type="button" className="choice is-wide world-pick" onClick={() => onPick('football')}>
           <GeoIcon name="ball" size={24} />
           {t.football}
+        </button>
+        <button type="button" className="choice is-wide world-pick" onClick={() => onPick('codes')}>
+          <GeoIcon name="hash" size={22} />
+          {t.codes}
+        </button>
+        <button type="button" className="choice is-wide world-pick" onClick={() => onPick('leaders')}>
+          <GeoIcon name="crown" size={22} />
+          {t.leaders}
         </button>
       </div>
     </div>

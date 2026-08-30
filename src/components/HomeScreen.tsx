@@ -4,7 +4,6 @@ import { REGIONS, STRINGS, difficultyLabel, localeTag, mixLabel, modeLabel, regi
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import type { LevelClear } from '../lib/levelProgress'
 import {
-  QUIZ_MODES,
   PLAY_DIFFICULTIES,
   FACTS_DIFFICULTIES,
   ROUND_SIZES,
@@ -14,6 +13,8 @@ import {
   getRegionPool,
   isFactsToName,
   isFootballMode,
+  isCodesMode,
+  isLeadersMode,
   isRegionSelected,
   toggleRegion,
   type LearnFrom,
@@ -28,6 +29,7 @@ import type { FactsDuelConfig } from '../lib/factsRules'
 import { AppChrome } from './AppChrome'
 import { HubNav, type HubTab } from './HubNav'
 import { DuelCreateModal } from './DuelCreateModal'
+import { GeoModeGrids } from './GeoModeGrids'
 import { WorldsBack } from './WorldsBack'
 
 export interface QuizSettings {
@@ -88,8 +90,8 @@ export function HomeScreen({
   const regions: Array<Region | 'all'> = ['all', ...REGIONS]
   const difficulties = factsMode ? FACTS_DIFFICULTIES : PLAY_DIFFICULTIES
   const currentBest = findBest(bests, settings)
-  const geoHistory = history.filter((item) => !isFootballMode(item.mode))
-  const geoBests = bests.filter((item) => !isFootballMode(item.mode))
+  const geoHistory = history.filter((item) => !isFootballMode(item.mode) && !isCodesMode(item.mode) && !isLeadersMode(item.mode))
+  const geoBests = bests.filter((item) => !isFootballMode(item.mode) && !isCodesMode(item.mode) && !isLeadersMode(item.mode))
   const [joinCode, setJoinCode] = useState('')
   const [duelSetupOpen, setDuelSetupOpen] = useState(false)
 
@@ -142,26 +144,19 @@ export function HomeScreen({
             <span className="choice-note">{t.hardMixNote}</span>
           </button>
         </div>
-        <div className="choice-grid is-modes">
-          {QUIZ_MODES.map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              className={`choice ${!settings.mix && settings.mode === mode ? 'is-active' : ''}`}
-              aria-pressed={!settings.mix && settings.mode === mode}
-              onClick={() =>
-                update({
-                  path: 'pool',
-                  mix: null,
-                  mode,
-                  difficulty: nextDifficultyForMode(mode, settings.difficulty),
-                })
-              }
-            >
-              {modeLabel(mode, settings.lang)}
-            </button>
-          ))}
-        </div>
+        <GeoModeGrids
+          lang={settings.lang}
+          activeMode={settings.mode}
+          mix={Boolean(settings.mix)}
+          onPick={(mode) =>
+            update({
+              path: 'pool',
+              mix: null,
+              mode,
+              difficulty: nextDifficultyForMode(mode, settings.difficulty),
+            })
+          }
+        />
         <h2>{t.region}</h2>
         <div className="choice-wrap">
           {regions.map((region) => (
@@ -197,7 +192,6 @@ export function HomeScreen({
             </button>
           ))}
         </div>
-        {settings.difficulty === 'hardcore' && !factsMode && <p className="setting-hint">{t.hardcoreHint}</p>}
 
         {!factsMode ? (
           <>
@@ -232,7 +226,6 @@ export function HomeScreen({
 
       <section className="card settings-card">
         <h2>{t.duel}</h2>
-        <p className="setting-hint">{t.duelHint}</p>
         <button type="button" className="btn-secondary" disabled={poolSize === 0} onClick={() => setDuelSetupOpen(true)}>
           {t.duelCreate}
         </button>

@@ -1,11 +1,24 @@
 import { ACHIEVEMENTS, type AchievementId } from '../data/achievements'
 import { REGIONS, type Region } from '../data/countries'
+import { footballCampaignLevels } from '../data/footballLevels'
 import { FINAL_LEVEL, LEVEL_COUNT } from '../data/levels'
 import type { RoundRecord } from './history'
 import { campaignStats } from './leaderboard'
 import type { LevelClear } from './levelProgress'
 import { countLifetimeSeed, loadLifetime } from './lifetime'
-import { LEVEL_MODES, QUIZ_MODES, FOOTBALL_MODES, isAllRegions, isFootballMode, parseRegions, type QuizMode } from './quiz'
+import { loadTrainerStats } from './mistakes'
+import {
+  CODES_MODES,
+  LEVEL_MODES,
+  QUIZ_MODES,
+  FOOTBALL_MODES,
+  isAllRegions,
+  isCodesMode,
+  isFootballMode,
+  parseRegions,
+  type QuizMode,
+} from './quiz'
+import { loadStamps, STAMP_TOTAL } from './stamps'
 import { accountLevel } from './xp'
 
 const MINUTE_MS = 60_000
@@ -45,6 +58,18 @@ export function listAchievements(
   const footballPool = pool.filter((round) => isFootballMode(round.mode))
   const footballComplete = completedPool.filter((round) => isFootballMode(round.mode))
   const footballModes = new Set<QuizMode>([...football.modes, ...footballComplete.map((round) => round.mode)])
+  const footballCampaignMax = Math.max(
+    0,
+    ...FOOTBALL_MODES.map((mode) => campaignStats(levelClears, mode, false).levelsCleared),
+  )
+  const footballCampaignFull = FOOTBALL_MODES.some((mode) => {
+    const needed = footballCampaignLevels(mode)
+    return needed > 0 && campaignStats(levelClears, mode, false).levelsCleared >= needed
+  })
+  const codesComplete = completedPool.filter((round) => isCodesMode(round.mode))
+  const codesModes = new Set(codesComplete.map((round) => round.mode))
+  const stamps = loadStamps().length
+  const trainer = loadTrainerStats()
   const rank = accountLevel(lifetime.xp)
   const bornAt = createdAt && createdAt > 0 ? createdAt : lifetime.firstSeen
   const ageMs = Math.max(0, Date.now() - bornAt)
@@ -119,6 +144,24 @@ export function listAchievements(
     ),
     fbTenMatches: football.completes >= 10,
     fbHardcore: footballComplete.some((round) => round.difficulty === 'hardcore'),
+    fbLevel: footballCampaignMax >= 1 || levelClears.some((item) => isFootballMode(item.mode)),
+    fbCampaign: footballCampaignFull,
+    cdKickoff: codesComplete.length > 0 || pool.some((round) => isCodesMode(round.mode)),
+    cdTld: codesComplete.some((round) => round.mode === 'tldToName' || round.mode === 'nameToTld'),
+    cdCalling: codesComplete.some((round) => round.mode === 'callingToName' || round.mode === 'nameToCalling'),
+    cdCar: codesComplete.some((round) => round.mode === 'carToName' || round.mode === 'nameToCar'),
+    cdAllModes: CODES_MODES.every((mode) => codesModes.has(mode)),
+    cdPerfect: codesComplete.some((round) => round.total >= 10 && round.correct === round.total),
+    cdTen: codesComplete.length >= 10,
+    stFirst: stamps >= 1,
+    stTen: stamps >= 10,
+    stFifty: stamps >= 50,
+    stAlbum: stamps >= STAMP_TOTAL,
+    msFirst: trainer.completes >= 1,
+    msPerfect: trainer.perfects >= 1,
+    seaCoast: completedPool.some((round) => round.mode === 'seaToName') || pool.some((round) => round.mode === 'seaToName'),
+    riverBank: completedPool.some((round) => round.mode === 'riverToName') || pool.some((round) => round.mode === 'riverToName'),
+    waterLevel: levelClears.some((item) => item.mode === 'seaToName' || item.mode === 'riverToName'),
   }
   return ACHIEVEMENTS.map((item) => ({ id: item.id, unlocked: unlocked[item.id] }))
 }

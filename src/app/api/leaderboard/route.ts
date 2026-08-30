@@ -1,8 +1,7 @@
-import { LEVEL_COUNT, isLevelNumber } from '../../../data/levels'
 import { parseAchievementIds } from '../../../data/achievements'
 import {
+  RATING_CLEARS_MAX,
   RATING_LEVEL_MAX,
-  RATING_LEVELS_MAX,
   RATING_XP_MAX,
   isPlayerId,
   parseRatingBoard,
@@ -10,7 +9,7 @@ import {
 } from '../../../lib/leaderboard'
 import { accountFromRequest, publishPlayerStats } from '../../../lib/authStore'
 import { publicEntries, readLevelBests, readRating, upsertLevelBest, upsertRatings } from '../../../lib/leaderboardStore'
-import { isQuizMode, type QuizMode } from '../../../lib/quiz'
+import { isQuizMode, isQuizWorld, type QuizMode } from '../../../lib/quiz'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -167,17 +166,21 @@ function parseEntry(body: unknown): null | {
     if (typeof record.level !== 'number' || !Number.isInteger(record.level)) return null
     if (record.xp < 1 || record.xp > RATING_XP_MAX) return null
     if (record.level < 1 || record.level > RATING_LEVEL_MAX) return null
+    const world = record.world === undefined || record.world === 'all' ? 'all' : record.world
+    if (world !== 'all' && !isQuizWorld(world)) return null
     return {
-      board: { kind: 'xp' },
+      board: { kind: 'xp', world, period: 'all' },
       entry: { levelsCleared: 0, totalMs: 0, xp: record.xp, level: record.level },
     }
   }
   if (typeof record.hardcore !== 'boolean') return null
   if (typeof record.levelsCleared !== 'number' || !Number.isInteger(record.levelsCleared)) return null
   if (boardName === 'clears') {
-    if (record.levelsCleared < 1 || record.levelsCleared > RATING_LEVELS_MAX) return null
+    if (record.levelsCleared < 1 || record.levelsCleared > RATING_CLEARS_MAX) return null
+    const world = record.world === undefined ? 'geo' : record.world
+    if (!isQuizWorld(world) || world === 'codes') return null
     return {
-      board: { kind: 'clears', hardcore: record.hardcore },
+      board: { kind: 'clears', hardcore: record.hardcore, world },
       entry: { levelsCleared: record.levelsCleared, totalMs: 0 },
     }
   }
@@ -185,8 +188,8 @@ function parseEntry(body: unknown): null | {
   const mode: QuizMode = record.mode
   const totalMs =
     typeof record.totalMs === 'number' && Number.isFinite(record.totalMs) ? Math.round(record.totalMs) : 0
-  if (record.levelsCleared < 1 || record.levelsCleared > LEVEL_COUNT) return null
-  if (totalMs < 0 || totalMs > LEVEL_COUNT * 3_600_000) return null
+  if (record.levelsCleared < 1 || record.levelsCleared > RATING_LEVEL_MAX) return null
+  if (totalMs < 0 || totalMs > RATING_LEVEL_MAX * 3_600_000) return null
   return {
     board: { kind: 'mode', mode, hardcore: record.hardcore },
     entry: { levelsCleared: record.levelsCleared, totalMs },
@@ -203,7 +206,7 @@ function parseLevelBest(body: unknown): null | {
   if (record.board !== 'levelBest') return null
   if (typeof record.mode !== 'string' || !isQuizMode(record.mode)) return null
   if (typeof record.hardcore !== 'boolean') return null
-  if (typeof record.level !== 'number' || !isLevelNumber(record.level)) return null
+  if (typeof record.level !== 'number' || record.level < 1 || record.level > RATING_LEVEL_MAX) return null
   if (typeof record.roundMs !== 'number' || !Number.isFinite(record.roundMs)) return null
   const roundMs = Math.round(record.roundMs)
   const livesLeft =

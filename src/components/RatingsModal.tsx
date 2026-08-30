@@ -1,21 +1,27 @@
 'use client'
 
 import { useEffect, useId, useMemo, useState } from 'react'
-import { LEVEL_COUNT } from '../data/levels'
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import { fetchAccount } from '../lib/account'
 import { unlockedAchievementIds } from '../lib/achievements'
 import type { RoundRecord } from '../lib/history'
 import {
-  RATING_LEVELS_MAX,
+  RATING_PERIODS,
   fetchRating,
   loadPlayer,
   submitRatings,
   type LeaderboardEntry,
   type RatingBoard,
+  type RatingPeriod,
+  type RatingWorld,
 } from '../lib/leaderboard'
 import type { LevelClear } from '../lib/levelProgress'
-import { LEVEL_MODES, type QuizMode } from '../lib/quiz'
+import {
+  campaignLevelCount,
+  campaignMaxForWorld,
+  campaignModesForWorld,
+  type QuizMode,
+} from '../lib/quiz'
 import { formatXp } from '../lib/xp'
 import { GeoIcon } from './GeoIcon'
 import { PlayerProfileModal } from './PlayerProfileModal'
@@ -32,10 +38,14 @@ interface RatingsModalProps {
 type Tab = 'xp' | 'levels'
 type ModeFilter = 'all' | QuizMode
 
+const SCOPES: RatingWorld[] = ['all', 'geo', 'football', 'codes', 'leaders']
+
 export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }: RatingsModalProps) {
   const t = STRINGS[lang]
   const titleId = useId()
+  const [scope, setScope] = useState<RatingWorld>('all')
   const [tab, setTab] = useState<Tab>('xp')
+  const [period, setPeriod] = useState<RatingPeriod>('all')
   const [mode, setMode] = useState<ModeFilter>('all')
   const [hardcore, setHardcore] = useState(false)
   const [signedIn, setSignedIn] = useState(false)
@@ -44,11 +54,18 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
   const [boardReady, setBoardReady] = useState(true)
   const [profileId, setProfileId] = useState<string | null>(null)
 
+  const topic = scope === 'all' ? null : scope
+  const hasCampaign = topic === 'geo' || topic === 'football' || topic === 'leaders'
+  const campaignModes = topic ? campaignModesForWorld(topic) : []
+  const showLevels = tab === 'levels' && hasCampaign
+
   const board = useMemo<RatingBoard>(() => {
-    if (tab === 'xp') return { kind: 'xp' }
-    if (mode === 'all') return { kind: 'clears', hardcore }
+    if (tab !== 'levels' || !hasCampaign) {
+      return { kind: 'xp', world: scope, period }
+    }
+    if (mode === 'all') return { kind: 'clears', hardcore, world: topic ?? 'geo' }
     return { kind: 'mode', mode, hardcore }
-  }, [tab, mode, hardcore])
+  }, [tab, hasCampaign, scope, period, hardcore, mode, topic])
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -111,9 +128,27 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
     }
   }, [board, posted])
 
-  const total = mode === 'all' ? RATING_LEVELS_MAX : LEVEL_COUNT
-  const hint =
-    tab === 'xp' ? t.ratingsXpHint : hardcore ? t.ratingsHardcoreHint : t.ratingsLevelsHint
+  const total =
+    showLevels && mode !== 'all'
+      ? campaignLevelCount(mode)
+      : topic
+        ? campaignMaxForWorld(topic)
+        : 0
+  const hint = showLevels
+    ? hardcore
+      ? t.ratingsHardcoreHint
+      : t.ratingsLevelsHint
+    : period !== 'all'
+      ? t.ratingsXpHintPeriod
+      : scope === 'all'
+        ? t.ratingsXpHintWorld
+        : t.ratingsXpHintTopic
+
+  function pickScope(next: RatingWorld) {
+    setScope(next)
+    setMode('all')
+    if (next === 'all' || next === 'codes') setTab('xp')
+  }
 
   return (
     <div className="passport-overlay" onClick={onClose}>
@@ -134,28 +169,71 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
           </button>
         </header>
 
-        <div className="choice-grid">
-          <button
-            type="button"
-            className={`choice ratings-choice ${tab === 'xp' ? 'is-active' : ''}`}
-            aria-pressed={tab === 'xp'}
-            onClick={() => setTab('xp')}
-          >
-            <GeoIcon name="meridians" />
-            {t.ratingsXp}
-          </button>
-          <button
-            type="button"
-            className={`choice ratings-choice ${tab === 'levels' ? 'is-active' : ''}`}
-            aria-pressed={tab === 'levels'}
-            onClick={() => setTab('levels')}
-          >
-            <GeoIcon name="map" />
-            {t.ratingsLevels}
-          </button>
+        <div className="choice-grid is-modes ratings-worlds">
+          {SCOPES.map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={`choice ratings-choice ${scope === item ? 'is-active' : ''}`}
+              aria-pressed={scope === item}
+              onClick={() => pickScope(item)}
+            >
+              <GeoIcon
+                name={
+                  item === 'all'
+                    ? 'trophy'
+                    : item === 'geo'
+                      ? 'globe'
+                      : item === 'football'
+                        ? 'ball'
+                        : item === 'codes'
+                          ? 'hash'
+                          : 'crown'
+                }
+              />
+              {scopeLabel(item, lang)}
+            </button>
+          ))}
         </div>
 
-        {tab === 'levels' ? (
+        {hasCampaign ? (
+          <div className="choice-grid">
+            <button
+              type="button"
+              className={`choice ratings-choice ${tab === 'xp' ? 'is-active' : ''}`}
+              aria-pressed={tab === 'xp'}
+              onClick={() => setTab('xp')}
+            >
+              <GeoIcon name="meridians" />
+              {t.ratingsXp}
+            </button>
+            <button
+              type="button"
+              className={`choice ratings-choice ${tab === 'levels' ? 'is-active' : ''}`}
+              aria-pressed={tab === 'levels'}
+              onClick={() => setTab('levels')}
+            >
+              <GeoIcon name="map" />
+              {t.ratingsLevels}
+            </button>
+          </div>
+        ) : null}
+
+        {tab === 'xp' || !hasCampaign ? (
+          <div className="choice-grid is-4">
+            {RATING_PERIODS.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={`choice ratings-choice ${period === item ? 'is-active' : ''}`}
+                aria-pressed={period === item}
+                onClick={() => setPeriod(item)}
+              >
+                {periodLabel(item, lang)}
+              </button>
+            ))}
+          </div>
+        ) : (
           <>
             <div className="choice-grid is-modes">
               <button
@@ -167,7 +245,7 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
                 <GeoIcon name="globe" />
                 {t.ratingsAll}
               </button>
-              {LEVEL_MODES.map((item) => (
+              {campaignModes.map((item) => (
                 <button
                   key={item}
                   type="button"
@@ -191,7 +269,7 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
               </button>
             </div>
           </>
-        ) : null}
+        )}
 
         <p className="setting-hint ratings-hint">{hint}</p>
         {!signedIn ? <p className="setting-hint">{t.accountNeeded}</p> : null}
@@ -199,7 +277,9 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
         {!boardReady ? (
           <p className="leaderboard-empty">{t.leaderboardOffline}</p>
         ) : entries.length === 0 ? (
-          <p className="leaderboard-empty">{t.leaderboardEmpty}</p>
+          <p className="leaderboard-empty">
+            {tab === 'xp' && period !== 'all' ? t.ratingsPeriodEmpty : t.leaderboardEmpty}
+          </p>
         ) : (
           <ol className="leaderboard-list">
             {entries.map((entry, index) => {
@@ -218,9 +298,11 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
                     <span className="leaderboard-rank">{index + 1}</span>
                     <span className="leaderboard-name">{entry.name}</span>
                     <span className="leaderboard-score">
-                      {tab === 'xp'
-                        ? `${t.accountLevel(entry.level || 1)} · ${formatXp(entry.xp ?? 0, lang)}`
-                        : t.leaderboardProgress(entry.levelsCleared, total)}
+                      {showLevels
+                        ? t.leaderboardProgress(entry.levelsCleared, total)
+                        : scope === 'all' && period === 'all'
+                          ? `${t.accountLevel(entry.level || 1)} · ${formatXp(entry.xp ?? 0, lang)}`
+                          : formatXp(entry.xp ?? 0, lang)}
                     </span>
                   </button>
                 </li>
@@ -241,4 +323,21 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
       ) : null}
     </div>
   )
+}
+
+function scopeLabel(scope: RatingWorld, lang: Lang): string {
+  const t = STRINGS[lang]
+  if (scope === 'all') return t.ratingsWorld
+  if (scope === 'geo') return t.geography
+  if (scope === 'football') return t.football
+  if (scope === 'codes') return t.codes
+  return t.leaders
+}
+
+function periodLabel(period: RatingPeriod, lang: Lang): string {
+  const t = STRINGS[lang]
+  if (period === 'day') return t.ratingsPeriodDay
+  if (period === 'week') return t.ratingsPeriodWeek
+  if (period === 'month') return t.ratingsPeriodMonth
+  return t.ratingsPeriodAll
 }

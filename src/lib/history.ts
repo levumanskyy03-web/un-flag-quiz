@@ -1,4 +1,4 @@
-import { isFootballMode, isMixKind, isQuizMode, isRegionFilter, type MixKind, type QuizDifficulty, type QuizMode, type RegionFilter, type RoundEnd } from './quiz'
+import { isCodesMode, isFootballMode, isLeadersMode, isMixKind, isQuizMode, isRegionFilter, type MixKind, type QuizDifficulty, type QuizMode, type RegionFilter, type RoundEnd } from './quiz'
 
 export const HISTORY_KEY = 'un-flag-quiz-history'
 export const BESTS_KEY = 'un-flag-quiz-bests'
@@ -105,8 +105,12 @@ export function isBetter(candidate: RoundRecord, current: RoundRecord): boolean 
 
 function capHistory(records: RoundRecord[]): RoundRecord[] {
   const football = records.filter((item) => isFootballMode(item.mode)).slice(0, HISTORY_LIMIT)
-  const geo = records.filter((item) => !isFootballMode(item.mode)).slice(0, HISTORY_LIMIT)
-  return [...football, ...geo].sort((a, b) => b.at - a.at)
+  const codes = records.filter((item) => isCodesMode(item.mode)).slice(0, HISTORY_LIMIT)
+  const leaders = records.filter((item) => isLeadersMode(item.mode)).slice(0, HISTORY_LIMIT)
+  const geo = records
+    .filter((item) => !isFootballMode(item.mode) && !isCodesMode(item.mode) && !isLeadersMode(item.mode))
+    .slice(0, HISTORY_LIMIT)
+  return [...football, ...codes, ...leaders, ...geo].sort((a, b) => b.at - a.at)
 }
 
 function scorePercent(record: RoundRecord): number {

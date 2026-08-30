@@ -11,7 +11,9 @@ import type { Lang } from '../i18n/strings'
 import { currencyChoiceLabel } from './currencyFakes'
 import { foundedChoiceLabel } from './foundedFakes'
 import { populationChoiceLabel } from './populationFakes'
-import { countryName, type Question, type QuizMode } from './quiz'
+import { isRankingMode } from '../data/rankings'
+import { codeAnswerKey, codePromptLabel, countryName, isCodeOptionMode, isLeadersMode, type Question, type QuizMode } from './quiz'
+import { isWaterMode, waterAnswerKey } from '../data/water'
 
 export function answerKey(country: Country, mode: QuizMode): string {
   if (
@@ -23,9 +25,18 @@ export function answerKey(country: Country, mode: QuizMode): string {
     mode === 'wcWinners' ||
     mode === 'wcFinalists' ||
     mode === 'wcHosts' ||
-    mode === 'euroWinners'
+    mode === 'euroWinners' ||
+    mode === 'tldToName' ||
+    mode === 'callingToName' ||
+    mode === 'carToName'
   ) {
     return country.iso
+  }
+  if (isRankingMode(mode)) return country.iso
+  if (isLeadersMode(mode)) return country.iso
+  if (isWaterMode(mode)) return waterAnswerKey(country.iso, mode)
+  if (mode === 'nameToTld' || mode === 'nameToCalling' || mode === 'nameToCar') {
+    return codeAnswerKey(country, mode)
   }
   if (mode === 'neighborsToName') return `neighbors:${neighborKey(country.iso)}`
   if (mode === 'nameToFounded') return `founded:${foundedYear(country.iso) ?? country.iso}`
@@ -44,13 +55,21 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
     mode === 'nameToMap' ||
     mode === 'mapToName' ||
     mode === 'factsToName' ||
+    mode === 'seaToName' ||
+    mode === 'riverToName' ||
     mode === 'wcWinners' ||
     mode === 'wcFinalists' ||
     mode === 'wcHosts' ||
-    mode === 'euroWinners'
+    mode === 'euroWinners' ||
+    mode === 'tldToName' ||
+    mode === 'callingToName' ||
+    mode === 'carToName'
   ) {
     return countryName(country, lang)
   }
+  if (isRankingMode(mode)) return countryName(country, lang)
+  if (isLeadersMode(mode)) return countryName(country, lang)
+  if (isCodeOptionMode(mode)) return codePromptLabel(country, mode)
   if (mode === 'nameToFounded') {
     if (!question) return String(foundedYear(country.iso) ?? '')
     return foundedChoiceLabel(
