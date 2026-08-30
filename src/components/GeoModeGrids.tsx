@@ -24,12 +24,17 @@ interface GeoModeGridsProps {
   mix?: boolean
   onPick: (mode: QuizMode) => void
   selectedModes?: readonly QuizMode[]
+  showRankings?: boolean
 }
 
-export function GeoModeGrids({ lang, activeMode, mix = false, onPick, selectedModes }: GeoModeGridsProps) {
-  const t = STRINGS[lang]
-  const rankingActive = !mix && RANKING_MODES.includes(activeMode as RankingMode)
-
+export function GeoModeGrids({
+  lang,
+  activeMode,
+  mix = false,
+  onPick,
+  selectedModes,
+  showRankings = true,
+}: GeoModeGridsProps) {
   return (
     <>
       <ModeButtons
@@ -40,19 +45,43 @@ export function GeoModeGrids({ lang, activeMode, mix = false, onPick, selectedMo
         selectedModes={selectedModes}
         onPick={onPick}
       />
-      <div className="ranking-modes">
-        <h2>{t.rankings}</h2>
-        <ModeButtons
+      {showRankings ? (
+        <RankingModeGrid
           lang={lang}
-          modes={RANKING_MODES}
           activeMode={activeMode}
           mix={mix}
           selectedModes={selectedModes}
           onPick={onPick}
         />
-        {rankingActive ? <RankingFootnote mode={activeMode as RankingMode} lang={lang} /> : null}
-      </div>
+      ) : null}
     </>
+  )
+}
+
+export function RankingModeGrid({
+  lang,
+  activeMode,
+  mix = false,
+  onPick,
+  selectedModes,
+  standalone = false,
+}: GeoModeGridsProps & { standalone?: boolean }) {
+  const t = STRINGS[lang]
+  const rankingActive = !mix && RANKING_MODES.includes(activeMode as RankingMode)
+
+  return (
+    <div className={`ranking-modes${standalone ? ' is-standalone' : ''}`}>
+      <h2>{t.rankings}</h2>
+      <ModeButtons
+        lang={lang}
+        modes={RANKING_MODES}
+        activeMode={activeMode}
+        mix={mix}
+        selectedModes={selectedModes}
+        onPick={onPick}
+      />
+      {rankingActive ? <RankingFootnote mode={activeMode as RankingMode} lang={lang} /> : null}
+    </div>
   )
 }
 

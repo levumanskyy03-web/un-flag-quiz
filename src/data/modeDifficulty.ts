@@ -1,5 +1,6 @@
 import { COUNTRIES, type Country } from './countries'
 import { LEVEL_ISOS } from './levels'
+import { quizLanguageId } from './languages'
 import { isEasyWaterCountry, isWaterMode } from './water'
 
 const KNOWN = new Set(COUNTRIES.map((country) => country.iso))
@@ -508,4 +509,29 @@ function buildFactsTiers(): Record<string, FactsDifficulty> {
 
 export function factsDifficultyOf(country: Country): FactsDifficulty {
   return FACTS_TIER[country.iso] ?? (country.difficulty === 'easy' ? 'easy' : 'hard')
+}
+
+export type LanguageDifficulty = 'easy' | 'medium' | 'hard'
+
+const LANGUAGE_TIER = buildLanguageTiers()
+
+function buildLanguageTiers(): Record<string, LanguageDifficulty> {
+  const withLang = COUNTRIES.filter((country) => quizLanguageId(country.iso)).sort(byFactsFame)
+  const easy = withLang.filter((country) => country.difficulty === 'easy')
+  const hard = withLang.filter((country) => country.difficulty === 'hard')
+  const easyKeep = Math.max(18, Math.round(easy.length * 0.45))
+  const fromEasy = easy.slice(easyKeep)
+  const mediumSize = fromEasy.length + Math.round(hard.length * 0.25)
+  const fromHardCount = Math.max(0, mediumSize - fromEasy.length)
+  const fromHard = hard.slice(0, fromHardCount)
+  const tier: Record<string, LanguageDifficulty> = {}
+  for (const country of easy.slice(0, easyKeep)) tier[country.iso] = 'easy'
+  for (const country of fromEasy) tier[country.iso] = 'medium'
+  for (const country of fromHard) tier[country.iso] = 'medium'
+  for (const country of hard.slice(fromHardCount)) tier[country.iso] = 'hard'
+  return tier
+}
+
+export function languageDifficultyOf(country: Country): LanguageDifficulty {
+  return LANGUAGE_TIER[country.iso] ?? (country.difficulty === 'easy' ? 'easy' : 'hard')
 }

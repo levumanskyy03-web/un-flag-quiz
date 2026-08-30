@@ -1,4 +1,4 @@
-import { campaignLevelCount, hasLevels, QUIZ_MODES, RANKING_MODES, type QuizMode } from './quiz'
+import { campaignLevelCount, hasLevels, QUIZ_MODES, type QuizMode } from './quiz'
 import type { RoundRecord } from './history'
 import { isBetter } from './history'
 import type { LevelClear } from './levelProgress'
@@ -17,7 +17,7 @@ export function statsByMode(
   bests: RoundRecord[],
   levelClears: LevelClear[],
 ): ModeStat[] {
-  return [...QUIZ_MODES, ...RANKING_MODES].map((mode) => {
+  return QUIZ_MODES.map((mode) => {
     const modeBests = bests.filter((item) => item.mode === mode && !item.mix)
     const best = modeBests.reduce<RoundRecord | null>((current, item) => {
       if (!current || isBetter(item, current)) return item

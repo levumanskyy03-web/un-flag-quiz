@@ -16,6 +16,7 @@ interface WorldPickScreenProps {
   xpReady?: boolean
   onChange: (settings: QuizSettings) => void
   onPick: (world: World) => void
+  onClearBests?: () => void
 }
 
 export function WorldPickScreen({
@@ -27,6 +28,7 @@ export function WorldPickScreen({
   xpReady = false,
   onChange,
   onPick,
+  onClearBests,
 }: WorldPickScreenProps) {
   const t = STRINGS[settings.lang]
 
@@ -41,6 +43,7 @@ export function WorldPickScreen({
           xp={xp}
           xpReady={xpReady}
           onChange={onChange}
+          onClearBests={onClearBests}
         />
         <h1>{t.worldsPick}</h1>
       </header>

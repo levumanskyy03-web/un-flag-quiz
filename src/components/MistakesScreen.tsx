@@ -6,6 +6,7 @@ import { GeoModeGrids } from './GeoModeGrids'
 import { geoMistakeCountries, type MistakeEntry } from '../lib/mistakes'
 import type { QuizSettings } from './HomeScreen'
 import { Flag, TeamFlag } from './Flag'
+import { FitText } from './FitText'
 import { LeaderPortrait } from './LeaderPortrait'
 import { HubNav, type HubTab } from './HubNav'
 import { LeadersSetup } from './LeadersScreen'
@@ -103,12 +104,15 @@ export function MistakesScreen({
                         <TeamFlag iso={item.iso} name={name} size="card" />
                       )}
                       <p className="learn-card-name">
-                        {name}
-                        {leaders && term
-                          ? ` · ${yearsLabel(term.from, term.to, t.present)}`
-                          : item.year
-                            ? ` · ${item.year}`
-                            : ''}
+                        <FitText>
+                          {`${name}${
+                            leaders && term
+                              ? ` · ${yearsLabel(term.from, term.to, t.present)}`
+                              : item.year
+                                ? ` · ${item.year}`
+                                : ''
+                          }`}
+                        </FitText>
                       </p>
                     </div>
                   )
@@ -118,7 +122,9 @@ export function MistakesScreen({
                   return (
                     <div key={country.iso} className="learn-card">
                       <Flag iso={country.iso} name={name} size="card" />
-                      <p className="learn-card-name">{name}</p>
+                      <p className="learn-card-name">
+                        <FitText>{name}</FitText>
+                      </p>
                     </div>
                   )
                 })}

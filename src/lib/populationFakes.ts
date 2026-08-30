@@ -18,11 +18,12 @@ export function populationChoiceLabel(
   lang: Lang,
   prompt: Country,
   optionIsos: readonly string[],
+  banned: readonly number[] = [],
 ): string {
   const passport = PASSPORTS[prompt.iso]
   if (!passport) return ''
   if (option.iso === prompt.iso) return formatPopulation(passport.population, lang)
-  const fake = fakesFor(prompt, optionIsos).get(option.iso)
+  const fake = fakesFor(prompt, optionIsos, banned).get(option.iso)
   if (fake == null) {
     const other = PASSPORTS[option.iso]
     return other ? formatPopulation(other.population, lang) : ''
@@ -30,12 +31,16 @@ export function populationChoiceLabel(
   return formatPopulation(fake, lang)
 }
 
-function fakesFor(prompt: Country, optionIsos: readonly string[]): Map<string, number> {
+function fakesFor(
+  prompt: Country,
+  optionIsos: readonly string[],
+  banned: readonly number[] = [],
+): Map<string, number> {
   const result = new Map<string, number>()
   const passport = PASSPORTS[prompt.iso]
   if (!passport) return result
   const distractors = optionIsos.filter((iso) => iso !== prompt.iso).sort()
-  const values = pickPopulations(passport.population, `${prompt.iso}:${distractors.join(',')}`)
+  const values = pickPopulations(passport.population, `${prompt.iso}:${distractors.join(',')}`, banned)
   distractors.forEach((iso, index) => {
     const value = values[index]
     if (value != null) result.set(iso, value)
@@ -43,13 +48,16 @@ function fakesFor(prompt: Country, optionIsos: readonly string[]): Map<string, n
   return result
 }
 
-function pickPopulations(correct: number, seed: string): number[] {
+function pickPopulations(correct: number, seed: string, banned: readonly number[] = []): number[] {
   const gap = populationGap(correct)
   const lows = candidates(correct, gap, 'low')
   const highs = candidates(correct, gap, 'high')
   const twoHigh = hash(seed) % 2 === 0
   const picked: number[] = []
-  const usedLabels = new Set([formatPopulation(correct, 'en')])
+  const usedLabels = new Set([
+    formatPopulation(correct, 'en'),
+    ...banned.map((value) => formatPopulation(value, 'en')),
+  ])
 
   const take = (pool: number[], n: number) => {
     for (const value of seededShuffle(pool, `${seed}:${picked.length}`)) {

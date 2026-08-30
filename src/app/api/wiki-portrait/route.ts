@@ -5,6 +5,7 @@ export const revalidate = 86400
 
 const memory = new Map<string, { at: number; body: string }>()
 const MEMORY_MS = 24 * 60 * 60 * 1000
+const CACHE_VER = 2
 
 export async function GET(request: Request) {
   const title = new URL(request.url).searchParams.get('title') ?? ''
@@ -12,7 +13,7 @@ export async function GET(request: Request) {
     return Response.json({ portrait: null }, { status: 400 })
   }
 
-  const key = title.trim().replace(/_/g, ' ')
+  const key = `${CACHE_VER}:${title.trim().replace(/_/g, ' ')}`
   const cached = memory.get(key)
   if (cached && Date.now() - cached.at < MEMORY_MS) {
     return new Response(cached.body, {

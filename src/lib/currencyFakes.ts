@@ -78,6 +78,7 @@ export function currencyChoiceLabel(
   lang: Lang,
   prompt: Country,
   optionIsos: readonly string[],
+  banned: readonly string[] = [],
 ): string {
   const passport = PASSPORTS[prompt.iso]
   if (!passport) return ''
@@ -85,7 +86,7 @@ export function currencyChoiceLabel(
     const source = PASSPORTS[option.iso] ?? passport
     return passportCurrency(source, lang)
   }
-  const label = distractorLabels(prompt, optionIsos).get(option.iso)
+  const label = distractorLabels(prompt, optionIsos, banned).get(option.iso)
   if (!label) {
     const source = PASSPORTS[option.iso]
     return source ? passportCurrency(source, lang) : ''
@@ -96,6 +97,7 @@ export function currencyChoiceLabel(
 function distractorLabels(
   prompt: Country,
   optionIsos: readonly string[],
+  banned: readonly string[] = [],
 ): Map<string, { en: string; ru: string }> {
   const result = new Map<string, { en: string; ru: string }>()
   const passport = PASSPORTS[prompt.iso]
@@ -106,11 +108,14 @@ function distractorLabels(
   const seed = seedKey(prompt.iso, distractors)
   const fakeCount = Math.min(seededShuffle([1, 2], seed)[0] ?? 1, Math.max(1, distractors.length - 1))
   const order = seededShuffle(distractors, `${seed}:order`)
-  const fakes = fakeLabels(prompt, fakeCount)
+  const fakes = fakeLabels(prompt, fakeCount, banned)
   const used = new Set(
-    [passport.currencyEn, passport.currencyRu, ...fakes.flatMap((label) => [label.en, label.ru])].map((text) =>
-      text.toLowerCase(),
-    ),
+    [
+      passport.currencyEn,
+      passport.currencyRu,
+      ...banned,
+      ...fakes.flatMap((label) => [label.en, label.ru]),
+    ].map((text) => text.toLowerCase()),
   )
 
   order.slice(0, fakes.length).forEach((iso, index) => {
@@ -133,13 +138,18 @@ function distractorLabels(
   return result
 }
 
-function fakeLabels(prompt: Country, count: number): Array<{ en: string; ru: string }> {
+function fakeLabels(
+  prompt: Country,
+  count: number,
+  banned: readonly string[] = [],
+): Array<{ en: string; ru: string }> {
   const adj = adjectiveFor(prompt)
   const passport = PASSPORTS[prompt.iso]
   if (!adj || !passport || count <= 0) return []
 
   const realEn = passport.currencyEn.toLowerCase()
   const realRu = passport.currencyRu.toLowerCase()
+  const bannedLower = new Set(banned.map((text) => text.toLowerCase()))
   const realUnit = unitKey(splitEn(passport.currencyEn).unit)
   const { preferred, extra } = unitPool(prompt.region, realUnit)
   const picked = [
@@ -154,6 +164,7 @@ function fakeLabels(prompt: Country, count: number): Array<{ en: string; ru: str
       ru: `${inflectRu(adj.ru, unit.gender)} ${unit.ru}`,
     }
     if (label.en.toLowerCase() === realEn || label.ru.toLowerCase() === realRu) continue
+    if (bannedLower.has(label.en.toLowerCase()) || bannedLower.has(label.ru.toLowerCase())) continue
     labels.push(label)
   }
   return labels

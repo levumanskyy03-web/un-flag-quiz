@@ -13,6 +13,7 @@ export function LegalShell({ title, children }: LegalShellProps) {
       <nav className="legal-nav">
         <WorldsBackLink />
         <a href="/countries">Страны</a>
+        <a href="/languages">Языки</a>
         <a href="/today">Страна дня</a>
       </nav>
       <article className="legal-article">

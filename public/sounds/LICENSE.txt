@@ -1,0 +1,11 @@
+Sounds from Kenney (www.kenney.nl), CC0 1.0 Universal.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+correct.wav  Kenney Interface Sounds — confirmation_002
+  https://kenney.nl/assets/interface-sounds
+wrong.wav    Kenney Interface Sounds — error_003
+  https://kenney.nl/assets/interface-sounds
+success.wav  Kenney Music Jingles — jingles_PIZZI00 / PIZZA00
+fail.wav     Kenney Music Jingles — jingles_HIT09
+record.wav   Kenney Music Jingles — jingles_STEEL16
+  https://kenney.nl/assets/music-jingles

@@ -83,6 +83,7 @@ import {
 import type { FactsDuelConfig } from "./lib/factsRules";
 import { bumpTrainerComplete, clearMistakes, loadMistakes, recordMistakes, clearCorrected, type MistakeEntry } from "./lib/mistakes";
 import { collectStamps, loadStamps } from "./lib/stamps";
+import { playSfx } from "./lib/sfx";
 
 const LANG_KEY = "un-flag-quiz-lang";
 
@@ -273,6 +274,7 @@ export default function App() {
         window.clearInterval(id);
         setRemainingMs(0);
         setTimedOut(true);
+        playSfx("wrong");
         setAnswers((prev) => {
           if (prev.length > index) return prev;
           const question = questions[index];
@@ -351,6 +353,7 @@ export default function App() {
                 rememberRound(answers);
                 const gold = quizSettings.levelHardcore || record.beat;
                 setResultTone(gold ? "gold" : "success");
+                playSfx(record.beat || !previousClear || baseAward > 0 ? "record" : "success");
                 setScreen("results");
               })();
               return;
@@ -405,7 +408,11 @@ export default function App() {
             if (gained > 0) {
               void publishRatings(loadLevelClears(), lifetime.xp);
             }
+            playSfx(saved.isNewBest ? "record" : endedBy === "complete" ? "success" : "fail");
           }
+        }
+        if (quizSettings.path === "levels" && endedBy !== "complete") {
+          playSfx("fail");
         }
         const gold = endedBy === "complete" && quizSettings.path === "levels" && quizSettings.levelHardcore;
         setResultTone(endedBy !== "complete" ? "fail" : gold ? "gold" : "success");
@@ -512,6 +519,7 @@ export default function App() {
     if (view.phase === "done") {
       setRoundMs(view.roundMs)
       setResultTone(view.youWon === false ? "fail" : "success")
+      if (prevPhase !== "done") playSfx(view.youWon === false ? "fail" : "success")
       setScreen("duel-results")
       return
     }
@@ -831,6 +839,7 @@ export default function App() {
       mode:
         prev.mode === "neighborsToName" ||
         prev.mode === "factsToName" ||
+        prev.mode === "nameToLanguage" ||
         isCodesMode(prev.mode) ||
         isRankingMode(prev.mode)
           ? "flagToName"
@@ -949,6 +958,7 @@ export default function App() {
       }
       rememberRound(answers);
       setResultTone(wrong === 0 ? "success" : null);
+      playSfx(wrong === 0 ? "success" : "fail");
       setScreen("results");
       return;
     }
@@ -989,7 +999,9 @@ export default function App() {
     if (!question) return;
     setSelectedIso(iso);
     setTimedOut(iso === null);
-    setAnswers((prev) => (prev.length > index ? prev : [...prev, { question, selectedIso: iso, timeMs }]));
+    const next = { question, selectedIso: iso, timeMs };
+    playSfx(isCorrect(next) ? "correct" : "wrong");
+    setAnswers((prev) => (prev.length > index ? prev : [...prev, next]));
   }
 
   async function handleAdvanceFact() {
@@ -1002,6 +1014,8 @@ export default function App() {
     if (duelCode) {
       if (duelView?.youAnswer !== undefined) return;
       if (duelView && duelView.phase !== "question" && duelView.phase !== "reveal") return;
+      const question = questionFromWire(duelView?.question ?? null);
+      if (question) playSfx(isCorrect({ question, selectedIso: iso, timeMs: 0 }) ? "correct" : "wrong");
       setSelectedIso(iso);
       void submitDuelPick(iso);
       return;
@@ -1009,7 +1023,9 @@ export default function App() {
     if (answered) return;
     const question = questions[index];
     setSelectedIso(iso);
-    setAnswers((prev) => [...prev, { question, selectedIso: iso, timeMs: questionTimeMs() }]);
+    const next = { question, selectedIso: iso, timeMs: questionTimeMs() };
+    playSfx(isCorrect(next) ? "correct" : "wrong");
+    setAnswers((prev) => [...prev, next]);
   }
 
   function playAgain() {
@@ -1106,31 +1122,19 @@ export default function App() {
   }
 
   function handleClearBests() {
-    setBests(clearBests((item) => isFootballMode(item.mode) || isCodesMode(item.mode) || isLeadersMode(item.mode)));
+    setBests(clearBests());
   }
 
   function handleClearFootballHistory() {
     setHistory(clearHistory((item) => !isFootballMode(item.mode)));
   }
 
-  function handleClearFootballBests() {
-    setBests(clearBests((item) => !isFootballMode(item.mode)));
-  }
-
   function handleClearCodesHistory() {
     setHistory(clearHistory((item) => !isCodesMode(item.mode)));
   }
 
-  function handleClearCodesBests() {
-    setBests(clearBests((item) => !isCodesMode(item.mode)));
-  }
-
   function handleClearLeadersHistory() {
     setHistory(clearHistory((item) => !isLeadersMode(item.mode)));
-  }
-
-  function handleClearLeadersBests() {
-    setBests(clearBests((item) => !isLeadersMode(item.mode)));
   }
 
   return (
@@ -1165,6 +1169,7 @@ export default function App() {
           xp={xp}
           xpReady={xpReady}
           onChange={handleSettingsChange}
+          onClearBests={handleClearBests}
           onPick={(next) => {
             if (next === "football") {
               const mode = isFootballMode(quizSettings.mode) ? quizSettings.mode : "wcWinners"
@@ -1228,7 +1233,7 @@ export default function App() {
           onCreateDuel={(modes) => void handleCreateDuel(modes)}
           onJoinDuel={(code) => void handleJoinDuel(code)}
           onClearHistory={handleClearFootballHistory}
-          onClearBests={handleClearFootballBests}
+          onClearBests={handleClearBests}
         />
       )}
       {world === "football" && screen === "levels" && (
@@ -1246,6 +1251,7 @@ export default function App() {
           onPlay={playLevel}
           onHub={goHub}
           onWorlds={goToWorlds}
+          onClearBests={handleClearBests}
         />
       )}
       {world === "football" && screen === "learn" && (
@@ -1372,7 +1378,7 @@ export default function App() {
           onHub={goHub}
           onWorlds={goToWorlds}
           onClearHistory={handleClearCodesHistory}
-          onClearBests={handleClearCodesBests}
+          onClearBests={handleClearBests}
         />
       )}
       {world === "codes" && screen === "learn" && (
@@ -1451,7 +1457,7 @@ export default function App() {
           onHub={goHub}
           onWorlds={goToWorlds}
           onClearHistory={handleClearLeadersHistory}
-          onClearBests={handleClearLeadersBests}
+          onClearBests={handleClearBests}
         />
       )}
       {world === "leaders" && screen === "levels" && (
@@ -1469,6 +1475,7 @@ export default function App() {
           onPlay={playLevel}
           onHub={goHub}
           onWorlds={goToWorlds}
+          onClearBests={handleClearBests}
         />
       )}
       {world === "leaders" && screen === "learn" && (
@@ -1579,6 +1586,7 @@ export default function App() {
           onPlay={playLevel}
           onHub={goHub}
           onWorlds={goToWorlds}
+          onClearBests={handleClearBests}
         />
       )}
       {world === "geo" && screen === "level20" && (
@@ -1632,6 +1640,7 @@ export default function App() {
           onChange={handleSettingsChange}
           onHub={goHub}
           onWorlds={goToWorlds}
+          onClearBests={handleClearBests}
         />
       )}
       {world === "geo" && screen === "duel-lobby" && duelView && (

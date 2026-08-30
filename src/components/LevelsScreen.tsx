@@ -29,6 +29,7 @@ interface LevelsScreenProps {
   onPlay: (level: number) => void
   onHub: (tab: HubTab) => void
   onWorlds: () => void
+  onClearBests?: () => void
 }
 
 export function LevelsScreen({
@@ -45,6 +46,7 @@ export function LevelsScreen({
   onPlay,
   onHub,
   onWorlds,
+  onClearBests,
 }: LevelsScreenProps) {
   const t = STRINGS[settings.lang]
   const [worldBests, setWorldBests] = useState<Record<number, LevelBest>>({})
@@ -79,6 +81,7 @@ export function LevelsScreen({
           xp={xp}
           xpReady={xpReady}
           onLangChange={(lang) => onChange({ ...settings, lang })}
+          onClearBests={onClearBests}
         />
 
         {isLeadersMode(settings.mode) ? (

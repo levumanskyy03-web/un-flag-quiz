@@ -13,7 +13,9 @@ import { STRINGS, localeTag, regionLabel, type Lang } from '../i18n/strings'
 import { countryName } from '../lib/quiz'
 import { collectStamp } from '../lib/stamps'
 import { Flag } from './Flag'
+import { FitText } from './FitText'
 import { RankingPlaces } from './RankingPlaces'
+import { PassportLanguages } from './PassportLanguages'
 
 interface PassportModalProps {
   country: Country
@@ -105,11 +107,12 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
             <dd>{passportCurrency(passport, lang)}</dd>
           </div>
           {founded !== undefined ? (
-            <div className="passport-founded">
+            <div>
               <dt>{t.founded}</dt>
               <dd>{founded}</dd>
             </div>
           ) : null}
+          <PassportLanguages iso={country.iso} lang={lang} />
         </dl>
         <RankingPlaces iso={country.iso} lang={lang} />
         {territoryNote ? null : (
@@ -129,7 +132,7 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
                       onClick={() => onOpenCountry(neighbor.iso)}
                     >
                       <Flag iso={neighbor.iso} name={neighborName} size="thumb" />
-                      <span>{neighborName}</span>
+                      <FitText>{neighborName}</FitText>
                     </button>
                   )
                 })}

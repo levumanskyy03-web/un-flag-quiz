@@ -290,6 +290,12 @@ export function QuizScreen({
                 })}
               </ul>
             </div>
+          ) : activeMode === 'nameToLanguage' ? (
+            <div className="code-prompt-block">
+              {mixHint ? null : <p className="neighbors-prompt-label">{t.nameToLanguagePrompt}</p>}
+              <Flag iso={question.country.iso} name={correctName} size="hero" />
+              <h2 className="prompt-name">{correctName}</h2>
+            </div>
           ) : (
             <h2 className="prompt-name">{correctName}</h2>
           )}

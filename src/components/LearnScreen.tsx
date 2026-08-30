@@ -13,6 +13,7 @@ import {
   isCodesMode,
   isFootballMode,
   isLeadersMode,
+  isNameToLanguage,
   isRankingMode,
   isRegionSelected,
   isWaterMapMode,
@@ -21,6 +22,7 @@ import {
   toggleRegion,
   waterName,
 } from '../lib/quiz'
+import { languageName, quizLanguageId } from '../data/languages'
 import { watersFor } from '../data/water'
 import { termById, yearsLabel } from '../data/leaders'
 import { collectStamp } from '../lib/stamps'
@@ -30,6 +32,7 @@ import type { QuizSettings } from './HomeScreen'
 import { HubNav, type HubTab } from './HubNav'
 import { GeoModeGrids } from './GeoModeGrids'
 import { Flag } from './Flag'
+import { FitText } from './FitText'
 import { LeaderPortrait } from './LeaderPortrait'
 import { LanguageToggle } from './LanguageToggle'
 import { LeadersSetup } from './LeadersScreen'
@@ -160,12 +163,15 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           const rankingPlace =
             isRankingMode(settings.mode) ? rankingPlaceOf(settings.mode, country.iso) : null
           const rankingTotal = isRankingMode(settings.mode) ? rankingCount(settings.mode) : 0
+          const quizLang = isNameToLanguage(settings.mode) ? quizLanguageId(country.iso) : null
           const term = leaders ? termById(country.iso) : undefined
           if (leaders && term) {
             return (
               <div key={country.iso} className="learn-card">
                 <LeaderPortrait name={name} wiki={term.wiki} size="card" />
-                <p className="learn-card-name">{name}</p>
+                <p className="learn-card-name">
+                  <FitText>{name}</FitText>
+                </p>
                 <p className="learn-card-meta">{yearsLabel(term.from, term.to, t.present)}</p>
               </div>
             )
@@ -181,8 +187,18 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
               }}
             >
               <Flag iso={country.iso} name={name} size="card" />
-              <p className="learn-card-name">{mapWater && waterLabel ? waterLabel : name}</p>
-              {mapWater ? <p className="learn-card-meta">{name}</p> : waterLabel ? <p className="learn-card-meta">{waterLabel}</p> : rankingPlace !== null ? <p className="learn-card-meta">{t.rankingPlace(rankingPlace, rankingTotal)}</p> : null}
+              <p className="learn-card-name">
+                <FitText>{mapWater && waterLabel ? waterLabel : name}</FitText>
+              </p>
+              {mapWater ? (
+                <p className="learn-card-meta">{name}</p>
+              ) : waterLabel ? (
+                <p className="learn-card-meta">{waterLabel}</p>
+              ) : rankingPlace !== null ? (
+                <p className="learn-card-meta">{t.rankingPlace(rankingPlace, rankingTotal)}</p>
+              ) : quizLang ? (
+                <p className="learn-card-meta">{languageName(quizLang, settings.lang)}</p>
+              ) : null}
             </button>
           )
         })}

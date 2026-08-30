@@ -799,6 +799,10 @@ html[dir="rtl"] .coc-level {
   color: var(--text);
 }
 
+.sfx-chip.is-muted {
+  color: var(--muted);
+}
+
 .geo-icon {
   display: block;
   flex: 0 0 auto;
@@ -898,6 +902,14 @@ html[dir="rtl"] .coc-level {
   flex-direction: column;
   gap: 12px;
   width: 100%;
+}
+
+.settings-pane .history-head {
+  margin-top: 4px;
+}
+
+.settings-pane .history-head .settings-sub {
+  margin: 0;
 }
 
 .settings-profile-row {
@@ -1094,6 +1106,26 @@ html[dir="rtl"] .coc-level {
   color: var(--accent);
   border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
   background: var(--accent-soft);
+}
+
+.achievement-pick.is-tier5 {
+  border-color: color-mix(in srgb, #b45309 35%, var(--border));
+}
+
+.achievement-pick.is-tier5.is-on {
+  color: #b45309;
+  border-color: color-mix(in srgb, #b45309 55%, var(--border));
+  background: color-mix(in srgb, #b45309 12%, var(--card));
+}
+
+.achievement-pick.is-tier6 {
+  border-color: color-mix(in srgb, #6d28d9 40%, var(--border));
+}
+
+.achievement-pick.is-tier6.is-on {
+  color: #6d28d9;
+  border-color: color-mix(in srgb, #6d28d9 60%, var(--border));
+  background: color-mix(in srgb, #6d28d9 12%, var(--card));
 }
 
 .achievement-pick.is-active {
@@ -1414,6 +1446,12 @@ html[dir="rtl"] .lang-select-mark {
   border-top: 2px solid var(--border);
 }
 
+.ranking-modes.is-standalone {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
 .ranking-modes h2 {
   margin: 0 0 14px;
 }
@@ -1509,6 +1547,63 @@ html[dir="rtl"] .lang-select-mark {
 .passport-ranking-tile.is-open .passport-ranking-help {
   color: var(--text);
   border-color: var(--accent);
+}
+
+.passport-overlay.ranking-about-overlay {
+  z-index: 30;
+  align-items: center;
+}
+
+.ranking-about-sheet {
+  position: relative;
+  width: min(440px, 100%);
+  margin-top: 0;
+  align-items: stretch;
+  text-align: start;
+}
+
+.ranking-about-sheet .passport-title {
+  padding: 0 40px 0 0;
+  text-align: start;
+  font-size: 1.25rem;
+}
+
+.ranking-about-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.7rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.ranking-about-close:hover {
+  color: var(--text);
+  background: var(--accent-soft);
+}
+
+.ranking-about-body {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.ranking-about-cite {
+  margin: 0;
+  padding: 12px 14px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--muted);
+  background: var(--accent-soft);
+  border-radius: 12px;
 }
 
 @media (max-width: 420px) {
@@ -2468,7 +2563,8 @@ button.leaderboard-row:disabled {
   margin-bottom: 4px;
 }
 
-.history-head h2 {
+.history-head h2,
+.history-head h3 {
   margin: 0;
 }
 
@@ -2588,6 +2684,7 @@ button.leaderboard-row:disabled {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
   padding: 10px;
   background: var(--card);
   border: 1px solid var(--border);
@@ -2609,6 +2706,8 @@ button.learn-card:hover {
 
 .learn-card-name {
   margin: 0;
+  width: 100%;
+  min-width: 0;
   text-align: center;
   font-size: 0.88rem;
   font-weight: 700;
@@ -2736,6 +2835,7 @@ button.learn-card:hover {
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  min-width: 0;
 }
 
 .passport-fields dt {
@@ -2749,10 +2849,162 @@ button.learn-card:hover {
 .passport-fields dd {
   margin: 0;
   font-weight: 700;
+  min-width: 0;
+  max-width: 100%;
 }
 
-.passport-founded {
+.passport-langs {
+  position: relative;
+}
+
+.passport-langs:last-child:nth-child(odd) {
   grid-column: 1 / -1;
+}
+
+.passport-langs dd {
+  width: 100%;
+}
+
+.passport-langs-main {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0 22px 0 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.passport-langs-main .fit-text {
+  width: 100%;
+}
+
+.passport-langs-star {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  min-height: 22px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.passport-langs-star:hover,
+.passport-langs.is-open .passport-langs-star {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.lang-modal-sheet {
+  max-height: min(80vh, 640px);
+  overflow: auto;
+}
+
+.lang-modal-note,
+.lang-modal-empty {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.lang-card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lang-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: inherit;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.lang-card.is-national {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.lang-card-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.lang-card-pct,
+.lang-card-mark {
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.lang-card.is-national .lang-card-mark {
+  color: var(--accent);
+}
+
+.lang-index {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.lang-index a {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  font-weight: 700;
+}
+
+.lang-index-count {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.language-page .quiz-map-frame {
+  margin: 12px 0 20px;
+}
+
+.language-countries h2 {
+  font-size: 1rem;
+  margin: 0 0 10px;
+}
+
+.quiz-map-frame .map-country.is-lang-range,
+.quiz-map-frame .map-pin.is-lang-range {
+  fill: var(--accent);
+  cursor: pointer;
+}
+
+.lang-range-map .map-country {
+  cursor: default;
 }
 
 .passport-fact {
@@ -2806,6 +3058,8 @@ button.learn-card:hover {
   display: flex;
   align-items: center;
   gap: 8px;
+  max-width: 100%;
+  min-width: 0;
   min-height: 40px;
   padding: 6px 10px 6px 6px;
   border: 1px solid var(--border);
@@ -3683,6 +3937,14 @@ html[dir="rtl"] .map-pan {
   justify-items: center;
   gap: 6px;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.leader-portrait > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .leader-portrait.is-hero {
@@ -3692,6 +3954,7 @@ html[dir="rtl"] .map-pan {
 .leader-photo,
 .leader-fallback {
   display: block;
+  width: 100%;
   object-fit: cover;
   object-position: top center;
   background: var(--accent-soft);
@@ -3742,6 +4005,7 @@ html[dir="rtl"] .map-pan {
   line-height: 1.3;
   font-weight: 600;
   color: var(--muted);
+  overflow-wrap: anywhere;
 }
 
 .leader-credit a {
@@ -3790,6 +4054,7 @@ html[dir="rtl"] .map-pan {
 
 .stamp-card {
   display: grid;
+  min-width: 0;
   gap: 6px;
   padding: 8px 6px 10px;
   border: 0;
@@ -3813,9 +4078,27 @@ html[dir="rtl"] .map-pan {
 
 .stamp-name {
   margin: 0;
+  width: 100%;
+  min-width: 0;
   font-size: 0.72rem;
   line-height: 1.2;
   text-align: center;
+}
+
+.fit-text {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.learn-card-name .fit-text,
+.stamp-name .fit-text {
+  width: 100%;
+}
+
+.passport-neighbor .fit-text {
+  flex: 0 1 auto;
 }
 
 

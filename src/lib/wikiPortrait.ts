@@ -122,8 +122,16 @@ function commonsFilePage(fileName: string): string {
   return `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(fileName.replace(/ /g, '_'))}`
 }
 
+function cleanAuthor(author: string): string {
+  return author
+    .replace(/^[^\s]+\.(?:png|jpe?g|gif|webp|svg|tiff?)\s*:?\s*/i, '')
+    .replace(/\b(unknown author)+\b/gi, 'Unknown author')
+    .replace(/^unknown,?\s*/i, '')
+    .trim()
+}
+
 function buildCredits(author: string, license: string): { credit: string; compactCredit: string } {
-  const who = author.replace(/\b(unknown author)+\b/gi, 'Unknown author').trim()
+  const who = cleanAuthor(author)
   const compactCredit = `${license} · Wikimedia Commons`
   const credit = who && !/^unknown author$/i.test(who) ? `${who} · ${compactCredit}` : compactCredit
   return { credit, compactCredit }

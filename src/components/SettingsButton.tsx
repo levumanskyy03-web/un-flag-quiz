@@ -17,6 +17,7 @@ export interface SettingsButtonProps {
   levelClears?: LevelClear[]
   onLangChange?: (lang: Lang) => void
   onAuth?: (account: Account | null) => void
+  onClearBests?: () => void
 }
 
 export function SettingsButton({
@@ -26,6 +27,7 @@ export function SettingsButton({
   levelClears = [],
   onLangChange,
   onAuth,
+  onClearBests,
 }: SettingsButtonProps) {
   const t = STRINGS[lang]
   const [open, setOpen] = useState(false)
@@ -66,6 +68,7 @@ export function SettingsButton({
           history={history}
           bests={bests}
           levelClears={levelClears}
+          onClearBests={onClearBests}
           onLangChange={(next) => onLangChange?.(next)}
           onClose={() => {
             refreshMark()

@@ -6,6 +6,7 @@ import { STAMP_TOTAL, hasStamp } from '../lib/stamps'
 import type { QuizSettings } from './HomeScreen'
 import { AppChrome } from './AppChrome'
 import { Flag } from './Flag'
+import { FitText } from './FitText'
 import { HubNav, type HubTab } from './HubNav'
 import { PassportModal } from './PassportModal'
 import { WorldsBack } from './WorldsBack'
@@ -23,6 +24,7 @@ interface AlbumScreenProps {
   onChange: (settings: QuizSettings) => void
   onHub: (tab: HubTab) => void
   onWorlds: () => void
+  onClearBests?: () => void
 }
 
 export function AlbumScreen({
@@ -36,6 +38,7 @@ export function AlbumScreen({
   onChange,
   onHub,
   onWorlds,
+  onClearBests,
 }: AlbumScreenProps) {
   const t = STRINGS[settings.lang]
   const [openIso, setOpenIso] = useState<string | null>(null)
@@ -52,6 +55,7 @@ export function AlbumScreen({
           xp={xp}
           xpReady={xpReady}
           onChange={onChange}
+          onClearBests={onClearBests}
         />
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1>{t.album}</h1>
@@ -79,7 +83,9 @@ export function AlbumScreen({
               <span className="stamp-frame">
                 <Flag iso={country.iso} name={name} size="card" />
               </span>
-              <p className="stamp-name">{owned ? name : '—'}</p>
+              <p className="stamp-name">
+                <FitText>{owned ? name : '—'}</FitText>
+              </p>
             </button>
           )
         })}

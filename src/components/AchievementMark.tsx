@@ -511,5 +511,149 @@ function Icon({ id }: { id: AchievementId }) {
           <path d="M3.5 9.5c1.6 1.6 3.2 1.6 4.8 0s3.2-1.6 4.8 0 3.2 1.6 4.8 0" />
         </>
       )
+    case 'langFluent':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M8 9.2h8M8 12h5.5M8 14.8h3.2" />
+          <path d="M16.4 14.2c.7.5.7 2.2 0 2.7" />
+        </>
+      )
+    case 'rankAtlas':
+      return (
+        <>
+          <path d="M5 18.5h14" />
+          <path d="M7 18.5V11h3v7.5M13.5 18.5V7h3.5v11.5" />
+        </>
+      )
+    case 'ldThree':
+      return (
+        <>
+          <circle cx="6.2" cy="9" r="2.2" />
+          <circle cx="12" cy="8.2" r="2.2" />
+          <circle cx="17.8" cy="9" r="2.2" />
+          <path d="M3.8 18.2c.4-2.6 1.6-4 2.4-4 .8 0 2 1.4 2.4 4M9.6 18.2c.4-2.8 1.7-4.4 2.4-4.4s2 1.6 2.4 4.4M14.8 18.2c.4-2.6 1.6-4 2.4-4 .8 0 2 1.4 2.4 4" />
+        </>
+      )
+    case 'mixIron':
+      return (
+        <>
+          <rect x="4" y="6" width="7.2" height="7.2" rx="1.4" />
+          <rect x="12.8" y="10.8" width="7.2" height="7.2" rx="1.4" />
+          <path d="M11 9.6 13.2 12" />
+        </>
+      )
+    case 'stampsCentury':
+      return (
+        <>
+          <rect x="4" y="5.5" width="10.5" height="10.5" rx="1.2" />
+          <rect x="9.5" y="8" width="10.5" height="10.5" rx="1.2" />
+          <path d="M12 12.4 13.6 14 17 10.6" />
+        </>
+      )
+    case 'geoHardTen':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <ellipse cx="12" cy="12" rx="3.2" ry="8" />
+          <path d="M4.2 12h15.6" />
+          <path d="M12 4.5 13.2 7.2h2.8L14.2 9l.9 2.6L12 10.2 8.9 11.6 9.8 9 7 7.2h2.8z" />
+        </>
+      )
+    case 'campaignTriple':
+      return (
+        <>
+          <path d="M4.5 18h15" />
+          <path d="M6 18V12h3.2v6M10.4 18V9h3.2v9M14.8 18V6h3.2v12" />
+        </>
+      )
+    case 'speedTen':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M12 8v4.2L16 14" />
+          <path d="M7 7 5.5 5.5M17 7l1.5-1.5" />
+        </>
+      )
+    case 'fbIron':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M12 7.2 14.4 9l-.9 2.8H10.5L9.6 9z" />
+          <path d="M8.5 16.5 12 13l3.5 3.5" />
+        </>
+      )
+    case 'mythWorld':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <ellipse cx="12" cy="12" rx="3.2" ry="8" />
+          <path d="M4.2 12h15.6" />
+          <path d="M12.2 7.2 9.6 11.4h2.1L11.1 15l2.8-4.4h-2.1z" />
+        </>
+      )
+    case 'mythGoldRoad':
+      return (
+        <>
+          <path d="M5 18.5h14" />
+          <path d="M7 18.5 12 5.5 17 18.5" />
+          <path d="M8.8 13.5h6.4" />
+          <path d="M12 5.5 13.1 8.2h2.6L14.1 10l.8 2.5L12 11.1 9.1 12.5 9.9 10 8.3 8.2h2.6z" />
+        </>
+      )
+    case 'mythAtlas':
+      return (
+        <>
+          <rect x="3.5" y="5" width="7.2" height="6.2" rx="1.1" />
+          <rect x="13.3" y="5" width="7.2" height="6.2" rx="1.1" />
+          <rect x="3.5" y="13" width="7.2" height="6.2" rx="1.1" />
+          <rect x="13.3" y="13" width="7.2" height="6.2" rx="1.1" />
+        </>
+      )
+    case 'mythRankings':
+      return (
+        <>
+          <path d="M4.5 18.5h15" />
+          <path d="M6.5 18.5V14h2.6v4.5M10.7 18.5V10h2.6v8.5M14.9 18.5V6h2.6v12.5" />
+          <path d="M12 3.8 13 6.2h2.4L13.8 7.8l.7 2.2L12 8.8l-2.5 1.2.7-2.2L8.6 6.2H11z" />
+        </>
+      )
+    case 'mythRegions':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M12 5.2 13.4 9h3.6l-2.9 2.2 1.1 3.4L12 12.6 8.8 14.6l1.1-3.4L7 9h3.6z" />
+        </>
+      )
+    case 'mythLevel40':
+      return (
+        <>
+          <path d="M12 3.5 19 8.2v7.6L12 20.5 5 15.8V8.2z" />
+          <path d="M8.4 15V10.2L12.4 15h.2V10.2" />
+        </>
+      )
+    case 'mythHundred':
+      return (
+        <>
+          <path d="M5 7.5h14M5 12h14M5 16.5h10" />
+          <path d="M3.4 7.5l1.3 1.3 2.2-2.4M3.4 12l1.3 1.3 2.2-2.4M3.4 16.5l1.3 1.3 2.2-2.4" />
+        </>
+      )
+    case 'mythLeaders':
+      return (
+        <>
+          <circle cx="12" cy="8" r="2.4" />
+          <path d="M7.2 18.4c.5-3.2 2-5 4.8-5s4.3 1.8 4.8 5" />
+          <path d="M12 3.5 13.2 6h2.8L14.2 7.7l.8 2.5L12 8.8 9 10.2l.8-2.5L8 6h2.8z" />
+        </>
+      )
+    case 'veteranYear':
+      return (
+        <>
+          <rect x="4.5" y="6" width="15" height="14" rx="2" />
+          <path d="M4.5 10h15M8 4.5v3M16 4.5v3" />
+          <circle cx="12" cy="15.2" r="2.4" />
+        </>
+      )
   }
 }

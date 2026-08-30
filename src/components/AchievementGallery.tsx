@@ -26,7 +26,7 @@ export function AchievementGallery({ lang, unlockedIds }: AchievementGalleryProp
             <button
               key={info.id}
               type="button"
-              className={`achievement-pick ${on ? 'is-on' : ''} ${focus === info.id ? 'is-active' : ''}`}
+              className={`achievement-pick is-tier-${info.tier} ${on ? 'is-on' : ''} ${focus === info.id ? 'is-active' : ''}`}
               aria-pressed={on}
               aria-label={copy.title}
               onClick={() => setFocus(info.id)}

@@ -12,6 +12,7 @@ interface AppChromeProps {
   xp?: number
   xpReady?: boolean
   onChange: (settings: QuizSettings) => void
+  onClearBests?: () => void
 }
 
 export function AppChrome({
@@ -22,6 +23,7 @@ export function AppChrome({
   xp = 0,
   xpReady = false,
   onChange,
+  onClearBests,
 }: AppChromeProps) {
   return (
     <div className="home-top">
@@ -33,6 +35,7 @@ export function AppChrome({
         xp={xp}
         xpReady={xpReady}
         onLangChange={(lang) => onChange({ ...settings, lang })}
+        onClearBests={onClearBests}
       />
       <LanguageToggle
         lang={settings.lang}

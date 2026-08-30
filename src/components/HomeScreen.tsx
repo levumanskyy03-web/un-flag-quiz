@@ -6,12 +6,14 @@ import type { LevelClear } from '../lib/levelProgress'
 import {
   PLAY_DIFFICULTIES,
   FACTS_DIFFICULTIES,
+  LANGUAGE_DIFFICULTIES,
   ROUND_SIZES,
   fitRoundSize,
   formatClock,
   getPool,
   getRegionPool,
   isFactsToName,
+  isNameToLanguage,
   isFootballMode,
   isCodesMode,
   isLeadersMode,
@@ -29,7 +31,7 @@ import type { FactsDuelConfig } from '../lib/factsRules'
 import { AppChrome } from './AppChrome'
 import { HubNav, type HubTab } from './HubNav'
 import { DuelCreateModal } from './DuelCreateModal'
-import { GeoModeGrids } from './GeoModeGrids'
+import { GeoModeGrids, RankingModeGrid } from './GeoModeGrids'
 import { WorldsBack } from './WorldsBack'
 
 export interface QuizSettings {
@@ -84,14 +86,18 @@ export function HomeScreen({
 }: HomeScreenProps) {
   const t = STRINGS[settings.lang]
   const factsMode = !settings.mix && isFactsToName(settings.mode)
+  const languageMode = !settings.mix && isNameToLanguage(settings.mode)
   const poolSize = settings.mix
     ? getRegionPool(settings.region).length
     : getPool(settings.region, settings.difficulty, settings.mode).length
   const regions: Array<Region | 'all'> = ['all', ...REGIONS]
-  const difficulties = factsMode ? FACTS_DIFFICULTIES : PLAY_DIFFICULTIES
+  const difficulties = languageMode
+    ? LANGUAGE_DIFFICULTIES
+    : factsMode
+      ? FACTS_DIFFICULTIES
+      : PLAY_DIFFICULTIES
   const currentBest = findBest(bests, settings)
   const geoHistory = history.filter((item) => !isFootballMode(item.mode) && !isCodesMode(item.mode) && !isLeadersMode(item.mode))
-  const geoBests = bests.filter((item) => !isFootballMode(item.mode) && !isCodesMode(item.mode) && !isLeadersMode(item.mode))
   const [joinCode, setJoinCode] = useState('')
   const [duelSetupOpen, setDuelSetupOpen] = useState(false)
 
@@ -114,6 +120,7 @@ export function HomeScreen({
           xp={xp}
           xpReady={xpReady}
           onChange={onChange}
+          onClearBests={onClearBests}
         />
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1>{t.title}</h1>
@@ -148,6 +155,7 @@ export function HomeScreen({
           lang={settings.lang}
           activeMode={settings.mode}
           mix={Boolean(settings.mix)}
+          showRankings={false}
           onPick={(mode) =>
             update({
               path: 'pool',
@@ -173,7 +181,7 @@ export function HomeScreen({
         </div>
 
         <h2>{t.difficulty}</h2>
-        <div className="choice-grid is-3">
+        <div className={`choice-grid ${difficulties.length === 4 ? 'is-4' : 'is-3'}`}>
           {difficulties.map((difficulty) => (
             <button
               key={difficulty}
@@ -252,6 +260,23 @@ export function HomeScreen({
         {duelError ? <p className="account-error">{duelError}</p> : null}
       </section>
 
+      <section className="card settings-card">
+        <RankingModeGrid
+          lang={settings.lang}
+          activeMode={settings.mode}
+          mix={Boolean(settings.mix)}
+          standalone
+          onPick={(mode) =>
+            update({
+              path: 'pool',
+              mix: null,
+              mode,
+              difficulty: nextDifficultyForMode(mode, settings.difficulty),
+            })
+          }
+        />
+      </section>
+
       {duelSetupOpen ? (
         <DuelCreateModal
           lang={settings.lang}
@@ -264,22 +289,6 @@ export function HomeScreen({
           }}
         />
       ) : null}
-
-      {geoBests.length > 0 && (
-        <section className="card history-card">
-          <div className="history-head">
-            <h2>{t.bests}</h2>
-            <button type="button" className="btn-ghost history-clear" onClick={onClearBests}>
-              {t.clearBests}
-            </button>
-          </div>
-          <ul className="history-list">
-            {geoBests.map((record) => (
-              <RecordRow key={record.id} record={record} lang={settings.lang} score={t.score} />
-            ))}
-          </ul>
-        </section>
-      )}
 
       {geoHistory.length > 0 && (
         <section className="card history-card">
@@ -334,5 +343,6 @@ function formatPlayedAt(at: number, lang: Lang): string {
 
 function nextDifficultyForMode(mode: QuizMode, difficulty: QuizDifficulty): QuizDifficulty {
   if (mode === 'factsToName') return difficulty === 'hardcore' ? 'hard' : difficulty
+  if (mode === 'nameToLanguage') return difficulty
   return difficulty === 'medium' ? 'hard' : difficulty
 }

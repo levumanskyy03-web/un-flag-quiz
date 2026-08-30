@@ -3,6 +3,7 @@ import { STRINGS, type Lang } from '../i18n/strings'
 import { accountLevelMark, accountProgress, formatXp } from '../lib/xp'
 import { RatingsButton } from './RatingsButton'
 import { SettingsButton, type SettingsButtonProps } from './SettingsButton'
+import { SfxButton } from './SfxButton'
 
 interface PlayerHudProps extends SettingsButtonProps {
   xp: number
@@ -86,6 +87,7 @@ export function PlayerHud({ xp, xpReady = false, ...settings }: PlayerHudProps) 
         levelClears={levelClears}
         xp={xp}
       />
+      <SfxButton lang={settings.lang} />
     </div>
   )
 }

@@ -17,7 +17,9 @@ import {
 import type { Country } from '../data/countries'
 import { StampCollector } from './StampCollector'
 import { Flag } from './Flag'
+import { FitText } from './FitText'
 import { RankingPlaces } from './RankingPlaces'
+import { PassportLanguages } from './PassportLanguages'
 
 interface CountryPassportViewProps {
   country: Country
@@ -74,6 +76,7 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
             <dd>{founded}</dd>
           </div>
         ) : null}
+        <PassportLanguages iso={country.iso} lang="ru" />
       </dl>
       <RankingPlaces iso={country.iso} lang="ru" />
       <section className="passport-neighbors">
@@ -85,7 +88,7 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
             {neighbors.map((neighbor) => (
               <a key={neighbor.iso} className="passport-neighbor" href={countryPath(neighbor.iso)}>
                 <Flag iso={neighbor.iso} name={neighbor.nameRu} size="thumb" />
-                <span>{neighbor.nameRu}</span>
+                <FitText>{neighbor.nameRu}</FitText>
               </a>
             ))}
           </div>

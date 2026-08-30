@@ -7,6 +7,7 @@ import {
   passportCapital,
   passportCurrency,
 } from '../data/passports'
+import { languageName, quizLanguageId } from '../data/languages'
 import type { Lang } from '../i18n/strings'
 import { currencyChoiceLabel } from './currencyFakes'
 import { foundedChoiceLabel } from './foundedFakes'
@@ -44,6 +45,7 @@ export function answerKey(country: Country, mode: QuizMode): string {
   if (!passport) return country.iso
   if (mode === 'nameToCapital') return `capital:${passport.capitalEn}`
   if (mode === 'nameToCurrency') return `currency:${passport.currencyEn}`
+  if (mode === 'nameToLanguage') return `lang:${quizLanguageId(country.iso) ?? country.iso}`
   return `population:${passport.population}`
 }
 
@@ -77,6 +79,7 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
       lang,
       question.country,
       question.options.map((option) => option.iso),
+      question.priorBan?.years,
     )
   }
   const passport = PASSPORTS[country.iso]
@@ -89,6 +92,7 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
       lang,
       question.country,
       question.options.map((option) => option.iso),
+      question.priorBan?.currencies,
     )
   }
   if (mode === 'nameToPopulation') {
@@ -98,7 +102,12 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
       lang,
       question.country,
       question.options.map((option) => option.iso),
+      question.priorBan?.populations,
     )
+  }
+  if (mode === 'nameToLanguage') {
+    const id = quizLanguageId(country.iso)
+    return id ? languageName(id, lang) : countryName(country, lang)
   }
   return formatPopulation(passport.population, lang)
 }

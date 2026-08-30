@@ -76,6 +76,7 @@ export function FootballScreen({
           xp={xp}
           xpReady={xpReady}
           onChange={onChange}
+          onClearBests={onClearBests}
         />
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1 className="football-title">
@@ -200,22 +201,6 @@ export function FootballScreen({
             onCreateDuel(modes)
           }}
         />
-      ) : null}
-
-      {bests.length > 0 ? (
-        <section className="card history-card">
-          <div className="history-head">
-            <h2>{t.bests}</h2>
-            <button type="button" className="btn-ghost history-clear" onClick={onClearBests}>
-              {t.clearBests}
-            </button>
-          </div>
-          <ul className="history-list">
-            {bests.map((record) => (
-              <FootballRecordRow key={record.id} record={record} lang={settings.lang} score={t.score} />
-            ))}
-          </ul>
-        </section>
       ) : null}
 
       {history.length > 0 ? (

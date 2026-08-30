@@ -108,6 +108,8 @@ export type Strings = {
   mapToRiver: string
   seaToName: string
   riverToName: string
+  nameToLanguage: string
+  nameToLanguagePrompt: string
   rankGdp: string
   rankGdpPc: string
   rankArea: string
@@ -147,6 +149,15 @@ export type Strings = {
   mixAskSea: string
   mixAskRiver: string
   founded: string
+  nationalLanguage: string
+  noNationalLanguage: string
+  andOthers: string
+  spokenLanguages: string
+  nationalMark: string
+  spokenRule: string
+  languageCountries: string
+  languageRange: string
+  languagesIndex: string
   region: string
   allRegions: string
   africa: string
@@ -257,9 +268,13 @@ export type Strings = {
   legalContacts: string
   legalCountries: string
   legalToday: string
+  legalLanguages: string
   settings: string
   settingsAccount: string
   settingsAbout: string
+  sounds: string
+  soundsOn: string
+  soundsOff: string
   settingsReport: string
   settingsAchievements: string
   settingsXp: string
@@ -545,7 +560,9 @@ export const STRINGS: Record<Lang, Strings> = {
     mapToSea: 'Море → страна',
     mapToRiver: 'Река → страна',
     seaToName: 'Берег → страна',
-    riverToName: 'Река/озеро → страна',
+    riverToName: 'Водоем → страна',
+    nameToLanguage: 'Страна → язык',
+    nameToLanguagePrompt: 'Какой язык у этой страны?',
     rankGdp: 'ВВП',
     rankGdpPc: 'ВВП на душу',
     rankArea: 'Площадь',
@@ -586,6 +603,15 @@ export const STRINGS: Record<Lang, Strings> = {
     mixAskSea: 'Назовите море или океан',
     mixAskRiver: 'Назовите реку или озеро',
     founded: 'Основание',
+    nationalLanguage: 'Язык',
+    noNationalLanguage: 'Нет национального языка',
+    andOthers: 'и другие',
+    spokenLanguages: 'На каких языках говорят',
+    nationalMark: 'нац.',
+    spokenRule: 'От 1 % населения и не меньше 5 000 говорящих. Не больше 20 языков.',
+    languageCountries: 'Страны, где этим языком говорят не меньше 1 %',
+    languageRange: 'Ареал',
+    languagesIndex: 'Языки',
     region: 'Регион',
     allRegions: 'Все регионы',
     africa: 'Африка',
@@ -694,6 +720,9 @@ export const STRINGS: Record<Lang, Strings> = {
     settings: 'Настройки',
     settingsAccount: 'Аккаунт',
     settingsAbout: 'О нас',
+    sounds: 'Звуки',
+    soundsOn: 'Вкл',
+    soundsOff: 'Выкл',
     settingsReport: 'Сообщить о проблеме',
     settingsAchievements: 'Ачивки',
     settingsXp: 'Опыт',
@@ -788,6 +817,7 @@ export const STRINGS: Record<Lang, Strings> = {
     legalContacts: 'Контакты',
     legalCountries: 'Страны',
     legalToday: 'Страна дня',
+    legalLanguages: 'Языки',
     duel: 'Дуэль',
     duelHint: 'Один на один: создайте комнату или введите код.',
     duelCreate: 'Создать комнату',
@@ -983,6 +1013,8 @@ export const STRINGS: Record<Lang, Strings> = {
     mapToRiver: 'River → country',
     seaToName: 'Coast → country',
     riverToName: 'River/lake → country',
+    nameToLanguage: 'Country → language',
+    nameToLanguagePrompt: 'What is this country’s language?',
     rankGdp: 'GDP',
     rankGdpPc: 'GDP per capita',
     rankArea: 'Area',
@@ -1023,6 +1055,15 @@ export const STRINGS: Record<Lang, Strings> = {
     mixAskSea: 'Name the sea or ocean',
     mixAskRiver: 'Name the river or lake',
     founded: 'Founded',
+    nationalLanguage: 'Language',
+    noNationalLanguage: 'No national language',
+    andOthers: 'and others',
+    spokenLanguages: 'Languages spoken',
+    nationalMark: 'nat.',
+    spokenRule: 'From 1% of the population and at least 5,000 speakers. At most 20 languages.',
+    languageCountries: 'Countries where at least 1% speak this language',
+    languageRange: 'Range',
+    languagesIndex: 'Languages',
     region: 'Region',
     allRegions: 'All regions',
     africa: 'Africa',
@@ -1131,6 +1172,9 @@ export const STRINGS: Record<Lang, Strings> = {
     settings: 'Settings',
     settingsAccount: 'Account',
     settingsAbout: 'About',
+    sounds: 'Sounds',
+    soundsOn: 'On',
+    soundsOff: 'Off',
     settingsReport: 'Report a problem',
     settingsAchievements: 'Achievements',
     settingsXp: 'XP',
@@ -1219,6 +1263,7 @@ export const STRINGS: Record<Lang, Strings> = {
     legalContacts: 'Contact',
     legalCountries: 'Countries',
     legalToday: 'Country of the day',
+    legalLanguages: 'Languages',
     duel: 'Duel',
     duelHint: 'One on one: create a room or enter a code.',
     duelCreate: 'Create room',

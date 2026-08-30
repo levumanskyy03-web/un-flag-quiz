@@ -1,6 +1,18 @@
 import { useId } from 'react'
 
-type GeoIconName = 'compass' | 'globe' | 'map' | 'pin' | 'meridians' | 'trophy' | 'ball' | 'stamp' | 'hash' | 'crown'
+type GeoIconName =
+  | 'compass'
+  | 'globe'
+  | 'map'
+  | 'pin'
+  | 'meridians'
+  | 'trophy'
+  | 'ball'
+  | 'stamp'
+  | 'hash'
+  | 'crown'
+  | 'speaker'
+  | 'speakerOff'
 
 interface GeoIconProps {
   name: GeoIconName
@@ -140,6 +152,34 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
             strokeLinejoin="round"
             strokeLinecap="round"
           />
+        </>
+      ) : null}
+      {name === 'speaker' || name === 'speakerOff' ? (
+        <>
+          <path
+            d="M2.7 6.15h2.35L8.5 3.55v8.9L5.05 9.85H2.7A.7.7 0 0 1 2 9.15v-2.3a.7.7 0 0 1 .7-.7Z"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
+          {name === 'speaker' ? (
+            <>
+              <path
+                d="M10.35 6.15c.7.55.7 3.15 0 3.7"
+                stroke="currentColor"
+                strokeWidth="1.15"
+                strokeLinecap="round"
+              />
+              <path
+                d="M12.15 4.7c1.45 1.2 1.45 5.4 0 6.6"
+                stroke="currentColor"
+                strokeWidth="1.15"
+                strokeLinecap="round"
+              />
+            </>
+          ) : (
+            <path d="M3.15 3.15 12.85 12.85" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" />
+          )}
         </>
       ) : null}
     </svg>

@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { type AvatarId } from '../data/avatars'
-import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
+import { STRINGS, difficultyLabel, localeTag, mixLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
 import {
   checkNameAvailable,
   fetchAccount,
@@ -22,7 +22,15 @@ import { isNameAllowed } from '../lib/nameFilter'
 import { isNameCooldown } from '../lib/nameRules'
 import { statsByMode } from '../lib/modeStats'
 import { loadProfile, saveProfile } from '../lib/profile'
-import { formatClock, hasLevels } from '../lib/quiz'
+import { isSfxMuted, playSfx, setSfxMuted, subscribeSfxMute } from '../lib/sfx'
+import {
+  footballHasDifficulty,
+  formatClock,
+  hasLevels,
+  isCodesMode,
+  isFootballMode,
+  isLeadersMode,
+} from '../lib/quiz'
 import { formatXp, accountProgress } from '../lib/xp'
 import { countLifetimeSeed, loadLifetime } from '../lib/lifetime'
 import { AchievementGallery } from './AchievementGallery'
@@ -44,6 +52,7 @@ interface SettingsModalProps {
   onLangChange: (lang: Lang) => void
   onClose: () => void
   onAuth?: (account: Account | null) => void
+  onClearBests?: () => void
 }
 
 export function SettingsModal({
@@ -54,6 +63,7 @@ export function SettingsModal({
   onLangChange,
   onClose,
   onAuth,
+  onClearBests,
 }: SettingsModalProps) {
   const t = STRINGS[lang]
   const titleId = useId()
@@ -76,6 +86,9 @@ export function SettingsModal({
   const [reportBody, setReportBody] = useState('')
   const [reportOpened, setReportOpened] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [sfxMuted, setSfxMutedState] = useState(isSfxMuted)
+
+  useEffect(() => subscribeSfxMute(setSfxMutedState), [])
   const authBlockRef = useRef<HTMLDivElement>(null)
   const stats = useMemo(() => statsByMode(history, bests, levelClears), [history, bests, levelClears])
   const xp = loadLifetime(countLifetimeSeed(history, levelClears)).xp
@@ -568,6 +581,30 @@ export function SettingsModal({
                 </li>
               ))}
             </ul>
+
+            <div className="history-head">
+              <h3 className="settings-sub">{t.bests}</h3>
+              {bests.length > 0 && onClearBests ? (
+                <button type="button" className="btn-ghost history-clear" onClick={onClearBests}>
+                  {t.clearBests}
+                </button>
+              ) : null}
+            </div>
+            {bests.length > 0 ? (
+              <ul className="history-list">
+                {bests.map((record) => (
+                  <li key={record.id} className="history-row">
+                    <div className="history-main">
+                      <p className="history-score">{t.score(record.correct, record.total)}</p>
+                      <p className="history-setup">{bestSetupLine(record, lang)}</p>
+                    </div>
+                    <p className="history-when">{formatPlayedAt(record.at, lang)}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="setting-hint">{t.modeStatsEmpty}</p>
+            )}
           </div>
         ) : null}
 
@@ -593,11 +630,38 @@ export function SettingsModal({
 
         {tab === 'about' ? (
           <div className="settings-pane settings-copy">
+            <p className="settings-sub">{t.sounds}</p>
+            <div className="choice-grid">
+              <button
+                type="button"
+                className={`choice ${sfxMuted ? '' : 'is-active'}`}
+                aria-pressed={!sfxMuted}
+                onClick={() => {
+                  setSfxMuted(false)
+                  setSfxMutedState(false)
+                  playSfx('correct')
+                }}
+              >
+                {t.soundsOn}
+              </button>
+              <button
+                type="button"
+                className={`choice ${sfxMuted ? 'is-active' : ''}`}
+                aria-pressed={sfxMuted}
+                onClick={() => {
+                  setSfxMuted(true)
+                  setSfxMutedState(true)
+                }}
+              >
+                {t.soundsOff}
+              </button>
+            </div>
             <p>{t.aboutBody}</p>
             <p>{t.aboutModes}</p>
             <p>{t.credit}</p>
             <p className="legal-inline catalog-inline">
               <a href="/countries">{t.legalCountries}</a>
+              <a href="/languages">{t.legalLanguages}</a>
               <a href="/today">{t.legalToday}</a>
             </p>
             <p className="legal-inline">
@@ -669,6 +733,30 @@ export function SettingsModal({
       ) : null}
     </div>
   )
+}
+
+function bestSetupLine(record: RoundRecord, lang: Lang): string {
+  const clock = formatClock(record.roundMs)
+  if (isFootballMode(record.mode)) {
+    const difficulty = footballHasDifficulty(record.mode) ? difficultyLabel(record.difficulty, lang) : null
+    return [modeLabel(record.mode, lang), difficulty, record.roundSize, clock].filter(Boolean).join(' · ')
+  }
+  if (isCodesMode(record.mode)) {
+    return `${modeLabel(record.mode, lang)} · ${record.roundSize} · ${clock}`
+  }
+  if (isLeadersMode(record.mode)) {
+    return `${modeLabel(record.mode, lang)} · ${difficultyLabel(record.difficulty, lang)} · ${record.roundSize} · ${clock}`
+  }
+  return `${record.mix ? mixLabel(record.mix, lang) : modeLabel(record.mode, lang)} · ${regionLabel(record.region, lang)} · ${difficultyLabel(record.difficulty, lang)} · ${record.roundSize} · ${clock}`
+}
+
+function formatPlayedAt(at: number, lang: Lang): string {
+  return new Date(at).toLocaleString(localeTag(lang), {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
 function authErrorText(error: AuthError, t: (typeof STRINGS)[Lang]) {

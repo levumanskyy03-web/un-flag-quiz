@@ -13,11 +13,12 @@ export function foundedChoiceLabel(
   _lang: Lang,
   prompt: Country,
   optionIsos: readonly string[],
+  banned: readonly number[] = [],
 ): string {
   const correct = foundedYear(prompt.iso)
   if (correct == null) return ''
   if (option.iso === prompt.iso) return String(correct)
-  const fake = fakesFor(prompt, optionIsos).get(option.iso)
+  const fake = fakesFor(prompt, optionIsos, banned).get(option.iso)
   if (fake == null) {
     const year = foundedYear(option.iso)
     return year == null ? '' : String(year)
@@ -25,12 +26,16 @@ export function foundedChoiceLabel(
   return String(fake)
 }
 
-function fakesFor(prompt: Country, optionIsos: readonly string[]): Map<string, number> {
+function fakesFor(
+  prompt: Country,
+  optionIsos: readonly string[],
+  banned: readonly number[] = [],
+): Map<string, number> {
   const result = new Map<string, number>()
   const correct = foundedYear(prompt.iso)
   if (correct == null) return result
   const distractors = optionIsos.filter((iso) => iso !== prompt.iso).sort()
-  const values = pickYears(correct, `${prompt.iso}:${distractors.join(',')}`)
+  const values = pickYears(correct, `${prompt.iso}:${distractors.join(',')}`, banned)
   distractors.forEach((iso, index) => {
     const value = values[index]
     if (value != null) result.set(iso, value)
@@ -38,13 +43,13 @@ function fakesFor(prompt: Country, optionIsos: readonly string[]): Map<string, n
   return result
 }
 
-function pickYears(correct: number, seed: string): number[] {
+function pickYears(correct: number, seed: string, banned: readonly number[] = []): number[] {
   const gap = foundedGap(correct)
   const lows = candidates(correct, gap, 'low')
   const highs = candidates(correct, gap, 'high')
   const twoHigh = hash(seed) % 2 === 0
   const picked: number[] = []
-  const used = new Set([correct])
+  const used = new Set([correct, ...banned])
 
   const take = (pool: number[], n: number) => {
     for (const value of seededShuffle(pool, `${seed}:${picked.length}`)) {
