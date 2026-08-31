@@ -1,9 +1,12 @@
 import { REGIONS } from '../data/countries'
 import {
+  EASY_FOOTBALL_MIX_MODES,
   EASY_MIX_MODES,
   FOOTBALL_MODES,
+  HARD_FOOTBALL_MIX_MODES,
   HARD_MIX_MODES,
   isAllRegions,
+  isFootballMode,
   isLeadersMode,
   leaderKindOf,
   leadersAskOf,
@@ -38,6 +41,52 @@ export type Strings = {
   wcTitleYearPrompt: (name: string) => string
   euroWinners: string
   euroWinnerPrompt: (year: number) => string
+  euroFinalists: string
+  euroFinalistPrompt: (year: number) => string
+  euroHosts: string
+  euroHostPrompt: (year: number) => string
+  euroTitleYears: string
+  euroTitleYearPrompt: (name: string) => string
+  wcScorers: string
+  wcScorerPrompt: (year: number) => string
+  uclWinners: string
+  uclWinnerPrompt: (year: number) => string
+  copaWinners: string
+  copaWinnerPrompt: (year: number) => string
+  afconWinners: string
+  afconWinnerPrompt: (year: number) => string
+  footballGroupWc: string
+  footballGroupEuro: string
+  footballGroupOther: string
+  footballGroupPlayers: string
+  playerPhotoToName: string
+  playerFactsToName: string
+  playerFactsHint: string
+  factGuessPlayer: string
+  playerPositionGk: string
+  playerPositionDf: string
+  playerPositionMf: string
+  playerPositionFw: string
+  playerFactNation: (name: string) => string
+  playerFactPosition: (pos: string) => string
+  playerFactClub: (name: string) => string
+  playerFactWcWinner: string
+  playerFactEuroWinner: string
+  playerFactCopaWinner: string
+  playerFactAfconWinner: string
+  playerFactUclWinner: string
+  playerFactBallonDor: string
+  playerFactBallonDorYear: (year: number) => string
+  playerFactBallonDorCount: (n: number) => string
+  playerFactWcCount: (n: number) => string
+  playerFactBornDecade: (decade: number) => string
+  playerFactWcFinalGoal: string
+  playerFactWcCaptain: string
+  playerFactGoldenBoot: string
+  playerFactBothClasico: string
+  playerFactLeftFoot: string
+  playerFactNumber10: string
+  duelFactsSeriesPlayers: string
   worldsBack: string
   footballRoundSize: string
   footballXpHint: (n: number) => string
@@ -104,6 +153,9 @@ export type Strings = {
   footballTableScore: string
   footballTableHost: string
   footballTableVenue: string
+  footballTablePlayer: string
+  footballTableGoals: string
+  footballTableCountry: string
   footballAet: string
   footballPens: string
   footballReplay: string
@@ -148,6 +200,7 @@ export type Strings = {
   rankingFootnote: (asOf: string, source: string, count: number) => string
   rankingPlace: (place: number, count: number) => string
   rankingHelp: string
+  rankingSource: string
   seaPrompt: string
   riverPrompt: string
   seaMapPrompt: string
@@ -388,6 +441,8 @@ export type Strings = {
   hardMix: string
   easyMixNote: string
   hardMixNote: string
+  footballEasyMixNote: string
+  footballHardMixNote: string
   duelVs: (name: string) => string
   duelWaitingOpponent: string
   duelOpponentDone: string
@@ -508,6 +563,60 @@ export const STRINGS: Record<Lang, Strings> = {
     wcTitleYearPrompt: (name) => `В каком году ${name} выиграла ЧМ?`,
     euroWinners: 'Победители Евро',
     euroWinnerPrompt: (year) => `Кто выиграл Евро ${year}?`,
+    euroFinalists: 'Финалисты Евро',
+    euroFinalistPrompt: (year) => `Кто проиграл финал Евро ${year}?`,
+    euroHosts: 'Хозяева Евро',
+    euroHostPrompt: (year) => `Где прошёл Евро ${year}?`,
+    euroTitleYears: 'Год титула Евро',
+    euroTitleYearPrompt: (name) => `В каком году ${name} выиграла Евро?`,
+    wcScorers: 'Бомбардиры ЧМ',
+    wcScorerPrompt: (year) => `Лучший бомбардир ЧМ ${year} — из какой страны?`,
+    uclWinners: 'Победители ЛЧ',
+    uclWinnerPrompt: (year) => `Кто выиграл Кубок чемпионов ${year}?`,
+    copaWinners: 'Копа Америка',
+    copaWinnerPrompt: (year) => `Кто выиграл Копа Америка ${year}?`,
+    afconWinners: 'Кубок Африки',
+    afconWinnerPrompt: (year) => `Кто выиграл Кубок Африки ${year}?`,
+    footballGroupWc: 'Чемпионат мира',
+    footballGroupEuro: 'Евро',
+    footballGroupOther: 'Другие',
+    footballGroupPlayers: 'Футболисты',
+    playerPhotoToName: 'Футболист по фото',
+    playerFactsToName: 'Футболист по фактам',
+    playerFactsHint:
+      'Не входит в уровни и сложный микс. Первые 5 фактов — 10 секунд, дальше — 15. 10 фактов, 3 ошибки — попытка проиграна.',
+    factGuessPlayer: 'Имя футболиста',
+    playerPositionGk: 'вратарь',
+    playerPositionDf: 'защитник',
+    playerPositionMf: 'полузащитник',
+    playerPositionFw: 'нападающий',
+    playerFactNation: (name) => `Играл за сборную: ${name}.`,
+    playerFactPosition: (pos) => `Амплуа — ${pos}.`,
+    playerFactClub: (name) => `Играл в клубе ${name}.`,
+    playerFactWcWinner: 'Выигрывал чемпионат мира.',
+    playerFactEuroWinner: 'Выигрывал чемпионат Европы.',
+    playerFactCopaWinner: 'Выигрывал Копа Америка.',
+    playerFactAfconWinner: 'Выигрывал Кубок Африки.',
+    playerFactUclWinner: 'Выигрывал Кубок европейских чемпионов / Лигу чемпионов.',
+    playerFactBallonDor: 'Получал «Золотой мяч».',
+    playerFactBallonDorYear: (year) => `«Золотой мяч» ${year} года.`,
+    playerFactBallonDorCount: (n) =>
+      n >= 3 ? 'Три и более «Золотых мяча».' : n === 2 ? 'Два «Золотых мяча».' : 'Один «Золотой мяч».',
+    playerFactWcCount: (n) =>
+      n === 0
+        ? 'Не играл на чемпионате мира.'
+        : n === 1
+          ? 'Играл на одном чемпионате мира.'
+          : n === 2
+            ? 'Играл на двух чемпионатах мира.'
+            : 'Играл на трёх и более чемпионатах мира.',
+    playerFactBornDecade: (decade) => `Родился в ${decade}-х.`,
+    playerFactWcFinalGoal: 'Забивал в финале чемпионата мира.',
+    playerFactWcCaptain: 'Был капитаном сборной на чемпионате мира.',
+    playerFactGoldenBoot: 'Брал «Золотую бутсу» чемпионата мира.',
+    playerFactBothClasico: 'Играл и за «Барселону», и за «Реал Мадрид».',
+    playerFactLeftFoot: 'Левая нога — рабочая.',
+    playerFactNumber10: 'Классическая десятка.',
     worldsBack: 'К темам',
     footballRoundSize: 'Вопросов в матче',
     footballXpHint: (n) => `Верный ответ: +${n} опыта. Полный матч и идеал дают бонус.`,
@@ -574,6 +683,9 @@ export const STRINGS: Record<Lang, Strings> = {
     footballTableScore: 'Счёт',
     footballTableHost: 'Хозяева',
     footballTableVenue: 'Где',
+    footballTablePlayer: 'Игрок',
+    footballTableGoals: 'Голы',
+    footballTableCountry: 'Страна',
     footballAet: 'д.в.',
     footballPens: 'пен.',
     footballReplay: 'переигровка',
@@ -619,6 +731,7 @@ export const STRINGS: Record<Lang, Strings> = {
       `Актуально на ${asOf}. Источник: ${source}. В рейтинге ${count} ${pluralRu(count, 'страна', 'страны', 'стран')}.`,
     rankingPlace: (place, count) => `${place}-е из ${count}`,
     rankingHelp: 'О рейтинге',
+    rankingSource: 'Источник',
     seaPrompt: 'Какая страна выходит к этой воде?',
     riverPrompt: 'Какая страна связана с этой рекой или озером?',
     seaMapPrompt: 'Какое это море или океан?',
@@ -869,6 +982,8 @@ export const STRINGS: Record<Lang, Strings> = {
     hardMix: 'Сложный микс',
     easyMixNote: 'Флаг → страна · Страна → флаг · Страна → столица',
     hardMixNote: 'Все режимы, кроме фактов: флаги, карта, соседи, моря и реки',
+    footballEasyMixNote: 'Победители ЧМ · Победители Евро · Хозяева ЧМ · Победители ЛЧ',
+    footballHardMixNote: 'Все футбольные режимы, кроме фактов про игроков',
     duelVs: (name) => `против ${name}`,
     duelWaitingOpponent: 'соперник ещё отвечает',
     duelOpponentDone: 'соперник ответил',
@@ -960,6 +1075,7 @@ export const STRINGS: Record<Lang, Strings> = {
     duelFactsHardcore: 'Хардкор',
     duelFactsHardcoreHint: '7 фактов, без ошибок. Первые 5 — 10 секунд, дальше — 15. «Дальше» листает факт у обоих.',
     duelFactsSeries: 'Стран за дуэль',
+    duelFactsSeriesPlayers: 'Игроков за дуэль',
   },
   en: {
     title: 'Country Passport',
@@ -977,6 +1093,60 @@ export const STRINGS: Record<Lang, Strings> = {
     wcTitleYearPrompt: (name) => `Which year did ${name} win the World Cup?`,
     euroWinners: 'Euro winners',
     euroWinnerPrompt: (year) => `Who won Euro ${year}?`,
+    euroFinalists: 'Euro finalists',
+    euroFinalistPrompt: (year) => `Who lost the Euro ${year} final?`,
+    euroHosts: 'Euro hosts',
+    euroHostPrompt: (year) => `Who hosted Euro ${year}?`,
+    euroTitleYears: 'Euro title year',
+    euroTitleYearPrompt: (name) => `Which year did ${name} win the Euro?`,
+    wcScorers: 'World Cup scorers',
+    wcScorerPrompt: (year) => `Which country had the top scorer at the ${year} World Cup?`,
+    uclWinners: 'Champions League',
+    uclWinnerPrompt: (year) => `Who won the ${year} European Cup / Champions League?`,
+    copaWinners: 'Copa América',
+    copaWinnerPrompt: (year) => `Who won Copa América ${year}?`,
+    afconWinners: 'AFCON',
+    afconWinnerPrompt: (year) => `Who won AFCON ${year}?`,
+    footballGroupWc: 'World Cup',
+    footballGroupEuro: 'Euro',
+    footballGroupOther: 'Other',
+    footballGroupPlayers: 'Players',
+    playerPhotoToName: 'Footballer by photo',
+    playerFactsToName: 'Footballer by facts',
+    playerFactsHint:
+      'Not in the campaign or hard mix. First 5 facts are 10 seconds, then 15. 10 facts, 3 wrong guesses fail the attempt.',
+    factGuessPlayer: 'Player name',
+    playerPositionGk: 'goalkeeper',
+    playerPositionDf: 'defender',
+    playerPositionMf: 'midfielder',
+    playerPositionFw: 'forward',
+    playerFactNation: (name) => `Played for ${name}.`,
+    playerFactPosition: (pos) => `Position: ${pos}.`,
+    playerFactClub: (name) => `Played for ${name}.`,
+    playerFactWcWinner: 'Won the World Cup.',
+    playerFactEuroWinner: 'Won the European Championship.',
+    playerFactCopaWinner: 'Won Copa América.',
+    playerFactAfconWinner: 'Won the Africa Cup of Nations.',
+    playerFactUclWinner: 'Won the European Cup / Champions League.',
+    playerFactBallonDor: 'Won the Ballon d’Or.',
+    playerFactBallonDorYear: (year) => `Ballon d’Or in ${year}.`,
+    playerFactBallonDorCount: (n) =>
+      n >= 3 ? 'Three or more Ballons d’Or.' : n === 2 ? 'Two Ballons d’Or.' : 'One Ballon d’Or.',
+    playerFactWcCount: (n) =>
+      n === 0
+        ? 'Never played at a World Cup.'
+        : n === 1
+          ? 'Played at one World Cup.'
+          : n === 2
+            ? 'Played at two World Cups.'
+            : 'Played at three or more World Cups.',
+    playerFactBornDecade: (decade) => `Born in the ${decade}s.`,
+    playerFactWcFinalGoal: 'Scored in a World Cup final.',
+    playerFactWcCaptain: 'Captained a side at the World Cup.',
+    playerFactGoldenBoot: 'Won the World Cup Golden Boot.',
+    playerFactBothClasico: 'Played for both Barcelona and Real Madrid.',
+    playerFactLeftFoot: 'Naturally left-footed.',
+    playerFactNumber10: 'A classic number 10.',
     worldsBack: 'Topics',
     footballRoundSize: 'Questions in the match',
     footballXpHint: (n) => `Correct answer: +${n} XP. Finish and go perfect for a bonus.`,
@@ -1043,6 +1213,9 @@ export const STRINGS: Record<Lang, Strings> = {
     footballTableScore: 'Score',
     footballTableHost: 'Host',
     footballTableVenue: 'Where',
+    footballTablePlayer: 'Player',
+    footballTableGoals: 'Goals',
+    footballTableCountry: 'Country',
     footballAet: 'a.e.t.',
     footballPens: 'pens',
     footballReplay: 'replay',
@@ -1088,6 +1261,7 @@ export const STRINGS: Record<Lang, Strings> = {
       `As of ${asOf}. Source: ${source}. ${count} ${count === 1 ? 'country' : 'countries'} in this ranking.`,
     rankingPlace: (place, count) => `#${place} of ${count}`,
     rankingHelp: 'About this ranking',
+    rankingSource: 'Source',
     seaPrompt: 'Which country borders this water?',
     riverPrompt: 'Which country is tied to this river or lake?',
     seaMapPrompt: 'Which sea or ocean is this?',
@@ -1332,6 +1506,8 @@ export const STRINGS: Record<Lang, Strings> = {
     hardMix: 'Hard mix',
     easyMixNote: 'Flag → country · Country → flag · Country → capital',
     hardMixNote: 'All modes except facts: flags, map, neighbours, seas and rivers',
+    footballEasyMixNote: 'World Cup winners · Euro winners · World Cup hosts · Champions League',
+    footballHardMixNote: 'All football modes except player facts',
     duelVs: (name) => `vs ${name}`,
     duelWaitingOpponent: 'opponent is still answering',
     duelOpponentDone: 'opponent answered',
@@ -1423,6 +1599,7 @@ export const STRINGS: Record<Lang, Strings> = {
     duelFactsHardcore: 'Hardcore',
     duelFactsHardcoreHint: '7 facts, no mistakes. First 5 are 10 seconds, then 15. Next advances the fact for both players.',
     duelFactsSeries: 'Countries per duel',
+    duelFactsSeriesPlayers: 'Players per duel',
   },
   ...EXTRA_STRINGS,
 }
@@ -1458,6 +1635,38 @@ export function modeLabel(mode: QuizMode, lang: Lang): string {
   return STRINGS[lang][mode]
 }
 
+export function footballQuestionPrompt(mode: QuizMode, year: number, name: string, lang: Lang): string | null {
+  const t = STRINGS[lang]
+  switch (mode) {
+    case 'wcWinners':
+      return t.wcWinnerPrompt(year)
+    case 'wcFinalists':
+      return t.wcFinalistPrompt(year)
+    case 'wcHosts':
+      return t.wcHostPrompt(year)
+    case 'wcTitleYears':
+      return t.wcTitleYearPrompt(name)
+    case 'wcScorers':
+      return t.wcScorerPrompt(year)
+    case 'euroWinners':
+      return t.euroWinnerPrompt(year)
+    case 'euroFinalists':
+      return t.euroFinalistPrompt(year)
+    case 'euroHosts':
+      return t.euroHostPrompt(year)
+    case 'euroTitleYears':
+      return t.euroTitleYearPrompt(name)
+    case 'uclWinners':
+      return t.uclWinnerPrompt(year)
+    case 'copaWinners':
+      return t.copaWinnerPrompt(year)
+    case 'afconWinners':
+      return t.afconWinnerPrompt(year)
+    default:
+      return null
+  }
+}
+
 export function modesLabel(modes: readonly QuizMode[], lang: Lang): string {
   const t = STRINGS[lang]
   const selected = [...QUIZ_MODES, ...RANKING_MODES].filter((mode) => modes.includes(mode))
@@ -1465,6 +1674,8 @@ export function modesLabel(modes: readonly QuizMode[], lang: Lang): string {
   if (sameModes(selected, HARD_MIX_MODES)) return t.hardMix
   if (selected.length > 0) return selected.map((mode) => modeLabel(mode, lang)).join(' · ')
   const football = FOOTBALL_MODES.filter((mode) => modes.includes(mode))
+  if (sameModes(football, EASY_FOOTBALL_MIX_MODES)) return t.easyMix
+  if (sameModes(football, HARD_FOOTBALL_MIX_MODES)) return t.hardMix
   if (football.length > 0) return football.map((mode) => modeLabel(mode, lang)).join(' · ')
   if (modes.length === 0) return modeLabel('flagToName', lang)
   return modes.map((mode) => modeLabel(mode, lang)).join(' · ')
@@ -1476,6 +1687,7 @@ export function mixLabel(mix: MixKind, lang: Lang): string {
 
 export function mixAskHint(mode: QuizMode, lang: Lang): string {
   const t = STRINGS[lang]
+  if (isFootballMode(mode)) return ''
   if (mode === 'nameToFlag') return t.mixAskFlag
   if (mode === 'nameToCapital') return t.mixAskCapital
   if (mode === 'nameToCurrency') return t.mixAskCurrency

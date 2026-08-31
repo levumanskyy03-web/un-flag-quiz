@@ -1,22 +1,30 @@
 import { useState } from 'react'
-import { STRINGS, difficultyLabel, localeTag, modeLabel, type Lang } from '../i18n/strings'
+import { STRINGS, difficultyLabel, localeTag, mixLabel, modeLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import type { LevelClear } from '../lib/levelProgress'
 import {
+  FACTS_DIFFICULTIES,
   FOOTBALL_MODES,
+  LEADERS_DIFFICULTIES,
   PLAY_DIFFICULTIES,
   ROUND_SIZES,
   fitRoundSize,
-  footballHasDifficulty,
+  footballMixPoolSize,
   footballPoolSize,
   formatClock,
+  isPlayerFactsToName,
+  isPlayerPhotoMode,
+  modesForFootballMix,
 } from '../lib/quiz'
+import type { FactsDuelConfig } from '../lib/factsRules'
 import { AppChrome } from './AppChrome'
 import { DuelCreateModal } from './DuelCreateModal'
+import { FootballModeGrids } from './FootballModeGrids'
 import { GeoIcon } from './GeoIcon'
 import { HubNav, type HubTab } from './HubNav'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
+import { FitText, ChoiceLabel } from './FitText'
 
 interface FootballScreenProps {
   settings: QuizSettings
@@ -29,7 +37,7 @@ interface FootballScreenProps {
   onStart: () => void
   onHub: (tab: HubTab) => void
   onWorlds: () => void
-  onCreateDuel: (modes: QuizSettings['mode'][]) => void
+  onCreateDuel: (modes: QuizSettings['mode'][], facts?: FactsDuelConfig) => void
   onJoinDuel: (code: string) => void
   duelError?: string | null
   onClearHistory: () => void
@@ -54,15 +62,28 @@ export function FootballScreen({
   onClearBests,
 }: FootballScreenProps) {
   const t = STRINGS[settings.lang]
-  const showDifficulty = footballHasDifficulty(settings.mode)
-  const poolSize = footballPoolSize(settings.mode, settings.difficulty)
+  const mix = settings.mix
+  const factsMode = !mix && isPlayerFactsToName(settings.mode)
+  const photoMode = !mix && isPlayerPhotoMode(settings.mode)
+  const difficulties = factsMode ? FACTS_DIFFICULTIES : photoMode ? LEADERS_DIFFICULTIES : PLAY_DIFFICULTIES
+  const poolSize = mix
+    ? footballMixPoolSize(mix, settings.difficulty)
+    : footballPoolSize(settings.mode, settings.difficulty)
   const currentBest = findBest(bests, settings)
   const [joinCode, setJoinCode] = useState('')
   const [duelSetupOpen, setDuelSetupOpen] = useState(false)
 
   function update(patch: Partial<QuizSettings>) {
     const next = { ...settings, ...patch }
-    onChange({ ...next, roundSize: fitRoundSize(next.roundSize, footballPoolSize(next.mode, next.difficulty)) })
+    onChange({
+      ...next,
+      roundSize: fitRoundSize(
+        next.roundSize,
+        next.mix
+          ? footballMixPoolSize(next.mix, next.difficulty)
+          : footballPoolSize(next.mode, next.difficulty),
+      ),
+    })
   }
 
   return (
@@ -89,50 +110,72 @@ export function FootballScreen({
 
       <section className="card settings-card">
         <h2>{t.mode}</h2>
-        <div className="choice-grid is-modes">
-          {FOOTBALL_MODES.map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              className={`choice ${settings.mode === mode ? 'is-active' : ''}`}
-              aria-pressed={settings.mode === mode}
-              onClick={() =>
-                update({
-                  path: 'pool',
-                  mix: null,
-                  mode,
-                  difficulty: footballHasDifficulty(mode)
-                    ? PLAY_DIFFICULTIES.includes(settings.difficulty)
-                      ? settings.difficulty
-                      : 'easy'
+        <div className="choice-grid">
+          <button
+            type="button"
+            className={`choice has-note is-wide ${mix === 'easy' ? 'is-active' : ''}`}
+            aria-pressed={mix === 'easy'}
+            onClick={() => update({ path: 'pool', mix: 'easy', mode: 'wcWinners' })}
+          >
+            <FitText minPx={9}>{t.easyMix}</FitText>
+            <FitText className="choice-note" wrap minPx={7}>
+              {t.footballEasyMixNote}
+            </FitText>
+          </button>
+          <button
+            type="button"
+            className={`choice has-note is-wide ${mix === 'hard' ? 'is-active' : ''}`}
+            aria-pressed={mix === 'hard'}
+            onClick={() => update({ path: 'pool', mix: 'hard', mode: 'wcWinners' })}
+          >
+            <FitText minPx={9}>{t.hardMix}</FitText>
+            <FitText className="choice-note" wrap minPx={7}>
+              {t.footballHardMixNote}
+            </FitText>
+          </button>
+        </div>
+        <FootballModeGrids
+          lang={settings.lang}
+          activeMode={settings.mode}
+          mix={Boolean(mix)}
+          selectedModes={mix ? modesForFootballMix(mix) : undefined}
+          onPick={(mode) =>
+            update({
+              path: 'pool',
+              mix: null,
+              mode,
+              difficulty: isPlayerFactsToName(mode)
+                ? settings.difficulty === 'hardcore'
+                  ? 'hard'
+                  : settings.difficulty
+                : isPlayerPhotoMode(mode)
+                  ? settings.difficulty
+                  : PLAY_DIFFICULTIES.includes(settings.difficulty)
+                    ? settings.difficulty
                     : 'easy',
-                })
-              }
+            })
+          }
+        />
+
+        <h2>{t.difficulty}</h2>
+        <div className={`choice-grid ${difficulties.length === 4 ? 'is-4' : 'is-3'}`}>
+          {difficulties.map((difficulty) => (
+            <button
+              key={difficulty}
+              type="button"
+              className={`choice ${settings.difficulty === difficulty ? 'is-active' : ''}`}
+              aria-pressed={settings.difficulty === difficulty}
+              onClick={() => update({ path: 'pool', difficulty, levelHardcore: difficulty === 'hardcore' })}
             >
-              {modeLabel(mode, settings.lang)}
+              <ChoiceLabel>{difficultyLabel(difficulty, settings.lang)}</ChoiceLabel>
             </button>
           ))}
         </div>
 
-        {showDifficulty ? (
-          <>
-            <h2>{t.difficulty}</h2>
-            <div className="choice-grid is-3">
-              {PLAY_DIFFICULTIES.map((difficulty) => (
-                <button
-                  key={difficulty}
-                  type="button"
-                  className={`choice ${settings.difficulty === difficulty ? 'is-active' : ''}`}
-                  aria-pressed={settings.difficulty === difficulty}
-                  onClick={() => update({ path: 'pool', difficulty, levelHardcore: difficulty === 'hardcore' })}
-                >
-                  {difficultyLabel(difficulty, settings.lang)}
-                </button>
-              ))}
-            </div>
-          </>
-        ) : null}
+        {factsMode ? <p className="setting-hint">{t.playerFactsHint}</p> : null}
 
+        {factsMode ? null : (
+        <>
         <h2>{t.footballRoundSize}</h2>
         <div className="choice-grid is-3">
           {ROUND_SIZES.map((roundSize) => (
@@ -148,6 +191,8 @@ export function FootballScreen({
             </button>
           ))}
         </div>
+        </>
+        )}
       </section>
 
       {currentBest ? (
@@ -196,9 +241,9 @@ export function FootballScreen({
           modeCatalog={FOOTBALL_MODES}
           showMix={false}
           onCancel={() => setDuelSetupOpen(false)}
-          onConfirm={(modes) => {
+          onConfirm={(modes, facts) => {
             setDuelSetupOpen(false)
-            onCreateDuel(modes)
+            onCreateDuel(modes, facts)
           }}
         />
       ) : null}
@@ -236,8 +281,8 @@ function FootballRecordRow({
       <div className="history-main">
         <p className="history-score">{score(record.correct, record.total)}</p>
         <p className="history-setup">
-          {modeLabel(record.mode, lang)}
-          {footballHasDifficulty(record.mode) ? ` · ${difficultyLabel(record.difficulty, lang)}` : ''} · {record.roundSize} ·{' '}
+          {record.mix ? mixLabel(record.mix, lang) : modeLabel(record.mode, lang)}
+          {` · ${difficultyLabel(record.difficulty, lang)}`} · {record.roundSize} ·{' '}
           {formatClock(record.roundMs)}
         </p>
       </div>

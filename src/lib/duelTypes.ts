@@ -1,4 +1,5 @@
 import type { FactClue } from './countryFacts'
+import type { PlayerFactClue } from './playerFacts'
 import type { FactsDuelConfig } from './factsRules'
 import type { QuizDifficulty, QuizMode, RegionFilter } from './quiz'
 
@@ -6,7 +7,7 @@ export interface DuelQuestionWire {
   countryIso: string
   optionIsos: string[]
   mode?: QuizMode
-  facts?: FactClue[]
+  facts?: Array<FactClue | PlayerFactClue>
   year?: number
   yearOptions?: number[]
   waterId?: string

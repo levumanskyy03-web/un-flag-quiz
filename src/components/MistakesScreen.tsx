@@ -1,13 +1,15 @@
 import { findCountry } from '../data/extras'
 import { termById, yearsLabel } from '../data/leaders'
+import { playerById } from '../data/footballPlayers'
 import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS, modeLabel } from '../i18n/strings'
-import { codePromptLabel, countryName, isCodesMode, isFootballMode, isLeadersMode, type QuizMode } from '../lib/quiz'
+import { codePromptLabel, countryName, isCodesMode, isFootballMode, isLeadersMode, isPlayerFootballMode, type QuizMode } from '../lib/quiz'
 import { GeoModeGrids } from './GeoModeGrids'
+import { FootballModeGrids } from './FootballModeGrids'
 import { geoMistakeCountries, type MistakeEntry } from '../lib/mistakes'
 import type { QuizSettings } from './HomeScreen'
 import { Flag, TeamFlag } from './Flag'
-import { FitText } from './FitText'
+import { FitText, ChoiceLabel } from './FitText'
 import { LeaderPortrait } from './LeaderPortrait'
 import { HubNav, type HubTab } from './HubNav'
 import { LeadersSetup } from './LeadersScreen'
@@ -56,7 +58,13 @@ export function MistakesScreen({
 
       {leaders ? (
         <LeadersSetup settings={settings} onChange={(next) => onChange({ ...next, path: 'mistakes', mix: null })} />
-      ) : football || codes ? (
+      ) : football ? (
+        <FootballModeGrids
+          lang={settings.lang}
+          activeMode={settings.mode}
+          onPick={(mode) => onChange({ ...settings, mode, mix: null, path: 'mistakes' })}
+        />
+      ) : codes ? (
         <div className="choice-grid is-modes">
           {modes.map((mode) => (
             <button
@@ -66,7 +74,7 @@ export function MistakesScreen({
               aria-pressed={settings.mode === mode}
               onClick={() => onChange({ ...settings, mode, mix: null, path: 'mistakes' })}
             >
-              {modeLabel(mode, settings.lang)}
+              <ChoiceLabel>{modeLabel(mode, settings.lang)}</ChoiceLabel>
             </button>
           ))}
         </div>
@@ -86,12 +94,17 @@ export function MistakesScreen({
           <section className="learn-grid">
             {byMode
               ? (list as MistakeEntry[]).map((item) => {
-                  const country = football ? footballTeamCountry(item.iso) : findCountry(item.iso)
+                  const player = isPlayerFootballMode(item.mode) ? playerById(item.iso) : undefined
+                  const country = football && !player ? footballTeamCountry(item.iso) : findCountry(item.iso)
                   const term = leaders ? termById(item.iso) : undefined
                   const name = term
                     ? settings.lang === 'ru'
                       ? term.ru
                       : term.en
+                    : player
+                      ? settings.lang === 'ru'
+                        ? player.ru
+                        : player.en
                     : country
                       ? countryName(country, settings.lang)
                       : item.iso
@@ -100,10 +113,12 @@ export function MistakesScreen({
                     <div key={`${item.mode}:${item.iso}:${item.year ?? ''}`} className="learn-card">
                       {leaders && term ? (
                         <LeaderPortrait name={name} wiki={term.wiki} size="card" />
+                      ) : player ? (
+                        <LeaderPortrait name={name} wiki={player.wiki} size="card" />
                       ) : football ? (
                         <TeamFlag iso={item.iso} name={name} size="card" />
                       ) : (
-                        <Flag iso={item.iso} name={name} size="card" />
+                        <Flag iso={country?.iso ?? item.iso} name={name} size="card" />
                       )}
                       <p className="learn-card-name">
                         <FitText>

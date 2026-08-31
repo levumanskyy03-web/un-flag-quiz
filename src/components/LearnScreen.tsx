@@ -10,6 +10,7 @@ import {
   CODES_MODES,
   codePromptLabel,
   countryName,
+  footballLearnCountries,
   footballLearnYears,
   getLearnPool,
   hasGeoFinale,
@@ -17,15 +18,20 @@ import {
   isFootballMode,
   isLeadersMode,
   isNameToLanguage,
+  isPlayerFactsToName,
+  isPlayerPhotoMode,
   isRankingMode,
   isRegionSelected,
   isWaterMapMode,
   isWaterMode,
+  modesForFootballMix,
   sortCountriesByName,
   toggleRegion,
   waterName,
 } from '../lib/quiz'
 import { footballLevelYears } from '../data/footballLevels'
+import { playerById } from '../data/footballPlayers'
+import { playerClueSequence, playerFactLabel } from '../lib/playerFacts'
 import { languageName, quizLanguageId } from '../data/languages'
 import { watersFor } from '../data/water'
 import { formatLeaderNumbers, leaderShowsNumber, personYearsLabel, termById } from '../data/leaders'
@@ -38,7 +44,8 @@ import { HubNav, type HubTab } from './HubNav'
 import { GeoModeGrids } from './GeoModeGrids'
 import { Flag, TeamFlag } from './Flag'
 import { FootballLearnTable } from './FootballLearnTable'
-import { FitText } from './FitText'
+import { FootballModeGrids } from './FootballModeGrids'
+import { FitText, ChoiceLabel } from './FitText'
 import { LeaderPortrait } from './LeaderPortrait'
 import { LeaderBioModal } from './LeaderBioModal'
 import { LanguageToggle } from './LanguageToggle'
@@ -58,6 +65,7 @@ interface LearnScreenProps {
 export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onWorlds }: LearnScreenProps) {
   const t = STRINGS[settings.lang]
   const football = isFootballMode(settings.mode)
+  const mixModes = football && settings.mix ? modesForFootballMix(settings.mix) : null
   const codes = isCodesMode(settings.mode)
   const leaders = isLeadersMode(settings.mode)
   const pool = getLearnPool(
@@ -120,8 +128,8 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
       </header>
 
       <p className="learn-copy">
-        {subtitle ? `${subtitle} · ` : ''}
-        {t.countriesCount(countries.length)}
+        {subtitle ? `${subtitle}` : ''}
+        {mixModes ? '' : `${subtitle ? ' · ' : ''}${t.countriesCount(countries.length)}`}
       </p>
 
       {settings.learnFrom === 'region' && !football && !codes && !leaders && (
@@ -154,7 +162,43 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
 
       {leaders ? (
         <LeadersSetup settings={settings} onChange={onChange} />
-      ) : football || codes || settings.learnFrom === 'level' ? (
+      ) : football ? (
+        <>
+          {settings.learnFrom === 'region' ? (
+            <div className="choice-grid">
+              <button
+                type="button"
+                className={`choice has-note is-wide ${settings.mix === 'easy' ? 'is-active' : ''}`}
+                aria-pressed={settings.mix === 'easy'}
+                onClick={() => onChange({ ...settings, mix: 'easy', mode: 'wcWinners' })}
+              >
+                <FitText minPx={9}>{t.easyMix}</FitText>
+                <FitText className="choice-note" wrap minPx={7}>
+                  {t.footballEasyMixNote}
+                </FitText>
+              </button>
+              <button
+                type="button"
+                className={`choice has-note is-wide ${settings.mix === 'hard' ? 'is-active' : ''}`}
+                aria-pressed={settings.mix === 'hard'}
+                onClick={() => onChange({ ...settings, mix: 'hard', mode: 'wcWinners' })}
+              >
+                <FitText minPx={9}>{t.hardMix}</FitText>
+                <FitText className="choice-note" wrap minPx={7}>
+                  {t.footballHardMixNote}
+                </FitText>
+              </button>
+            </div>
+          ) : null}
+          <FootballModeGrids
+            lang={settings.lang}
+            activeMode={settings.mode}
+            mix={Boolean(mixModes)}
+            selectedModes={mixModes ?? undefined}
+            onPick={(mode) => onChange({ ...settings, mode, mix: null })}
+          />
+        </>
+      ) : codes || settings.learnFrom === 'level' ? (
         <div className="choice-grid is-modes">
           {modes.map((mode) => (
             <button
@@ -164,7 +208,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
               aria-pressed={settings.mode === mode}
               onClick={() => onChange({ ...settings, mode })}
             >
-              {modeLabel(mode, settings.lang)}
+              <ChoiceLabel>{modeLabel(mode, settings.lang)}</ChoiceLabel>
             </button>
           ))}
         </div>
@@ -176,7 +220,46 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         />
       )}
 
-      {football && isFootballMode(settings.mode) ? (
+      {football && mixModes ? (
+        <div className="football-learn-mix">
+          {mixModes.map((mode) => (
+            <section key={mode} className="football-learn-mix-block">
+              <h2>{modeLabel(mode, settings.lang)}</h2>
+              {mode === 'wcTitleYears' || mode === 'euroTitleYears' ? (
+                <div className="learn-grid">
+                  {footballLearnCountries(mode).map((country) => {
+                    const name = countryName(country, settings.lang)
+                    const years = footballLearnYears(mode, country.iso)
+                    return (
+                      <div key={`${mode}:${country.iso}`} className="learn-card">
+                        <TeamFlag iso={country.iso} name={name} size="card" />
+                        <p className="learn-card-name">
+                          <FitText>{name}</FitText>
+                        </p>
+                        {years.length > 0 ? <p className="learn-card-meta">{years.join(' · ')}</p> : null}
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : isPlayerPhotoMode(mode) || isPlayerFactsToName(mode) ? (
+                <div className="learn-grid is-leaders">
+                  {footballLearnCountries(mode).map((country) => (
+                    <PlayerLearnCard
+                      key={`${mode}:${country.iso}`}
+                      iso={country.iso}
+                      name={countryName(country, settings.lang)}
+                      facts={isPlayerFactsToName(mode)}
+                      lang={settings.lang}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <FootballLearnTable mode={mode} lang={settings.lang} />
+              )}
+            </section>
+          ))}
+        </div>
+      ) : football && isFootballMode(settings.mode) && !isPlayerPhotoMode(settings.mode) && !isPlayerFactsToName(settings.mode) ? (
         <FootballLearnTable
           mode={settings.mode}
           lang={settings.lang}
@@ -184,6 +267,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         />
       ) : null}
 
+      {mixModes ? null : (
       <section className={`learn-grid${leaders ? ' is-leaders' : ''}`}>
         {countries.map((country) => {
           const name = countryName(country, settings.lang)
@@ -212,6 +296,17 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 <p className="learn-card-meta">{personYearsLabel(term, t.present)}</p>
                 {bio ? <p className="learn-card-bio">{bio}</p> : null}
               </button>
+            )
+          }
+          if (isPlayerPhotoMode(settings.mode) || isPlayerFactsToName(settings.mode)) {
+            return (
+              <PlayerLearnCard
+                key={country.iso}
+                iso={country.iso}
+                name={name}
+                facts={isPlayerFactsToName(settings.mode)}
+                lang={settings.lang}
+              />
             )
           }
           if (isFootballMode(settings.mode)) {
@@ -267,8 +362,9 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           )
         })}
       </section>
+      )}
 
-      <button type="button" className="btn-primary" disabled={countries.length === 0} onClick={onPractice}>
+      <button type="button" className="btn-primary" disabled={countries.length === 0 && !mixModes} onClick={onPractice}>
         {t.checkYourself}
       </button>
 
@@ -289,6 +385,32 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           onClose={() => setOpenTermId(null)}
         />
       )}
+    </div>
+  )
+}
+
+function PlayerLearnCard({
+  iso,
+  name,
+  facts,
+  lang,
+}: {
+  iso: string
+  name: string
+  facts: boolean
+  lang: QuizSettings['lang']
+}) {
+  const player = playerById(iso)
+  const clues = facts && player ? playerClueSequence(player.id, 4) : []
+  return (
+    <div className="learn-card is-leader">
+      {player ? <LeaderPortrait name={name} wiki={player.wiki} size="card" /> : null}
+      <p className="learn-card-name">
+        <FitText>{name}</FitText>
+      </p>
+      {clues.length > 0 ? (
+        <p className="learn-card-bio">{clues.map((clue) => playerFactLabel(clue, lang)).join(' · ')}</p>
+      ) : null}
     </div>
   )
 }

@@ -4,7 +4,16 @@ import type { FlagColor, FlagMotif } from '../data/flagTraits'
 import { type Lang } from '../i18n/lang'
 import { STRINGS, regionLabel } from '../i18n/strings'
 import type { FactClue, FoundedEra, NeighborBand, PopulationBand } from './countryFacts'
+import { playerFactLabel, type PlayerFactClue } from './playerFacts'
 import { countryName } from './quiz'
+
+export function isPlayerFactClue(clue: FactClue | PlayerFactClue): clue is PlayerFactClue {
+  return clue.kind.startsWith('player')
+}
+
+export function anyFactLabel(clue: FactClue | PlayerFactClue, lang: Lang): string {
+  return isPlayerFactClue(clue) ? playerFactLabel(clue, lang) : factLabel(clue, lang)
+}
 
 export function factLabel(clue: FactClue, lang: Lang): string {
   const t = STRINGS[lang]

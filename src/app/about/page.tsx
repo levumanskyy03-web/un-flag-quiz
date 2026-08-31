@@ -20,14 +20,14 @@ export default function AboutPage() {
       </p>
       <p>Сайт сделал Лев Уманский. Игра бесплатная, без обязательной регистрации.</p>
       <p>
-        Портреты в разделе «Лидеры» подгружаются с Wikimedia Commons и показываются только если у файла свободная
-        лицензия (общественное достояние, CC BY или CC BY-SA). Под фото — автор и лицензия, со ссылкой на страницу
-        файла. Fair use и прочие несвободные снимки с Википедии не используем: вместо них инициалы.
+        Портреты в разделах «Лидеры» и «Футболисты» подгружаются с Wikimedia Commons и показываются только если у файла
+        свободная лицензия (общественное достояние, CC BY или CC BY-SA). Под фото — автор и лицензия, со ссылкой на
+        страницу файла. Fair use и прочие несвободные снимки с Википедии не используем: вместо них инициалы.
       </p>
       <p lang="en">
         Country Passport is a quiz on the 193 UN member states: flags, capitals, maps, and a football section.
-        Leader portraits come from Wikimedia Commons and are shown only when the file is Public Domain, CC BY, or
-        CC BY-SA. Created by Lev Umansky.
+        Leader and footballer portraits come from Wikimedia Commons and are shown only when the file is Public Domain,
+        CC BY, or CC BY-SA. Created by Lev Umansky.
       </p>
     </LegalShell>
   )

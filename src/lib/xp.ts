@@ -90,7 +90,16 @@ const FOOTBALL_MODE_XP: Record<FootballMode, number> = {
   wcFinalists: 1,
   wcHosts: 1,
   wcTitleYears: 2,
+  wcScorers: 2,
   euroWinners: 1,
+  euroFinalists: 1,
+  euroHosts: 1,
+  euroTitleYears: 2,
+  uclWinners: 2,
+  copaWinners: 1,
+  afconWinners: 1,
+  playerPhotoToName: 2,
+  playerFactsToName: 2,
 }
 
 const HARD_FREE_MODES = new Set<QuizMode>([
@@ -100,6 +109,8 @@ const HARD_FREE_MODES = new Set<QuizMode>([
   'mapToName',
   'neighborsToName',
   'factsToName',
+  'playerFactsToName',
+  'playerPhotoToName',
   'seaToName',
   'riverToName',
   'mapToSea',
@@ -122,12 +133,14 @@ export function xpForFootballRound(
   endedBy: RoundEnd,
 ): number {
   if (!isFootballMode(mode) || answers.length === 0) return 0
-  const correct = answers.filter(isCorrect).length
-  const per = xpPerFootballCorrect(mode, difficulty)
-  let xp = correct * per
+  let xp = 0
+  for (const answer of answers) {
+    if (!isCorrect(answer)) continue
+    xp += xpPerFootballCorrect(answer.question.mode ?? mode, difficulty)
+  }
   if (endedBy === 'complete') {
     xp += answers.length
-    if (correct === answers.length) xp += 2 * answers.length
+    if (answers.every(isCorrect)) xp += 2 * answers.length
   }
   return Math.max(0, Math.round(xp))
 }

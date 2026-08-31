@@ -13,7 +13,7 @@ import { currencyChoiceLabel } from './currencyFakes'
 import { foundedChoiceLabel } from './foundedFakes'
 import { populationChoiceLabel } from './populationFakes'
 import { isRankingMode } from '../data/rankings'
-import { codeAnswerKey, codePromptLabel, countryName, isCodeOptionMode, isLeadersMode, type Question, type QuizMode } from './quiz'
+import { codeAnswerKey, codePromptLabel, countryName, isCodeOptionMode, isLeadersMode, isPlayerFootballMode, type Question, type QuizMode } from './quiz'
 import { isWaterMode, waterAnswerKey } from '../data/water'
 
 export function answerKey(country: Country, mode: QuizMode): string {
@@ -27,6 +27,12 @@ export function answerKey(country: Country, mode: QuizMode): string {
     mode === 'wcFinalists' ||
     mode === 'wcHosts' ||
     mode === 'euroWinners' ||
+    mode === 'euroFinalists' ||
+    mode === 'euroHosts' ||
+    mode === 'wcScorers' ||
+    mode === 'uclWinners' ||
+    mode === 'copaWinners' ||
+    mode === 'afconWinners' ||
     mode === 'tldToName' ||
     mode === 'callingToName' ||
     mode === 'carToName'
@@ -34,7 +40,7 @@ export function answerKey(country: Country, mode: QuizMode): string {
     return country.iso
   }
   if (isRankingMode(mode)) return country.iso
-  if (isLeadersMode(mode)) return country.iso
+  if (isLeadersMode(mode) || isPlayerFootballMode(mode)) return country.iso
   if (isWaterMode(mode)) return waterAnswerKey(country.iso, mode)
   if (mode === 'nameToTld' || mode === 'nameToCalling' || mode === 'nameToCar') {
     return codeAnswerKey(country, mode)
@@ -63,6 +69,12 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
     mode === 'wcFinalists' ||
     mode === 'wcHosts' ||
     mode === 'euroWinners' ||
+    mode === 'euroFinalists' ||
+    mode === 'euroHosts' ||
+    mode === 'wcScorers' ||
+    mode === 'uclWinners' ||
+    mode === 'copaWinners' ||
+    mode === 'afconWinners' ||
     mode === 'tldToName' ||
     mode === 'callingToName' ||
     mode === 'carToName'
@@ -70,7 +82,7 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
     return countryName(country, lang)
   }
   if (isRankingMode(mode)) return countryName(country, lang)
-  if (isLeadersMode(mode)) return countryName(country, lang)
+  if (isLeadersMode(mode) || isPlayerFootballMode(mode)) return countryName(country, lang)
   if (isCodeOptionMode(mode)) return codePromptLabel(country, mode)
   if (mode === 'nameToFounded') {
     if (!question) return String(foundedYear(country.iso) ?? '')

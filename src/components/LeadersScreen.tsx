@@ -18,11 +18,13 @@ import {
   leadersModeOf,
   type LeaderAsk,
   type LeadersMode,
+  type QuizMode,
 } from '../lib/quiz'
 import type { LeaderKind } from '../data/leaders'
 import { AppChrome } from './AppChrome'
 import { GeoIcon } from './GeoIcon'
 import { HubNav, type HubTab } from './HubNav'
+import { ModeChoice } from './ModeChoice'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
@@ -149,10 +151,12 @@ export function LeadersSetup({
   settings,
   onChange,
   showDifficulty = false,
+  campaignPercent,
 }: {
   settings: QuizSettings
   onChange: (settings: QuizSettings) => void
   showDifficulty?: boolean
+  campaignPercent?: (mode: QuizMode) => number | null
 }) {
   const t = STRINGS[settings.lang]
   const mode = defaultLeadersMode(settings.mode)
@@ -171,38 +175,43 @@ export function LeadersSetup({
     <>
       <h2>{t.leaderTopic}</h2>
       <div className="choice-grid is-4">
-        {LEADERS_TOPICS.map((kind) => (
-          <button
-            key={kind}
-            type="button"
-            className={`choice ${topic === kind ? 'is-active' : ''}`}
-            aria-pressed={topic === kind}
-            onClick={() => setTopic(kind)}
-          >
-            {kind === 'pope'
+        {LEADERS_TOPICS.map((kind) => {
+          const topicMode = leadersModeOf(kind, ask)
+          const label =
+            kind === 'pope'
               ? t.popesLeaders
               : kind === 'rus'
                 ? t.askoldToUnion
                 : kind === 'uk'
                   ? t.ukMonarchs
-                  : t.usPresidents}
-          </button>
-        ))}
+                  : t.usPresidents
+          return (
+            <ModeChoice
+              key={kind}
+              label={label}
+              active={topic === kind}
+              onClick={() => setTopic(kind)}
+              percent={campaignPercent?.(topicMode)}
+            />
+          )
+        })}
       </div>
 
       <h2>{t.leaderAsk}</h2>
       <div className={`choice-grid${leadersAsksOf(topic).length === 3 ? ' is-3' : ''}`}>
-        {leadersAsksOf(topic).map((item) => (
-          <button
-            key={item}
-            type="button"
-            className={`choice ${ask === item ? 'is-active' : ''}`}
-            aria-pressed={ask === item}
-            onClick={() => setAsk(item)}
-          >
-            {item === 'photo' ? t.leaderAskPhoto : item === 'number' ? t.leaderAskNumber : t.leaderAskYears}
-          </button>
-        ))}
+        {leadersAsksOf(topic).map((item) => {
+          const askMode = leadersModeOf(topic, item)
+          const label = item === 'photo' ? t.leaderAskPhoto : item === 'number' ? t.leaderAskNumber : t.leaderAskYears
+          return (
+            <ModeChoice
+              key={item}
+              label={label}
+              active={ask === item}
+              onClick={() => setAsk(item)}
+              percent={campaignPercent?.(askMode)}
+            />
+          )
+        })}
       </div>
 
       {showDifficulty ? (

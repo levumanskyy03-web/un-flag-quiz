@@ -22,11 +22,20 @@ interface PassportModalProps {
   lang: Lang
   territoryNote?: string
   disputeNote?: string
+  stacked?: boolean
   onClose: () => void
   onOpenCountry: (iso: string) => void
 }
 
-export function PassportModal({ country, lang, territoryNote, disputeNote, onClose, onOpenCountry }: PassportModalProps) {
+export function PassportModal({
+  country,
+  lang,
+  territoryNote,
+  disputeNote,
+  stacked = false,
+  onClose,
+  onOpenCountry,
+}: PassportModalProps) {
   const t = STRINGS[lang]
   const passport = getPassport(country.iso)
   const name = countryName(country, lang)
@@ -52,7 +61,14 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
   if (!passport) return null
 
   return (
-    <div className="passport-overlay" onClick={onClose} role="presentation">
+    <div
+      className={`passport-overlay${stacked ? ' is-stacked' : ''}`}
+      onClick={(event) => {
+        event.stopPropagation()
+        onClose()
+      }}
+      role="presentation"
+    >
       <div
         className="passport-sheet"
         role="dialog"
@@ -104,7 +120,7 @@ export function PassportModal({ country, lang, territoryNote, disputeNote, onClo
           ) : null}
           <PassportLanguages iso={country.iso} lang={lang} />
         </dl>
-        <RankingPlaces iso={country.iso} lang={lang} />
+        <RankingPlaces iso={country.iso} lang={lang} onOpenCountry={onOpenCountry} />
         {territoryNote ? null : (
           <section className="passport-neighbors">
             <h3>{t.neighbors}</h3>

@@ -61,3 +61,23 @@ export function factText(
   const [en, ru] = rows[index % rows.length]
   return lang === 'ru' ? ru : en
 }
+
+export function constantFactTexts(
+  iso: string,
+  lang: Lang,
+  rotatingIndex: number,
+  fallback: CountryFact,
+  count = 4,
+): string[] {
+  const rotating = factText(iso, rotatingIndex, lang, fallback)
+  const rows = countryFacts(iso)
+  const pool = rows.length > 0 ? rows : [fallback]
+  const texts: string[] = []
+  for (const fact of pool) {
+    const text = lang === 'ru' ? fact.ru : fact.en
+    if (text === rotating) continue
+    texts.push(text)
+    if (texts.length >= count) break
+  }
+  return texts
+}

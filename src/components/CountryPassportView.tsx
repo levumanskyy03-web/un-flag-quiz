@@ -70,7 +70,7 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
         ) : null}
         <PassportLanguages iso={country.iso} lang="ru" />
       </dl>
-      <RankingPlaces iso={country.iso} lang="ru" />
+      <RankingPlaces iso={country.iso} lang="ru" linkToPages />
       <section className="passport-neighbors">
         <h2>{t.neighbors}</h2>
         {neighbors.length === 0 ? (

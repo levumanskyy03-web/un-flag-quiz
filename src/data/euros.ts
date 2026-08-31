@@ -1,4 +1,14 @@
-import { footballTeamCountry, type WorldCupWinner } from './worldCup'
+import {
+  footballTeamCountry,
+  hostRelatedIds,
+  singleHostPool,
+  tournamentRelatedFinalistIds,
+  tournamentRelatedWinnerIds,
+  tournamentWinYears,
+  wcHostAnswerId,
+  type WorldCupHost,
+  type WorldCupWinner,
+} from './worldCup'
 
 export const EURO_WINNERS: WorldCupWinner[] = [
   { year: 1960, winnerId: 'su', runnerUpId: 'yu' },
@@ -20,7 +30,7 @@ export const EURO_WINNERS: WorldCupWinner[] = [
   { year: 2024, winnerId: 'es', runnerUpId: 'eng' },
 ]
 
-const EURO_EASY_FROM = 1996
+export const EURO_EASY_FROM = 1996
 
 export function euroPool(difficulty: 'easy' | 'medium' | 'hard' | 'hardcore'): WorldCupWinner[] {
   if (difficulty === 'easy') return EURO_WINNERS.filter((item) => item.year >= EURO_EASY_FROM)
@@ -35,16 +45,50 @@ export function euroTeamCountries() {
   return [...new Set(EURO_WINNERS.flatMap((item) => [item.winnerId, item.runnerUpId]))].map(footballTeamCountry)
 }
 
-export function euroRelatedTeamIds(year: number): string[] {
-  const index = EURO_WINNERS.findIndex((item) => item.year === year)
-  if (index < 0) return []
-  const current = EURO_WINNERS[index]
-  const ids: string[] = []
-  const add = (id?: string) => {
-    if (id && id !== current.winnerId && !ids.includes(id)) ids.push(id)
+export const EURO_HOSTS: WorldCupHost[] = [
+  { year: 1960, hostIds: ['fr'] },
+  { year: 1964, hostIds: ['es'] },
+  { year: 1968, hostIds: ['it'] },
+  { year: 1972, hostIds: ['be'] },
+  { year: 1976, hostIds: ['yu'] },
+  { year: 1980, hostIds: ['it'] },
+  { year: 1984, hostIds: ['fr'] },
+  { year: 1988, hostIds: ['de'] },
+  { year: 1992, hostIds: ['se'] },
+  { year: 1996, hostIds: ['eng'] },
+  { year: 2000, hostIds: ['be', 'nl'] },
+  { year: 2004, hostIds: ['pt'] },
+  { year: 2008, hostIds: ['at', 'ch'] },
+  { year: 2012, hostIds: ['pl', 'ua'] },
+  { year: 2016, hostIds: ['fr'] },
+  { year: 2024, hostIds: ['de'] },
+]
+
+export function euroHostPool(difficulty: 'easy' | 'medium' | 'hard' | 'hardcore'): WorldCupHost[] {
+  return singleHostPool(EURO_HOSTS, difficulty)
+}
+
+export function euroHostCountries() {
+  const ids = new Set<string>()
+  for (const cup of EURO_HOSTS) {
+    ids.add(wcHostAnswerId(cup.hostIds))
+    for (const id of cup.hostIds) ids.add(id)
   }
-  add(EURO_WINNERS[index - 1]?.winnerId)
-  add(EURO_WINNERS[index + 1]?.winnerId)
-  add(current.runnerUpId)
-  return ids
+  return [...ids].map(footballTeamCountry)
+}
+
+export function euroRelatedTeamIds(year: number): string[] {
+  return tournamentRelatedWinnerIds(EURO_WINNERS, year)
+}
+
+export function euroHostRelatedIds(year: number): string[] {
+  return hostRelatedIds(EURO_HOSTS, year)
+}
+
+export function euroFinalistRelatedIds(year: number): string[] {
+  return tournamentRelatedFinalistIds(EURO_WINNERS, year)
+}
+
+export function euroWinYearsFor(winnerId: string): number[] {
+  return tournamentWinYears(EURO_WINNERS, winnerId)
 }

@@ -1,6 +1,8 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { COUNTRIES } from '../data/countries'
+import { FOOTBALL_PLAYERS } from '../data/footballPlayers'
+import { playerClueSequence } from './playerFacts'
 import { isPlayerId, sanitizeName } from './leaderboard'
 import { isNameAllowed } from './nameFilter'
 import type { DuelQuestionWire, DuelView } from './duelTypes'
@@ -17,11 +19,13 @@ import {
 import {
   answerPauseMs,
   createFootballMixedRound,
+  createFootballRound,
   createMixedRound,
   getRegionPool,
   isFactsToName,
   isFootballMode,
   isFootballYearChoice,
+  isPlayerFactsToName,
   isQuizDifficulty,
   isQuizMode,
   isRegionFilter,
@@ -105,7 +109,8 @@ export async function createDuelRoom(input: {
   includeExtras?: boolean
 }): Promise<{ ok: true; room: DuelRoom } | { ok: false; error: 'offline' | 'empty' }> {
   const facts = input.facts && isFactsToName(input.modes[0] ?? input.mode) ? input.facts : undefined
-  const modes = facts ? (['factsToName'] as QuizMode[]) : orderedModes(input.modes.length > 0 ? input.modes : [input.mode])
+  const factsMode = facts ? (isQuizMode(input.modes[0] ?? input.mode) ? (input.modes[0] ?? input.mode) : 'factsToName') : undefined
+  const modes = facts && factsMode ? [factsMode] : orderedModes(input.modes.length > 0 ? input.modes : [input.mode])
   const roundSize = facts ? facts.series : input.roundSize
   const now = Date.now()
   for (let attempt = 0; attempt < 8; attempt += 1) {
@@ -384,16 +389,17 @@ export function parseCreateBody(body: unknown): {
   if (!modes || !isRegionFilter(record.region) || !isQuizDifficulty(record.difficulty)) {
     return null
   }
-  const factsMode = modes.includes('factsToName')
+  const factsMode = modes.some(isFactsToName)
   const facts = factsMode ? parseFactsDuelConfig(record) : undefined
   if (factsMode && !facts) return null
   const roundSize = typeof record.roundSize === 'number' ? record.roundSize : Number(record.roundSize)
   if (facts) {
+    const factsModeId = modes.find(isFactsToName) ?? 'factsToName'
     return {
       playerId,
       name: parseDuelName(record.name),
-      mode: 'factsToName',
-      modes: ['factsToName'],
+      mode: factsModeId,
+      modes: [factsModeId],
       region: record.region,
       difficulty: record.difficulty,
       roundSize: facts.series,
@@ -406,7 +412,7 @@ export function parseCreateBody(body: unknown): {
     playerId,
     name: parseDuelName(record.name),
     mode: modes[0],
-    modes: modes.filter((mode) => mode !== 'factsToName'),
+    modes: modes.filter((mode) => !isFactsToName(mode)),
     region: record.region,
     difficulty: record.difficulty,
     roundSize,
@@ -532,7 +538,25 @@ function buildQuestions(
   facts?: FactsDuelConfig,
   includeExtras = false,
 ): DuelQuestionWire[] {
-  if (facts || (modes.length === 1 && modes[0] === 'factsToName')) {
+  if (facts || (modes.length === 1 && isFactsToName(modes[0]))) {
+    const factsMode = modes.find(isFactsToName) ?? 'factsToName'
+    if (isPlayerFactsToName(factsMode)) {
+      const pool = [...FOOTBALL_PLAYERS]
+      const count = Math.min(facts?.series ?? roundSize, pool.length)
+      const rng = mulberry32(seedFrom(seed + 'players'))
+      const shuffled = [...pool]
+      for (let i = shuffled.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(rng() * (i + 1))
+        ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      }
+      const max = factsMaxFor(facts)
+      return shuffled.slice(0, count).map((player, index) => ({
+        countryIso: player.id,
+        optionIsos: [],
+        mode: factsMode,
+        facts: playerClueSequence(player.id, max, mulberry32(seedFrom(`${seed}:${player.id}:${index}`))),
+      }))
+    }
     const pool = getRegionPool(region, includeExtras)
     const count = Math.min(facts?.series ?? roundSize, pool.length)
     const picked = [...pool].sort((a, b) => a.iso.localeCompare(b.iso))
@@ -546,12 +570,22 @@ function buildQuestions(
     return shuffled.slice(0, count).map((country, index) => ({
       countryIso: country.iso,
       optionIsos: [],
-      mode: 'factsToName' as const,
+      mode: factsMode,
       facts: clueSequence(country.iso, max, mulberry32(seedFrom(`${seed}:${country.iso}:${index}`))),
     }))
   }
   const footballModes = modes.filter(isFootballMode)
   if (footballModes.length === modes.length && footballModes.length > 0) {
+    if (footballModes.length === 1) {
+      return createFootballRound(footballModes[0], roundSize, difficulty).map((question) => ({
+        countryIso: question.country.iso,
+        optionIsos: question.options.map((option) => option.iso),
+        mode: question.mode ?? footballModes[0],
+        year: question.year,
+        yearOptions: question.yearOptions,
+        facts: question.facts,
+      }))
+    }
     return createFootballMixedRound(footballModes, roundSize, difficulty).map((question) => ({
       countryIso: question.country.iso,
       optionIsos: question.options.map((option) => option.iso),
@@ -624,14 +658,15 @@ function acceptDuelIso(
     const years = (question?.yearOptions ?? []).map(String)
     return years.includes(iso) ? iso : null
   }
-  if (mode === 'nameToMap' || mode === 'factsToName') {
+  if (mode === 'nameToMap' || isFactsToName(mode)) {
+    if (isPlayerFactsToName(mode)) return FOOTBALL_PLAYERS.some((player) => player.id === iso) ? iso : null
     return COUNTRIES.some((country) => country.iso === iso) ? iso : null
   }
   return optionIsos.includes(iso) ? iso : null
 }
 
 function isFactsRoom(room: DuelRoom): boolean {
-  return Boolean(room.facts) || questionModeOf(room) === 'factsToName'
+  return Boolean(room.facts) || isFactsToName(questionModeOf(room))
 }
 
 function viewQuestion(room: DuelRoom): DuelQuestionWire | null {

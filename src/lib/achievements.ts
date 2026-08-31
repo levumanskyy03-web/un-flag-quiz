@@ -17,6 +17,7 @@ import {
   isAllRegions,
   isCodesMode,
   isFootballMode,
+  footballHasDifficulty,
   isLeadersMode,
   isRankingMode,
   parseRegions,
@@ -187,7 +188,7 @@ export function listAchievements(
     fbPerfect10: footballComplete.some((round) => round.total >= 10 && round.correct === round.total),
     fbHard: footballComplete.some(
       (round) =>
-        (round.mode === 'wcHosts' || round.mode === 'euroWinners') &&
+        footballHasDifficulty(round.mode) &&
         (round.difficulty === 'hard' || round.difficulty === 'hardcore'),
     ),
     fbTenMatches: football.completes >= 20,

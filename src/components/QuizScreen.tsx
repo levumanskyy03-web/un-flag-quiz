@@ -1,4 +1,4 @@
-import { STRINGS, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
+import { STRINGS, footballQuestionPrompt, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
 import { type Country } from '../data/countries'
 import { findCountry } from '../data/extras'
 import { landNeighbors } from '../data/neighbors'
@@ -14,6 +14,7 @@ import {
   isLeaderNumberPrompt,
   isLeaderPhotoMode,
   isLeaderYearsPrompt,
+  isPlayerPhotoMode,
   isRankingMode,
   isWaterMapMode,
   isWaterMode,
@@ -28,12 +29,14 @@ import {
 import { rankingPlaceOf } from '../data/rankings'
 import { optionLabel } from '../lib/quizAnswers'
 import { termById, yearsLabel } from '../data/leaders'
+import { playerById } from '../data/footballPlayers'
 import { Flag, TeamFlag } from './Flag'
 import { LeaderPortrait } from './LeaderPortrait'
 import { Lives } from './Lives'
 import { QuizMap } from './QuizMap'
 import { RankingFootnote } from './GeoModeGrids'
 import { WorldsBack } from './WorldsBack'
+import { ChoiceLabel, FitText } from './FitText'
 
 interface QuizScreenProps {
   lang: Lang
@@ -100,6 +103,7 @@ export function QuizScreen({
   const mapRegion = quizMapRegion(path, region)
   const mixHint = mix ? mixAskHint(activeMode, lang) : null
   const leaderTerm = termById(question.country.iso)
+  const player = playerById(question.country.iso)
   const leaderRange = leaderTerm ? yearsLabel(leaderTerm.from, leaderTerm.to, t.present) : ''
   const promptNeighbors =
     activeMode === 'neighborsToName'
@@ -197,19 +201,13 @@ export function QuizScreen({
           {mixHint ? <p className="mix-ask-hint">{mixHint}</p> : null}
           {activeMode === 'flagToName' ? (
             <Flag iso={question.country.iso} name={correctName} size="hero" />
-          ) : activeMode === 'wcWinners' ? (
-            <h2 className="prompt-name">{t.wcWinnerPrompt(question.year ?? 0)}</h2>
-          ) : activeMode === 'wcFinalists' ? (
-            <h2 className="prompt-name">{t.wcFinalistPrompt(question.year ?? 0)}</h2>
-          ) : activeMode === 'wcHosts' ? (
-            <h2 className="prompt-name">{t.wcHostPrompt(question.year ?? 0)}</h2>
-          ) : activeMode === 'euroWinners' ? (
-            <h2 className="prompt-name">{t.euroWinnerPrompt(question.year ?? 0)}</h2>
-          ) : activeMode === 'wcTitleYears' ? (
+          ) : isFootballYearChoice(activeMode) ? (
             <div className="title-year-prompt">
               <TeamFlag iso={question.country.iso} name={correctName} size="hero" />
-              <h2 className="prompt-name">{t.wcTitleYearPrompt(correctName)}</h2>
+              <h2 className="prompt-name">{footballQuestionPrompt(activeMode, question.year ?? 0, correctName, lang)}</h2>
             </div>
+          ) : footballQuestionPrompt(activeMode, question.year ?? 0, correctName, lang) ? (
+            <h2 className="prompt-name">{footballQuestionPrompt(activeMode, question.year ?? 0, correctName, lang)}</h2>
           ) : isCodePromptMode(activeMode) ? (
             <div className="code-prompt-block">
               <p className="neighbors-prompt-label">
@@ -227,12 +225,12 @@ export function QuizScreen({
                   ? t.nameToCallingAsk(correctName)
                   : t.nameToCarAsk(correctName)}
             </h2>
-          ) : isLeaderPhotoMode(activeMode) ? (
+          ) : isLeaderPhotoMode(activeMode) || isPlayerPhotoMode(activeMode) ? (
             <div className="leader-prompt">
               <p className="neighbors-prompt-label">{t.leaderPhotoPrompt}</p>
               <LeaderPortrait
                 name={correctName}
-                wiki={leaderTerm?.wiki ?? ''}
+                wiki={leaderTerm?.wiki ?? player?.wiki ?? ''}
                 size="hero"
                 compact={!answered}
               />
@@ -400,10 +398,10 @@ export function QuizScreen({
                 ) : isFootballTeamChoice(activeMode) ? (
                   <span className="option-team">
                     <TeamFlag iso={option.iso} name={name} size="thumb" />
-                    <span>{optionLabel(option, activeMode, lang, question)}</span>
+                    <FitText minPx={8}>{optionLabel(option, activeMode, lang, question)}</FitText>
                   </span>
                 ) : (
-                  optionLabel(option, activeMode, lang, question)
+                  <ChoiceLabel>{optionLabel(option, activeMode, lang, question)}</ChoiceLabel>
                 )}
               </button>
             )

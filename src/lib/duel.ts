@@ -1,3 +1,4 @@
+import { playerById, playerCountry } from '../data/footballPlayers'
 import { findCountry } from '../data/extras'
 import { type Country } from '../data/countries'
 import { footballTeamCountry, isNamedFootballTeam } from '../data/worldCup'
@@ -22,19 +23,24 @@ export function duelPlayerId(): string {
   }
 }
 
+function resolveDuelCountry(iso: string, mode?: string): Country | undefined {
+  const player = playerById(iso)
+  if (player) return playerCountry(player)
+  return (
+    findCountry(iso) ??
+    (isFootballMode(mode) || isNamedFootballTeam(iso) || iso.includes('+') ? footballTeamCountry(iso) : undefined)
+  )
+}
+
 export function questionFromWire(wire: DuelQuestionWire | null): Question | null {
   if (!wire) return null
-  const country =
-    findCountry(wire.countryIso) ??
-    (isFootballMode(wire.mode) || isNamedFootballTeam(wire.countryIso) || wire.countryIso.includes('+')
-      ? footballTeamCountry(wire.countryIso)
-      : undefined)
+  const country = resolveDuelCountry(wire.countryIso, wire.mode)
   if (!country) return null
   if (isFactsToName(wire.mode ?? 'flagToName')) {
     return {
       country,
       options: [country],
-      mode: 'factsToName',
+      mode: isQuizMode(wire.mode) ? wire.mode : 'factsToName',
       facts: wire.facts ?? [],
     }
   }
@@ -48,7 +54,7 @@ export function questionFromWire(wire: DuelQuestionWire | null): Question | null
     }
   }
   const options = wire.optionIsos
-    .map((iso) => findCountry(iso) ?? (isNamedFootballTeam(iso) || iso.includes('+') ? footballTeamCountry(iso) : undefined))
+    .map((iso) => resolveDuelCountry(iso, wire.mode))
     .filter((item): item is Country => item !== undefined)
   if (options.length < 2 && !(wire.waterOptions && wire.waterOptions.length >= 2)) return null
   return {

@@ -1,4 +1,5 @@
 import { STRINGS, type Lang } from '../i18n/strings'
+import { FitText } from './FitText'
 import { GeoIcon } from './GeoIcon'
 
 export type HubTab = 'free' | 'levels' | 'learn' | 'map' | 'mistakes' | 'album'
@@ -44,7 +45,7 @@ export function HubNav({ lang, active, tabs = GEO_TABS, onSelect }: HubNavProps)
             onClick={() => onSelect(tab)}
           >
             <GeoIcon name={ICONS[tab]} size={15} />
-            {labels[tab]}
+            <FitText minPx={8}>{labels[tab]}</FitText>
           </button>
         ))}
       </div>

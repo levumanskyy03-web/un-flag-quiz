@@ -1,3 +1,4 @@
+import { footballPlayerWikis } from '../data/footballPlayers'
 import { ALL_LEADER_TERMS } from '../data/leaders'
 
 export const WIKI_UA =
@@ -16,7 +17,12 @@ export interface WikiPortrait {
 const TITLE_MAX = 180
 const THUMB_WIDTH = 480
 const ALLOWED_TITLES = new Set(
-  ALL_LEADER_TERMS.map((term) => normalizeWikiTitle(term.wiki)).filter((title): title is string => Boolean(title)),
+  [
+    ...ALL_LEADER_TERMS.map((term) => term.wiki),
+    ...footballPlayerWikis(),
+  ]
+    .map((title) => normalizeWikiTitle(title))
+    .filter((title): title is string => Boolean(title)),
 )
 
 export function normalizeWikiTitle(value: string): string | null {

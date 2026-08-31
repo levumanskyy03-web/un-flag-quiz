@@ -33,6 +33,7 @@ import { HubNav, type HubTab } from './HubNav'
 import { DuelCreateModal } from './DuelCreateModal'
 import { GeoModeGrids, RankingModeGrid } from './GeoModeGrids'
 import { WorldsBack } from './WorldsBack'
+import { ChoiceLabel, FitText } from './FitText'
 
 export interface QuizSettings {
   lang: Lang
@@ -139,8 +140,10 @@ export function HomeScreen({
             aria-pressed={settings.mix === 'easy'}
             onClick={() => update({ path: 'pool', mix: 'easy', mode: 'flagToName' })}
           >
-            {t.easyMix}
-            <span className="choice-note">{t.easyMixNote}</span>
+            <FitText minPx={9}>{t.easyMix}</FitText>
+            <FitText className="choice-note" wrap minPx={7}>
+              {t.easyMixNote}
+            </FitText>
           </button>
           <button
             type="button"
@@ -148,8 +151,10 @@ export function HomeScreen({
             aria-pressed={settings.mix === 'hard'}
             onClick={() => update({ path: 'pool', mix: 'hard', mode: 'flagToName' })}
           >
-            {t.hardMix}
-            <span className="choice-note">{t.hardMixNote}</span>
+            <FitText minPx={9}>{t.hardMix}</FitText>
+            <FitText className="choice-note" wrap minPx={7}>
+              {t.hardMixNote}
+            </FitText>
           </button>
         </div>
         <GeoModeGrids
@@ -199,7 +204,7 @@ export function HomeScreen({
                 })
               }
             >
-              {difficultyLabel(difficulty, settings.lang)}
+              <ChoiceLabel>{difficultyLabel(difficulty, settings.lang)}</ChoiceLabel>
             </button>
           ))}
         </div>
@@ -371,7 +376,7 @@ export function ExtrasToggle({
 }
 
 function nextDifficultyForMode(mode: QuizMode, difficulty: QuizDifficulty): QuizDifficulty {
-  if (mode === 'factsToName') return difficulty === 'hardcore' ? 'hard' : difficulty
+  if (mode === 'factsToName' || mode === 'playerFactsToName') return difficulty === 'hardcore' ? 'hard' : difficulty
   if (mode === 'nameToLanguage') return difficulty
   return difficulty === 'medium' ? 'hard' : difficulty
 }

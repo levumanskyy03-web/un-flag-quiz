@@ -10,7 +10,10 @@ import { fetchLevelBests, type LevelBest } from '../lib/leaderboard'
 import { MAX_LIVES, LEVEL_MODES, formatClock, hasGeoFinale, isLeadersMode, type QuizMode } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
 import { HubNav, type HubTab } from './HubNav'
+import { FootballModeGrids, isFootballCatalog } from './FootballModeGrids'
+import { modeCampaignPercent } from '../lib/campaignPercent'
 import { LeadersSetup } from './LeadersScreen'
+import { ModeChoice } from './ModeChoice'
 import { PlayerHud } from './PlayerHud'
 import { Lives } from './Lives'
 import { WorldsBack } from './WorldsBack'
@@ -88,19 +91,26 @@ export function LevelsScreen({
           <LeadersSetup
             settings={settings}
             onChange={(next) => onChange({ ...next, path: 'levels', mix: null })}
+            campaignPercent={(mode) => modeCampaignPercent(levelClears, mode)}
+          />
+        ) : isFootballCatalog(modes) ? (
+          <FootballModeGrids
+            lang={settings.lang}
+            activeMode={settings.mode}
+            onPick={(mode) => onChange({ ...settings, path: 'levels', mode, mix: null })}
+            hideModes={['playerFactsToName']}
+            campaignPercent={(mode) => modeCampaignPercent(levelClears, mode)}
           />
         ) : (
           <div className="choice-grid is-modes">
             {modes.map((mode) => (
-              <button
+              <ModeChoice
                 key={mode}
-                type="button"
-                className={`choice ${settings.mode === mode ? 'is-active' : ''}`}
-                aria-pressed={settings.mode === mode}
+                label={modeLabel(mode, settings.lang)}
+                active={settings.mode === mode}
                 onClick={() => onChange({ ...settings, path: 'levels', mode })}
-              >
-                {modeLabel(mode, settings.lang)}
-              </button>
+                percent={modeCampaignPercent(levelClears, mode)}
+              />
             ))}
           </div>
         )}

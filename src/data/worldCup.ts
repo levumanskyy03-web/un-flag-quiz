@@ -11,11 +11,14 @@ export interface WorldCupHost {
   hostIds: string[]
 }
 
+import { footballClub } from './footballClubs'
+
 const TEAM_NAMES: Record<string, { nameEn: string; nameRu: string }> = {
   eng: { nameEn: 'England', nameRu: 'Англия' },
   tch: { nameEn: 'Czechoslovakia', nameRu: 'Чехословакия' },
   su: { nameEn: 'Soviet Union', nameRu: 'СССР' },
   yu: { nameEn: 'Yugoslavia', nameRu: 'Югославия' },
+  sct: { nameEn: 'Scotland', nameRu: 'Шотландия' },
 }
 
 export const WORLD_CUP_WINNERS: WorldCupWinner[] = [
@@ -41,7 +44,6 @@ export const WORLD_CUP_WINNERS: WorldCupWinner[] = [
   { year: 2014, winnerId: 'de', runnerUpId: 'ar' },
   { year: 2018, winnerId: 'fr', runnerUpId: 'hr' },
   { year: 2022, winnerId: 'ar', runnerUpId: 'fr' },
-  { year: 2026, winnerId: 'es', runnerUpId: 'ar' },
 ]
 
 export const WORLD_CUP_HOSTS: WorldCupHost[] = [
@@ -71,6 +73,7 @@ export const WORLD_CUP_HOSTS: WorldCupHost[] = [
 ]
 
 export const WC_CHAMPION_IDS = [...new Set(WORLD_CUP_WINNERS.map((item) => item.winnerId))]
+export const WC_EASY_FROM = 1998
 export const WC_FINALIST_IDS = [...new Set(WORLD_CUP_WINNERS.map((item) => item.runnerUpId))]
 
 export function footballIsos(iso: string): string[] {
@@ -89,6 +92,10 @@ export function footballTeamCountry(id: string): Country {
   const named = TEAM_NAMES[id]
   if (named) {
     return { iso: id, nameEn: named.nameEn, nameRu: named.nameRu, region: 'europe', difficulty: 'easy' }
+  }
+  const club = footballClub(id)
+  if (club) {
+    return { iso: id, nameEn: club.nameEn, nameRu: club.nameRu, region: 'europe', difficulty: 'easy' }
   }
   const country = COUNTRIES.find((item) => item.iso === id)
   if (!country) {
@@ -125,7 +132,63 @@ export function wcWinYearsFor(winnerId: string): number[] {
 }
 
 export function isNamedFootballTeam(iso: string): boolean {
-  return iso in TEAM_NAMES
+  return iso in TEAM_NAMES || Boolean(footballClub(iso))
+}
+
+export function tournamentYearPool<T extends { year: number }>(
+  list: readonly T[],
+  difficulty: 'easy' | 'medium' | 'hard' | 'hardcore',
+  easyFrom: number,
+): T[] {
+  if (difficulty === 'easy') return list.filter((item) => item.year >= easyFrom)
+  return [...list]
+}
+
+export function tournamentWinYears(list: readonly WorldCupWinner[], winnerId: string): number[] {
+  return list.filter((item) => item.winnerId === winnerId).map((item) => item.year)
+}
+
+export function tournamentChampionCountries(list: readonly WorldCupWinner[]): Country[] {
+  return [...new Set(list.map((item) => item.winnerId))].map(footballTeamCountry)
+}
+
+export function tournamentTeamCountries(list: readonly WorldCupWinner[]): Country[] {
+  return [...new Set(list.flatMap((item) => [item.winnerId, item.runnerUpId]))].map(footballTeamCountry)
+}
+
+export function tournamentRelatedWinnerIds(list: readonly WorldCupWinner[], year: number): string[] {
+  const index = list.findIndex((item) => item.year === year)
+  if (index < 0) return []
+  const current = list[index]
+  return uniqueIds([list[index - 1]?.winnerId, list[index + 1]?.winnerId, current.runnerUpId], current.winnerId)
+}
+
+export function tournamentRelatedFinalistIds(list: readonly WorldCupWinner[], year: number): string[] {
+  const index = list.findIndex((item) => item.year === year)
+  if (index < 0) return []
+  const current = list[index]
+  return uniqueIds(
+    [current.winnerId, list[index - 1]?.runnerUpId, list[index + 1]?.runnerUpId],
+    current.runnerUpId,
+  )
+}
+
+export function hostRelatedIds(list: readonly WorldCupHost[], year: number): string[] {
+  const index = list.findIndex((item) => item.year === year)
+  if (index < 0) return []
+  const current = list[index]
+  const answerId = wcHostAnswerId(current.hostIds)
+  const prev = list[index - 1]
+  const next = list[index + 1]
+  return uniqueIds(
+    [prev ? wcHostAnswerId(prev.hostIds) : undefined, next ? wcHostAnswerId(next.hostIds) : undefined],
+    answerId,
+  )
+}
+
+export function singleHostPool(list: readonly WorldCupHost[], difficulty: 'easy' | 'medium' | 'hard' | 'hardcore'): WorldCupHost[] {
+  if (difficulty === 'easy') return list.filter((item) => item.hostIds.length === 1)
+  return [...list]
 }
 
 export function wcHostPool(difficulty: 'easy' | 'medium' | 'hard' | 'hardcore'): WorldCupHost[] {
@@ -168,7 +231,7 @@ export function wcHostRelatedIds(year: number): string[] {
   ], answerId)
 }
 
-function uniqueIds(ids: Array<string | undefined>, exclude: string): string[] {
+export function uniqueIds(ids: Array<string | undefined>, exclude: string): string[] {
   const seen = new Set<string>([exclude])
   const next: string[] = []
   for (const id of ids) {

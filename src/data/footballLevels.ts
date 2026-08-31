@@ -1,18 +1,23 @@
-import { EURO_WINNERS } from './euros'
+import { AFCON_WINNERS } from './afcon'
+import { COPA_WINNERS } from './copaAmerica'
+import { EURO_HOSTS, EURO_WINNERS } from './euros'
+import { FOOTBALL_PLAYERS } from './footballPlayers'
+import { UCL_WINNERS } from './ucl'
+import { WC_SCORERS } from './wcScorers'
 import { WORLD_CUP_HOSTS, WORLD_CUP_WINNERS } from './worldCup'
 
 export const FOOTBALL_LEVEL_CHUNK = 4
 
-const FOOTBALL_LEVEL_MODES = ['wcWinners', 'wcFinalists', 'wcHosts', 'wcTitleYears', 'euroWinners'] as const
-export type FootballLevelMode = (typeof FOOTBALL_LEVEL_MODES)[number]
-
-export function isFootballLevelMode(value: string): value is FootballLevelMode {
-  return (FOOTBALL_LEVEL_MODES as readonly string[]).includes(value)
-}
-
 export function footballYearsForMode(mode: string): number[] {
-  if (mode === 'euroWinners') return EURO_WINNERS.map((item) => item.year)
+  if (mode === 'euroWinners' || mode === 'euroFinalists' || mode === 'euroTitleYears') {
+    return EURO_WINNERS.map((item) => item.year)
+  }
+  if (mode === 'euroHosts') return EURO_HOSTS.map((item) => item.year)
   if (mode === 'wcHosts') return WORLD_CUP_HOSTS.map((item) => item.year)
+  if (mode === 'wcScorers') return WC_SCORERS.map((item) => item.year)
+  if (mode === 'uclWinners') return UCL_WINNERS.map((item) => item.year)
+  if (mode === 'copaWinners') return COPA_WINNERS.map((item) => item.year)
+  if (mode === 'afconWinners') return AFCON_WINNERS.map((item) => item.year)
   return WORLD_CUP_WINNERS.map((item) => item.year)
 }
 
@@ -25,8 +30,24 @@ export function footballLevelChunks(mode: string): number[][] {
   return chunks
 }
 
+export function footballPlayerChunks(): string[][] {
+  const ids = FOOTBALL_PLAYERS.map((player) => player.id)
+  const chunks: string[][] = []
+  for (let index = 0; index < ids.length; index += FOOTBALL_LEVEL_CHUNK) {
+    chunks.push(ids.slice(index, index + FOOTBALL_LEVEL_CHUNK))
+  }
+  return chunks
+}
+
 export function footballCampaignLevels(mode: string): number {
+  if (mode === 'playerFactsToName') return 0
+  if (mode === 'playerPhotoToName') return footballPlayerChunks().length
   return footballLevelChunks(mode).length
+}
+
+export function footballLevelPlayerIds(mode: string, level: number): string[] {
+  if (mode !== 'playerPhotoToName') return []
+  return footballPlayerChunks()[level - 1] ?? []
 }
 
 export function footballLevelYears(mode: string, level: number): number[] {

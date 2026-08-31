@@ -19,7 +19,8 @@ import { QuizScreen } from "./components/QuizScreen";
 import { ResultsScreen } from "./components/ResultsScreen";
 import { RecordModal } from "./components/RecordModal";
 import { WorldPickScreen, type World } from "./components/WorldPickScreen";
-import { footballLevelYears } from "./data/footballLevels";
+import { footballLevelPlayerIds, footballLevelYears } from "./data/footballLevels";
+import { playerById } from "./data/footballPlayers";
 import { termById } from "./data/leaders";
 import { FINAL_LEVEL, isFinalLevel } from "./data/levels";
 import { STRINGS, isLang, langDir, localeTag, type Lang } from "./i18n/strings";
@@ -54,6 +55,7 @@ import {
   campaignLevelCount,
   campaignLevelNumbers,
   createFootballRound,
+  createFootballMixedRound,
   createCodesRound,
   createLeadersRound,
   getLevelPool,
@@ -62,17 +64,22 @@ import {
   getRegionPool,
   isCorrect,
   footballHasDifficulty,
+  footballPoolSize,
   isFactsToName,
   isCodesMode,
   isFootballMode,
   isLeaderPhotoMode,
   isLeadersMode,
+  isPlayerFactsToName,
+  isPlayerFootballMode,
+  isPlayerPhotoMode,
   isRankingMode,
   isRoundSize,
   isWaterMode,
   hasGeoFinale,
   livesFor,
   MAX_LIVES,
+  modesForFootballMix,
   modesForMix,
   poolForMode,
   questionLimitMs,
@@ -257,8 +264,8 @@ export default function App() {
     const add = (question: Question | null | undefined) => {
       if (!question) return;
       const mode = question.mode ?? quizSettings.mode;
-      if (!isLeaderPhotoMode(mode)) return;
-      const wiki = termById(question.country.iso)?.wiki;
+      if (!isLeaderPhotoMode(mode) && !isPlayerPhotoMode(mode)) return;
+      const wiki = termById(question.country.iso)?.wiki ?? playerById(question.country.iso)?.wiki;
       if (wiki) titles.push(wiki);
     };
     for (const question of questions) add(question);
@@ -736,10 +743,34 @@ export default function App() {
     );
   }
 
-  function startFootballRound(path: PlayPath = "pool", level = quizSettings.level, years?: number[]) {
+  function startFootballRound(path: PlayPath = "pool", level = quizSettings.level, years?: number[], playerIds?: string[]) {
+    const mix = path === "levels" ? null : quizSettings.mix;
+    const difficulty = quizSettings.difficulty;
+    if (mix) {
+      const modes = modesForFootballMix(mix);
+      const round = createFootballMixedRound(modes, years ? years.length : quizSettings.roundSize, difficulty);
+      if (round.length === 0) return;
+      beginPreparedRound(round, path, level, {
+        mode: modes[0],
+        mix,
+        region: "all",
+        difficulty,
+      });
+      return;
+    }
     const mode = isFootballMode(quizSettings.mode) ? quizSettings.mode : "wcWinners";
-    const difficulty = footballHasDifficulty(mode) ? quizSettings.difficulty : "easy";
-    const round = createFootballRound(mode, years ? years.length : quizSettings.roundSize, difficulty, years);
+    const facts = isPlayerFactsToName(mode);
+    const count =
+      facts && path === "pool"
+        ? 1
+        : playerIds?.length
+          ? playerIds.length
+          : years
+            ? years.length
+            : facts && (path === "learn" || path === "mistakes")
+              ? footballPoolSize(mode, difficulty)
+              : quizSettings.roundSize;
+    const round = createFootballRound(mode, count, difficulty, years, undefined, playerIds);
     if (round.length === 0) return;
     beginPreparedRound(round, path, level, {
       mode,
@@ -808,6 +839,11 @@ export default function App() {
     }
     if (!isLevelUnlocked(levelClears, level, quizSettings.mode)) return;
     if (isFootballMode(quizSettings.mode)) {
+      if (isPlayerPhotoMode(quizSettings.mode)) {
+        const ids = footballLevelPlayerIds(quizSettings.mode, level);
+        startFootballRound("levels", level, undefined, ids);
+        return;
+      }
       const years = footballLevelYears(quizSettings.mode, level);
       startFootballRound("levels", level, years);
       return;
@@ -873,11 +909,13 @@ export default function App() {
       ...prev,
       path: "levels",
       mode:
-        prev.mode === "neighborsToName" ||
-        prev.mode === "factsToName" ||
-        prev.mode === "nameToLanguage" ||
-        isCodesMode(prev.mode) ||
-        isRankingMode(prev.mode)
+        prev.mode === "playerFactsToName"
+          ? "playerPhotoToName"
+          : prev.mode === "neighborsToName" ||
+            prev.mode === "factsToName" ||
+            prev.mode === "nameToLanguage" ||
+            isCodesMode(prev.mode) ||
+            isRankingMode(prev.mode)
           ? "flagToName"
           : prev.mode,
     }));
@@ -955,6 +993,12 @@ export default function App() {
 
   function startMistakesPractice() {
     if (isFootballMode(quizSettings.mode)) {
+      if (isPlayerFootballMode(quizSettings.mode)) {
+        const isos = mistakeList.filter((item) => item.mode === quizSettings.mode).map((item) => item.iso);
+        if (isos.length === 0) return;
+        startFootballRound("mistakes", quizSettings.level, undefined, isos);
+        return;
+      }
       const years = mistakeList.filter((item) => item.mode === quizSettings.mode).map((item) => item.year).filter((year): year is number => year !== undefined);
       if (years.length === 0) return;
       startFootballRound("mistakes", quizSettings.level, years);
@@ -1268,7 +1312,7 @@ export default function App() {
           onStart={() => startFootballRound()}
           onHub={goHub}
           onWorlds={goToWorlds}
-          onCreateDuel={(modes) => void handleCreateDuel(modes)}
+          onCreateDuel={(modes, facts) => void handleCreateDuel(modes, facts)}
           onJoinDuel={(code) => void handleJoinDuel(code)}
           onClearHistory={handleClearFootballHistory}
           onClearBests={handleClearBests}
@@ -1331,6 +1375,42 @@ export default function App() {
         />
       )}
       {world === "football" && screen === "quiz" && (isDuel ? questionFromWire(duelView?.question ?? null) : questions[index]) && (
+        isFactsToName(currentMode) ? (
+        <FactsScreen
+          lang={quizSettings.lang}
+          question={(isDuel ? questionFromWire(duelView?.question ?? null) : questions[index])!}
+          index={isDuel && duelView ? duelView.index : index}
+          total={isDuel && duelView ? duelView.total : questions.length}
+          roundMs={roundMs}
+          practice={isPractice && !isDuel}
+          selectedIso={isDuel ? duelView?.youAnswer ?? selectedIso : selectedIso}
+          finished={answered && !isDuel}
+          duel={
+            isDuel && duelView
+              ? {
+                  opponentName: duelView.opponentName ?? STRINGS[quizSettings.lang].duelOpponent,
+                  opponentReady: duelView.opponentReady,
+                  youScore: duelView.youScore,
+                  opponentScore: duelView.opponentScore ?? 0,
+                  remainingMs: duelView.remainingMs,
+                  factIndex: duelView.factIndex ?? 0,
+                  facts: duelView.question?.facts ?? [],
+                  maxFacts: duelView.factsMax ?? 10,
+                  wrongs: duelView.youWrongs ?? 0,
+                  wrongLimit: duelView.factsWrongLimit ?? 3,
+                  hardcore: Boolean(duelView.facts?.hardcore),
+                  locked: duelView.youAnswer !== undefined,
+                }
+              : undefined
+          }
+          onFinish={(iso, timeMs) => finishFacts(iso, timeMs)}
+          onGuess={isDuel ? (iso) => void submitDuelPick(iso) : undefined}
+          onAdvance={isDuel ? () => void handleAdvanceFact() : undefined}
+          onCountryNext={isPractice ? handlePracticeNext : undefined}
+          onBack={goBackFromPlay}
+          onWorlds={goToWorlds}
+        />
+        ) : (
         <QuizScreen
           lang={quizSettings.lang}
           mode={currentMode}
@@ -1346,6 +1426,11 @@ export default function App() {
           livesLeft={isDuel ? 0 : livesLeft}
           maxLives={isDuel || isPractice ? 0 : livesLimit}
           practice={isPractice && !isDuel}
+          mix={
+            isDuel
+              ? (duelView?.modes.length ?? 0) > 1
+              : Boolean(quizSettings.mix && quizSettings.path === "pool")
+          }
           duel={
             isDuel && duelView
               ? {
@@ -1363,6 +1448,7 @@ export default function App() {
           onBack={goBackFromPlay}
           onWorlds={goToWorlds}
         />
+        )
       )}
       {world === "football" && screen === "duel-results" && duelView && (
         <DuelResults

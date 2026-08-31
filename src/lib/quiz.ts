@@ -4,7 +4,13 @@ import { countriesForPool, isExtraIso } from '../data/extras'
 import { foundedYear } from '../data/founded'
 import { getPassport } from '../data/passports'
 import { HOLDOUT_BY_ISO, TERRITORY_BY_ISO } from '../data/territories'
-import { footballCampaignLevels, footballLevelYears } from '../data/footballLevels'
+import { footballCampaignLevels, footballLevelPlayerIds, footballLevelYears } from '../data/footballLevels'
+import {
+  FOOTBALL_PLAYERS,
+  footballPlayerPool,
+  playerCountry,
+  type FootballPlayer,
+} from '../data/footballPlayers'
 import { LEVEL_COUNT, LEVEL_ISOS, isFinalLevel, isLevelNumber } from '../data/levels'
 import { isEasyForMode, factsDifficultyOf, languageDifficultyOf } from '../data/modeDifficulty'
 import { canAskNeighbors } from '../data/neighbors'
@@ -35,11 +41,38 @@ import {
   type LeaderKind,
   type LeaderTerm,
 } from '../data/leaders'
-import { euroPool, euroRelatedTeamIds, euroTeamCountries, EURO_WINNERS } from '../data/euros'
+import { AFCON_EASY_FROM, AFCON_WINNERS } from '../data/afcon'
+import { COPA_EASY_FROM, COPA_WINNERS } from '../data/copaAmerica'
+import {
+  euroFinalistRelatedIds,
+  euroHostCountries,
+  euroHostPool,
+  euroHostRelatedIds,
+  euroPool,
+  euroRelatedTeamIds,
+  euroTeamCountries,
+  euroWinYearsFor,
+  EURO_HOSTS,
+  EURO_WINNERS,
+} from '../data/euros'
+import { clubNation } from '../data/footballClubs'
+import { UCL_EASY_FROM, UCL_WINNERS, uclClubCountries, uclRelatedClubIds, uclWinYearsFor } from '../data/ucl'
+import {
+  WC_SCORER_EASY_FROM,
+  WC_SCORERS,
+  wcScorerAnswerId,
+  wcScorerCountries,
+  wcScorerRelatedIds,
+} from '../data/wcScorers'
 import {
   footballTeamCountry,
   footballOptionClashes,
   isNamedFootballTeam,
+  tournamentRelatedFinalistIds,
+  tournamentRelatedWinnerIds,
+  tournamentTeamCountries,
+  tournamentWinYears,
+  tournamentYearPool,
   wcChampionCountries,
   wcFinalistCountries,
   wcFinalistRelatedIds,
@@ -51,6 +84,8 @@ import {
   wcWinYearsFor,
   WORLD_CUP_HOSTS,
   WORLD_CUP_WINNERS,
+  WC_EASY_FROM,
+  type WorldCupWinner,
 } from '../data/worldCup'
 import {
   isRankingEasy,
@@ -64,6 +99,7 @@ import {
 import { correctLanguageIds, quizLanguageId } from '../data/languages'
 import { localeTag, type Lang } from '../i18n/lang'
 import { clueSequence, type FactClue } from './countryFacts'
+import { playerClueSequence, type PlayerFactClue } from './playerFacts'
 import { FACTS_CLUE_TIME_MS } from './factsRules'
 
 export { isRankingMode, RANKING_MODES, type RankingMode } from '../data/rankings'
@@ -85,7 +121,16 @@ export const QUIZ_MODES = [
   'riverToName',
   'nameToLanguage',
 ] as const
-export const FOOTBALL_MODES = ['wcWinners', 'wcFinalists', 'wcHosts', 'wcTitleYears', 'euroWinners'] as const
+export const WC_FOOTBALL_MODES = ['wcWinners', 'wcFinalists', 'wcHosts', 'wcTitleYears', 'wcScorers'] as const
+export const EURO_FOOTBALL_MODES = ['euroWinners', 'euroFinalists', 'euroHosts', 'euroTitleYears'] as const
+export const OTHER_FOOTBALL_MODES = ['uclWinners', 'copaWinners', 'afconWinners'] as const
+export const PLAYER_FOOTBALL_MODES = ['playerPhotoToName', 'playerFactsToName'] as const
+export const FOOTBALL_MODES = [
+  ...WC_FOOTBALL_MODES,
+  ...EURO_FOOTBALL_MODES,
+  ...OTHER_FOOTBALL_MODES,
+  ...PLAYER_FOOTBALL_MODES,
+] as const
 export const CODES_MODES = ['tldToName', 'nameToTld', 'callingToName', 'nameToCalling', 'carToName', 'nameToCar'] as const
 export const LEADERS_MODES = [
   'usYearsToName',
@@ -125,6 +170,10 @@ export const HARD_MIX_MODES: QuizMode[] = [
   'seaToName',
   'riverToName',
 ]
+export const EASY_FOOTBALL_MIX_MODES: FootballMode[] = ['wcWinners', 'euroWinners', 'wcHosts', 'uclWinners']
+export const HARD_FOOTBALL_MIX_MODES: FootballMode[] = FOOTBALL_MODES.filter(
+  (mode) => mode !== 'playerFactsToName',
+)
 export const MIX_KINDS = ['easy', 'hard'] as const
 export type MixKind = (typeof MIX_KINDS)[number]
 
@@ -132,7 +181,12 @@ export function isMixKind(value: unknown): value is MixKind {
   return value === 'easy' || value === 'hard'
 }
 
-export function modesForMix(mix: MixKind): QuizMode[] {
+export function modesForFootballMix(mix: MixKind): FootballMode[] {
+  return mix === 'easy' ? [...EASY_FOOTBALL_MIX_MODES] : [...HARD_FOOTBALL_MIX_MODES]
+}
+
+export function modesForMix(mix: MixKind, world: QuizWorld = 'geo'): QuizMode[] {
+  if (world === 'football') return modesForFootballMix(mix)
   return mix === 'easy' ? [...EASY_MIX_MODES] : [...HARD_MIX_MODES]
 }
 
@@ -247,22 +301,40 @@ export function isCodeOptionMode(mode: QuizMode): boolean {
 }
 
 export function footballHasDifficulty(mode: QuizMode): boolean {
-  return mode === 'wcHosts' || mode === 'euroWinners'
+  return isFootballMode(mode)
 }
 
-export function isFootballTeamChoice(mode: QuizMode): boolean {
-  return mode === 'wcWinners' || mode === 'wcFinalists' || mode === 'wcHosts' || mode === 'euroWinners'
-}
-
-export function isFootballYearChoice(mode: QuizMode): boolean {
-  return mode === 'wcTitleYears'
+export function footballYearList(mode: QuizMode, difficulty: QuizDifficulty): number[] {
+  if (mode === 'wcHosts') return wcHostPool(difficulty).map((item) => item.year)
+  if (mode === 'euroHosts') return euroHostPool(difficulty).map((item) => item.year)
+  if (mode === 'euroWinners' || mode === 'euroFinalists' || mode === 'euroTitleYears') {
+    return euroPool(difficulty).map((item) => item.year)
+  }
+  if (mode === 'wcScorers') return tournamentYearPool(WC_SCORERS, difficulty, WC_SCORER_EASY_FROM).map((item) => item.year)
+  if (mode === 'uclWinners') return tournamentYearPool(UCL_WINNERS, difficulty, UCL_EASY_FROM).map((item) => item.year)
+  if (mode === 'copaWinners') return tournamentYearPool(COPA_WINNERS, difficulty, COPA_EASY_FROM).map((item) => item.year)
+  if (mode === 'afconWinners') return tournamentYearPool(AFCON_WINNERS, difficulty, AFCON_EASY_FROM).map((item) => item.year)
+  if (isFootballMode(mode)) {
+    return tournamentYearPool(WORLD_CUP_WINNERS, difficulty, WC_EASY_FROM).map((item) => item.year)
+  }
+  return []
 }
 
 export function footballPoolSize(mode: QuizMode, difficulty: QuizDifficulty): number {
-  if (mode === 'wcHosts') return wcHostPool(difficulty).length
-  if (mode === 'euroWinners') return euroPool(difficulty).length
-  if (isFootballMode(mode)) return WORLD_CUP_WINNERS.length
-  return 0
+  if (isPlayerFootballMode(mode)) return footballPlayerPool(difficulty).length
+  return footballYearList(mode, difficulty).length
+}
+
+export function footballMixPoolSize(mix: MixKind, difficulty: QuizDifficulty): number {
+  return modesForFootballMix(mix).reduce((sum, mode) => sum + footballPoolSize(mode, difficulty), 0)
+}
+
+export function isFootballTeamChoice(mode: QuizMode): boolean {
+  return isFootballMode(mode) && !isFootballYearChoice(mode) && !isPlayerFootballMode(mode)
+}
+
+export function isFootballYearChoice(mode: QuizMode): boolean {
+  return mode === 'wcTitleYears' || mode === 'euroTitleYears'
 }
 
 export function uniqueModes(modes: readonly unknown[]): QuizMode[] {
@@ -308,7 +380,19 @@ export function isMapMode(mode: QuizMode): boolean {
 }
 
 export function isFactsToName(mode: QuizMode): boolean {
-  return mode === 'factsToName'
+  return mode === 'factsToName' || mode === 'playerFactsToName'
+}
+
+export function isPlayerFactsToName(mode: QuizMode): boolean {
+  return mode === 'playerFactsToName'
+}
+
+export function isPlayerPhotoMode(mode: QuizMode): boolean {
+  return mode === 'playerPhotoToName'
+}
+
+export function isPlayerFootballMode(mode: QuizMode): boolean {
+  return mode === 'playerPhotoToName' || mode === 'playerFactsToName'
 }
 
 export function isNameToLanguage(mode: QuizMode): boolean {
@@ -319,7 +403,7 @@ export { isWaterMapMode, isWaterMode, waterCampaignLevels, waterLevelNumbers, wa
 
 export function hasLevels(mode: QuizMode): boolean {
   return (
-    isFootballMode(mode) ||
+    (isFootballMode(mode) && mode !== 'playerFactsToName') ||
     isLeadersMode(mode) ||
     (!isCodesMode(mode) &&
       !isRankingMode(mode) &&
@@ -460,7 +544,7 @@ export function questionLimitMs(
     return worldView ? MAP_FIND_WORLD_TIME_MS : MAP_FIND_REGION_TIME_MS
   }
   if (mode === 'mapToName') return MAP_IDENTIFY_TIME_MS
-  if (mode === 'factsToName') return FACTS_CLUE_TIME_MS
+  if (isFactsToName(mode)) return FACTS_CLUE_TIME_MS
   if (isWaterMode(mode)) return WATER_QUESTION_TIME_MS
   if (isRankingMode(mode)) return FACT_QUESTION_TIME_MS
   if (isFactMode(mode)) return FACT_QUESTION_TIME_MS
@@ -516,7 +600,7 @@ export interface Question {
   options: Country[]
   yearOptions?: number[]
   mode?: QuizMode
-  facts?: FactClue[]
+  facts?: Array<FactClue | PlayerFactClue>
   year?: number
   waterId?: string
   waterOptions?: string[]
@@ -540,7 +624,7 @@ interface OptionAvoid {
 }
 
 export function isCorrect(answer: RoundAnswer): boolean {
-  if (answer.question.mode === 'wcTitleYears') {
+  if (isFootballYearChoice(answer.question.mode ?? 'flagToName')) {
     return answer.selectedIso === String(answer.question.year)
   }
   if (isWaterMapMode(answer.question.mode) && answer.question.waterId) {
@@ -593,10 +677,13 @@ export function countryName(country: Country, lang: Lang): string {
 }
 
 export function flagUrl(iso: string): string {
+  const nation = clubNation(iso)
+  if (nation) return flagUrl(nation)
   if (iso === 'af') return '/flags/af.svg'
   if (iso === 'su') return '/flags/su.svg'
   if (iso === 'yu') return '/flags/yu.svg'
   if (iso === 'eng') return 'https://flagcdn.com/gb-eng.svg'
+  if (iso === 'sct') return 'https://flagcdn.com/gb-sct.svg'
   if (iso === 'tch') return 'https://flagcdn.com/cz.svg'
   return `https://flagcdn.com/${iso}.svg`
 }
@@ -723,6 +810,7 @@ export function getLevelPool(level: number, mode: QuizMode = 'flagToName'): Coun
 }
 
 export function levelQuestionCount(level: number, mode: QuizMode): number {
+  if (mode === 'playerPhotoToName') return footballLevelPlayerIds(mode, level).length
   if (isFootballMode(mode)) return footballLevelYears(mode, level).length
   return getLevelPool(level, mode).length
 }
@@ -740,6 +828,11 @@ export function getLearnPool(
   includeExtras = false,
 ): Country[] {
   if (isFootballMode(mode)) {
+    if (isPlayerFootballMode(mode)) {
+      const ids =
+        learnFrom === 'level' && mode === 'playerPhotoToName' ? footballLevelPlayerIds(mode, level) : undefined
+      return footballLearnCountries(mode, undefined, ids)
+    }
     const years = learnFrom === 'level' ? footballLevelYears(mode, level) : undefined
     return footballLearnCountries(mode, years)
   }
@@ -772,7 +865,15 @@ export function getLearnPool(
   return filtered.filter((country) => extraFitsMode(country, mode))
 }
 
-export function footballLearnCountries(mode: FootballMode, years?: readonly number[]): Country[] {
+export function footballLearnCountries(
+  mode: FootballMode,
+  years?: readonly number[],
+  playerIds?: readonly string[],
+): Country[] {
+  if (isPlayerFootballMode(mode)) {
+    const allow = playerIds && playerIds.length > 0 ? new Set(playerIds) : null
+    return FOOTBALL_PLAYERS.filter((player) => !allow || allow.has(player.id)).map(playerCountry)
+  }
   const allow = years && years.length > 0 ? new Set(years) : null
   const yearOk = (year: number) => !allow || allow.has(year)
   const ids = new Set<string>()
@@ -788,8 +889,32 @@ export function footballLearnCountries(mode: FootballMode, years?: readonly numb
     for (const item of WORLD_CUP_HOSTS) {
       if (yearOk(item.year)) ids.add(wcHostAnswerId(item.hostIds))
     }
-  } else {
+  } else if (mode === 'euroWinners' || mode === 'euroTitleYears') {
     for (const item of EURO_WINNERS) {
+      if (yearOk(item.year)) ids.add(item.winnerId)
+    }
+  } else if (mode === 'euroFinalists') {
+    for (const item of EURO_WINNERS) {
+      if (yearOk(item.year)) ids.add(item.runnerUpId)
+    }
+  } else if (mode === 'euroHosts') {
+    for (const item of EURO_HOSTS) {
+      if (yearOk(item.year)) ids.add(wcHostAnswerId(item.hostIds))
+    }
+  } else if (mode === 'wcScorers') {
+    for (const item of WC_SCORERS) {
+      if (yearOk(item.year)) ids.add(wcScorerAnswerId(item))
+    }
+  } else if (mode === 'uclWinners') {
+    for (const item of UCL_WINNERS) {
+      if (yearOk(item.year)) ids.add(item.clubId)
+    }
+  } else if (mode === 'copaWinners') {
+    for (const item of COPA_WINNERS) {
+      if (yearOk(item.year)) ids.add(item.winnerId)
+    }
+  } else {
+    for (const item of AFCON_WINNERS) {
       if (yearOk(item.year)) ids.add(item.winnerId)
     }
   }
@@ -797,6 +922,7 @@ export function footballLearnCountries(mode: FootballMode, years?: readonly numb
 }
 
 export function footballLearnYears(mode: FootballMode, teamId: string, years?: readonly number[]): number[] {
+  if (isPlayerFootballMode(mode)) return []
   let list: number[]
   if (mode === 'wcWinners' || mode === 'wcTitleYears') {
     list = wcWinYearsFor(teamId)
@@ -804,8 +930,20 @@ export function footballLearnYears(mode: FootballMode, teamId: string, years?: r
     list = WORLD_CUP_WINNERS.filter((item) => item.runnerUpId === teamId).map((item) => item.year)
   } else if (mode === 'wcHosts') {
     list = WORLD_CUP_HOSTS.filter((item) => wcHostAnswerId(item.hostIds) === teamId).map((item) => item.year)
+  } else if (mode === 'euroWinners' || mode === 'euroTitleYears') {
+    list = euroWinYearsFor(teamId)
+  } else if (mode === 'euroFinalists') {
+    list = EURO_WINNERS.filter((item) => item.runnerUpId === teamId).map((item) => item.year)
+  } else if (mode === 'euroHosts') {
+    list = EURO_HOSTS.filter((item) => wcHostAnswerId(item.hostIds) === teamId).map((item) => item.year)
+  } else if (mode === 'wcScorers') {
+    list = WC_SCORERS.filter((item) => wcScorerAnswerId(item) === teamId).map((item) => item.year)
+  } else if (mode === 'uclWinners') {
+    list = uclWinYearsFor(teamId)
+  } else if (mode === 'copaWinners') {
+    list = tournamentWinYears(COPA_WINNERS, teamId)
   } else {
-    list = EURO_WINNERS.filter((item) => item.winnerId === teamId).map((item) => item.year)
+    list = tournamentWinYears(AFCON_WINNERS, teamId)
   }
   if (years && years.length > 0) {
     const allow = new Set(years)
@@ -819,8 +957,32 @@ function footballCountryForYear(mode: FootballMode, year: number): Country[] {
     const item = WORLD_CUP_HOSTS.find((host) => host.year === year)
     return item ? [footballTeamCountry(wcHostAnswerId(item.hostIds))] : []
   }
-  if (mode === 'euroWinners') {
+  if (mode === 'euroHosts') {
+    const item = EURO_HOSTS.find((host) => host.year === year)
+    return item ? [footballTeamCountry(wcHostAnswerId(item.hostIds))] : []
+  }
+  if (mode === 'euroWinners' || mode === 'euroTitleYears') {
     const item = EURO_WINNERS.find((cup) => cup.year === year)
+    return item ? [footballTeamCountry(item.winnerId)] : []
+  }
+  if (mode === 'euroFinalists') {
+    const item = EURO_WINNERS.find((cup) => cup.year === year)
+    return item ? [footballTeamCountry(item.runnerUpId)] : []
+  }
+  if (mode === 'wcScorers') {
+    const item = WC_SCORERS.find((cup) => cup.year === year)
+    return item ? [footballTeamCountry(wcScorerAnswerId(item))] : []
+  }
+  if (mode === 'uclWinners') {
+    const item = UCL_WINNERS.find((cup) => cup.year === year)
+    return item ? [footballTeamCountry(item.clubId)] : []
+  }
+  if (mode === 'copaWinners') {
+    const item = COPA_WINNERS.find((cup) => cup.year === year)
+    return item ? [footballTeamCountry(item.winnerId)] : []
+  }
+  if (mode === 'afconWinners') {
+    const item = AFCON_WINNERS.find((cup) => cup.year === year)
     return item ? [footballTeamCountry(item.winnerId)] : []
   }
   const item = WORLD_CUP_WINNERS.find((cup) => cup.year === year)
@@ -960,17 +1122,75 @@ export function createFootballRound(
   difficulty: QuizDifficulty = 'easy',
   years?: number[],
   prior?: OptionAvoid,
+  playerIds?: string[],
 ): Question[] {
+  if (isPlayerFootballMode(mode)) return createPlayerRound(mode, count, difficulty, playerIds)
   const avoid: OptionAvoid = {
     keys: [...(prior?.keys ?? [])],
     years: [...(prior?.years ?? [])],
     waters: [...(prior?.waters ?? [])],
   }
-  if (mode === 'wcFinalists') return createWcFinalistsRound(count, years, avoid)
-  if (mode === 'wcHosts') return createWcHostsRound(count, difficulty, years, avoid)
-  if (mode === 'wcTitleYears') return createWcTitleYearsRound(count, years, avoid)
-  if (mode === 'euroWinners') return createEuroWinnersRound(count, difficulty, years, avoid)
-  return createWcWinnersRound(count, years, avoid)
+  const scoped = years?.length ? years : footballYearList(mode, difficulty)
+  if (mode === 'wcFinalists') return createWcFinalistsRound(count, scoped, avoid)
+  if (mode === 'wcHosts') return createWcHostsRound(count, difficulty, scoped, avoid)
+  if (mode === 'wcTitleYears') {
+    return createTitleYearsRound('wcTitleYears', WORLD_CUP_WINNERS, wcWinYearsFor, count, scoped, avoid)
+  }
+  if (mode === 'euroWinners') {
+    return createWinnerYearRound(
+      'euroWinners',
+      EURO_WINNERS,
+      (item) => footballTeamCountry(item.winnerId),
+      (year) => euroRelatedTeamIds(year),
+      euroTeamCountries(),
+      count,
+      scoped,
+      avoid,
+    )
+  }
+  if (mode === 'euroFinalists') {
+    return createWinnerYearRound(
+      'euroFinalists',
+      EURO_WINNERS,
+      (item) => footballTeamCountry(item.runnerUpId),
+      (year) => euroFinalistRelatedIds(year),
+      euroTeamCountries(),
+      count,
+      scoped,
+      avoid,
+    )
+  }
+  if (mode === 'euroHosts') return createEuroHostsRound(count, difficulty, scoped, avoid)
+  if (mode === 'euroTitleYears') {
+    return createTitleYearsRound('euroTitleYears', EURO_WINNERS, euroWinYearsFor, count, scoped, avoid)
+  }
+  if (mode === 'wcScorers') return createWcScorersRound(count, difficulty, scoped, avoid)
+  if (mode === 'uclWinners') return createUclWinnersRound(count, difficulty, scoped, avoid)
+  if (mode === 'copaWinners') {
+    return createWinnerYearRound(
+      'copaWinners',
+      COPA_WINNERS,
+      (item) => footballTeamCountry(item.winnerId),
+      (year) => tournamentRelatedWinnerIds(COPA_WINNERS, year),
+      tournamentTeamCountries(COPA_WINNERS),
+      count,
+      scoped,
+      avoid,
+    )
+  }
+  if (mode === 'afconWinners') {
+    return createWinnerYearRound(
+      'afconWinners',
+      AFCON_WINNERS,
+      (item) => footballTeamCountry(item.winnerId),
+      (year) => tournamentRelatedWinnerIds(AFCON_WINNERS, year),
+      tournamentTeamCountries(AFCON_WINNERS),
+      count,
+      scoped,
+      avoid,
+    )
+  }
+  return createWcWinnersRound(count, scoped, avoid)
 }
 
 export function createCodesRound(
@@ -1123,12 +1343,13 @@ export function createFootballMixedRound(
   count: number,
   difficulty: QuizDifficulty,
 ): Question[] {
-  if (modes.length === 0 || count <= 0) return []
+  const playable = modes.filter((mode) => mode !== 'playerFactsToName')
+  if (playable.length === 0 || count <= 0) return []
   const questions: Question[] = []
   const used = new Set<string>()
   const avoid: OptionAvoid = { keys: [], years: [], waters: [] }
   for (let i = 0; i < count * 6 && questions.length < count; i += 1) {
-    const mode = modes[i % modes.length]
+    const mode = playable[i % playable.length]
     const [question] = createFootballRound(mode, 1, difficulty, undefined, avoid)
     if (!question) continue
     const key = `${question.mode}:${question.year}:${question.country.iso}`
@@ -1217,31 +1438,32 @@ function createWcHostsRound(
   return questions
 }
 
-function createWcTitleYearsRound(
+function createTitleYearsRound(
+  mode: FootballMode,
+  list: readonly WorldCupWinner[],
+  winYears: (winnerId: string) => number[],
   count: number,
   years?: number[],
   avoid: OptionAvoid = { keys: [], years: [], waters: [] },
 ): Question[] {
-  const source = years?.length
-    ? WORLD_CUP_WINNERS.filter((item) => years.includes(item.year))
-    : WORLD_CUP_WINNERS
+  const source = years?.length ? list.filter((item) => years.includes(item.year)) : [...list]
   const picked = shuffle(source).slice(0, Math.min(count, source.length))
-  const allYears = WORLD_CUP_WINNERS.map((item) => item.year)
+  const allYears = list.map((item) => item.year)
   const questions: Question[] = []
   for (const item of picked) {
     const winner = footballTeamCountry(item.winnerId)
-    const theirYears = new Set(wcWinYearsFor(item.winnerId))
+    const theirYears = new Set(winYears(item.winnerId))
     const related: number[] = []
     const addYear = (year?: number) => {
       if (year === undefined || year === item.year || theirYears.has(year) || related.includes(year)) return
       related.push(year)
     }
-    for (const cup of WORLD_CUP_WINNERS) {
+    for (const cup of list) {
       if (cup.runnerUpId === item.winnerId) addYear(cup.year)
     }
-    const index = WORLD_CUP_WINNERS.findIndex((cup) => cup.year === item.year)
-    addYear(WORLD_CUP_WINNERS[index - 1]?.year)
-    addYear(WORLD_CUP_WINNERS[index + 1]?.year)
+    const index = list.findIndex((cup) => cup.year === item.year)
+    addYear(list[index - 1]?.year)
+    addYear(list[index + 1]?.year)
     const blocked = new Set(theirYears)
     const yearOptions = [
       item.year,
@@ -1263,7 +1485,7 @@ function createWcTitleYearsRound(
       country: winner,
       options: [],
       yearOptions: shuffle(yearOptions),
-      mode: 'wcTitleYears',
+      mode,
       year: item.year,
     })
     avoid.years.push(item.year)
@@ -1271,27 +1493,108 @@ function createWcTitleYearsRound(
   return questions
 }
 
-function createEuroWinnersRound(
+function createWinnerYearRound(
+  mode: FootballMode,
+  source: readonly WorldCupWinner[],
+  answerOf: (item: WorldCupWinner) => Country,
+  relatedOf: (year: number) => string[],
+  fillers: Country[],
+  count: number,
+  years: number[] | undefined,
+  avoid: OptionAvoid,
+): Question[] {
+  const pool = years?.length ? source.filter((item) => years.includes(item.year)) : [...source]
+  const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
+  const questions: Question[] = []
+  for (const item of picked) {
+    const answer = answerOf(item)
+    questions.push({
+      country: answer,
+      options: pickFootballOptions(answer, relatedOf(item.year), fillers, { avoidKeys: avoid.keys }),
+      mode,
+      year: item.year,
+    })
+    avoid.keys.push(answer.iso)
+  }
+  return questions
+}
+
+function createEuroHostsRound(
   count: number,
   difficulty: QuizDifficulty,
   years?: number[],
   avoid: OptionAvoid = { keys: [], years: [], waters: [] },
 ): Question[] {
-  const pool = years?.length ? EURO_WINNERS.filter((item) => years.includes(item.year)) : euroPool(difficulty)
+  const pool = years?.length
+    ? EURO_HOSTS.filter((item) => years.includes(item.year))
+    : euroHostPool(difficulty)
   const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
-  const fillers = euroTeamCountries()
   const questions: Question[] = []
   for (const item of picked) {
-    const winner = footballTeamCountry(item.winnerId)
+    const host = footballTeamCountry(wcHostAnswerId(item.hostIds))
     questions.push({
-      country: winner,
-      options: pickFootballOptions(winner, euroRelatedTeamIds(item.year), fillers, {
+      country: host,
+      options: pickFootballOptions(host, euroHostRelatedIds(item.year), euroHostCountries(), {
         avoidKeys: avoid.keys,
       }),
-      mode: 'euroWinners',
+      mode: 'euroHosts',
       year: item.year,
     })
-    avoid.keys.push(winner.iso)
+    avoid.keys.push(host.iso)
+  }
+  return questions
+}
+
+function createWcScorersRound(
+  count: number,
+  difficulty: QuizDifficulty,
+  years?: number[],
+  avoid: OptionAvoid = { keys: [], years: [], waters: [] },
+): Question[] {
+  const pool = years?.length
+    ? WC_SCORERS.filter((item) => years.includes(item.year))
+    : tournamentYearPool(WC_SCORERS, difficulty, WC_SCORER_EASY_FROM)
+  const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
+  const fillers = wcScorerCountries()
+  const questions: Question[] = []
+  for (const item of picked) {
+    const country = footballTeamCountry(wcScorerAnswerId(item))
+    questions.push({
+      country,
+      options: pickFootballOptions(country, wcScorerRelatedIds(item.year), fillers, {
+        avoidKeys: avoid.keys,
+      }),
+      mode: 'wcScorers',
+      year: item.year,
+    })
+    avoid.keys.push(country.iso)
+  }
+  return questions
+}
+
+function createUclWinnersRound(
+  count: number,
+  difficulty: QuizDifficulty,
+  years?: number[],
+  avoid: OptionAvoid = { keys: [], years: [], waters: [] },
+): Question[] {
+  const pool = years?.length
+    ? UCL_WINNERS.filter((item) => years.includes(item.year))
+    : tournamentYearPool(UCL_WINNERS, difficulty, UCL_EASY_FROM)
+  const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
+  const fillers = uclClubCountries()
+  const questions: Question[] = []
+  for (const item of picked) {
+    const club = footballTeamCountry(item.clubId)
+    questions.push({
+      country: club,
+      options: pickFootballOptions(club, uclRelatedClubIds(item.year), fillers, {
+        avoidKeys: avoid.keys,
+      }),
+      mode: 'uclWinners',
+      year: item.year,
+    })
+    avoid.keys.push(club.iso)
   }
   return questions
 }
@@ -1439,8 +1742,70 @@ function questionForMode(
 }
 
 function withFacts(question: Question): Question {
+  if (question.mode === 'playerFactsToName') {
+    return { ...question, facts: playerClueSequence(question.country.iso) }
+  }
   if (question.mode !== 'factsToName') return question
   return { ...question, facts: clueSequence(question.country.iso) }
+}
+
+function createPlayerRound(
+  mode: QuizMode,
+  count: number,
+  difficulty: QuizDifficulty,
+  playerIds?: string[],
+): Question[] {
+  const full = footballPlayerPool(difficulty)
+  const pool = playerIds?.length ? full.filter((player) => playerIds.includes(player.id)) : full
+  const distractors = playerIds?.length ? FOOTBALL_PLAYERS : full
+  const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
+  const questions: Question[] = []
+  const avoidIds = new Set<string>()
+  for (const player of picked) {
+    const country = playerCountry(player)
+    if (mode === 'playerFactsToName') {
+      questions.push({
+        country,
+        mode,
+        options: [country],
+        facts: playerClueSequence(player.id),
+      })
+      continue
+    }
+    questions.push({
+      country,
+      mode,
+      options: pickPlayerNameOptions(player, distractors, avoidIds),
+    })
+    avoidIds.add(player.id)
+  }
+  return questions
+}
+
+function pickPlayerNameOptions(
+  player: FootballPlayer,
+  pool: FootballPlayer[],
+  avoidIds: ReadonlySet<string>,
+): Country[] {
+  const distractors = pickFirstFit(3, [...avoidIds], (banned) => {
+    const sameNation = shuffle(
+      pool.filter((item) => item.nation === player.nation && item.id !== player.id && !banned.has(item.id)),
+    )
+    const samePos = shuffle(
+      pool.filter((item) => item.position === player.position && item.id !== player.id && !banned.has(item.id)),
+    )
+    const rest = shuffle(pool.filter((item) => item.id !== player.id && !banned.has(item.id)))
+    const seen = new Set([player.id])
+    const picks: FootballPlayer[] = []
+    for (const item of [...sameNation.slice(0, 1), ...samePos, ...rest]) {
+      if (picks.length === 3) break
+      if (seen.has(item.id) || banned.has(item.id)) continue
+      seen.add(item.id)
+      picks.push(item)
+    }
+    return picks.map(playerCountry)
+  })
+  return shuffle([playerCountry(player), ...distractors])
 }
 
 function createRankingRound(pool: Country[], count: number, mode: RankingMode): Question[] {

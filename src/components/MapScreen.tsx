@@ -55,6 +55,11 @@ function isoFromTarget(target: EventTarget | null) {
   return target.closest('[data-iso]')?.getAttribute('data-iso') ?? null
 }
 
+function clickableIsoFromTarget(target: EventTarget | null) {
+  const iso = isoFromTarget(target)
+  return iso && isClickableIso(iso) ? iso : null
+}
+
 function locationLabel(id: string, lang: QuizSettings['lang']) {
   const resolved = resolveMapLocation(id)
   if (!resolved) return ''
@@ -341,6 +346,21 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
     if (drag && !drag.moved && drag.iso) openLocation(drag.iso)
   }
 
+  function onMapHover(event: { target: EventTarget | null }) {
+    const iso = clickableIsoFromTarget(event.target)
+    setHoverId((current) => (current === iso ? current : iso))
+  }
+
+  function onMapUnhover(event: { currentTarget: SVGSVGElement; relatedTarget: EventTarget | null }) {
+    const related = event.relatedTarget
+    if (related instanceof Node && event.currentTarget.contains(related)) {
+      const iso = clickableIsoFromTarget(related)
+      setHoverId((current) => (current === iso ? current : iso))
+      return
+    }
+    setHoverId((current) => (current === null ? current : null))
+  }
+
   const canZoomIn = camera.w > WORLD.w / ZOOM_MAX + 1
   const canZoomOut = camera.w < WORLD.w - 1 || camera.h < WORLD.h - 1
   const regions: MapRegion[] = ['all', ...REGIONS]
@@ -426,6 +446,8 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
               preserveAspectRatio="xMidYMid meet"
               role="img"
               aria-label={t.map}
+              onMouseOver={onMapHover}
+              onMouseOut={onMapUnhover}
             >
               {world.locations.map((location) => {
                 const clickable = isClickableIso(location.id)
@@ -438,13 +460,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
                     data-iso={location.id}
                     d={location.path}
                     className={`map-country${clickable ? '' : ' is-other'}${holdout ? ' is-holdout' : ''}${isOpen ? ' is-open' : ''}${isHover ? ' is-hover' : ''}`}
-                    onMouseEnter={() => {
-                      if (clickable) setHoverId(location.id)
-                    }}
-                    onMouseLeave={() => setHoverId((current) => (current === location.id ? null : current))}
-                  >
-                    {clickable ? <title>{locationLabel(location.id, settings.lang)}</title> : null}
-                  </path>
+                  />
                 )
               })}
               {markers.map((marker) => {
@@ -452,18 +468,15 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
                 const isHover = marker.iso === hoverId
                 const disputed = Boolean(TERRITORY_BY_ISO.get(marker.iso)?.claimRu)
                 return (
-                  <circle
-                    key={`pin-${marker.iso}`}
-                    data-iso={marker.iso}
-                    className={`map-pin${disputed ? ' is-dispute' : ''}${isOpen ? ' is-open' : ''}${isHover ? ' is-hover' : ''}`}
-                    cx={marker.x}
-                    cy={marker.y}
-                    r={disputed ? 3.8 : 3.2}
-                    onMouseEnter={() => setHoverId(marker.iso)}
-                    onMouseLeave={() => setHoverId((current) => (current === marker.iso ? null : current))}
-                  >
-                    <title>{locationLabel(marker.iso, settings.lang)}</title>
-                  </circle>
+                  <g key={`pin-${marker.iso}`}>
+                    <circle className="map-pin-hit" data-iso={marker.iso} cx={marker.x} cy={marker.y} r={10} />
+                    <circle
+                      className={`map-pin${disputed ? ' is-dispute' : ''}${isOpen ? ' is-open' : ''}${isHover ? ' is-hover' : ''}`}
+                      cx={marker.x}
+                      cy={marker.y}
+                      r={disputed ? 3.8 : 3.2}
+                    />
+                  </g>
                 )
               })}
             </svg>

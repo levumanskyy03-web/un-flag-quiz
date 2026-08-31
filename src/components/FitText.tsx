@@ -6,56 +6,65 @@ interface FitTextProps {
   children: string
   className?: string
   minPx?: number
+  wrap?: boolean
 }
 
-export function FitText({ children, className, minPx = 9 }: FitTextProps) {
+export function FitText({ children, className, minPx = 9, wrap = false }: FitTextProps) {
   const ref = useRef<HTMLSpanElement>(null)
 
   useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
     const box = el.parentElement ?? el
-    let lastWidth = -1
+
+    const overflows = () => {
+      if (el.clientWidth < 8) return false
+      if (wrap) {
+        return el.scrollWidth > el.clientWidth + 0.5 || el.scrollHeight > el.clientHeight + 0.5
+      }
+      return el.scrollWidth > el.clientWidth + 0.5
+    }
 
     const fit = () => {
-      const width = el.clientWidth
-      if (width < 8) return
-      if (Math.abs(width - lastWidth) < 0.5) return
-      lastWidth = width
-
       el.style.fontSize = ''
       const max = parseFloat(getComputedStyle(el).fontSize)
       if (!Number.isFinite(max) || max <= minPx) {
         el.style.fontSize = `${minPx}px`
         return
       }
-      if (el.scrollWidth <= el.clientWidth + 0.5) return
+      if (el.clientWidth < 8) return
+      if (!overflows()) return
 
       let lo = minPx
       let hi = max
       for (let i = 0; i < 16; i++) {
         const mid = (lo + hi) / 2
         el.style.fontSize = `${mid}px`
-        if (el.scrollWidth <= el.clientWidth + 0.5) lo = mid
-        else hi = mid
+        if (overflows()) hi = mid
+        else lo = mid
       }
       el.style.fontSize = `${lo}px`
+      if (overflows()) el.style.fontSize = `${minPx}px`
     }
 
     fit()
-    const observer = new ResizeObserver((entries) => {
-      const next = entries[0]?.contentRect.width
-      if (next !== undefined && Math.abs(next - lastWidth) < 0.5) return
-      lastWidth = -1
-      fit()
-    })
+    const observer = new ResizeObserver(() => fit())
     observer.observe(box)
     return () => observer.disconnect()
-  }, [children, minPx])
+  }, [children, minPx, wrap])
 
+  const cls = ['fit-text', wrap ? 'is-wrap' : null, className].filter(Boolean).join(' ')
   return (
-    <span ref={ref} className={className ? `fit-text ${className}` : 'fit-text'}>
+    <span ref={ref} className={cls}>
       {children}
     </span>
+  )
+}
+
+export function ChoiceLabel({ children }: { children: string }) {
+  return (
+    <FitText wrap minPx={8}>
+      {children}
+    </FitText>
   )
 }

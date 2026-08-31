@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { STRINGS, type Lang } from '../i18n/strings'
 import type { FactClue } from '../lib/countryFacts'
-import { factLabel, searchCountries } from '../lib/factText'
+import type { PlayerFactClue } from '../lib/playerFacts'
+import { anyFactLabel, searchCountries } from '../lib/factText'
+import { searchPlayers } from '../lib/playerFacts'
 import {
   FACTS_MAX,
   FACTS_WRONG_LIMIT,
   factsClueTimeMs,
 } from '../lib/factsRules'
-import { countryName, formatClock, type Question } from '../lib/quiz'
+import { countryName, formatClock, isPlayerFactsToName, type Question } from '../lib/quiz'
 import { Lives } from './Lives'
 import { WorldsBack } from './WorldsBack'
 
@@ -27,7 +29,7 @@ interface FactsScreenProps {
     opponentScore: number
     remainingMs: number
     factIndex: number
-    facts: FactClue[]
+    facts: Array<FactClue | PlayerFactClue>
     maxFacts: number
     wrongs: number
     wrongLimit: number
@@ -82,7 +84,11 @@ export function FactsScreen({
   const secondsLeft = Math.ceil(activeRemaining / 1000)
   const urgent = !locked && activeRemaining <= 3000
   const timerWidth = `${Math.max(0, (activeRemaining / limitMs) * 100)}%`
-  const suggestions = useMemo(() => searchCountries(query, lang), [query, lang])
+  const playerMode = isPlayerFactsToName(question.mode ?? 'factsToName')
+  const suggestions = useMemo(
+    () => (playerMode ? searchPlayers(query, lang) : searchCountries(query, lang)),
+    [query, lang, playerMode],
+  )
   const factLivesTotal = Number.isFinite(wrongLimit) ? wrongLimit : 0
   const factLivesLeft = factLivesTotal > 0 ? Math.max(0, factLivesTotal - activeWrongs) : 0
   const canAdvance = activeIndex + 1 < maxFacts
@@ -206,7 +212,7 @@ export function FactsScreen({
         {clue ? (
           <>
             <p className="facts-uniqueness">{t.factUniqueness(clue.uniqueness)}</p>
-            <p className="facts-text">{factLabel(clue, lang)}</p>
+            <p className="facts-text">{anyFactLabel(clue, lang)}</p>
           </>
         ) : null}
         {flash ? <p className="facts-flash">{flash}</p> : null}
@@ -222,7 +228,7 @@ export function FactsScreen({
         <ol className="facts-prev">
           {facts.slice(0, activeIndex).map((item, i) => (
             <li key={item.id}>
-              <span>{i + 1}.</span> {factLabel(item, lang)}
+              <span>{i + 1}.</span> {anyFactLabel(item, lang)}
               <em>{t.factUniqueness(item.uniqueness)}</em>
             </li>
           ))}
@@ -264,11 +270,11 @@ export function FactsScreen({
         }}
       >
         <label className="map-search">
-          <span className="sr-only">{t.factGuess}</span>
+          <span className="sr-only">{playerMode ? t.factGuessPlayer : t.factGuess}</span>
           <input
             type="search"
             value={query}
-            placeholder={t.factGuess}
+            placeholder={playerMode ? t.factGuessPlayer : t.factGuess}
             autoComplete="off"
             spellCheck={false}
             disabled={locked}

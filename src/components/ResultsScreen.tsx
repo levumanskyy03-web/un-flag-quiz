@@ -1,5 +1,6 @@
 import { findCountry } from '../data/extras'
-import { STRINGS, type Lang } from '../i18n/strings'
+import { playerById, playerCountry } from '../data/footballPlayers'
+import { STRINGS, footballQuestionPrompt, type Lang } from '../i18n/strings'
 import {
   averageTimeMs,
   countryName,
@@ -12,6 +13,7 @@ import {
   isFootballYearChoice,
   isLeadersMode,
   isMapMode,
+  isPlayerFactsToName,
   isWaterMapMode,
   isWaterMode,
   slowestAnswer,
@@ -132,19 +134,14 @@ export function ResultsScreen({
                       : answer.selectedIso
                     : answer.question.options.find((option) => option.iso === answer.selectedIso) ??
                       findCountry(answer.selectedIso) ??
+                      (playerById(answer.selectedIso) ? playerCountry(playerById(answer.selectedIso)!) : null) ??
                       null
               const prompt =
-                itemMode === 'wcWinners' && answer.question.year
-                  ? t.wcWinnerPrompt(answer.question.year)
-                  : itemMode === 'wcFinalists' && answer.question.year
-                    ? t.wcFinalistPrompt(answer.question.year)
-                    : itemMode === 'wcHosts' && answer.question.year
-                      ? t.wcHostPrompt(answer.question.year)
-                      : itemMode === 'euroWinners' && answer.question.year
-                        ? t.euroWinnerPrompt(answer.question.year)
-                        : itemMode === 'wcTitleYears'
-                          ? t.wcTitleYearPrompt(countryName(correct, lang))
-                          : isLeadersMode(itemMode)
+                isFootballYearChoice(itemMode)
+                  ? footballQuestionPrompt(itemMode, answer.question.year ?? 0, countryName(correct, lang), lang)
+                  : isFootballTeamChoice(itemMode) && answer.question.year
+                    ? footballQuestionPrompt(itemMode, answer.question.year, countryName(correct, lang), lang)
+                    : isLeadersMode(itemMode)
                             ? countryName(correct, lang)
                           : isFactMode(itemMode) || isFactsToName(itemMode)
                             ? countryName(correct, lang)
@@ -159,7 +156,7 @@ export function ResultsScreen({
                     yearChoice ||
                     isMapMode(itemMode) ||
                     isFactMode(itemMode) ||
-                    isFactsToName(itemMode) ||
+                    (isFactsToName(itemMode) && !isPlayerFactsToName(itemMode)) ||
                     (isWaterMode(itemMode) && !isWaterMapMode(itemMode))) && (
                     <TeamFlag iso={correct.iso} name={countryName(correct, lang)} size="thumb" />
                   )}
