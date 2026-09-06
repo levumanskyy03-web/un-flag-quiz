@@ -102,7 +102,7 @@ export function PassportModal({
           </div>
           <div>
             <dt>{t.capital}</dt>
-            <dd>{passportCapital(passport, lang)}</dd>
+            <dd>{passportCapital(passport, lang, country.iso)}</dd>
           </div>
           <div>
             <dt>{t.population}</dt>
@@ -110,7 +110,7 @@ export function PassportModal({
           </div>
           <div>
             <dt>{t.currency}</dt>
-            <dd>{passportCurrency(passport, lang)}</dd>
+            <dd>{passportCurrency(passport, lang, country.iso)}</dd>
           </div>
           {founded !== undefined ? (
             <div>

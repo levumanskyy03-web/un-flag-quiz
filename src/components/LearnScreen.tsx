@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { type Region } from '../data/countries'
 import { findCountry } from '../data/extras'
 import { isFinalLevel } from '../data/levels'
@@ -34,7 +34,7 @@ import { playerById } from '../data/footballPlayers'
 import { playerClueSequence, playerFactLabel } from '../lib/playerFacts'
 import { languageName, quizLanguageId } from '../data/languages'
 import { watersFor } from '../data/water'
-import { formatLeaderNumbers, leaderShowsNumber, personYearsLabel, termById } from '../data/leaders'
+import { formatLeaderNumbers, formatTermNumber, leaderShowsNumber, personYearsLabel, splitLearnTerms, termById, yearsLabel } from '../data/leaders'
 import { leaderBio } from '../data/leaderBios'
 import { getPassport } from '../data/passports'
 import { rankingCount, rankingPlaceOf } from '../data/rankings'
@@ -52,6 +52,8 @@ import { LanguageToggle } from './LanguageToggle'
 import { LeadersSetup } from './LeadersScreen'
 import { PassportModal } from './PassportModal'
 import { WorldsBack } from './WorldsBack'
+import { prefetchWikiPortraits, type PortraitRequest } from '../lib/wikiThumb'
+import { portraitFileForTerm } from '../data/leaderPortraitFiles'
 
 interface LearnScreenProps {
   settings: QuizSettings
@@ -108,6 +110,42 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
     : codes
       ? (['free', 'learn', 'mistakes'] as const)
       : undefined
+
+  useEffect(() => {
+    const pool = getLearnPool(
+      settings.learnFrom,
+      settings.region,
+      settings.level,
+      settings.mode,
+      settings.includeExtras,
+    )
+    const titles: Array<string | PortraitRequest> = []
+    if (isLeadersMode(settings.mode)) {
+      for (const country of pool) {
+        const term = termById(country.iso)
+        if (term) titles.push({ title: term.wiki, file: portraitFileForTerm(term.id) })
+      }
+    }
+    const mix = settings.mix && isFootballMode(settings.mode) ? modesForFootballMix(settings.mix) : null
+    const playerPhoto =
+      isPlayerPhotoMode(settings.mode) ||
+      isPlayerFactsToName(settings.mode) ||
+      Boolean(mix?.some((mode) => isPlayerPhotoMode(mode) || isPlayerFactsToName(mode)))
+    if (playerPhoto) {
+      for (const country of pool) {
+        const wiki = playerById(country.iso)?.wiki
+        if (wiki) titles.push(wiki)
+      }
+    }
+    prefetchWikiPortraits(titles)
+  }, [
+    settings.mode,
+    settings.mix,
+    settings.learnFrom,
+    settings.level,
+    settings.region,
+    settings.includeExtras,
+  ])
 
   return (
     <div className="screen learn-screen">
@@ -281,6 +319,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           const term = leaders ? termById(country.iso) : undefined
           if (leaders && term) {
             const bio = leaderBio(term, settings.lang)
+            const perTerm = term.kind === 'us' && splitLearnTerms(term)
             return (
               <button
                 key={country.iso}
@@ -288,12 +327,16 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 className="learn-card is-leader"
                 onClick={() => setOpenTermId(term.id)}
               >
-                {leaderShowsNumber(term.kind) ? <p className="leader-num">{formatLeaderNumbers(term)}</p> : null}
-                <LeaderPortrait name={name} wiki={term.wiki} size="card" />
+                {leaderShowsNumber(term.kind) ? (
+                  <p className="leader-num">{perTerm ? formatTermNumber(term) : formatLeaderNumbers(term)}</p>
+                ) : null}
+                <LeaderPortrait name={name} wiki={term.wiki} file={portraitFileForTerm(term.id)} size="card" />
                 <p className="learn-card-name">
                   <FitText>{name}</FitText>
                 </p>
-                <p className="learn-card-meta">{personYearsLabel(term, t.present)}</p>
+                <p className="learn-card-meta">
+                  {perTerm ? yearsLabel(term.from, term.to, t.present) : personYearsLabel(term, t.present)}
+                </p>
                 {bio ? <p className="learn-card-bio">{bio}</p> : null}
               </button>
             )

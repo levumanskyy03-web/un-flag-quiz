@@ -1,4 +1,5 @@
 import type { Lang } from '../../i18n/strings'
+import { getPassport, passportFact } from '../passports'
 import type { CountryFact } from './types'
 import allFacts from './all.json'
 
@@ -56,8 +57,15 @@ export function factText(
   lang: Lang,
   fallback: CountryFact,
 ): string {
+  const passport = getPassport(iso)
+  if (lang !== 'ru' && lang !== 'en' && passport) {
+    return passportFact(passport, lang, iso)
+  }
   const rows = FACTS[iso] ?? []
-  if (rows.length === 0) return lang === 'ru' ? fallback.ru : fallback.en
+  if (rows.length === 0) {
+    if (passport) return passportFact(passport, lang, iso)
+    return lang === 'ru' ? fallback.ru : fallback.en
+  }
   const [en, ru] = rows[index % rows.length]
   return lang === 'ru' ? ru : en
 }
@@ -69,6 +77,7 @@ export function constantFactTexts(
   fallback: CountryFact,
   count = 4,
 ): string[] {
+  if (lang !== 'ru' && lang !== 'en') return []
   const rotating = factText(iso, rotatingIndex, lang, fallback)
   const rows = countryFacts(iso)
   const pool = rows.length > 0 ? rows : [fallback]

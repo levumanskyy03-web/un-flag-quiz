@@ -485,7 +485,7 @@ export const FOOTBALL_PLAYERS: FootballPlayer[] = [
     id: 'xavi',
     en: 'Xavi',
     ru: 'Хави',
-    wiki: 'Xavi',
+    wiki: 'Xavi (footballer, born 1980)',
     nation: 'es',
     position: 'mf',
     clubs: ['barca', 'alsadd'],

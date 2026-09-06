@@ -5,6 +5,7 @@ import { type Lang } from '../i18n/lang'
 import { STRINGS, regionLabel } from '../i18n/strings'
 import type { FactClue, FoundedEra, NeighborBand, PopulationBand } from './countryFacts'
 import { playerFactLabel, type PlayerFactClue } from './playerFacts'
+import { getPassport, passportCurrency } from '../data/passports'
 import { countryName } from './quiz'
 
 export function isPlayerFactClue(clue: FactClue | PlayerFactClue): clue is PlayerFactClue {
@@ -24,8 +25,16 @@ export function factLabel(clue: FactClue, lang: Lang): string {
       return t.factFlagColor(flagColorLabel(clue.color, lang))
     case 'flagMotif':
       return flagMotifLabel(clue.motif, lang)
-    case 'currency':
-      return t.factCurrency(lang === 'ru' ? clue.currencyRu ?? clue.currencyEn ?? '' : clue.currencyEn ?? '')
+    case 'currency': {
+      const iso = clue.currencyIso
+      const passport = iso ? getPassport(iso) : undefined
+      const label = passport && iso
+        ? passportCurrency(passport, lang, iso)
+        : lang === 'ru'
+          ? clue.currencyRu ?? clue.currencyEn ?? ''
+          : clue.currencyEn ?? ''
+      return t.factCurrency(label)
+    }
     case 'island':
       return t.factNoLandBorders
     case 'landlocked':

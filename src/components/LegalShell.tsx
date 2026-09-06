@@ -1,21 +1,25 @@
-import type { ReactNode } from 'react'
+"use client";
 
-import { STRINGS } from '../i18n/strings'
-import { WorldsBackLink } from './WorldsBack'
+import type { ReactNode } from "react";
+import { STRINGS } from "../i18n/strings";
+import { LanguageToggle } from "./LanguageToggle";
+import { WorldsBackLink } from "./WorldsBack";
+import { SiteLangProvider, useSiteLang } from "../i18n/siteLang";
 
 interface LegalShellProps {
-  title?: string
-  children: ReactNode
-  catalogBack?: boolean
+  title?: string;
+  children: ReactNode;
+  catalogBack?: boolean;
 }
 
-export function LegalShell({ title, children, catalogBack = false }: LegalShellProps) {
-  const t = STRINGS.ru
+function LegalShellInner({ title, children, catalogBack = false }: LegalShellProps) {
+  const { lang, setLang } = useSiteLang();
+  const t = STRINGS[lang];
   return (
     <div className="app legal-app">
       <nav className="legal-nav">
         <div className="legal-nav-back">
-          <WorldsBackLink />
+          <WorldsBackLink lang={lang} />
           {catalogBack ? (
             <a className="btn-ghost worlds-back" href="/countries">
               {t.back}
@@ -23,9 +27,10 @@ export function LegalShell({ title, children, catalogBack = false }: LegalShellP
           ) : null}
         </div>
         <div className="legal-nav-links">
-          <a href="/countries">Страны</a>
-          <a href="/languages">Языки</a>
-          <a href="/today">Страна дня</a>
+          <LanguageToggle lang={lang} onChange={setLang} />
+          <a href="/countries">{t.legalCountries}</a>
+          <a href="/languages">{t.legalLanguages}</a>
+          <a href="/today">{t.legalToday}</a>
         </div>
       </nav>
       <article className="legal-article">
@@ -34,11 +39,20 @@ export function LegalShell({ title, children, catalogBack = false }: LegalShellP
       </article>
       <footer className="legal-footer">
         <nav className="legal-links">
-          <a href="/about">О проекте</a>
-          <a href="/privacy">Политика</a>
-          <a href="/contacts">Контакты</a>
+          <a href="/about">{t.legalAbout}</a>
+          <a href="/privacy">{t.legalPrivacy}</a>
+          <a href="/contacts">{t.legalContacts}</a>
         </nav>
+        <p className="credit">{t.credit}</p>
       </footer>
     </div>
-  )
+  );
+}
+
+export function LegalShell(props: LegalShellProps) {
+  return (
+    <SiteLangProvider>
+      <LegalShellInner {...props} />
+    </SiteLangProvider>
+  );
 }

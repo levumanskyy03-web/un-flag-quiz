@@ -5,15 +5,17 @@ export const revalidate = 86400
 
 const memory = new Map<string, { at: number; body: string }>()
 const MEMORY_MS = 24 * 60 * 60 * 1000
-const CACHE_VER = 2
+const CACHE_VER = 9
 
 export async function GET(request: Request) {
-  const title = new URL(request.url).searchParams.get('title') ?? ''
+  const url = new URL(request.url)
+  const title = url.searchParams.get('title') ?? ''
+  const file = url.searchParams.get('file') ?? ''
   if (!isAllowedLeaderWiki(title)) {
     return Response.json({ portrait: null }, { status: 400 })
   }
 
-  const key = `${CACHE_VER}:${title.trim().replace(/_/g, ' ')}`
+  const key = `${CACHE_VER}:${title.trim().replace(/_/g, ' ')}:${file.trim().replace(/_/g, ' ')}`
   const cached = memory.get(key)
   const cacheHeaders = {
     'Content-Type': 'application/json',
@@ -24,10 +26,17 @@ export async function GET(request: Request) {
   }
 
   try {
-    const portrait = await lookupWikiPortrait(title)
+    const portrait = await lookupWikiPortrait(title, file || undefined)
     const body = JSON.stringify({ portrait })
-    memory.set(key, { at: Date.now(), body })
-    return new Response(body, { headers: cacheHeaders })
+    if (portrait) memory.set(key, { at: Date.now(), body })
+    return new Response(body, {
+      headers: {
+        ...cacheHeaders,
+        'Cache-Control': portrait
+          ? cacheHeaders['Cache-Control']
+          : 'no-store',
+      },
+    })
   } catch {
     return Response.json({ portrait: null }, { status: 503 })
   }

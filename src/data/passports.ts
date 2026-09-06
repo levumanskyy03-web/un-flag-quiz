@@ -1,5 +1,6 @@
 import { localeTag, type Lang } from '../i18n/lang'
 import { EXTRA_PASSPORTS } from './extrasPassports'
+import I18N from './passportI18n.json'
 
 export interface Passport {
   capitalEn: string
@@ -231,14 +232,37 @@ export function formatPopulation(population: number, lang: Lang): string {
   }).format(population)
 }
 
-export function passportCapital(passport: Passport, lang: Lang): string {
-  return lang === 'ru' ? passport.capitalRu : passport.capitalEn
+type PassportI18nRow = {
+  capital?: Partial<Record<Lang, string>>
+  currency?: Partial<Record<Lang, string>>
+  fact?: Partial<Record<Lang, string>>
 }
 
-export function passportCurrency(passport: Passport, lang: Lang): string {
-  return lang === 'ru' ? passport.currencyRu : passport.currencyEn
+function passportI18n(): Record<string, PassportI18nRow> {
+  return I18N as Record<string, PassportI18nRow>
 }
 
-export function passportFact(passport: Passport, lang: Lang): string {
-  return lang === 'ru' ? passport.factRu : passport.factEn
+function localizedField(
+  iso: string | undefined,
+  field: 'capital' | 'currency' | 'fact',
+  lang: Lang,
+  ru: string,
+  en: string,
+): string {
+  if (lang === 'ru') return ru
+  if (lang === 'en') return en
+  if (!iso) return en
+  return passportI18n()[iso]?.[field]?.[lang] ?? en
+}
+
+export function passportCapital(passport: Passport, lang: Lang, iso?: string): string {
+  return localizedField(iso, 'capital', lang, passport.capitalRu, passport.capitalEn)
+}
+
+export function passportCurrency(passport: Passport, lang: Lang, iso?: string): string {
+  return localizedField(iso, 'currency', lang, passport.currencyRu, passport.currencyEn)
+}
+
+export function passportFact(passport: Passport, lang: Lang, iso?: string): string {
+  return localizedField(iso, 'fact', lang, passport.factRu, passport.factEn)
 }

@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { formatLeaderNumbers, leaderShowsNumber, personYearsLabel, type LeaderTerm } from '../data/leaders'
+import { portraitFileForTerm } from '../data/leaderPortraitFiles'
 import { leaderBio } from '../data/leaderBios'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { LeaderPortrait } from './LeaderPortrait'
@@ -43,7 +44,7 @@ export function LeaderBioModal({ term, lang, onClose }: LeaderBioModalProps) {
           {t.close}
         </button>
         {leaderShowsNumber(term.kind) ? <p className="leader-num">{numbers}</p> : null}
-        <LeaderPortrait name={name} wiki={term.wiki} size="hero" />
+        <LeaderPortrait name={name} wiki={term.wiki} file={portraitFileForTerm(term.id)} size="hero" />
         <h2 id="leader-bio-title" className="passport-title">
           {name}
         </h2>

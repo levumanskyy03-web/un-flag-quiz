@@ -96,9 +96,9 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
   }
   const passport = PASSPORTS[country.iso]
   if (!passport) return countryName(country, lang)
-  if (mode === 'nameToCapital') return passportCapital(passport, lang)
+  if (mode === 'nameToCapital') return passportCapital(passport, lang, country.iso)
   if (mode === 'nameToCurrency') {
-    if (!question) return passportCurrency(passport, lang)
+    if (!question) return passportCurrency(passport, lang, country.iso)
     return currencyChoiceLabel(
       country,
       lang,

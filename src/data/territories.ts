@@ -1,6 +1,6 @@
 import { COUNTRIES, type Region } from './countries'
 import { EXTRA_ISOS } from './extras'
-import type { Lang } from '../i18n/lang'
+import { localeTag, type Lang } from '../i18n/lang'
 
 export interface MapTerritory {
   iso: string
@@ -176,13 +176,22 @@ export const HOLDOUT_BY_ISO = new Map(HOLDOUTS.map((item) => [item.iso, item]))
 const COUNTRY_BY_ISO = new Map(COUNTRIES.map((country) => [country.iso, country]))
 
 export function territoryName(territory: MapTerritory, lang: Lang) {
-  return lang === 'ru' ? territory.nameRu : territory.nameEn
+  if (lang === 'ru') return territory.nameRu
+  if (lang === 'en') return territory.nameEn
+  try {
+    const iso = territory.iso.includes('-') ? territory.iso.slice(0, 2) : territory.iso
+    const name = new Intl.DisplayNames([localeTag(lang)], { type: 'region' }).of(iso.toUpperCase())
+    if (name && name.toUpperCase() !== iso.toUpperCase()) return name
+  } catch {
+    /* fall back */
+  }
+  return territory.nameEn
 }
 
 export function territoryNote(territory: MapTerritory, lang: Lang) {
   return lang === 'ru'
-    ? `${territory.nameRu} — ${territory.statusRu}`
-    : `${territory.nameEn} is ${territory.statusEn}`
+    ? `${territoryName(territory, lang)} — ${territory.statusRu}`
+    : `${territoryName(territory, lang)} is ${territory.statusEn}`
 }
 
 export function disputeNote(territory: MapTerritory, lang: Lang) {

@@ -7,7 +7,7 @@ import {
   type FootballPlayer,
 } from '../data/footballPlayers'
 import { footballTeamCountry } from '../data/worldCup'
-import { type Lang } from '../i18n/lang'
+import { localeTag, type Lang } from '../i18n/lang'
 import { STRINGS } from '../i18n/strings'
 import { mulberry32, seedFrom } from './countryFacts'
 import { FACTS_MAX } from './factsRules'
@@ -171,7 +171,15 @@ export function playerClueSequence(
 
 function nationName(iso: string, lang: Lang): string {
   const country = footballTeamCountry(iso)
-  return lang === 'ru' ? country.nameRu : country.nameEn
+  if (lang === 'ru') return country.nameRu
+  if (lang === 'en') return country.nameEn
+  try {
+    const name = new Intl.DisplayNames([localeTag(lang)], { type: 'region' }).of(country.iso.toUpperCase())
+    if (name) return name
+  } catch {
+    /* fall back */
+  }
+  return country.nameEn
 }
 
 export function playerFactLabel(clue: PlayerFactClue, lang: Lang): string {

@@ -6,6 +6,7 @@ import { fetchWikiPortrait, peekWikiPortrait, type WikiPortrait } from '../lib/w
 interface LeaderPortraitProps {
   name: string
   wiki: string
+  file?: string
   size?: 'hero' | 'card' | 'thumb'
   compact?: boolean
 }
@@ -16,13 +17,13 @@ function initials(name: string) {
   return letters.toUpperCase() || '?'
 }
 
-export function LeaderPortrait({ name, wiki, size = 'card', compact = false }: LeaderPortraitProps) {
-  const [portrait, setPortrait] = useState<WikiPortrait | null>(() => peekWikiPortrait(wiki) ?? null)
+export function LeaderPortrait({ name, wiki, file, size = 'card', compact = false }: LeaderPortraitProps) {
+  const [portrait, setPortrait] = useState<WikiPortrait | null>(() => peekWikiPortrait(wiki, file) ?? null)
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     let live = true
-    const cached = peekWikiPortrait(wiki)
+    const cached = peekWikiPortrait(wiki, file)
     setFailed(false)
     if (cached !== undefined) {
       setPortrait(cached)
@@ -33,13 +34,13 @@ export function LeaderPortrait({ name, wiki, size = 'card', compact = false }: L
       setPortrait(null)
     }
     if (!wiki) return
-    void fetchWikiPortrait(wiki).then((next) => {
+    void fetchWikiPortrait(wiki, file).then((next) => {
       if (live) setPortrait(next)
     })
     return () => {
       live = false
     }
-  }, [wiki])
+  }, [wiki, file])
 
   if (!portrait || failed) {
     return (

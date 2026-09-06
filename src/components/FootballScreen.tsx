@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { STRINGS, difficultyLabel, localeTag, mixLabel, modeLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import type { LevelClear } from '../lib/levelProgress'
@@ -25,6 +25,8 @@ import { HubNav, type HubTab } from './HubNav'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
 import { FitText, ChoiceLabel } from './FitText'
+import { footballPlayerPool } from '../data/footballPlayers'
+import { prefetchWikiPortraits } from '../lib/wikiThumb'
 
 interface FootballScreenProps {
   settings: QuizSettings
@@ -72,6 +74,14 @@ export function FootballScreen({
   const currentBest = findBest(bests, settings)
   const [joinCode, setJoinCode] = useState('')
   const [duelSetupOpen, setDuelSetupOpen] = useState(false)
+
+  useEffect(() => {
+    const photo =
+      photoMode ||
+      (mix ? modesForFootballMix(mix).some((mode) => isPlayerPhotoMode(mode) || isPlayerFactsToName(mode)) : false)
+    if (!photo) return
+    prefetchWikiPortraits(footballPlayerPool(settings.difficulty).map((player) => player.wiki).slice(0, 24))
+  }, [mix, photoMode, settings.difficulty])
 
   function update(patch: Partial<QuizSettings>) {
     const next = { ...settings, ...patch }

@@ -2,14 +2,26 @@ import type { WikiPortrait } from './wikiPortrait'
 
 export type { WikiPortrait }
 
+export interface PortraitRequest {
+  title: string
+  file?: string
+}
+
 const cache = new Map<string, WikiPortrait | null>()
 const inflight = new Map<string, Promise<WikiPortrait | null>>()
-const STORE_KEY = 'unfq-wiki-portraits-v2'
+const STORE_KEY = 'unfq-wiki-portraits-v9'
+const PORTRAIT_API_VER = '9'
 const STORE_MS = 14 * 24 * 60 * 60 * 1000
-const PREFETCH_WORKERS = 4
+const NULL_STORE_MS = 6 * 60 * 60 * 1000
+const PREFETCH_WORKERS = 2
+let activeFetches = 0
+const fetchWaiters: Array<() => void> = []
 
-function cacheKey(title: string) {
-  return title.trim().replace(/_/g, ' ')
+function cacheKey(title: string, file?: string) {
+  const wiki = title.trim().replace(/_/g, ' ')
+  const extra = file?.trim().replace(/_/g, ' ')
+  if (!wiki) return ''
+  return extra ? `${wiki}::${extra}` : wiki
 }
 
 function readStore(): Record<string, { at: number; portrait: WikiPortrait | null }> {
@@ -38,8 +50,23 @@ function writeStore(title: string, portrait: WikiPortrait | null) {
 function fromStore(title: string): WikiPortrait | null | undefined {
   const entry = readStore()[title]
   if (!entry) return undefined
-  if (Date.now() - entry.at > STORE_MS) return undefined
+  const ttl = entry.portrait ? STORE_MS : NULL_STORE_MS
+  if (Date.now() - entry.at > ttl) return undefined
   return entry.portrait
+}
+
+async function acquireFetchSlot() {
+  if (activeFetches >= PREFETCH_WORKERS) {
+    await new Promise<void>((resolve) => {
+      fetchWaiters.push(resolve)
+    })
+  }
+  activeFetches += 1
+}
+
+function releaseFetchSlot() {
+  activeFetches = Math.max(0, activeFetches - 1)
+  fetchWaiters.shift()?.()
 }
 
 function preloadImage(url: string) {
@@ -49,8 +76,8 @@ function preloadImage(url: string) {
   img.src = url
 }
 
-export function peekWikiPortrait(title: string): WikiPortrait | null | undefined {
-  const key = cacheKey(title)
+export function peekWikiPortrait(title: string, file?: string): WikiPortrait | null | undefined {
+  const key = cacheKey(title, file)
   if (!key) return undefined
   if (cache.has(key)) return cache.get(key)
   const stored = fromStore(key)
@@ -62,8 +89,8 @@ export function peekWikiPortrait(title: string): WikiPortrait | null | undefined
   return undefined
 }
 
-export async function fetchWikiPortrait(title: string): Promise<WikiPortrait | null> {
-  const key = cacheKey(title)
+export async function fetchWikiPortrait(title: string, file?: string): Promise<WikiPortrait | null> {
+  const key = cacheKey(title, file)
   if (!key) return null
   const hit = cache.get(key)
   if (hit !== undefined) {
@@ -80,10 +107,19 @@ export async function fetchWikiPortrait(title: string): Promise<WikiPortrait | n
   if (pending) return pending
 
   const request = (async () => {
+    await acquireFetchSlot()
     try {
-      const params = new URLSearchParams({ title: key })
-      const response = await fetch(`/api/wiki-portrait?${params}`)
-      if (!response.ok) return null
+      const params = new URLSearchParams({ title: title.trim().replace(/_/g, ' '), v: PORTRAIT_API_VER })
+      if (file?.trim()) params.set('file', file.trim().replace(/_/g, ' '))
+      let response: Response | null = null
+      for (let attempt = 0; attempt < 4; attempt += 1) {
+        response = await fetch(`/api/wiki-portrait?${params}`)
+        if (response.ok || response.status !== 503) break
+        await new Promise((resolve) => {
+          setTimeout(resolve, 700 * (attempt + 1))
+        })
+      }
+      if (!response?.ok) return null
       const body: unknown = await response.json()
       const portrait =
         body &&
@@ -95,14 +131,16 @@ export async function fetchWikiPortrait(title: string): Promise<WikiPortrait | n
         typeof body.portrait.url === 'string'
           ? (body.portrait as WikiPortrait)
           : null
-      cache.set(key, portrait)
-      writeStore(key, portrait)
-      if (portrait?.url) preloadImage(portrait.url)
+      if (portrait) {
+        cache.set(key, portrait)
+        writeStore(key, portrait)
+        preloadImage(portrait.url)
+      }
       return portrait
     } catch {
-      cache.set(key, null)
       return null
     } finally {
+      releaseFetchSlot()
       inflight.delete(key)
     }
   })()
@@ -111,15 +149,27 @@ export async function fetchWikiPortrait(title: string): Promise<WikiPortrait | n
   return request
 }
 
-export function prefetchWikiPortraits(titles: string[]) {
-  const unique = [...new Set(titles.map(cacheKey).filter(Boolean))]
+function asRequest(item: string | PortraitRequest): PortraitRequest {
+  return typeof item === 'string' ? { title: item } : item
+}
+
+export function prefetchWikiPortraits(titles: Array<string | PortraitRequest>) {
+  const unique: PortraitRequest[] = []
+  const seen = new Set<string>()
+  for (const item of titles) {
+    const req = asRequest(item)
+    const key = cacheKey(req.title, req.file)
+    if (!key || seen.has(key)) continue
+    seen.add(key)
+    unique.push(req)
+  }
   if (unique.length === 0) return
   let next = 0
   const workers = Array.from({ length: Math.min(PREFETCH_WORKERS, unique.length) }, async () => {
     while (next < unique.length) {
-      const title = unique[next++]
-      if (!title) return
-      await fetchWikiPortrait(title)
+      const req = unique[next++]
+      if (!req) return
+      await fetchWikiPortrait(req.title, req.file)
     }
   })
   void Promise.all(workers)

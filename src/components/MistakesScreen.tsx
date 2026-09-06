@@ -1,5 +1,6 @@
 import { findCountry } from '../data/extras'
 import { termById, yearsLabel } from '../data/leaders'
+import { portraitFileForTerm } from '../data/leaderPortraitFiles'
 import { playerById } from '../data/footballPlayers'
 import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS, modeLabel } from '../i18n/strings'
@@ -112,7 +113,7 @@ export function MistakesScreen({
                   return (
                     <div key={`${item.mode}:${item.iso}:${item.year ?? ''}`} className="learn-card">
                       {leaders && term ? (
-                        <LeaderPortrait name={name} wiki={term.wiki} size="card" />
+                        <LeaderPortrait name={name} wiki={term.wiki} file={portraitFileForTerm(term.id)} size="card" />
                       ) : player ? (
                         <LeaderPortrait name={name} wiki={player.wiki} size="card" />
                       ) : football ? (

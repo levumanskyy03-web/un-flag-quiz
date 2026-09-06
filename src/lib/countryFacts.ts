@@ -65,6 +65,7 @@ export interface FactClue {
   populationBand?: PopulationBand
   currencyEn?: string
   currencyRu?: string
+  currencyIso?: string
   language?: CivicLang
   water?: WaterBody
 }
@@ -125,6 +126,7 @@ function buildBank(): { byIso: Map<string, FactClue[]>; byKey: Map<string, Set<s
           kind: 'currency',
           currencyEn: passport.currencyEn,
           currencyRu: passport.currencyRu,
+          currencyIso: iso,
         },
         `currency:${normalize(passport.currencyEn)}`,
       )

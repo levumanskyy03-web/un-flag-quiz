@@ -1,5 +1,6 @@
 import { footballPlayerWikis } from '../data/footballPlayers'
 import { ALL_LEADER_TERMS } from '../data/leaders'
+import { WIKI_PORTRAIT_FILES, isAllowedPortraitFile } from '../data/leaderPortraitFiles'
 
 export const WIKI_UA =
   'PassportCountry/1.0 (https://un-flag-quiz.vercel.app; levumanskyy03@gmail.com)'
@@ -75,13 +76,26 @@ export function classifyLicense(
   if (name.startsWith('cc by') && !name.includes(' sa') && !name.includes('nc') && !name.includes('nd')) {
     return 'cc-by'
   }
+  // Support GFDL and other free licenses commonly used for leader portraits
+  if (
+    name.includes('gfdl') ||
+    name.includes('gnu free documentation') ||
+    name.includes('free art license') ||
+    name.includes('fal') ||
+    url.includes('copyleft/fdl') ||
+    url.includes('free-art-license')
+  ) {
+    return 'cc-by-sa'
+  }
   return null
 }
+
+const COMMONS_HOSTS = new Set(['upload.wikimedia.org', 'thumb.wikimedia.org'])
 
 export function isCommonsUploadUrl(url: string): boolean {
   try {
     const parsed = new URL(url)
-    return parsed.hostname === 'upload.wikimedia.org' && parsed.pathname.includes('/wikipedia/commons/')
+    return COMMONS_HOSTS.has(parsed.hostname) && parsed.pathname.includes('/wikipedia/commons/')
   } catch {
     return false
   }
@@ -146,6 +160,7 @@ function buildCredits(author: string, license: string): { credit: string; compac
 interface MediaWikiPage {
   missing?: boolean
   pageimage?: string
+  pageprops?: { wikibase_item?: string }
   thumbnail?: { source?: string }
   imageinfo?: Array<{
     thumburl?: string
@@ -155,14 +170,69 @@ interface MediaWikiPage {
   }>
 }
 
+function commonsUrlScore(url: string): number {
+  if (!isCommonsUploadUrl(url)) return -1
+  try {
+    const parsed = new URL(url)
+    const thumb = parsed.pathname.includes('/thumb/') ? 2 : 0
+    const upload = parsed.hostname === 'upload.wikimedia.org' ? 1 : 0
+    return thumb + upload
+  } catch {
+    return -1
+  }
+}
+
+function pickCommonsUrl(urls: Array<string | undefined>): string | null {
+  let best: string | null = null
+  let bestScore = -1
+  for (const raw of urls) {
+    if (!raw) continue
+    const url = cleanThumbUrl(raw)
+    const score = commonsUrlScore(url)
+    if (score > bestScore) {
+      best = url
+      bestScore = score
+    }
+  }
+  return best
+}
+
+const WIKI_WORKERS = 2
+let wikiActive = 0
+const wikiWaiters: Array<() => void> = []
+
+async function acquireWikiSlot() {
+  if (wikiActive >= WIKI_WORKERS) {
+    await new Promise<void>((resolve) => {
+      wikiWaiters.push(resolve)
+    })
+  }
+  wikiActive += 1
+}
+
+function releaseWikiSlot() {
+  wikiActive = Math.max(0, wikiActive - 1)
+  wikiWaiters.shift()?.()
+}
+
 async function wikiJson(url: string): Promise<unknown> {
-  const response = await fetch(url, {
-    headers: { 'User-Agent': WIKI_UA, Accept: 'application/json' },
-    next: { revalidate: 86_400 },
-    signal: AbortSignal.timeout(8_000),
-  })
-  if (!response.ok) throw new Error('wiki')
-  return response.json()
+  await acquireWikiSlot()
+  try {
+    const response = await fetch(url, {
+      headers: { 'User-Agent': WIKI_UA, Accept: 'application/json' },
+      cache: 'no-store',
+      signal: AbortSignal.timeout(8_000),
+    })
+    if (!response.ok) throw new Error('wiki')
+    const data: unknown = await response.json()
+    if (data && typeof data === 'object' && 'error' in data) throw new Error('wiki')
+    return data
+  } finally {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 80)
+    })
+    releaseWikiSlot()
+  }
 }
 
 function firstPage(data: unknown): MediaWikiPage | null {
@@ -174,7 +244,14 @@ function firstPage(data: unknown): MediaWikiPage | null {
   return page && typeof page === 'object' ? (page as MediaWikiPage) : null
 }
 
-async function readFileInfo(fileName: string): Promise<MediaWikiPage['imageinfo']> {
+function hasLicenseMeta(info: NonNullable<MediaWikiPage['imageinfo']>[number]): boolean {
+  const meta = info.extmetadata
+  return Boolean(
+    metaValue(meta, 'LicenseShortName') || metaValue(meta, 'LicenseUrl') || metaValue(meta, 'Copyrighted'),
+  )
+}
+
+async function readFileInfos(fileName: string): Promise<NonNullable<MediaWikiPage['imageinfo']>> {
   const params = new URLSearchParams({
     action: 'query',
     format: 'json',
@@ -186,43 +263,65 @@ async function readFileInfo(fileName: string): Promise<MediaWikiPage['imageinfo'
     iiurlwidth: String(THUMB_WIDTH),
   })
   const origins = ['https://commons.wikimedia.org/w/api.php', 'https://en.wikipedia.org/w/api.php']
-  const pages = await Promise.all(
-    origins.map(async (origin) => {
-      try {
-        return firstPage(await wikiJson(`${origin}?${params}`))
-      } catch {
-        return null
-      }
-    }),
-  )
-  return pages.find((page) => page?.imageinfo?.[0])?.imageinfo
+  const infos: NonNullable<MediaWikiPage['imageinfo']> = []
+  for (const origin of origins) {
+    try {
+      const page = firstPage(await wikiJson(`${origin}?${params}`))
+      const info = page?.imageinfo?.[0]
+      if (!info) continue
+      infos.push(info)
+      if (pickCommonsUrl([info.thumburl, info.url]) && hasLicenseMeta(info)) return infos
+    } catch {
+      /* try the other origin */
+    }
+  }
+  return infos
 }
 
-export async function lookupWikiPortrait(title: string): Promise<WikiPortrait | null> {
-  const normalized = normalizeWikiTitle(title)
-  if (!normalized || !ALLOWED_TITLES.has(normalized)) return null
+interface WikidataEntities {
+  entities?: Record<
+    string,
+    {
+      claims?: Record<
+        string,
+        Array<{
+          mainsnak?: {
+            datavalue?: {
+              value?: unknown
+            }
+          }
+        }>
+      >
+    }
+  >
+}
 
+async function wikidataImage(qid: string): Promise<string | null> {
+  if (!/^Q\d+$/.test(qid)) return null
   const params = new URLSearchParams({
-    action: 'query',
+    action: 'wbgetentities',
+    ids: qid,
+    props: 'claims',
     format: 'json',
-    formatversion: '2',
-    redirects: '1',
-    titles: normalized,
-    prop: 'pageimages',
-    piprop: 'name|thumbnail',
-    pithumbsize: String(THUMB_WIDTH),
   })
-  const article = firstPage(await wikiJson(`https://en.wikipedia.org/w/api.php?${params}`))
-  const fileName = article?.pageimage?.replace(/ /g, '_')
-  if (!fileName) return null
+  try {
+    const data = (await wikiJson(`https://www.wikidata.org/w/api.php?${params}`)) as WikidataEntities
+    const value = data.entities?.[qid]?.claims?.P18?.[0]?.mainsnak?.datavalue?.value
+    return typeof value === 'string' && value.trim() ? value.trim().replace(/ /g, '_') : null
+  } catch {
+    return null
+  }
+}
 
-  const info = (await readFileInfo(fileName))?.[0]
+async function portraitFromFile(fileName: string, fallbackUrl?: string): Promise<WikiPortrait | null> {
+  const infos = await readFileInfos(fileName)
+  const info = infos.find((item) => item.extmetadata) ?? infos[0]
   if (!info) return null
   const media = (info.mediatype ?? '').toUpperCase()
   if (media && media !== 'BITMAP' && media !== 'DRAWING') return null
 
-  const url = info.thumburl || info.url || article?.thumbnail?.source
-  if (!url || !isCommonsUploadUrl(url)) return null
+  const url = pickCommonsUrl([...infos.map((item) => item.thumburl), ...infos.map((item) => item.url), fallbackUrl])
+  if (!url) return null
 
   const meta = info.extmetadata
   const shortName = metaValue(meta, 'LicenseShortName')
@@ -235,10 +334,57 @@ export async function lookupWikiPortrait(title: string): Promise<WikiPortrait | 
   const author = stripMarkup(metaValue(meta, 'Artist'))
   const { credit, compactCredit } = buildCredits(author, license)
   return {
-    url: cleanThumbUrl(url),
+    url,
     credit,
     compactCredit,
     filePage: commonsFilePage(fileName.replace(/_/g, ' ')),
     license,
   }
+}
+
+function uniqueFiles(names: Array<string | null | undefined>): string[] {
+  const seen = new Set<string>()
+  const files: string[] = []
+  for (const name of names) {
+    const file = name?.trim().replace(/ /g, '_')
+    if (!file || seen.has(file)) continue
+    seen.add(file)
+    files.push(file)
+  }
+  return files
+}
+
+export async function lookupWikiPortrait(title: string, preferredFile?: string | null): Promise<WikiPortrait | null> {
+  const normalized = normalizeWikiTitle(title)
+  if (!normalized || !ALLOWED_TITLES.has(normalized)) return null
+  const hinted = preferredFile?.trim().replace(/_/g, ' ')
+  const preferred = hinted && isAllowedPortraitFile(hinted) ? hinted : WIKI_PORTRAIT_FILES[normalized]
+
+  const params = new URLSearchParams({
+    action: 'query',
+    format: 'json',
+    formatversion: '2',
+    redirects: '1',
+    titles: normalized,
+    prop: 'pageimages|pageprops',
+    piprop: 'name|thumbnail',
+    pithumbsize: String(THUMB_WIDTH),
+    ppprop: 'wikibase_item',
+  })
+  const article = firstPage(await wikiJson(`https://en.wikipedia.org/w/api.php?${params}`))
+  const pageFile = article?.pageimage?.replace(/ /g, '_')
+  const files = uniqueFiles([preferred, article?.pageimage])
+  for (const fileName of files) {
+    const fallback = fileName === pageFile ? article?.thumbnail?.source : undefined
+    const portrait = await portraitFromFile(fileName, fallback)
+    if (portrait) return portrait
+  }
+  const qid = article?.pageprops?.wikibase_item
+  const extra = qid ? await wikidataImage(qid) : null
+  for (const fileName of uniqueFiles([extra])) {
+    if (files.includes(fileName)) continue
+    const portrait = await portraitFromFile(fileName)
+    if (portrait) return portrait
+  }
+  return null
 }

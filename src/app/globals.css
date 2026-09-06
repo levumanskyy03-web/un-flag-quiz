@@ -432,7 +432,11 @@ img {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 16px;
+  gap: 10px 16px;
+}
+
+.legal-nav-links .lang-select-wrap {
+  margin: 0;
 }
 
 .legal-nav-links {

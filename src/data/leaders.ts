@@ -90,6 +90,14 @@ export function formatLeaderNumbers(term: LeaderTerm): string {
   return `№ ${personNumbers(term).join(' · ')}`
 }
 
+export function formatTermNumber(term: LeaderTerm): string {
+  return `№ ${term.n}`
+}
+
+export function splitLearnTerms(term: LeaderTerm): boolean {
+  return personNumbers(term).length > 1
+}
+
 export function personYearsLabel(term: LeaderTerm, present: string): string {
   const spans = termsForKind(term.kind)
     .filter((item) => item.personId === term.personId)

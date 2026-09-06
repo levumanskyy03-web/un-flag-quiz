@@ -1,7 +1,7 @@
 import { COUNTRIES } from './countries'
 import { COUNTRY_LANGS, LANGUAGES, type SpokenShare } from './languageData'
 import { getPassport } from './passports'
-import type { Lang } from '../i18n/lang'
+import { localeTag, type Lang } from '../i18n/lang'
 
 export { LANGUAGES, COUNTRY_LANGS, type SpokenShare } from './languageData'
 
@@ -15,9 +15,18 @@ export function languageById(id: string) {
 
 export function languageName(id: string, lang: Lang): string {
   const info = languageById(id)
+  const code = id.trim().toLowerCase()
+  try {
+    const name = new Intl.DisplayNames([localeTag(lang)], { type: 'language' }).of(code)
+    if (name && name.toLowerCase() !== code) {
+      return name
+    }
+  } catch {
+    /* fall back */
+  }
   if (!info) return id
   const raw = lang === 'ru' ? info.nameRu : info.nameEn
-  if (lang !== 'en' && raw && raw[0] === raw[0].toLowerCase()) {
+  if (raw && raw[0] === raw[0].toLowerCase()) {
     return raw.charAt(0).toUpperCase() + raw.slice(1)
   }
   return raw
@@ -54,7 +63,7 @@ export function countriesSpeaking(id: string) {
   return COUNTRIES.filter((country) => spokenLanguages(country.iso).some((item) => item.id === lang)).sort((a, b) => {
     const pa = spokenShare(a.iso, lang)
     const pb = spokenShare(b.iso, lang)
-    return pb - pa || a.nameRu.localeCompare(b.nameRu, 'ru')
+    return pb - pa || a.nameEn.localeCompare(b.nameEn, 'en')
   })
 }
 
@@ -82,16 +91,16 @@ export function nationalPreview(iso: string, lang: Lang, max = 3): { names: stri
   }
 }
 
-export function allLanguageIds(): string[] {
-  return Object.keys(LANGUAGES).sort((a, b) => languageName(a, 'ru').localeCompare(languageName(b, 'ru'), 'ru'))
+export function allLanguageIds(lang: Lang = 'en'): string[] {
+  return Object.keys(LANGUAGES).sort((a, b) => languageName(a, lang).localeCompare(languageName(b, lang), localeTag(lang)))
 }
 
-export function languagesIndex() {
-  return allLanguageIds()
+export function languagesIndex(lang: Lang = 'en') {
+  return allLanguageIds(lang)
     .map((id) => ({
       id,
       countries: countriesSpeaking(id),
     }))
     .filter((item) => item.countries.length > 0)
-    .sort((a, b) => b.countries.length - a.countries.length || languageName(a.id, 'ru').localeCompare(languageName(b.id, 'ru'), 'ru'))
+    .sort((a, b) => b.countries.length - a.countries.length || languageName(a.id, lang).localeCompare(languageName(b.id, lang), localeTag(lang)))
 }

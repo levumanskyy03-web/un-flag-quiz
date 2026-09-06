@@ -83,13 +83,14 @@ export function currencyChoiceLabel(
   const passport = PASSPORTS[prompt.iso]
   if (!passport) return ''
   if (option.iso === prompt.iso || !usesCurrencyFakes(prompt.iso, passport.currencyEn)) {
-    const source = PASSPORTS[option.iso] ?? passport
-    return passportCurrency(source, lang)
+    const sourceIso = PASSPORTS[option.iso] ? option.iso : prompt.iso
+    const source = PASSPORTS[sourceIso] ?? passport
+    return passportCurrency(source, lang, sourceIso)
   }
   const label = distractorLabels(prompt, optionIsos, banned).get(option.iso)
   if (!label) {
     const source = PASSPORTS[option.iso]
-    return source ? passportCurrency(source, lang) : ''
+    return source ? passportCurrency(source, lang, option.iso) : ''
   }
   return lang === 'ru' ? label.ru : label.en
 }

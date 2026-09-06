@@ -29,6 +29,7 @@ import {
 import { rankingPlaceOf } from '../data/rankings'
 import { optionLabel } from '../lib/quizAnswers'
 import { termById, yearsLabel } from '../data/leaders'
+import { portraitFileForTerm } from '../data/leaderPortraitFiles'
 import { playerById } from '../data/footballPlayers'
 import { Flag, TeamFlag } from './Flag'
 import { LeaderPortrait } from './LeaderPortrait'
@@ -231,6 +232,7 @@ export function QuizScreen({
               <LeaderPortrait
                 name={correctName}
                 wiki={leaderTerm?.wiki ?? player?.wiki ?? ''}
+                file={leaderTerm ? portraitFileForTerm(leaderTerm.id) : undefined}
                 size="hero"
                 compact={!answered}
               />
