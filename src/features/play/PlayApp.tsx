@@ -46,6 +46,7 @@ import {
   isFootballMode,
   isLeaderPhotoMode,
   isLeadersMode,
+  isManagerFootballMode,
   isPlayerFactsToName,
   isPlayerFootballMode,
   isPlayerPhotoMode,
@@ -708,7 +709,12 @@ export default function PlayApp() {
     }
     if (!isLevelUnlocked(levelClears, level, quizSettings.mode)) return;
     if (isFootballMode(quizSettings.mode)) {
-      if (isPlayerPhotoMode(quizSettings.mode)) {
+      if (
+        isPlayerFootballMode(quizSettings.mode) ||
+        isManagerFootballMode(quizSettings.mode) ||
+        quizSettings.mode === "clubCrestToName" ||
+        quizSettings.mode === "stadiumToClub"
+      ) {
         const ids = footballLevelPlayerIds(quizSettings.mode, level);
         startFootballRound("levels", level, undefined, ids);
         return;
@@ -783,6 +789,7 @@ export default function PlayApp() {
           : prev.mode === "neighborsToName" ||
             prev.mode === "factsToName" ||
             prev.mode === "nameToLanguage" ||
+            prev.mode === "nameToGov" ||
             isCodesMode(prev.mode) ||
             isRankingMode(prev.mode)
           ? "flagToName"
@@ -1182,6 +1189,7 @@ export default function PlayApp() {
       {world === "geo" ? <GeoPlay play={play} /> : null}
       <nav className="catalog-links">
         <a href="/countries">{STRINGS[quizSettings.lang].legalCountries}</a>
+        <a href="/languages">{STRINGS[quizSettings.lang].legalLanguages}</a>
         <a href="/today">{STRINGS[quizSettings.lang].legalToday}</a>
       </nav>
       <footer className="legal-footer">

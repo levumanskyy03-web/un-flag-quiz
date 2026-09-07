@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { type Region } from '../data/countries'
 import { findCountry } from '../data/extras'
 import { isFinalLevel } from '../data/levels'
-import { REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
+import { governmentLabel, REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
 import {
   QUIZ_MODES,
   LEVEL_MODES,
@@ -17,8 +17,11 @@ import {
   isCodesMode,
   isFootballMode,
   isLeadersMode,
+  isManagerFootballMode,
+  isNameToGov,
   isNameToLanguage,
   isPlayerFactsToName,
+  isPlayerFootballMode,
   isPlayerPhotoMode,
   isRankingMode,
   isRegionSelected,
@@ -31,8 +34,10 @@ import {
 } from '../lib/quiz'
 import { footballLevelYears } from '../data/footballLevels'
 import { playerById } from '../data/footballPlayers'
+import { PlayerCardModal } from './PlayerCardModal'
 import { playerClueSequence, playerFactLabel } from '../lib/playerFacts'
 import { languageName, quizLanguageId } from '../data/languages'
+import { govKindOf } from '../data/governments'
 import { watersFor } from '../data/water'
 import { formatLeaderNumbers, formatTermNumber, leaderShowsNumber, personYearsLabel, splitLearnTerms, termById, yearsLabel } from '../data/leaders'
 import { leaderBio } from '../data/leaderBios'
@@ -89,8 +94,10 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   const regions: Array<Region | 'all'> = ['all', ...REGIONS]
   const [openIso, setOpenIso] = useState<string | null>(null)
   const [openTermId, setOpenTermId] = useState<string | null>(null)
+  const [openPlayerId, setOpenPlayerId] = useState<string | null>(null)
   const openCountry = openIso ? findCountry(openIso) : undefined
   const openTerm = openTermId ? termById(openTermId) : undefined
+  const openPlayer = openPlayerId ? playerById(openPlayerId) : undefined
   const geoFinale = settings.learnFrom === 'level' && isFinalLevel(settings.level) && hasGeoFinale(settings.mode)
   const title = settings.learnFrom === 'level' ? (geoFinale ? t.finalLevel : t.levelLabel(settings.level)) : t.learn
   const subtitle =
@@ -279,7 +286,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                     )
                   })}
                 </div>
-              ) : isPlayerPhotoMode(mode) || isPlayerFactsToName(mode) ? (
+              ) : isPlayerFootballMode(mode) ? (
                 <div className="learn-grid is-leaders">
                   {footballLearnCountries(mode).map((country) => (
                     <PlayerLearnCard
@@ -288,6 +295,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                       name={countryName(country, settings.lang)}
                       facts={isPlayerFactsToName(mode)}
                       lang={settings.lang}
+                      onOpen={() => setOpenPlayerId(country.iso)}
                     />
                   ))}
                 </div>
@@ -297,7 +305,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
             </section>
           ))}
         </div>
-      ) : football && isFootballMode(settings.mode) && !isPlayerPhotoMode(settings.mode) && !isPlayerFactsToName(settings.mode) ? (
+      ) : football && isFootballMode(settings.mode) && !isPlayerFootballMode(settings.mode) && !isManagerFootballMode(settings.mode) && settings.mode !== 'clubCrestToName' && settings.mode !== 'stadiumToClub' ? (
         <FootballLearnTable
           mode={settings.mode}
           lang={settings.lang}
@@ -316,6 +324,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
             isRankingMode(settings.mode) ? rankingPlaceOf(settings.mode, country.iso) : null
           const rankingTotal = isRankingMode(settings.mode) ? rankingCount(settings.mode) : 0
           const quizLang = isNameToLanguage(settings.mode) ? quizLanguageId(country.iso) : null
+          const govKind = isNameToGov(settings.mode) ? govKindOf(country.iso) : undefined
           const term = leaders ? termById(country.iso) : undefined
           if (leaders && term) {
             const bio = leaderBio(term, settings.lang)
@@ -341,7 +350,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
               </button>
             )
           }
-          if (isPlayerPhotoMode(settings.mode) || isPlayerFactsToName(settings.mode)) {
+          if (isPlayerFootballMode(settings.mode)) {
             return (
               <PlayerLearnCard
                 key={country.iso}
@@ -349,6 +358,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 name={name}
                 facts={isPlayerFactsToName(settings.mode)}
                 lang={settings.lang}
+                onOpen={() => setOpenPlayerId(country.iso)}
               />
             )
           }
@@ -400,6 +410,8 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 <p className="learn-card-meta">{t.rankingPlace(rankingPlace, rankingTotal)}</p>
               ) : quizLang ? (
                 <p className="learn-card-meta">{languageName(quizLang, settings.lang)}</p>
+              ) : govKind ? (
+                <p className="learn-card-meta">{governmentLabel(govKind, settings.lang)}</p>
               ) : null}
             </button>
           )
@@ -428,6 +440,9 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           onClose={() => setOpenTermId(null)}
         />
       )}
+      {openPlayer && (
+        <PlayerCardModal key={openPlayer.id} player={openPlayer} lang={settings.lang} onClose={() => setOpenPlayerId(null)} />
+      )}
     </div>
   )
 }
@@ -437,16 +452,18 @@ function PlayerLearnCard({
   name,
   facts,
   lang,
+  onOpen,
 }: {
   iso: string
   name: string
   facts: boolean
   lang: QuizSettings['lang']
+  onOpen?: () => void
 }) {
   const player = playerById(iso)
   const clues = facts && player ? playerClueSequence(player.id, 4) : []
   return (
-    <div className="learn-card is-leader">
+    <button type="button" className="learn-card is-leader" onClick={onOpen}>
       {player ? <LeaderPortrait name={name} wiki={player.wiki} size="card" /> : null}
       <p className="learn-card-name">
         <FitText>{name}</FitText>
@@ -454,6 +471,6 @@ function PlayerLearnCard({
       {clues.length > 0 ? (
         <p className="learn-card-bio">{clues.map((clue) => playerFactLabel(clue, lang)).join(' · ')}</p>
       ) : null}
-    </div>
+    </button>
   )
 }

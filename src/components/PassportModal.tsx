@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { type Country } from '../data/countries'
 import { findCountry } from '../data/extras'
 import { foundedYear } from '../data/founded'
+import { govKindOf } from '../data/governments'
 import { landNeighbors } from '../data/neighbors'
 import {
   formatPopulation,
@@ -9,7 +10,7 @@ import {
   passportCapital,
   passportCurrency,
 } from '../data/passports'
-import { STRINGS, localeTag, regionLabel, type Lang } from '../i18n/strings'
+import { STRINGS, governmentLabel, localeTag, regionLabel, type Lang } from '../i18n/strings'
 import { countryName } from '../lib/quiz'
 import { Flag } from './Flag'
 import { FitText } from './FitText'
@@ -40,6 +41,7 @@ export function PassportModal({
   const passport = getPassport(country.iso)
   const name = countryName(country, lang)
   const founded = foundedYear(country.iso)
+  const govKind = govKindOf(country.iso)
   const neighbors = landNeighbors(country.iso)
     .map((iso) => findCountry(iso))
     .filter((item): item is Country => item !== undefined)
@@ -112,6 +114,12 @@ export function PassportModal({
             <dt>{t.currency}</dt>
             <dd>{passportCurrency(passport, lang, country.iso)}</dd>
           </div>
+          {govKind ? (
+            <div>
+              <dt>{t.government}</dt>
+              <dd>{governmentLabel(govKind, lang)}</dd>
+            </div>
+          ) : null}
           {founded !== undefined ? (
             <div>
               <dt>{t.founded}</dt>

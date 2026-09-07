@@ -6,6 +6,7 @@ import {
   codePromptLabel,
   countryName,
   formatClock,
+  isClubCrestMode,
   isCodeOptionMode,
   isCodePromptMode,
   isFootballTeamChoice,
@@ -15,6 +16,7 @@ import {
   isLeaderPhotoMode,
   isLeaderYearsPrompt,
   isPlayerPhotoMode,
+  isStadiumMode,
   isRankingMode,
   isWaterMapMode,
   isWaterMode,
@@ -31,6 +33,8 @@ import { optionLabel } from '../lib/quizAnswers'
 import { termById, yearsLabel } from '../data/leaders'
 import { portraitFileForTerm } from '../data/leaderPortraitFiles'
 import { playerById } from '../data/footballPlayers'
+import { FOOTBALL_MANAGERS } from '../data/footballManagers'
+import { clubWiki } from '../data/footballClubs'
 import { Flag, TeamFlag } from './Flag'
 import { LeaderPortrait } from './LeaderPortrait'
 import { Lives } from './Lives'
@@ -104,7 +108,14 @@ export function QuizScreen({
   const mapRegion = quizMapRegion(path, region)
   const mixHint = mix ? mixAskHint(activeMode, lang) : null
   const leaderTerm = termById(question.country.iso)
-  const player = playerById(question.country.iso)
+  const promptPlayer = playerById(question.promptEntity?.iso ?? question.country.iso)
+  const player = promptPlayer ?? playerById(question.country.iso)
+  const manager = FOOTBALL_MANAGERS.find((item) => item.id === question.country.iso)
+  const footballAsk = footballQuestionPrompt(activeMode, question.year ?? 0, String(question.shirtNumber ?? correctName), lang, {
+    league: question.league,
+    stadiumName: question.stadiumName,
+    goldenEvent: question.goldenEvent,
+  })
   const leaderRange = leaderTerm ? yearsLabel(leaderTerm.from, leaderTerm.to, t.present) : ''
   const promptNeighbors =
     activeMode === 'neighborsToName'
@@ -205,10 +216,30 @@ export function QuizScreen({
           ) : isFootballYearChoice(activeMode) ? (
             <div className="title-year-prompt">
               <TeamFlag iso={question.country.iso} name={correctName} size="hero" />
-              <h2 className="prompt-name">{footballQuestionPrompt(activeMode, question.year ?? 0, correctName, lang)}</h2>
+              <h2 className="prompt-name">{footballAsk}</h2>
             </div>
-          ) : footballQuestionPrompt(activeMode, question.year ?? 0, correctName, lang) ? (
-            <h2 className="prompt-name">{footballQuestionPrompt(activeMode, question.year ?? 0, correctName, lang)}</h2>
+          ) : isClubCrestMode(activeMode) ? (
+            <div className="leader-prompt">
+              <p className="neighbors-prompt-label">{footballAsk}</p>
+              <LeaderPortrait
+                name={countryName(question.promptEntity ?? question.country, lang)}
+                wiki={clubWiki((question.promptEntity ?? question.country).iso)}
+                size="hero"
+                compact={!answered}
+              />
+            </div>
+          ) : isStadiumMode(activeMode) ? (
+            <h2 className="prompt-name">{footballAsk}</h2>
+          ) : activeMode === 'playerShirtToName' ? (
+            <div className="code-prompt-block">
+              <p className="neighbors-prompt-label">{footballAsk}</p>
+              {question.promptEntity ? (
+                <TeamFlag iso={question.promptEntity.iso} name={countryName(question.promptEntity, lang)} size="hero" />
+              ) : null}
+              <h2 className="prompt-name code-prompt">{question.shirtNumber ?? ''}</h2>
+            </div>
+          ) : footballAsk && !isPlayerPhotoMode(activeMode) ? (
+            <h2 className="prompt-name">{footballAsk}</h2>
           ) : isCodePromptMode(activeMode) ? (
             <div className="code-prompt-block">
               <p className="neighbors-prompt-label">
@@ -228,10 +259,10 @@ export function QuizScreen({
             </h2>
           ) : isLeaderPhotoMode(activeMode) || isPlayerPhotoMode(activeMode) ? (
             <div className="leader-prompt">
-              <p className="neighbors-prompt-label">{t.leaderPhotoPrompt}</p>
+              <p className="neighbors-prompt-label">{footballAsk ?? t.leaderPhotoPrompt}</p>
               <LeaderPortrait
-                name={correctName}
-                wiki={leaderTerm?.wiki ?? player?.wiki ?? ''}
+                name={question.promptEntity ? countryName(question.promptEntity, lang) : manager ? (lang === 'ru' ? manager.ru : manager.en) : correctName}
+                wiki={player?.wiki ?? manager?.wiki ?? ''}
                 file={leaderTerm ? portraitFileForTerm(leaderTerm.id) : undefined}
                 size="hero"
                 compact={!answered}
@@ -294,9 +325,13 @@ export function QuizScreen({
                 })}
               </ul>
             </div>
-          ) : activeMode === 'nameToLanguage' ? (
+          ) : activeMode === 'nameToLanguage' || activeMode === 'nameToGov' ? (
             <div className="code-prompt-block">
-              {mixHint ? null : <p className="neighbors-prompt-label">{t.nameToLanguagePrompt}</p>}
+              {mixHint ? null : (
+                <p className="neighbors-prompt-label">
+                  {activeMode === 'nameToGov' ? t.nameToGovPrompt : t.nameToLanguagePrompt}
+                </p>
+              )}
               <Flag iso={question.country.iso} name={correctName} size="hero" />
               <h2 className="prompt-name">{correctName}</h2>
             </div>
@@ -397,7 +432,7 @@ export function QuizScreen({
                     <Flag iso={option.iso} name={name} size="option" />
                     {answered && <span className="option-caption">{name}</span>}
                   </>
-                ) : isFootballTeamChoice(activeMode) ? (
+                ) : isFootballTeamChoice(activeMode) || activeMode === 'playerToNation' || activeMode === 'playerToClub' ? (
                   <span className="option-team">
                     <TeamFlag iso={option.iso} name={name} size="thumb" />
                     <FitText minPx={8}>{optionLabel(option, activeMode, lang, question)}</FitText>

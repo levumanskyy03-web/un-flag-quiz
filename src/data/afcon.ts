@@ -1,4 +1,4 @@
-import { type WorldCupWinner } from './worldCup'
+import { type WorldCupHost, type WorldCupWinner } from './worldCup'
 
 export const AFCON_WINNERS: WorldCupWinner[] = [
   { year: 1957, winnerId: 'eg', runnerUpId: 'et' },
@@ -35,6 +35,43 @@ export const AFCON_WINNERS: WorldCupWinner[] = [
   { year: 2019, winnerId: 'dz', runnerUpId: 'sn' },
   { year: 2021, winnerId: 'sn', runnerUpId: 'eg' },
   { year: 2023, winnerId: 'ci', runnerUpId: 'ng' },
+]
+
+export const AFCON_HOSTS: WorldCupHost[] = [
+  { year: 1957, hostIds: ['sd'] },
+  { year: 1959, hostIds: ['eg'] },
+  { year: 1962, hostIds: ['et'] },
+  { year: 1963, hostIds: ['gh'] },
+  { year: 1965, hostIds: ['tn'] },
+  { year: 1968, hostIds: ['et'] },
+  { year: 1970, hostIds: ['sd'] },
+  { year: 1972, hostIds: ['cm'] },
+  { year: 1974, hostIds: ['eg'] },
+  { year: 1976, hostIds: ['et'] },
+  { year: 1978, hostIds: ['gh'] },
+  { year: 1980, hostIds: ['ng'] },
+  { year: 1982, hostIds: ['ly'] },
+  { year: 1984, hostIds: ['ci'] },
+  { year: 1986, hostIds: ['eg'] },
+  { year: 1988, hostIds: ['ma'] },
+  { year: 1990, hostIds: ['dz'] },
+  { year: 1992, hostIds: ['sn'] },
+  { year: 1994, hostIds: ['tn'] },
+  { year: 1996, hostIds: ['za'] },
+  { year: 1998, hostIds: ['bf'] },
+  { year: 2000, hostIds: ['gh', 'ng'] },
+  { year: 2002, hostIds: ['ml'] },
+  { year: 2004, hostIds: ['tn'] },
+  { year: 2006, hostIds: ['eg'] },
+  { year: 2008, hostIds: ['gh'] },
+  { year: 2010, hostIds: ['ao'] },
+  { year: 2012, hostIds: ['ga', 'gq'] },
+  { year: 2013, hostIds: ['za'] },
+  { year: 2015, hostIds: ['gq'] },
+  { year: 2017, hostIds: ['ga'] },
+  { year: 2019, hostIds: ['eg'] },
+  { year: 2021, hostIds: ['cm'] },
+  { year: 2023, hostIds: ['ci'] },
 ]
 
 export const AFCON_EASY_FROM = 2000

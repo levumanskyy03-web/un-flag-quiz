@@ -391,6 +391,7 @@ export function DuelApp({ code: rawCode }: { code: string }) {
       ) : null}
       <nav className="catalog-links">
         <a href="/countries">{t.legalCountries}</a>
+        <a href="/languages">{t.legalLanguages}</a>
         <a href="/today">{t.legalToday}</a>
       </nav>
       <footer className="legal-footer">

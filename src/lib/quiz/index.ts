@@ -2,6 +2,7 @@ import { COUNTRY_CODES } from '../../data/countryCodes'
 import { footballCampaignLevels, footballLevelPlayerIds, footballLevelYears } from '../../data/footballLevels'
 import { LEVEL_COUNT } from '../../data/levels'
 import { quizLanguageId } from '../../data/languages'
+import { govKindOf } from '../../data/governments'
 import { canAskWater, countryForWater, isWaterMapMode, isWaterMode, waterCampaignLevels, watersFor } from '../../data/water'
 import { rankingPlaceOf } from '../../data/rankings'
 import {
@@ -9,6 +10,8 @@ import {
   isCodesMode,
   isFootballMode,
   isLeadersMode,
+  isManagerFootballMode,
+  isNameToGov,
   isNameToLanguage,
   isPlayerFootballMode,
   isRankingMode,
@@ -54,6 +57,14 @@ export function campaignMaxForWorld(world: QuizWorld): number {
 
 export function getLevelPool(level: number, mode: QuizMode = 'flagToName'): Country[] {
   if (isFootballMode(mode)) {
+    if (
+      isPlayerFootballMode(mode) ||
+      isManagerFootballMode(mode) ||
+      mode === 'clubCrestToName' ||
+      mode === 'stadiumToClub'
+    ) {
+      return footballLearnCountries(mode, undefined, footballLevelPlayerIds(mode, level))
+    }
     const years = footballLevelYears(mode, level)
     return years.flatMap((year) => footballCountryForYear(mode, year)).filter(Boolean)
   }
@@ -64,7 +75,14 @@ export function getLevelPool(level: number, mode: QuizMode = 'flagToName'): Coun
 }
 
 export function levelQuestionCount(level: number, mode: QuizMode): number {
-  if (mode === 'playerPhotoToName') return footballLevelPlayerIds(mode, level).length
+  if (
+    isPlayerFootballMode(mode) ||
+    isManagerFootballMode(mode) ||
+    mode === 'clubCrestToName' ||
+    mode === 'stadiumToClub'
+  ) {
+    return footballLevelPlayerIds(mode, level).length
+  }
   if (isFootballMode(mode)) return footballLevelYears(mode, level).length
   return getLevelPool(level, mode).length
 }
@@ -77,9 +95,8 @@ export function getLearnPool(
   includeExtras = false,
 ): Country[] {
   if (isFootballMode(mode)) {
-    if (isPlayerFootballMode(mode)) {
-      const ids =
-        learnFrom === 'level' && mode === 'playerPhotoToName' ? footballLevelPlayerIds(mode, level) : undefined
+    if (isPlayerFootballMode(mode) || isManagerFootballMode(mode) || mode === 'clubCrestToName' || mode === 'stadiumToClub') {
+      const ids = learnFrom === 'level' ? footballLevelPlayerIds(mode, level) : undefined
       return footballLearnCountries(mode, undefined, ids)
     }
     const years = learnFrom === 'level' ? footballLevelYears(mode, level) : undefined
@@ -110,6 +127,8 @@ export function getLearnPool(
       ? pool.filter((country) => rankingPlaceOf(mode, country.iso) !== null)
       : isNameToLanguage(mode)
         ? pool.filter((country) => quizLanguageId(country.iso))
-        : pool
+        : isNameToGov(mode)
+          ? pool.filter((country) => govKindOf(country.iso))
+          : pool
   return filtered.filter((country) => extraFitsMode(country, mode))
 }

@@ -143,11 +143,13 @@ function commonsFilePage(fileName: string): string {
 }
 
 function cleanAuthor(author: string): string {
-  return author
+  const cleaned = author
     .replace(/^[^\s]+\.(?:png|jpe?g|gif|webp|svg|tiff?)\s*:?\s*/i, '')
+    .replace(/\bauthor\s+unknown(\s+author)?\b/gi, 'Unknown author')
     .replace(/\b(unknown author)+\b/gi, 'Unknown author')
     .replace(/^unknown,?\s*/i, '')
     .trim()
+  return /^unknown author$/i.test(cleaned) ? '' : cleaned
 }
 
 function buildCredits(author: string, license: string): { credit: string; compactCredit: string } {
@@ -216,23 +218,36 @@ function releaseWikiSlot() {
 }
 
 async function wikiJson(url: string): Promise<unknown> {
-  await acquireWikiSlot()
-  try {
-    const response = await fetch(url, {
-      headers: { 'User-Agent': WIKI_UA, Accept: 'application/json' },
-      cache: 'no-store',
-      signal: AbortSignal.timeout(8_000),
-    })
-    if (!response.ok) throw new Error('wiki')
-    const data: unknown = await response.json()
-    if (data && typeof data === 'object' && 'error' in data) throw new Error('wiki')
-    return data
-  } finally {
+  let lastError: Error | null = null
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await acquireWikiSlot()
+    try {
+      const response = await fetch(url, {
+        headers: { 'User-Agent': WIKI_UA, Accept: 'application/json' },
+        cache: 'no-store',
+        signal: AbortSignal.timeout(12_000),
+      })
+      if (response.status === 429 || response.status === 503) {
+        lastError = new Error('wiki')
+      } else {
+        if (!response.ok) throw new Error('wiki')
+        const data: unknown = await response.json()
+        if (data && typeof data === 'object' && 'error' in data) throw new Error('wiki')
+        return data
+      }
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('wiki')
+    } finally {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 80)
+      })
+      releaseWikiSlot()
+    }
     await new Promise((resolve) => {
-      setTimeout(resolve, 80)
+      setTimeout(resolve, 400 * (attempt + 1))
     })
-    releaseWikiSlot()
   }
+  throw lastError ?? new Error('wiki')
 }
 
 function firstPage(data: unknown): MediaWikiPage | null {

@@ -98,7 +98,7 @@ export function GeoPlay({ play }: { play: PlaySession }) {
         <MistakesScreen
           settings={play.quizSettings}
           mistakes={play.mistakeList}
-          modes={["flagToName", "nameToFlag", "nameToCapital", "nameToCurrency", "nameToPopulation", "nameToFounded", "neighborsToName", "nameToMap", "mapToName", "mapToSea", "mapToRiver", "seaToName", "riverToName"]}
+          modes={["flagToName", "nameToFlag", "nameToCapital", "nameToCurrency", "nameToPopulation", "nameToFounded", "neighborsToName", "nameToMap", "mapToName", "mapToSea", "mapToRiver", "seaToName", "riverToName", "nameToGov"]}
           onChange={play.handleSettingsChange}
           onHub={play.goHub}
           onWorlds={play.goToWorlds}

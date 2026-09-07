@@ -8,45 +8,26 @@ import {
   passportCurrency,
 } from '../data/passports'
 import { languageName, quizLanguageId } from '../data/languages'
-import type { Lang } from '../i18n/strings'
+import { govKindOf } from '../data/governments'
+import { governmentLabel, type Lang } from '../i18n/strings'
 import { currencyChoiceLabel } from './currencyFakes'
 import { foundedChoiceLabel } from './foundedFakes'
 import { populationChoiceLabel } from './populationFakes'
 import { isRankingMode } from '../data/rankings'
-import { codeAnswerKey, codePromptLabel, countryName, isCodeOptionMode, isLeadersMode, isPlayerFootballMode, type Question, type QuizMode } from './quiz'
+import { isFootballMode, isLeadersMode, isPlayerFootballMode, type Question, type QuizMode } from './quiz'
 import { isWaterMode, waterAnswerKey } from '../data/water'
 
 export function answerKey(country: Country, mode: QuizMode): string {
-  if (
-    mode === 'flagToName' ||
-    mode === 'nameToFlag' ||
-    mode === 'nameToMap' ||
-    mode === 'mapToName' ||
-    mode === 'factsToName' ||
-    mode === 'wcWinners' ||
-    mode === 'wcFinalists' ||
-    mode === 'wcHosts' ||
-    mode === 'euroWinners' ||
-    mode === 'euroFinalists' ||
-    mode === 'euroHosts' ||
-    mode === 'wcScorers' ||
-    mode === 'uclWinners' ||
-    mode === 'copaWinners' ||
-    mode === 'afconWinners' ||
-    mode === 'tldToName' ||
-    mode === 'callingToName' ||
-    mode === 'carToName'
-  ) {
+  if (isFootballMode(mode) || isRankingMode(mode) || isLeadersMode(mode) || isPlayerFootballMode(mode)) {
     return country.iso
   }
-  if (isRankingMode(mode)) return country.iso
-  if (isLeadersMode(mode) || isPlayerFootballMode(mode)) return country.iso
   if (isWaterMode(mode)) return waterAnswerKey(country.iso, mode)
   if (mode === 'nameToTld' || mode === 'nameToCalling' || mode === 'nameToCar') {
     return codeAnswerKey(country, mode)
   }
   if (mode === 'neighborsToName') return `neighbors:${neighborKey(country.iso)}`
   if (mode === 'nameToFounded') return `founded:${foundedYear(country.iso) ?? country.iso}`
+  if (mode === 'nameToGov') return `gov:${govKindOf(country.iso) ?? country.iso}`
   const passport = PASSPORTS[country.iso]
   if (!passport) return country.iso
   if (mode === 'nameToCapital') return `capital:${passport.capitalEn}`
@@ -56,33 +37,9 @@ export function answerKey(country: Country, mode: QuizMode): string {
 }
 
 export function optionLabel(country: Country, mode: QuizMode, lang: Lang, question?: Question): string {
-  if (
-    mode === 'flagToName' ||
-    mode === 'nameToFlag' ||
-    mode === 'neighborsToName' ||
-    mode === 'nameToMap' ||
-    mode === 'mapToName' ||
-    mode === 'factsToName' ||
-    mode === 'seaToName' ||
-    mode === 'riverToName' ||
-    mode === 'wcWinners' ||
-    mode === 'wcFinalists' ||
-    mode === 'wcHosts' ||
-    mode === 'euroWinners' ||
-    mode === 'euroFinalists' ||
-    mode === 'euroHosts' ||
-    mode === 'wcScorers' ||
-    mode === 'uclWinners' ||
-    mode === 'copaWinners' ||
-    mode === 'afconWinners' ||
-    mode === 'tldToName' ||
-    mode === 'callingToName' ||
-    mode === 'carToName'
-  ) {
+  if (isFootballMode(mode) || isRankingMode(mode) || isLeadersMode(mode) || isPlayerFootballMode(mode)) {
     return countryName(country, lang)
   }
-  if (isRankingMode(mode)) return countryName(country, lang)
-  if (isLeadersMode(mode) || isPlayerFootballMode(mode)) return countryName(country, lang)
   if (isCodeOptionMode(mode)) return codePromptLabel(country, mode)
   if (mode === 'nameToFounded') {
     if (!question) return String(foundedYear(country.iso) ?? '')
@@ -93,6 +50,10 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
       question.options.map((option) => option.iso),
       question.priorBan?.years,
     )
+  }
+  if (mode === 'nameToGov') {
+    const kind = govKindOf(country.iso)
+    return kind ? governmentLabel(kind, lang) : countryName(country, lang)
   }
   const passport = PASSPORTS[country.iso]
   if (!passport) return countryName(country, lang)

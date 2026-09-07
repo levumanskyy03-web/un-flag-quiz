@@ -33,16 +33,49 @@ export const QUIZ_MODES = [
   'seaToName',
   'riverToName',
   'nameToLanguage',
+  'nameToGov',
 ] as const
 export const WC_FOOTBALL_MODES = ['wcWinners', 'wcFinalists', 'wcHosts', 'wcTitleYears', 'wcScorers'] as const
 export const EURO_FOOTBALL_MODES = ['euroWinners', 'euroFinalists', 'euroHosts', 'euroTitleYears'] as const
-export const OTHER_FOOTBALL_MODES = ['uclWinners', 'copaWinners', 'afconWinners'] as const
-export const PLAYER_FOOTBALL_MODES = ['playerPhotoToName', 'playerFactsToName'] as const
+export const OTHER_FOOTBALL_MODES = [
+  'copaWinners',
+  'copaFinalists',
+  'copaHosts',
+  'afconWinners',
+  'afconFinalists',
+  'afconHosts',
+  'asianCupWinners',
+  'goldCupWinners',
+  'nationsLeagueWinners',
+] as const
+export const CLUB_FOOTBALL_MODES = [
+  'uclWinners',
+  'uclFinalists',
+  'uclTitleYears',
+  'europaWinners',
+  'libertadoresWinners',
+  'leagueWinners',
+  'clubCrestToName',
+  'stadiumToClub',
+] as const
+export const PLAYER_FOOTBALL_MODES = [
+  'playerPhotoToName',
+  'playerFactsToName',
+  'playerToNation',
+  'playerToClub',
+  'playerClubToName',
+  'playerShirtToName',
+  'ballonDorWinners',
+  'goldenBallWinners',
+] as const
+export const MANAGER_FOOTBALL_MODES = ['managerPhotoToName'] as const
 export const FOOTBALL_MODES = [
   ...WC_FOOTBALL_MODES,
   ...EURO_FOOTBALL_MODES,
   ...OTHER_FOOTBALL_MODES,
+  ...CLUB_FOOTBALL_MODES,
   ...PLAYER_FOOTBALL_MODES,
+  ...MANAGER_FOOTBALL_MODES,
 ] as const
 export const CODES_MODES = ['tldToName', 'nameToTld', 'callingToName', 'nameToCalling', 'carToName', 'nameToCar'] as const
 export const LEADERS_MODES = [
@@ -65,7 +98,8 @@ export const LEADERS_ASKS = ['years', 'number', 'photo'] as const
 export type LeaderAsk = (typeof LEADERS_ASKS)[number]
 export type QuizMode = (typeof QUIZ_MODES)[number] | FootballMode | CodesMode | LeadersMode | RankingMode
 export const LEVEL_MODES: QuizMode[] = QUIZ_MODES.filter(
-  (mode) => mode !== 'neighborsToName' && mode !== 'factsToName' && mode !== 'nameToLanguage',
+  (mode) =>
+    mode !== 'neighborsToName' && mode !== 'factsToName' && mode !== 'nameToLanguage' && mode !== 'nameToGov',
 )
 export const EASY_MIX_MODES: QuizMode[] = ['flagToName', 'nameToFlag', 'nameToCapital']
 export const HARD_MIX_MODES: QuizMode[] = [
@@ -218,11 +252,16 @@ export function footballHasDifficulty(mode: QuizMode): boolean {
 }
 
 export function isFootballTeamChoice(mode: QuizMode): boolean {
-  return isFootballMode(mode) && !isFootballYearChoice(mode) && !isPlayerFootballMode(mode)
+  return (
+    isFootballMode(mode) &&
+    !isFootballYearChoice(mode) &&
+    !isPlayerFootballMode(mode) &&
+    !isManagerFootballMode(mode)
+  )
 }
 
 export function isFootballYearChoice(mode: QuizMode): boolean {
-  return mode === 'wcTitleYears' || mode === 'euroTitleYears'
+  return mode === 'wcTitleYears' || mode === 'euroTitleYears' || mode === 'uclTitleYears'
 }
 
 export function uniqueModes(modes: readonly unknown[]): QuizMode[] {
@@ -259,7 +298,8 @@ export function isFactMode(mode: QuizMode): boolean {
     mode === 'nameToCurrency' ||
     mode === 'nameToPopulation' ||
     mode === 'nameToFounded' ||
-    mode === 'nameToLanguage'
+    mode === 'nameToLanguage' ||
+    mode === 'nameToGov'
   )
 }
 
@@ -276,15 +316,36 @@ export function isPlayerFactsToName(mode: QuizMode): boolean {
 }
 
 export function isPlayerPhotoMode(mode: QuizMode): boolean {
-  return mode === 'playerPhotoToName'
+  return (
+    mode === 'playerPhotoToName' ||
+    mode === 'playerToNation' ||
+    mode === 'playerToClub' ||
+    mode === 'managerPhotoToName'
+  )
 }
 
 export function isPlayerFootballMode(mode: QuizMode): boolean {
-  return mode === 'playerPhotoToName' || mode === 'playerFactsToName'
+  return (PLAYER_FOOTBALL_MODES as readonly string[]).includes(mode as string)
+}
+
+export function isManagerFootballMode(mode: QuizMode): boolean {
+  return mode === 'managerPhotoToName'
+}
+
+export function isClubCrestMode(mode: QuizMode): boolean {
+  return mode === 'clubCrestToName' || mode === 'playerClubToName'
+}
+
+export function isStadiumMode(mode: QuizMode): boolean {
+  return mode === 'stadiumToClub'
 }
 
 export function isNameToLanguage(mode: QuizMode): boolean {
   return mode === 'nameToLanguage'
+}
+
+export function isNameToGov(mode: QuizMode): boolean {
+  return mode === 'nameToGov'
 }
 
 export function hasLevels(mode: QuizMode): boolean {
@@ -295,7 +356,8 @@ export function hasLevels(mode: QuizMode): boolean {
       !isRankingMode(mode) &&
       mode !== 'neighborsToName' &&
       mode !== 'factsToName' &&
-      mode !== 'nameToLanguage')
+      mode !== 'nameToLanguage' &&
+      mode !== 'nameToGov')
   )
 }
 
@@ -306,7 +368,8 @@ export function hasGeoFinale(mode: QuizMode): boolean {
     !isLeadersMode(mode) &&
     !isCodesMode(mode) &&
     !isRankingMode(mode) &&
-    mode !== 'nameToLanguage'
+    mode !== 'nameToLanguage' &&
+    mode !== 'nameToGov'
   )
 }
 
@@ -468,6 +531,11 @@ export interface Question {
   year?: number
   waterId?: string
   waterOptions?: string[]
+  promptEntity?: Country
+  shirtNumber?: number
+  stadiumName?: string
+  league?: 'pl' | 'laliga' | 'seriea' | 'bundesliga' | 'ligue1'
+  goldenEvent?: 'wc' | 'euro'
   priorBan?: {
     years?: number[]
     populations?: number[]

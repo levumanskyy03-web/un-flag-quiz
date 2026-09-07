@@ -458,6 +458,44 @@ const MAP_IDENTIFY_EASY = isoSet([
   'jm',
 ])
 
+const GOV_EASY = isoSet([
+  'us',
+  'br',
+  'mx',
+  'ar',
+  'fr',
+  'ru',
+  'pt',
+  'ua',
+  'de',
+  'it',
+  'in',
+  'il',
+  'za',
+  'ch',
+  'gb',
+  'es',
+  'se',
+  'no',
+  'dk',
+  'nl',
+  'be',
+  'jp',
+  'th',
+  'ca',
+  'au',
+  'nz',
+  'ma',
+  'sa',
+  'ae',
+  'qa',
+  'cn',
+  'kp',
+  'cu',
+  'vn',
+  'ir',
+])
+
 const EASY_BY_MODE: Record<string, ReadonlySet<string> | 'flag'> = {
   flagToName: 'flag',
   nameToFlag: 'flag',
@@ -468,6 +506,7 @@ const EASY_BY_MODE: Record<string, ReadonlySet<string> | 'flag'> = {
   neighborsToName: NEIGHBORS_EASY,
   nameToMap: MAP_FIND_EASY,
   mapToName: MAP_IDENTIFY_EASY,
+  nameToGov: GOV_EASY,
 }
 
 export function isEasyForMode(country: Country, mode: string): boolean {

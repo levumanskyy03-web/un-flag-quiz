@@ -1,4 +1,4 @@
-import { type WorldCupWinner } from './worldCup'
+import { type WorldCupHost, type WorldCupWinner } from './worldCup'
 
 export const COPA_WINNERS: WorldCupWinner[] = [
   { year: 1916, winnerId: 'uy', runnerUpId: 'ar' },
@@ -48,6 +48,53 @@ export const COPA_WINNERS: WorldCupWinner[] = [
   { year: 2019, winnerId: 'br', runnerUpId: 'pe' },
   { year: 2021, winnerId: 'ar', runnerUpId: 'br' },
   { year: 2024, winnerId: 'ar', runnerUpId: 'co' },
+]
+
+export const COPA_HOSTS: WorldCupHost[] = [
+  { year: 1916, hostIds: ['ar'] },
+  { year: 1917, hostIds: ['uy'] },
+  { year: 1919, hostIds: ['br'] },
+  { year: 1920, hostIds: ['cl'] },
+  { year: 1921, hostIds: ['ar'] },
+  { year: 1922, hostIds: ['br'] },
+  { year: 1923, hostIds: ['uy'] },
+  { year: 1924, hostIds: ['uy'] },
+  { year: 1925, hostIds: ['ar'] },
+  { year: 1926, hostIds: ['cl'] },
+  { year: 1927, hostIds: ['pe'] },
+  { year: 1929, hostIds: ['ar'] },
+  { year: 1935, hostIds: ['pe'] },
+  { year: 1937, hostIds: ['ar'] },
+  { year: 1939, hostIds: ['pe'] },
+  { year: 1941, hostIds: ['cl'] },
+  { year: 1942, hostIds: ['uy'] },
+  { year: 1945, hostIds: ['cl'] },
+  { year: 1946, hostIds: ['ar'] },
+  { year: 1947, hostIds: ['ec'] },
+  { year: 1949, hostIds: ['br'] },
+  { year: 1953, hostIds: ['pe'] },
+  { year: 1955, hostIds: ['cl'] },
+  { year: 1956, hostIds: ['uy'] },
+  { year: 1957, hostIds: ['pe'] },
+  { year: 1959, hostIds: ['ar'] },
+  { year: 1963, hostIds: ['bo'] },
+  { year: 1967, hostIds: ['uy'] },
+  { year: 1987, hostIds: ['ar'] },
+  { year: 1989, hostIds: ['br'] },
+  { year: 1991, hostIds: ['cl'] },
+  { year: 1993, hostIds: ['ec'] },
+  { year: 1995, hostIds: ['uy'] },
+  { year: 1997, hostIds: ['bo'] },
+  { year: 1999, hostIds: ['py'] },
+  { year: 2001, hostIds: ['co'] },
+  { year: 2004, hostIds: ['pe'] },
+  { year: 2007, hostIds: ['ve'] },
+  { year: 2011, hostIds: ['ar'] },
+  { year: 2015, hostIds: ['cl'] },
+  { year: 2016, hostIds: ['us'] },
+  { year: 2019, hostIds: ['br'] },
+  { year: 2021, hostIds: ['br'] },
+  { year: 2024, hostIds: ['us'] },
 ]
 
 export const COPA_EASY_FROM = 2001

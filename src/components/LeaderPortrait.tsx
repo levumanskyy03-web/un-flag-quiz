@@ -20,26 +20,37 @@ function initials(name: string) {
 export function LeaderPortrait({ name, wiki, file, size = 'card', compact = false }: LeaderPortraitProps) {
   const [portrait, setPortrait] = useState<WikiPortrait | null>(() => peekWikiPortrait(wiki, file) ?? null)
   const [failed, setFailed] = useState(false)
+  const [fetchTry, setFetchTry] = useState(0)
+  const [imgTry, setImgTry] = useState(0)
 
   useEffect(() => {
     let live = true
     const cached = peekWikiPortrait(wiki, file)
     setFailed(false)
-    if (cached !== undefined) {
-      setPortrait(cached)
-      if (cached) return () => {
+    if (cached) setPortrait(cached)
+    else setPortrait(null)
+    if (!wiki || cached) {
+      return () => {
         live = false
       }
-    } else {
-      setPortrait(null)
     }
-    if (!wiki) return
     void fetchWikiPortrait(wiki, file).then((next) => {
-      if (live) setPortrait(next)
+      if (!live) return
+      setPortrait(next)
+      if (!next && fetchTry < 5) {
+        window.setTimeout(() => {
+          if (live) setFetchTry((n) => n + 1)
+        }, 700 * (fetchTry + 1))
+      }
     })
     return () => {
       live = false
     }
+  }, [wiki, file, fetchTry])
+
+  useEffect(() => {
+    setImgTry(0)
+    setFetchTry(0)
   }, [wiki, file])
 
   if (!portrait || failed) {
@@ -55,12 +66,21 @@ export function LeaderPortrait({ name, wiki, file, size = 'card', compact = fals
   return (
     <figure className={`leader-portrait is-${size}`}>
       <img
+        key={`${portrait.url}:${imgTry}`}
         className={`leader-photo is-${size}`}
         src={portrait.url}
         alt=""
         decoding="async"
+        loading={size === 'hero' ? 'eager' : 'lazy'}
+        referrerPolicy="no-referrer"
         fetchPriority={size === 'hero' ? 'high' : 'low'}
-        onError={() => setFailed(true)}
+        onError={() => {
+          if (imgTry < 4) {
+            window.setTimeout(() => setImgTry((n) => n + 1), 500 * (imgTry + 1))
+          } else {
+            setFailed(true)
+          }
+        }}
       />
       <figcaption className="leader-credit">
         <a href={portrait.filePage} target="_blank" rel="noreferrer">

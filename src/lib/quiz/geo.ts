@@ -24,8 +24,10 @@ import {
 } from '../../data/water'
 import { nearbyRankingCountries, rankingCountries, rankingPlaceOf, type RankingMode } from '../../data/rankings'
 import { correctLanguageIds, quizLanguageId } from '../../data/languages'
+import { govKindOf } from '../../data/governments'
 import {
   isCodesMode,
+  isNameToGov,
   isNameToLanguage,
   isRankingMode,
   isWaterMapMode,
@@ -54,7 +56,7 @@ function extraHasMap(iso: string): boolean {
 
 export function extraFitsMode(country: Country, mode: QuizMode): boolean {
   if (!isExtraIso(country.iso)) return true
-  if (isWaterMode(mode) || isRankingMode(mode) || isNameToLanguage(mode)) return false
+  if (isWaterMode(mode) || isRankingMode(mode) || isNameToLanguage(mode) || isNameToGov(mode)) return false
   if (mode === 'neighborsToName') return canAskNeighbors(country.iso)
   if (
     mode === 'nameToCapital' ||
@@ -179,6 +181,9 @@ export function poolForMode(
   } else if (isNameToLanguage(mode)) {
     next = pool.filter((country) => quizLanguageId(country.iso))
     if (next.length < 4) next = COUNTRIES.filter((country) => quizLanguageId(country.iso))
+  } else if (isNameToGov(mode)) {
+    next = pool.filter((country) => govKindOf(country.iso))
+    if (next.length < 4) next = COUNTRIES.filter((country) => govKindOf(country.iso))
   }
   if (!difficulty) return next
   const filtered = next.filter((country) => matchesPlayDifficulty(country, mode, difficulty))
@@ -195,6 +200,7 @@ export function createRound(
   if (mode && isWaterMode(mode)) return createWaterRound(pool, count, mode, pool.length > WATER_LEVEL_SIZE)
   if (mode && isRankingMode(mode)) return createRankingRound(pool, count, mode)
   if (mode && isNameToLanguage(mode)) return createLanguageRound(pool, count)
+  if (mode && isNameToGov(mode)) return createGovRound(pool, count)
   const targets = shuffle(pool).slice(0, Math.min(count, pool.length))
   const questions: Question[] = []
   const avoidKeys: string[] = []
@@ -365,6 +371,13 @@ function questionForMode(
       options: shuffle([country, ...pickLanguageDistractors(country, modePool, 3, languageIdsFrom(avoid.keys))]),
     }
   }
+  if (isNameToGov(mode)) {
+    return {
+      country,
+      mode,
+      options: shuffle([country, ...pickGovDistractors(country, modePool)]),
+    }
+  }
   if (isWaterMode(mode)) {
     const waterId = watersFor(country.iso, mode)[0]
     if (!waterId) return null
@@ -406,6 +419,24 @@ function createRankingRound(pool: Country[], count: number, mode: RankingMode): 
     avoidKeys.push(country.iso)
   }
   return questions
+}
+
+function createGovRound(pool: Country[], count: number): Question[] {
+  const eligible = pool.filter((country) => govKindOf(country.iso))
+  const targets = shuffle(eligible).slice(0, Math.min(count, eligible.length))
+  const questions: Question[] = []
+  for (const country of targets) {
+    questions.push({
+      country,
+      mode: 'nameToGov',
+      options: shuffle([country, ...pickGovDistractors(country, eligible)]),
+    })
+  }
+  return questions
+}
+
+function pickGovDistractors(correct: Country, pool: Country[]): Country[] {
+  return pickDistractors(correct, pool, 3, (country) => govKindOf(country.iso) ?? country.iso)
 }
 
 function createLanguageRound(pool: Country[], count: number): Question[] {

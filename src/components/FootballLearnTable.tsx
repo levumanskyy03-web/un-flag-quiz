@@ -17,7 +17,7 @@ import {
   wcHostAnswerId,
 } from '../data/worldCup'
 import { STRINGS, type Lang } from '../i18n/strings'
-import { countryName, type FootballMode } from '../lib/quiz'
+import { countryName, isPlayerFootballMode, type FootballMode } from '../lib/quiz'
 import { TeamFlag } from './Flag'
 
 interface FootballLearnTableProps {
@@ -84,24 +84,24 @@ function rowsFor(mode: FootballMode, lang: Lang, years?: readonly number[]): Row
       goals: item.goals,
     }))
   }
-  if (mode === 'uclWinners') {
-    return UCL_WINNERS.filter((item) => yearOk(item.year, years)).map((item) => ({
-      year: item.year,
-      clubId: item.clubId,
-    }))
-  }
-  if (mode === 'copaWinners') {
+  if (mode === 'copaWinners' || mode === 'copaFinalists') {
     return COPA_WINNERS.filter((item) => yearOk(item.year, years)).map((item) => ({
       year: item.year,
       winnerId: item.winnerId,
       runnerUpId: item.runnerUpId,
     }))
   }
-  if (mode === 'afconWinners') {
+  if (mode === 'afconWinners' || mode === 'afconFinalists') {
     return AFCON_WINNERS.filter((item) => yearOk(item.year, years)).map((item) => ({
       year: item.year,
       winnerId: item.winnerId,
       runnerUpId: item.runnerUpId,
+    }))
+  }
+  if (mode === 'uclWinners' || mode === 'uclFinalists') {
+    return UCL_WINNERS.filter((item) => yearOk(item.year, years)).map((item) => ({
+      year: item.year,
+      clubId: mode === 'uclFinalists' ? item.runnerUpId : item.clubId,
     }))
   }
   return WORLD_CUP_WINNERS.filter((item) => yearOk(item.year, years) && worldCupFinal(item.year)).map((item) => ({
@@ -135,7 +135,15 @@ function MatchCell({ winnerId, runnerUpId, lang }: { winnerId?: string; runnerUp
 }
 
 export function FootballLearnTable({ mode, lang, years }: FootballLearnTableProps) {
-  if (mode === 'wcTitleYears' || mode === 'euroTitleYears' || mode === 'playerPhotoToName' || mode === 'playerFactsToName') {
+  if (
+    mode === 'wcTitleYears' ||
+    mode === 'euroTitleYears' ||
+    mode === 'uclTitleYears' ||
+    isPlayerFootballMode(mode) ||
+    mode === 'clubCrestToName' ||
+    mode === 'stadiumToClub' ||
+    mode === 'managerPhotoToName'
+  ) {
     return null
   }
   const t = STRINGS[lang]
@@ -147,14 +155,20 @@ export function FootballLearnTable({ mode, lang, years }: FootballLearnTableProp
     replay: t.footballReplay,
     golden: t.footballGolden,
   }
-  const showWinner = mode === 'wcWinners' || mode === 'euroWinners' || mode === 'copaWinners' || mode === 'afconWinners'
+  const showWinner =
+    mode === 'wcWinners' ||
+    mode === 'euroWinners' ||
+    mode === 'copaWinners' ||
+    mode === 'copaFinalists' ||
+    mode === 'afconWinners' ||
+    mode === 'afconFinalists'
   const showRunnerUp = showWinner
+  const showClub = mode === 'uclWinners' || mode === 'uclFinalists'
   const showMatch = mode === 'wcFinalists' || mode === 'wcHosts' || mode === 'euroFinalists' || mode === 'euroHosts'
   const showHost = mode === 'wcHosts' || mode === 'euroHosts'
   const showVenue = showHost
   const showScore = mode === 'wcWinners' || mode === 'wcFinalists' || mode === 'wcHosts' || mode === 'euroWinners' || mode === 'euroFinalists' || mode === 'euroHosts'
   const showPlayer = mode === 'wcScorers'
-  const showClub = mode === 'uclWinners'
   const showCountry = mode === 'wcScorers'
 
   return (

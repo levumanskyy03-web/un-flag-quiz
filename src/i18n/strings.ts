@@ -1,4 +1,5 @@
 import { REGIONS } from '../data/countries'
+import { type GovKind } from '../data/governments'
 import {
   EASY_FOOTBALL_MIX_MODES,
   EASY_MIX_MODES,
@@ -55,10 +56,78 @@ export type Strings = {
   copaWinnerPrompt: (year: number) => string
   afconWinners: string
   afconWinnerPrompt: (year: number) => string
+  copaFinalists: string
+  copaFinalistPrompt: (year: number) => string
+  copaHosts: string
+  copaHostPrompt: (year: number) => string
+  afconFinalists: string
+  afconFinalistPrompt: (year: number) => string
+  afconHosts: string
+  afconHostPrompt: (year: number) => string
+  asianCupWinners: string
+  asianCupWinnerPrompt: (year: number) => string
+  goldCupWinners: string
+  goldCupWinnerPrompt: (year: number) => string
+  nationsLeagueWinners: string
+  nationsLeagueWinnerPrompt: (year: number) => string
+  uclFinalists: string
+  uclFinalistPrompt: (year: number) => string
+  uclTitleYears: string
+  uclTitleYearPrompt: (name: string) => string
+  europaWinners: string
+  europaWinnerPrompt: (year: number) => string
+  libertadoresWinners: string
+  libertadoresWinnerPrompt: (year: number) => string
+  leagueWinners: string
+  leagueWinnerPrompt: (league: string, year: number) => string
+  leaguePl: string
+  leagueLaliga: string
+  leagueSeriea: string
+  leagueBundesliga: string
+  leagueLigue1: string
+  clubCrestToName: string
+  clubCrestPrompt: string
+  stadiumToClub: string
+  stadiumPrompt: (name: string) => string
+  playerToNation: string
+  playerToNationPrompt: string
+  playerToClub: string
+  playerToClubPrompt: string
+  playerClubToName: string
+  playerClubPrompt: string
+  playerShirtToName: string
+  playerShirtPrompt: (n: number) => string
+  ballonDorWinners: string
+  ballonDorPrompt: (year: number) => string
+  goldenBallWinners: string
+  goldenBallPrompt: (event: string, year: number) => string
+  goldenBallWc: string
+  goldenBallEuro: string
+  managerPhotoToName: string
+  playerCardBorn: string
+  playerCardLived: string
+  playerCardNation: string
+  playerCardBornIn: string
+  playerCardClubs: string
+  playerCardClubCountries: string
+  playerCardTrophies: string
+  playerCardHonours: string
+  playerCardFacts: string
+  playerCardHeight: string
+  playerCardFoot: string
+  playerCardNumber: string
+  playerCardCaps: string
+  playerFootLeft: string
+  playerFootRight: string
+  playerFootBoth: string
+  playerEraActive: string
+  playerEraLegend: string
   footballGroupWc: string
   footballGroupEuro: string
   footballGroupOther: string
+  footballGroupClubs: string
   footballGroupPlayers: string
+  footballGroupManagers: string
   playerPhotoToName: string
   playerFactsToName: string
   playerFactsHint: string
@@ -177,6 +246,15 @@ export type Strings = {
   riverToName: string
   nameToLanguage: string
   nameToLanguagePrompt: string
+  nameToGov: string
+  nameToGovPrompt: string
+  govPresidential: string
+  govSemiPresidential: string
+  govParliamentary: string
+  govConstMonarchy: string
+  govAbsMonarchy: string
+  govOneParty: string
+  govTheocracy: string
   rankGdp: string
   rankGdpPc: string
   rankArea: string
@@ -213,6 +291,7 @@ export type Strings = {
   mixAskCurrency: string
   mixAskPopulation: string
   mixAskFounded: string
+  mixAskGov: string
   mixAskMap: string
   mixAskSea: string
   mixAskRiver: string
@@ -419,6 +498,7 @@ export type Strings = {
   capital: string
   population: string
   currency: string
+  government: string
   fact: string
   neighbors: string
   noNeighbors: string
@@ -577,10 +657,78 @@ export const STRINGS: Record<Lang, Strings> = {
     copaWinnerPrompt: (year) => `Кто выиграл Копа Америка ${year}?`,
     afconWinners: 'Кубок Африки',
     afconWinnerPrompt: (year) => `Кто выиграл Кубок Африки ${year}?`,
+    copaFinalists: 'Финалисты Копа Америка',
+    copaFinalistPrompt: (year) => `Кто проиграл финал Копа Америка ${year}?`,
+    copaHosts: 'Хозяева Копа Америка',
+    copaHostPrompt: (year) => `Где прошла Копа Америка ${year}?`,
+    afconFinalists: 'Финалисты Кубка Африки',
+    afconFinalistPrompt: (year) => `Кто проиграл финал Кубка Африки ${year}?`,
+    afconHosts: 'Хозяева Кубка Африки',
+    afconHostPrompt: (year) => `Где прошёл Кубок Африки ${year}?`,
+    asianCupWinners: 'Кубок Азии',
+    asianCupWinnerPrompt: (year) => `Кто выиграл Кубок Азии ${year}?`,
+    goldCupWinners: 'Золотой кубок КОНКАКАФ',
+    goldCupWinnerPrompt: (year) => `Кто выиграл Золотой кубок ${year}?`,
+    nationsLeagueWinners: 'Лига наций',
+    nationsLeagueWinnerPrompt: (year) => `Кто выиграл Лигу наций ${year}?`,
+    uclFinalists: 'Финалисты ЛЧ',
+    uclFinalistPrompt: (year) => `Кто проиграл финал Кубка чемпионов ${year}?`,
+    uclTitleYears: 'Год титула ЛЧ',
+    uclTitleYearPrompt: (name) => `В каком году ${name} выиграл Кубок чемпионов / ЛЧ?`,
+    europaWinners: 'Лига Европы',
+    europaWinnerPrompt: (year) => `Кто выиграл Кубок УЕФА / Лигу Европы ${year}?`,
+    libertadoresWinners: 'Кубок Либертадорес',
+    libertadoresWinnerPrompt: (year) => `Кто выиграл Кубок Либертадорес ${year}?`,
+    leagueWinners: 'Чемпионы лиг',
+    leagueWinnerPrompt: (league, year) => `Кто выиграл ${league} в сезоне, закончившемся в ${year}?`,
+    leaguePl: 'АПЛ',
+    leagueLaliga: 'Ла Лигу',
+    leagueSeriea: 'Серию А',
+    leagueBundesliga: 'Бундеслигу',
+    leagueLigue1: 'Лигу 1',
+    clubCrestToName: 'Эмблема клуба',
+    clubCrestPrompt: 'Какой это клуб?',
+    stadiumToClub: 'Стадион → клуб',
+    stadiumPrompt: (name) => `Какой клуб играет на стадионе ${name}?`,
+    playerToNation: 'Футболист → страна',
+    playerToNationPrompt: 'За какую страну играет этот футболист?',
+    playerToClub: 'Футболист → клуб',
+    playerToClubPrompt: 'В каком клубе он наиболее известен?',
+    playerClubToName: 'Клуб → футболист',
+    playerClubPrompt: 'Кто из этих игроков выступал за этот клуб?',
+    playerShirtToName: 'Номер и флаг',
+    playerShirtPrompt: (n) => `Кто играл под номером ${n} в этой сборной?`,
+    ballonDorWinners: 'Золотой мяч',
+    ballonDorPrompt: (year) => `Кто получил «Золотой мяч» в ${year} году?`,
+    goldenBallWinners: 'Лучший игрок турнира',
+    goldenBallPrompt: (event, year) => `Кто был лучшим игроком ${event} ${year}?`,
+    goldenBallWc: 'ЧМ',
+    goldenBallEuro: 'Евро',
+    managerPhotoToName: 'Тренер по фото',
+    playerCardBorn: 'Рождение',
+    playerCardLived: 'Годы жизни',
+    playerCardNation: 'Сборная',
+    playerCardBornIn: 'Страна рождения',
+    playerCardClubs: 'Клубы',
+    playerCardClubCountries: 'Страны клубов',
+    playerCardTrophies: 'Кубки',
+    playerCardHonours: 'Личные награды',
+    playerCardFacts: 'Интересные факты',
+    playerCardHeight: 'Рост',
+    playerCardFoot: 'Рабочая нога',
+    playerCardNumber: 'Номер',
+    playerCardCaps: 'Сборная (матчи / голы)',
+    playerFootLeft: 'левая',
+    playerFootRight: 'правая',
+    playerFootBoth: 'обе',
+    playerEraActive: 'Играет',
+    playerEraLegend: 'Легенда',
     footballGroupWc: 'Чемпионат мира',
     footballGroupEuro: 'Евро',
     footballGroupOther: 'Другие',
+    footballGroupClubs: 'Клубы',
     footballGroupPlayers: 'Футболисты',
+    footballGroupManagers: 'Тренеры',
     playerPhotoToName: 'Футболист по фото',
     playerFactsToName: 'Футболист по фактам',
     playerFactsHint:
@@ -707,6 +855,15 @@ export const STRINGS: Record<Lang, Strings> = {
     riverToName: 'Водоем → страна',
     nameToLanguage: 'Страна → язык',
     nameToLanguagePrompt: 'Какой язык у этой страны?',
+    nameToGov: 'Страна → гос. устройство',
+    nameToGovPrompt: 'Какое государственное устройство у этой страны?',
+    govPresidential: 'Президентская республика',
+    govSemiPresidential: 'Полупрезидентская республика',
+    govParliamentary: 'Парламентская республика',
+    govConstMonarchy: 'Конституционная монархия',
+    govAbsMonarchy: 'Абсолютная монархия',
+    govOneParty: 'Однопартийная республика',
+    govTheocracy: 'Теократия',
     rankGdp: 'ВВП',
     rankGdpPc: 'ВВП на душу',
     rankArea: 'Площадь',
@@ -744,6 +901,7 @@ export const STRINGS: Record<Lang, Strings> = {
     mixAskCurrency: 'Назовите валюту',
     mixAskPopulation: 'Назовите население',
     mixAskFounded: 'Назовите год основания',
+    mixAskGov: 'Назовите гос. устройство',
     mixAskMap: 'Найдите страну на карте',
     mixAskSea: 'Назовите море или океан',
     mixAskRiver: 'Назовите реку или озеро',
@@ -954,6 +1112,7 @@ export const STRINGS: Record<Lang, Strings> = {
     capital: 'Столица',
     population: 'Население',
     currency: 'Валюта',
+    government: 'Гос. устройство',
     fact: 'Факт',
     neighbors: 'Сухопутные соседи',
     noNeighbors: 'Нет сухопутных соседей',
@@ -1107,10 +1266,78 @@ export const STRINGS: Record<Lang, Strings> = {
     copaWinnerPrompt: (year) => `Who won Copa América ${year}?`,
     afconWinners: 'AFCON',
     afconWinnerPrompt: (year) => `Who won AFCON ${year}?`,
+    copaFinalists: 'Copa América finalists',
+    copaFinalistPrompt: (year) => `Who lost the ${year} Copa América final?`,
+    copaHosts: 'Copa América hosts',
+    copaHostPrompt: (year) => `Who hosted Copa América ${year}?`,
+    afconFinalists: 'AFCON finalists',
+    afconFinalistPrompt: (year) => `Who lost the ${year} AFCON final?`,
+    afconHosts: 'AFCON hosts',
+    afconHostPrompt: (year) => `Who hosted AFCON ${year}?`,
+    asianCupWinners: 'AFC Asian Cup',
+    asianCupWinnerPrompt: (year) => `Who won the ${year} AFC Asian Cup?`,
+    goldCupWinners: 'Gold Cup',
+    goldCupWinnerPrompt: (year) => `Who won the ${year} Gold Cup?`,
+    nationsLeagueWinners: 'Nations League',
+    nationsLeagueWinnerPrompt: (year) => `Who won the ${year} Nations League?`,
+    uclFinalists: 'UCL finalists',
+    uclFinalistPrompt: (year) => `Who lost the ${year} European Cup / Champions League final?`,
+    uclTitleYears: 'UCL title year',
+    uclTitleYearPrompt: (name) => `Which year did ${name} win the European Cup / Champions League?`,
+    europaWinners: 'Europa League',
+    europaWinnerPrompt: (year) => `Who won the ${year} UEFA Cup / Europa League?`,
+    libertadoresWinners: 'Copa Libertadores',
+    libertadoresWinnerPrompt: (year) => `Who won the ${year} Copa Libertadores?`,
+    leagueWinners: 'League champions',
+    leagueWinnerPrompt: (league, year) => `Who won ${league} in the season ending ${year}?`,
+    leaguePl: 'the Premier League',
+    leagueLaliga: 'La Liga',
+    leagueSeriea: 'Serie A',
+    leagueBundesliga: 'the Bundesliga',
+    leagueLigue1: 'Ligue 1',
+    clubCrestToName: 'Club crest',
+    clubCrestPrompt: 'Which club is this?',
+    stadiumToClub: 'Stadium to club',
+    stadiumPrompt: (name) => `Which club plays at ${name}?`,
+    playerToNation: 'Player to country',
+    playerToNationPrompt: 'Which country does this player represent?',
+    playerToClub: 'Player to club',
+    playerToClubPrompt: 'Which club is this player best known for?',
+    playerClubToName: 'Club to player',
+    playerClubPrompt: 'Which of these players appeared for this club?',
+    playerShirtToName: 'Number and flag',
+    playerShirtPrompt: (n) => `Who wore number ${n} for this national team?`,
+    ballonDorWinners: 'Ballon d’Or',
+    ballonDorPrompt: (year) => `Who won the Ballon d’Or in ${year}?`,
+    goldenBallWinners: 'Player of the tournament',
+    goldenBallPrompt: (event, year) => `Who was player of the tournament at ${event} ${year}?`,
+    goldenBallWc: 'the World Cup',
+    goldenBallEuro: 'the Euro',
+    managerPhotoToName: 'Manager by photo',
+    playerCardBorn: 'Born',
+    playerCardLived: 'Lived',
+    playerCardNation: 'National team',
+    playerCardBornIn: 'Born in',
+    playerCardClubs: 'Clubs',
+    playerCardClubCountries: 'Club countries',
+    playerCardTrophies: 'Trophies',
+    playerCardHonours: 'Individual honours',
+    playerCardFacts: 'Notes',
+    playerCardHeight: 'Height',
+    playerCardFoot: 'Preferred foot',
+    playerCardNumber: 'Number',
+    playerCardCaps: 'Caps / goals',
+    playerFootLeft: 'left',
+    playerFootRight: 'right',
+    playerFootBoth: 'both',
+    playerEraActive: 'Active',
+    playerEraLegend: 'Legend',
     footballGroupWc: 'World Cup',
     footballGroupEuro: 'Euro',
     footballGroupOther: 'Other',
+    footballGroupClubs: 'Clubs',
     footballGroupPlayers: 'Players',
+    footballGroupManagers: 'Managers',
     playerPhotoToName: 'Footballer by photo',
     playerFactsToName: 'Footballer by facts',
     playerFactsHint:
@@ -1237,6 +1464,15 @@ export const STRINGS: Record<Lang, Strings> = {
     riverToName: 'River/lake → country',
     nameToLanguage: 'Country → language',
     nameToLanguagePrompt: 'What is this country’s language?',
+    nameToGov: 'Country → government',
+    nameToGovPrompt: 'What is this country’s form of government?',
+    govPresidential: 'Presidential republic',
+    govSemiPresidential: 'Semi-presidential republic',
+    govParliamentary: 'Parliamentary republic',
+    govConstMonarchy: 'Constitutional monarchy',
+    govAbsMonarchy: 'Absolute monarchy',
+    govOneParty: 'One-party republic',
+    govTheocracy: 'Theocracy',
     rankGdp: 'GDP',
     rankGdpPc: 'GDP per capita',
     rankArea: 'Area',
@@ -1274,6 +1510,7 @@ export const STRINGS: Record<Lang, Strings> = {
     mixAskCurrency: 'Name the currency',
     mixAskPopulation: 'Name the population',
     mixAskFounded: 'Name the founding year',
+    mixAskGov: 'Name the form of government',
     mixAskMap: 'Find the country on the map',
     mixAskSea: 'Name the sea or ocean',
     mixAskRiver: 'Name the river or lake',
@@ -1478,6 +1715,7 @@ export const STRINGS: Record<Lang, Strings> = {
     capital: 'Capital',
     population: 'Population',
     currency: 'Currency',
+    government: 'Government',
     fact: 'Fact',
     neighbors: 'Land neighbors',
     noNeighbors: 'No land neighbors',
@@ -1635,8 +1873,27 @@ export function modeLabel(mode: QuizMode, lang: Lang): string {
   return STRINGS[lang][mode]
 }
 
-export function footballQuestionPrompt(mode: QuizMode, year: number, name: string, lang: Lang): string | null {
+export function footballQuestionPrompt(
+  mode: QuizMode,
+  year: number,
+  name: string,
+  lang: Lang,
+  extra?: { league?: 'pl' | 'laliga' | 'seriea' | 'bundesliga' | 'ligue1'; stadiumName?: string; goldenEvent?: 'wc' | 'euro' },
+): string | null {
   const t = STRINGS[lang]
+  const leagueName =
+    extra?.league === 'pl'
+      ? t.leaguePl
+      : extra?.league === 'laliga'
+        ? t.leagueLaliga
+        : extra?.league === 'seriea'
+          ? t.leagueSeriea
+          : extra?.league === 'bundesliga'
+            ? t.leagueBundesliga
+            : extra?.league === 'ligue1'
+              ? t.leagueLigue1
+              : t.leaguePl
+  const golden = extra?.goldenEvent === 'euro' ? t.goldenBallEuro : t.goldenBallWc
   switch (mode) {
     case 'wcWinners':
       return t.wcWinnerPrompt(year)
@@ -1658,10 +1915,52 @@ export function footballQuestionPrompt(mode: QuizMode, year: number, name: strin
       return t.euroTitleYearPrompt(name)
     case 'uclWinners':
       return t.uclWinnerPrompt(year)
+    case 'uclFinalists':
+      return t.uclFinalistPrompt(year)
+    case 'uclTitleYears':
+      return t.uclTitleYearPrompt(name)
     case 'copaWinners':
       return t.copaWinnerPrompt(year)
+    case 'copaFinalists':
+      return t.copaFinalistPrompt(year)
+    case 'copaHosts':
+      return t.copaHostPrompt(year)
     case 'afconWinners':
       return t.afconWinnerPrompt(year)
+    case 'afconFinalists':
+      return t.afconFinalistPrompt(year)
+    case 'afconHosts':
+      return t.afconHostPrompt(year)
+    case 'asianCupWinners':
+      return t.asianCupWinnerPrompt(year)
+    case 'goldCupWinners':
+      return t.goldCupWinnerPrompt(year)
+    case 'nationsLeagueWinners':
+      return t.nationsLeagueWinnerPrompt(year)
+    case 'europaWinners':
+      return t.europaWinnerPrompt(year)
+    case 'libertadoresWinners':
+      return t.libertadoresWinnerPrompt(year)
+    case 'leagueWinners':
+      return t.leagueWinnerPrompt(leagueName, year)
+    case 'clubCrestToName':
+      return t.clubCrestPrompt
+    case 'stadiumToClub':
+      return t.stadiumPrompt(extra?.stadiumName ?? name)
+    case 'playerToNation':
+      return t.playerToNationPrompt
+    case 'playerToClub':
+      return t.playerToClubPrompt
+    case 'playerClubToName':
+      return t.playerClubPrompt
+    case 'playerShirtToName':
+      return t.playerShirtPrompt(Number(name) || 0)
+    case 'ballonDorWinners':
+      return t.ballonDorPrompt(year)
+    case 'goldenBallWinners':
+      return t.goldenBallPrompt(golden, year)
+    case 'managerPhotoToName':
+      return t.leaderPhotoPrompt
     default:
       return null
   }
@@ -1693,10 +1992,31 @@ export function mixAskHint(mode: QuizMode, lang: Lang): string {
   if (mode === 'nameToCurrency') return t.mixAskCurrency
   if (mode === 'nameToPopulation') return t.mixAskPopulation
   if (mode === 'nameToFounded') return t.mixAskFounded
+  if (mode === 'nameToGov') return t.mixAskGov
   if (mode === 'nameToMap') return t.mixAskMap
   if (mode === 'mapToSea') return t.mixAskSea
   if (mode === 'mapToRiver') return t.mixAskRiver
   return t.mixAskCountry
+}
+
+export function governmentLabel(kind: GovKind, lang: Lang): string {
+  const t = STRINGS[lang]
+  switch (kind) {
+    case 'presidential':
+      return t.govPresidential
+    case 'semiPresidential':
+      return t.govSemiPresidential
+    case 'parliamentary':
+      return t.govParliamentary
+    case 'constMonarchy':
+      return t.govConstMonarchy
+    case 'absMonarchy':
+      return t.govAbsMonarchy
+    case 'oneParty':
+      return t.govOneParty
+    case 'theocracy':
+      return t.govTheocracy
+  }
 }
 
 function pluralRu(n: number, one: string, few: string, many: string): string {

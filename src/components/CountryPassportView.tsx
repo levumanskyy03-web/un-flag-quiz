@@ -1,6 +1,7 @@
 "use client";
 
 import { foundedYear } from "../data/founded";
+import { govKindOf } from "../data/governments";
 import { landNeighbors } from "../data/neighbors";
 import {
   formatPopulation,
@@ -9,7 +10,7 @@ import {
   passportCurrency,
 } from "../data/passports";
 import { PAGE_COPY } from "../i18n/pages";
-import { STRINGS, regionLabel } from "../i18n/strings";
+import { STRINGS, governmentLabel, regionLabel } from "../i18n/strings";
 import { useSiteLang } from "../i18n/siteLang";
 import { adjacentCountries, countryPath, neighborCountries } from "../lib/countryCatalog";
 import { countryName } from "../lib/quiz";
@@ -34,6 +35,7 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
 
   const name = countryName(country, lang);
   const founded = foundedYear(country.iso);
+  const govKind = govKindOf(country.iso);
   const neighbors = neighborCountries(country.iso, landNeighbors(country.iso));
   const adjacent = adjacentCountries(country.iso);
 
@@ -60,6 +62,12 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
           <dt>{t.currency}</dt>
           <dd>{passportCurrency(passport, lang, country.iso)}</dd>
         </div>
+        {govKind ? (
+          <div>
+            <dt>{t.government}</dt>
+            <dd>{governmentLabel(govKind, lang)}</dd>
+          </div>
+        ) : null}
         {founded !== undefined ? (
           <div>
             <dt>{t.founded}</dt>

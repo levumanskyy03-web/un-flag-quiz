@@ -1,7 +1,9 @@
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import { ModeChoice } from './ModeChoice'
 import {
+  CLUB_FOOTBALL_MODES,
   EURO_FOOTBALL_MODES,
+  MANAGER_FOOTBALL_MODES,
   OTHER_FOOTBALL_MODES,
   PLAYER_FOOTBALL_MODES,
   WC_FOOTBALL_MODES,
@@ -67,6 +69,16 @@ export function FootballModeGrids({
         onPick={onPick}
         campaignPercent={campaignPercent}
       />
+      <ModeGroup
+        title={t.footballGroupClubs}
+        modes={CLUB_FOOTBALL_MODES.filter((mode) => !hidden.has(mode))}
+        lang={lang}
+        activeMode={activeMode}
+        selectedModes={selectedModes}
+        mix={mix}
+        onPick={onPick}
+        campaignPercent={campaignPercent}
+      />
       {players.length > 0 ? (
         <ModeGroup
           title={t.footballGroupPlayers}
@@ -79,6 +91,16 @@ export function FootballModeGrids({
           campaignPercent={campaignPercent}
         />
       ) : null}
+      <ModeGroup
+        title={t.footballGroupManagers}
+        modes={MANAGER_FOOTBALL_MODES.filter((mode) => !hidden.has(mode))}
+        lang={lang}
+        activeMode={activeMode}
+        selectedModes={selectedModes}
+        mix={mix}
+        onPick={onPick}
+        campaignPercent={campaignPercent}
+      />
     </div>
   )
 }
