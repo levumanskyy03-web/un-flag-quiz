@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 import { footballClub } from '../data/footballClubs'
 import { playerClubName, type FootballPlayer } from '../data/footballPlayers'
+import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS, type Lang } from '../i18n/strings'
-import { countryName, footballTeamCountry } from '../lib/quiz'
+import { countryName } from '../lib/quiz'
 import { LeaderPortrait } from './LeaderPortrait'
 
 interface PlayerCardModalProps {
