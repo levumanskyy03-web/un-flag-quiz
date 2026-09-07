@@ -152,10 +152,22 @@ function cleanAuthor(author: string): string {
   return /^unknown author$/i.test(cleaned) ? '' : cleaned
 }
 
-function buildCredits(author: string, license: string): { credit: string; compactCredit: string } {
+function looksLikeLicenseEssay(text: string): boolean {
+  return /this file is licensed|you are free:|creativecommons\.org|permission is granted|could you be kind|vous [eê]tes libre|cette photo a [eé]t[eé] prise/i.test(
+    text,
+  )
+}
+
+function shortAuthor(author: string): string {
   const who = cleanAuthor(author)
+  if (!who || looksLikeLicenseEssay(who) || who.length > 42) return ''
+  return who
+}
+
+function buildCredits(author: string, license: string, attribution = ''): { credit: string; compactCredit: string } {
+  const who = shortAuthor(attribution) || shortAuthor(author)
   const compactCredit = `${license} · Wikimedia Commons`
-  const credit = who && !/^unknown author$/i.test(who) ? `${who} · ${compactCredit}` : compactCredit
+  const credit = who ? `${who} · ${compactCredit}` : compactCredit
   return { credit, compactCredit }
 }
 
@@ -199,7 +211,7 @@ function pickCommonsUrl(urls: Array<string | undefined>): string | null {
   return best
 }
 
-const WIKI_WORKERS = 2
+const WIKI_WORKERS = 4
 let wikiActive = 0
 const wikiWaiters: Array<() => void> = []
 
@@ -346,8 +358,9 @@ async function portraitFromFile(fileName: string, fallbackUrl?: string): Promise
   if (!kind) return null
 
   const license = licenseLabel(kind, shortName)
-  const author = stripMarkup(metaValue(meta, 'Artist'))
-  const { credit, compactCredit } = buildCredits(author, license)
+  const artist = stripMarkup(metaValue(meta, 'Artist'))
+  const attribution = stripMarkup(metaValue(meta, 'Attribution'))
+  const { credit, compactCredit } = buildCredits(artist, license, attribution)
   return {
     url,
     credit,

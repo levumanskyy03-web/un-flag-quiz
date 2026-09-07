@@ -69,13 +69,14 @@ export const PLAYER_FOOTBALL_MODES = [
   'goldenBallWinners',
 ] as const
 export const MANAGER_FOOTBALL_MODES = ['managerPhotoToName'] as const
+export const CUP_FOOTBALL_MODES = [...WC_FOOTBALL_MODES, ...EURO_FOOTBALL_MODES, ...OTHER_FOOTBALL_MODES] as const
+export const FOOTBALL_TOPICS = ['players', 'managers', 'clubs', 'cups'] as const
+export type FootballTopic = (typeof FOOTBALL_TOPICS)[number]
 export const FOOTBALL_MODES = [
-  ...WC_FOOTBALL_MODES,
-  ...EURO_FOOTBALL_MODES,
-  ...OTHER_FOOTBALL_MODES,
-  ...CLUB_FOOTBALL_MODES,
   ...PLAYER_FOOTBALL_MODES,
   ...MANAGER_FOOTBALL_MODES,
+  ...CLUB_FOOTBALL_MODES,
+  ...CUP_FOOTBALL_MODES,
 ] as const
 export const CODES_MODES = ['tldToName', 'nameToTld', 'callingToName', 'nameToCalling', 'carToName', 'nameToCar'] as const
 export const LEADERS_MODES = [
@@ -330,6 +331,27 @@ export function isPlayerFootballMode(mode: QuizMode): boolean {
 
 export function isManagerFootballMode(mode: QuizMode): boolean {
   return mode === 'managerPhotoToName'
+}
+
+export function footballTopicOf(mode: QuizMode): FootballTopic {
+  if (isManagerFootballMode(mode)) return 'managers'
+  if (isPlayerFootballMode(mode)) return 'players'
+  if ((CLUB_FOOTBALL_MODES as readonly string[]).includes(mode)) return 'clubs'
+  return 'cups'
+}
+
+export function footballModesOf(topic: FootballTopic): readonly FootballMode[] {
+  if (topic === 'players') return PLAYER_FOOTBALL_MODES
+  if (topic === 'managers') return MANAGER_FOOTBALL_MODES
+  if (topic === 'clubs') return CLUB_FOOTBALL_MODES
+  return CUP_FOOTBALL_MODES
+}
+
+export function defaultFootballModeOf(topic: FootballTopic): FootballMode {
+  if (topic === 'players') return 'playerPhotoToName'
+  if (topic === 'managers') return 'managerPhotoToName'
+  if (topic === 'clubs') return 'clubCrestToName'
+  return 'wcWinners'
 }
 
 export function isClubCrestMode(mode: QuizMode): boolean {

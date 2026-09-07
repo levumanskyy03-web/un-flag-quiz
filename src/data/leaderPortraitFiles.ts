@@ -1,5 +1,6 @@
 /** Commons files to prefer over Wikipedia infobox images (coins, tombs, inscribed plates). */
 export const WIKI_PORTRAIT_FILES: Record<string, string> = {
+  'Lilian Thuram': 'Lilian Thuram 2007.jpg',
   'Iziaslav I of Kiev': 'Izyaslav I Yaroslavich.png',
   'Sviatopolk I of Kiev': 'Sviatopolk I of Kiev.jpg',
   'Sviatopolk II of Kiev': 'Svyatopolk II - fresco of the Novospassky Monastery.png',

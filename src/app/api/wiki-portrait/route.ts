@@ -5,7 +5,7 @@ export const revalidate = 86400
 
 const memory = new Map<string, { at: number; body: string }>()
 const MEMORY_MS = 24 * 60 * 60 * 1000
-const CACHE_VER = 12
+const CACHE_VER = 13
 
 export async function GET(request: Request) {
   const url = new URL(request.url)

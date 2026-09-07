@@ -1,13 +1,19 @@
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import { ModeChoice } from './ModeChoice'
+import type { QuizSettings } from './HomeScreen'
 import {
   CLUB_FOOTBALL_MODES,
   EURO_FOOTBALL_MODES,
+  FOOTBALL_TOPICS,
   MANAGER_FOOTBALL_MODES,
   OTHER_FOOTBALL_MODES,
   PLAYER_FOOTBALL_MODES,
   WC_FOOTBALL_MODES,
+  defaultFootballModeOf,
+  footballModesOf,
+  footballTopicOf,
   isFootballMode,
+  type FootballTopic,
   type QuizMode,
 } from '../lib/quiz'
 
@@ -23,6 +29,80 @@ interface FootballModeGridsProps {
 
 export function isFootballCatalog(modes: readonly QuizMode[]): boolean {
   return modes.length > 0 && modes.every(isFootballMode)
+}
+
+function topicLabel(topic: FootballTopic, lang: Lang) {
+  const t = STRINGS[lang]
+  if (topic === 'players') return t.footballGroupPlayers
+  if (topic === 'managers') return t.footballGroupManagers
+  if (topic === 'clubs') return t.footballGroupClubs
+  return t.footballTopicCups
+}
+
+export function FootballSetup({
+  settings,
+  onChange,
+  hideModes,
+  campaignPercent,
+}: {
+  settings: QuizSettings
+  onChange: (settings: QuizSettings) => void
+  hideModes?: readonly QuizMode[]
+  campaignPercent?: (mode: QuizMode) => number | null
+}) {
+  const t = STRINGS[settings.lang]
+  const hidden = new Set(hideModes ?? [])
+  const topic = footballTopicOf(settings.mode)
+  const topicModes = footballModesOf(topic).filter((mode) => !hidden.has(mode))
+
+  function pickTopic(next: FootballTopic) {
+    const modes = footballModesOf(next).filter((mode) => !hidden.has(mode))
+    const mode = (modes as readonly string[]).includes(settings.mode)
+      ? settings.mode
+      : (modes[0] ?? defaultFootballModeOf(next))
+    onChange({ ...settings, mix: null, mode })
+  }
+
+  return (
+    <>
+      <h2>{t.leaderTopic}</h2>
+      <div className="choice-grid is-4">
+        {FOOTBALL_TOPICS.map((item) => (
+          <ModeChoice
+            key={item}
+            label={topicLabel(item, settings.lang)}
+            active={!settings.mix && topic === item}
+            onClick={() => pickTopic(item)}
+            percent={campaignPercent?.(defaultFootballModeOf(item))}
+          />
+        ))}
+      </div>
+      {topic === 'cups' ? (
+        <FootballModeGrids
+          lang={settings.lang}
+          activeMode={settings.mode}
+          onPick={(mode) => onChange({ ...settings, mix: null, mode })}
+          hideModes={[...PLAYER_FOOTBALL_MODES, ...CLUB_FOOTBALL_MODES, ...MANAGER_FOOTBALL_MODES, ...(hideModes ?? [])]}
+          campaignPercent={campaignPercent}
+        />
+      ) : (
+        <>
+          <h2>{t.mode}</h2>
+          <div className="choice-grid is-modes">
+            {topicModes.map((mode) => (
+              <ModeChoice
+                key={mode}
+                label={modeLabel(mode, settings.lang)}
+                active={settings.mode === mode}
+                onClick={() => onChange({ ...settings, mix: null, mode })}
+                percent={campaignPercent?.(mode)}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </>
+  )
 }
 
 export function FootballModeGrids({
@@ -124,6 +204,7 @@ function ModeGroup({
   onPick: (mode: QuizMode) => void
   campaignPercent?: (mode: QuizMode) => number | null
 }) {
+  if (modes.length === 0) return null
   return (
     <div className="football-mode-group">
       <h2>{title}</h2>

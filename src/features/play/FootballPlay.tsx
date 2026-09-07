@@ -52,7 +52,7 @@ export function FootballPlay({ play }: { play: PlaySession }) {
           xp={play.xp}
           xpReady={play.xpReady}
           modes={FOOTBALL_MODES}
-          levels={campaignLevelNumbers(isFootballMode(play.quizSettings.mode) ? play.quizSettings.mode : "wcWinners")}
+          levels={campaignLevelNumbers(isFootballMode(play.quizSettings.mode) ? play.quizSettings.mode : "playerPhotoToName")}
           tabs={["free", "levels", "learn", "mistakes"]}
           onChange={play.handleSettingsChange}
           onPlay={play.playLevel}

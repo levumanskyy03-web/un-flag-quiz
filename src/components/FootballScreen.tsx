@@ -19,7 +19,7 @@ import {
 import type { FactsDuelConfig } from '../lib/factsRules'
 import { AppChrome } from './AppChrome'
 import { DuelCreateModal } from './DuelCreateModal'
-import { FootballModeGrids } from './FootballModeGrids'
+import { FootballModeGrids, FootballSetup } from './FootballModeGrids'
 import { GeoIcon } from './GeoIcon'
 import { HubNav, type HubTab } from './HubNav'
 import { WorldsBack } from './WorldsBack'
@@ -96,6 +96,22 @@ export function FootballScreen({
     })
   }
 
+  function applyFootballSettings(next: QuizSettings) {
+    update({
+      ...next,
+      path: 'pool',
+      difficulty: isPlayerFactsToName(next.mode)
+        ? next.difficulty === 'hardcore'
+          ? 'hard'
+          : next.difficulty
+        : isPlayerPhotoMode(next.mode)
+          ? next.difficulty
+          : PLAY_DIFFICULTIES.includes(next.difficulty)
+            ? next.difficulty
+            : 'easy',
+    })
+  }
+
   return (
     <div className="screen football-screen">
       <header className="home-header">
@@ -119,7 +135,6 @@ export function FootballScreen({
       <HubNav lang={settings.lang} active="free" tabs={['free', 'levels', 'learn', 'mistakes']} onSelect={onHub} />
 
       <section className="card settings-card">
-        <h2>{t.mode}</h2>
         <div className="choice-grid">
           <button
             type="button"
@@ -144,28 +159,17 @@ export function FootballScreen({
             </FitText>
           </button>
         </div>
-        <FootballModeGrids
-          lang={settings.lang}
-          activeMode={settings.mode}
-          mix={Boolean(mix)}
-          selectedModes={mix ? modesForFootballMix(mix) : undefined}
-          onPick={(mode) =>
-            update({
-              path: 'pool',
-              mix: null,
-              mode,
-              difficulty: isPlayerFactsToName(mode)
-                ? settings.difficulty === 'hardcore'
-                  ? 'hard'
-                  : settings.difficulty
-                : isPlayerPhotoMode(mode)
-                  ? settings.difficulty
-                  : PLAY_DIFFICULTIES.includes(settings.difficulty)
-                    ? settings.difficulty
-                    : 'easy',
-            })
-          }
-        />
+        {mix ? (
+          <FootballModeGrids
+            lang={settings.lang}
+            activeMode={settings.mode}
+            mix
+            selectedModes={modesForFootballMix(mix)}
+            onPick={(mode) => applyFootballSettings({ ...settings, mix: null, mode })}
+          />
+        ) : (
+          <FootballSetup settings={settings} onChange={applyFootballSettings} />
+        )}
 
         <h2>{t.difficulty}</h2>
         <div className={`choice-grid ${difficulties.length === 4 ? 'is-4' : 'is-3'}`}>

@@ -4547,8 +4547,16 @@ html[dir="rtl"] .map-pan {
   text-decoration: underline;
 }
 
+.leader-portrait.is-hero .leader-credit {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 1.4em;
+}
+
+.leader-portrait.is-card .leader-credit,
 .leader-portrait.is-thumb .leader-credit {
-  font-size: 0.5rem;
+  display: none;
 }
 
 .code-prompt-block {

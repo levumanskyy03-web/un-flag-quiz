@@ -10,7 +10,7 @@ import { fetchLevelBests, type LevelBest } from '../lib/leaderboard'
 import { MAX_LIVES, LEVEL_MODES, formatClock, hasGeoFinale, isLeadersMode, type QuizMode } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
 import { HubNav, type HubTab } from './HubNav'
-import { FootballModeGrids, isFootballCatalog } from './FootballModeGrids'
+import { FootballSetup, isFootballCatalog } from './FootballModeGrids'
 import { modeCampaignPercent } from '../lib/campaignPercent'
 import { LeadersSetup } from './LeadersScreen'
 import { ModeChoice } from './ModeChoice'
@@ -66,6 +66,11 @@ export function LevelsScreen({
     }
   }, [settings.mode, settings.levelHardcore])
 
+  useEffect(() => {
+    if (!isFootballCatalog(modes) || settings.mode !== 'playerFactsToName') return
+    onChange({ ...settings, path: 'levels', mode: 'playerPhotoToName', mix: null })
+  }, [modes, settings.mode])
+
   const pickedBest = picked !== null ? worldBests[picked] : undefined
 
   return (
@@ -94,10 +99,9 @@ export function LevelsScreen({
             campaignPercent={(mode) => modeCampaignPercent(levelClears, mode)}
           />
         ) : isFootballCatalog(modes) ? (
-          <FootballModeGrids
-            lang={settings.lang}
-            activeMode={settings.mode}
-            onPick={(mode) => onChange({ ...settings, path: 'levels', mode, mix: null })}
+          <FootballSetup
+            settings={settings}
+            onChange={(next) => onChange({ ...next, path: 'levels', mix: null })}
             hideModes={['playerFactsToName']}
             campaignPercent={(mode) => modeCampaignPercent(levelClears, mode)}
           />

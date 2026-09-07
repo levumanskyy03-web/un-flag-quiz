@@ -49,7 +49,7 @@ import { HubNav, type HubTab } from './HubNav'
 import { GeoModeGrids } from './GeoModeGrids'
 import { Flag, TeamFlag } from './Flag'
 import { FootballLearnTable } from './FootballLearnTable'
-import { FootballModeGrids } from './FootballModeGrids'
+import { FootballModeGrids, FootballSetup } from './FootballModeGrids'
 import { FitText, ChoiceLabel } from './FitText'
 import { LeaderPortrait } from './LeaderPortrait'
 import { LeaderBioModal } from './LeaderBioModal'
@@ -144,7 +144,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         if (wiki) titles.push(wiki)
       }
     }
-    prefetchWikiPortraits(titles)
+    prefetchWikiPortraits(titles.slice(0, 24))
   }, [
     settings.mode,
     settings.mix,
@@ -235,13 +235,17 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
               </button>
             </div>
           ) : null}
-          <FootballModeGrids
-            lang={settings.lang}
-            activeMode={settings.mode}
-            mix={Boolean(mixModes)}
-            selectedModes={mixModes ?? undefined}
-            onPick={(mode) => onChange({ ...settings, mode, mix: null })}
-          />
+          {mixModes ? (
+            <FootballModeGrids
+              lang={settings.lang}
+              activeMode={settings.mode}
+              mix
+              selectedModes={mixModes}
+              onPick={(mode) => onChange({ ...settings, mode, mix: null })}
+            />
+          ) : (
+            <FootballSetup settings={settings} onChange={(next) => onChange({ ...next, mix: null })} />
+          )}
         </>
       ) : codes || settings.learnFrom === 'level' ? (
         <div className="choice-grid is-modes">

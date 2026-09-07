@@ -204,7 +204,7 @@ export default function PlayApp() {
 
   useEffect(() => {
     if (world === "football" && !isFootballMode(settings.mode)) {
-      const mode = "wcWinners" as const;
+      const mode = "playerPhotoToName" as const;
       const difficulty = footballHasDifficulty(mode)
         ? settings.difficulty === "medium"
           ? "hard"
@@ -628,7 +628,7 @@ export default function PlayApp() {
       });
       return;
     }
-    const mode = isFootballMode(quizSettings.mode) ? quizSettings.mode : "wcWinners";
+    const mode = isFootballMode(quizSettings.mode) ? quizSettings.mode : "playerPhotoToName";
     const facts = isPlayerFactsToName(mode);
     const count =
       facts && path === "pool"
@@ -1138,7 +1138,7 @@ export default function PlayApp() {
           onClearBests={handleClearBests}
           onPick={(next) => {
             if (next === "football") {
-              const mode = isFootballMode(quizSettings.mode) ? quizSettings.mode : "wcWinners"
+              const mode = isFootballMode(quizSettings.mode) ? quizSettings.mode : "playerPhotoToName"
               const difficulty = footballHasDifficulty(mode)
                 ? quizSettings.difficulty === "medium"
                   ? "hard"

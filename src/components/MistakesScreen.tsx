@@ -6,7 +6,7 @@ import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS, modeLabel } from '../i18n/strings'
 import { codePromptLabel, countryName, isCodesMode, isFootballMode, isLeadersMode, isPlayerFootballMode, type QuizMode } from '../lib/quiz'
 import { GeoModeGrids } from './GeoModeGrids'
-import { FootballModeGrids } from './FootballModeGrids'
+import { FootballSetup } from './FootballModeGrids'
 import { geoMistakeCountries, type MistakeEntry } from '../lib/mistakes'
 import type { QuizSettings } from './HomeScreen'
 import { Flag, TeamFlag } from './Flag'
@@ -60,10 +60,9 @@ export function MistakesScreen({
       {leaders ? (
         <LeadersSetup settings={settings} onChange={(next) => onChange({ ...next, path: 'mistakes', mix: null })} />
       ) : football ? (
-        <FootballModeGrids
-          lang={settings.lang}
-          activeMode={settings.mode}
-          onPick={(mode) => onChange({ ...settings, mode, mix: null, path: 'mistakes' })}
+        <FootballSetup
+          settings={settings}
+          onChange={(next) => onChange({ ...next, mix: null, path: 'mistakes' })}
         />
       ) : codes ? (
         <div className="choice-grid is-modes">

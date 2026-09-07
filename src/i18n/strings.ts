@@ -128,6 +128,7 @@ export type Strings = {
   footballGroupClubs: string
   footballGroupPlayers: string
   footballGroupManagers: string
+  footballTopicCups: string
   playerPhotoToName: string
   playerFactsToName: string
   playerFactsHint: string
@@ -729,6 +730,7 @@ export const STRINGS: Record<Lang, Strings> = {
     footballGroupClubs: 'Клубы',
     footballGroupPlayers: 'Футболисты',
     footballGroupManagers: 'Тренеры',
+    footballTopicCups: 'Турниры',
     playerPhotoToName: 'Футболист по фото',
     playerFactsToName: 'Футболист по фактам',
     playerFactsHint:
@@ -1338,6 +1340,7 @@ export const STRINGS: Record<Lang, Strings> = {
     footballGroupClubs: 'Clubs',
     footballGroupPlayers: 'Players',
     footballGroupManagers: 'Managers',
+    footballTopicCups: 'Tournaments',
     playerPhotoToName: 'Footballer by photo',
     playerFactsToName: 'Footballer by facts',
     playerFactsHint:

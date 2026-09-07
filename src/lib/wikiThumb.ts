@@ -9,11 +9,12 @@ export interface PortraitRequest {
 
 const cache = new Map<string, WikiPortrait | null>()
 const inflight = new Map<string, Promise<WikiPortrait | null>>()
-const STORE_KEY = 'unfq-wiki-portraits-v12'
-const PORTRAIT_API_VER = '12'
+const STORE_KEY = 'unfq-wiki-portraits-v13'
+const PORTRAIT_API_VER = '13'
 const STORE_MS = 14 * 24 * 60 * 60 * 1000
 const NULL_STORE_MS = 6 * 60 * 60 * 1000
-const PREFETCH_WORKERS = 2
+const PREFETCH_WORKERS = 4
+const STORE_MAX = 120
 let activeFetches = 0
 const fetchWaiters: Array<() => void> = []
 
@@ -38,12 +39,17 @@ function readStore(): Record<string, { at: number; portrait: WikiPortrait | null
 
 function writeStore(title: string, portrait: WikiPortrait | null) {
   if (typeof window === 'undefined') return
-  try {
-    const store = readStore()
-    store[title] = { at: Date.now(), portrait }
-    window.localStorage.setItem(STORE_KEY, JSON.stringify(store))
-  } catch {
-    /* quota / private mode */
+  const store = readStore()
+  store[title] = { at: Date.now(), portrait }
+  let entries = Object.entries(store).sort((a, b) => b[1].at - a[1].at).slice(0, STORE_MAX)
+  for (;;) {
+    try {
+      window.localStorage.setItem(STORE_KEY, JSON.stringify(Object.fromEntries(entries)))
+      return
+    } catch {
+      if (entries.length <= 1) return
+      entries = entries.slice(0, Math.max(1, entries.length - 16))
+    }
   }
 }
 
