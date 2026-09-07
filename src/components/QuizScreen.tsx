@@ -263,7 +263,8 @@ export function QuizScreen({
               <LeaderPortrait
                 name={question.promptEntity ? countryName(question.promptEntity, lang) : manager ? (lang === 'ru' ? manager.ru : manager.en) : correctName}
                 wiki={player?.wiki ?? manager?.wiki ?? ''}
-                file={leaderTerm ? portraitFileForTerm(leaderTerm.id) : undefined}
+                file={player?.wikiFile ?? (leaderTerm ? portraitFileForTerm(leaderTerm.id) : undefined)}
+                flagIso={player?.nation}
                 size="hero"
                 compact={!answered}
               />

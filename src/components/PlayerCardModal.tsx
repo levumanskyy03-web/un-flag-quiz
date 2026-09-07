@@ -78,7 +78,7 @@ export function PlayerCardModal({ player, lang, onClose }: PlayerCardModalProps)
         <button type="button" className="btn-ghost passport-close" onClick={onClose}>
           {t.close}
         </button>
-        <LeaderPortrait name={name} wiki={player.wiki} size="hero" />
+        <LeaderPortrait name={name} wiki={player.wiki} file={player.wikiFile} flagIso={player.nation} size="hero" />
         <h2 id="player-card-title" className="passport-title">
           {name}
         </h2>

@@ -122,6 +122,7 @@ export type Strings = {
   playerFootBoth: string
   playerEraActive: string
   playerEraLegend: string
+  playerLearnAll: string
   footballGroupWc: string
   footballGroupEuro: string
   footballGroupOther: string
@@ -216,6 +217,8 @@ export type Strings = {
   mistakesClear: string
   noTimerHint: string
   footballLearnHint: string
+  footballRosterCount: (n: number) => string
+  footballRosterSplit: (active: number, legends: number) => string
   footballTableYear: string
   footballTableWinner: string
   footballTableRunnerUp: string
@@ -724,6 +727,7 @@ export const STRINGS: Record<Lang, Strings> = {
     playerFootBoth: 'обе',
     playerEraActive: 'Играет',
     playerEraLegend: 'Легенда',
+    playerLearnAll: 'Все',
     footballGroupWc: 'Чемпионат мира',
     footballGroupEuro: 'Евро',
     footballGroupOther: 'Другие',
@@ -825,7 +829,10 @@ export const STRINGS: Record<Lang, Strings> = {
     mistakesEmpty: 'Пока нет ошибок — так и держать.',
     mistakesClear: 'Очистить список',
     noTimerHint: 'Без таймера и жизней.',
-    footballLearnHint: 'Карточки команд. Потом можно себя проверить.',
+    footballLearnHint: 'Карточки футболистов. Потом можно себя проверить.',
+    footballRosterCount: (n) => `${n} ${pluralRu(n, 'футболист', 'футболиста', 'футболистов')}`,
+    footballRosterSplit: (active, legends) =>
+      `${active} ${pluralRu(active, 'действующий', 'действующих', 'действующих')} · ${legends} ${pluralRu(legends, 'легенда', 'легенды', 'легенд')}`,
     footballTableYear: 'Год',
     footballTableWinner: 'Чемпион',
     footballTableRunnerUp: 'Финалист',
@@ -1334,6 +1341,7 @@ export const STRINGS: Record<Lang, Strings> = {
     playerFootBoth: 'both',
     playerEraActive: 'Active',
     playerEraLegend: 'Legend',
+    playerLearnAll: 'All',
     footballGroupWc: 'World Cup',
     footballGroupEuro: 'Euro',
     footballGroupOther: 'Other',
@@ -1435,7 +1443,10 @@ export const STRINGS: Record<Lang, Strings> = {
     mistakesEmpty: 'No mistakes yet — keep it that way.',
     mistakesClear: 'Clear list',
     noTimerHint: 'No timer and no lives.',
-    footballLearnHint: 'Team cards. Then you can test yourself.',
+    footballLearnHint: 'Player cards. Then you can test yourself.',
+    footballRosterCount: (n) => `${n} ${n === 1 ? 'footballer' : 'footballers'}`,
+    footballRosterSplit: (active, legends) =>
+      `${active} active · ${legends} ${legends === 1 ? 'legend' : 'legends'}`,
     footballTableYear: 'Year',
     footballTableWinner: 'Winner',
     footballTableRunnerUp: 'Runner-up',

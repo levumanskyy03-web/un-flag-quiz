@@ -329,6 +329,10 @@ export function isPlayerFootballMode(mode: QuizMode): boolean {
   return (PLAYER_FOOTBALL_MODES as readonly string[]).includes(mode as string)
 }
 
+export function isFootballRosterMode(mode: QuizMode): boolean {
+  return isPlayerFootballMode(mode) && mode !== 'ballonDorWinners' && mode !== 'goldenBallWinners'
+}
+
 export function isManagerFootballMode(mode: QuizMode): boolean {
   return mode === 'managerPhotoToName'
 }

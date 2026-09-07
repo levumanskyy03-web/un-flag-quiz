@@ -80,7 +80,11 @@ export function FootballScreen({
       photoMode ||
       (mix ? modesForFootballMix(mix).some((mode) => isPlayerPhotoMode(mode) || isPlayerFactsToName(mode)) : false)
     if (!photo) return
-    prefetchWikiPortraits(footballPlayerPool(settings.difficulty).map((player) => player.wiki).slice(0, 24))
+    prefetchWikiPortraits(
+      footballPlayerPool(settings.difficulty)
+        .map((player) => ({ title: player.wiki, file: player.wikiFile }))
+        .slice(0, 24),
+    )
   }, [mix, photoMode, settings.difficulty])
 
   function update(patch: Partial<QuizSettings>) {

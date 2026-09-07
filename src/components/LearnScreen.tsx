@@ -17,6 +17,7 @@ import {
   isCodesMode,
   isFootballMode,
   isLeadersMode,
+  isFootballRosterMode,
   isManagerFootballMode,
   isNameToGov,
   isNameToLanguage,
@@ -82,8 +83,6 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
     settings.mode,
     settings.includeExtras,
   )
-  const countries =
-    settings.learnFrom === 'level' || football || leaders ? pool : sortCountriesByName(pool, settings.lang)
   const modes = football
     ? FOOTBALL_MODES
     : codes
@@ -95,6 +94,21 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   const [openIso, setOpenIso] = useState<string | null>(null)
   const [openTermId, setOpenTermId] = useState<string | null>(null)
   const [openPlayerId, setOpenPlayerId] = useState<string | null>(null)
+  const [playerEra, setPlayerEra] = useState<'all' | 'active' | 'legend'>('all')
+  const rosterLearn = isFootballRosterMode(settings.mode) && !mixModes
+  const countries = (settings.learnFrom === 'level' || football || leaders
+    ? pool
+    : sortCountriesByName(pool, settings.lang)
+  ).filter((country) => {
+    if (!rosterLearn || playerEra === 'all') return true
+    return playerById(country.iso)?.era === playerEra
+  })
+  const rosterActive = rosterLearn
+    ? pool.filter((country) => playerById(country.iso)?.era === 'active').length
+    : 0
+  const rosterLegends = rosterLearn
+    ? pool.filter((country) => playerById(country.iso)?.era === 'legend').length
+    : 0
   const openCountry = openIso ? findCountry(openIso) : undefined
   const openTerm = openTermId ? termById(openTermId) : undefined
   const openPlayer = openPlayerId ? playerById(openPlayerId) : undefined
@@ -105,9 +119,9 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
       ? geoFinale
         ? t.finalLevelHint
         : undefined
-      : football
-        ? t.footballLearnHint
-        : codes
+        : football
+          ? t.footballLearnHint
+          : codes
           ? t.codesSubtitle
           : leaders
             ? t.leadersSubtitle
@@ -140,8 +154,8 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
       Boolean(mix?.some((mode) => isPlayerPhotoMode(mode) || isPlayerFactsToName(mode)))
     if (playerPhoto) {
       for (const country of pool) {
-        const wiki = playerById(country.iso)?.wiki
-        if (wiki) titles.push(wiki)
+        const player = playerById(country.iso)
+        if (player?.wiki) titles.push({ title: player.wiki, file: player.wikiFile })
       }
     }
     prefetchWikiPortraits(titles.slice(0, 24))
@@ -174,7 +188,15 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
 
       <p className="learn-copy">
         {subtitle ? `${subtitle}` : ''}
-        {mixModes ? '' : `${subtitle ? ' · ' : ''}${t.countriesCount(countries.length)}`}
+        {mixModes
+          ? ''
+          : rosterLearn
+            ? `${subtitle ? ' · ' : ''}${
+                playerEra === 'all'
+                  ? t.footballRosterSplit(rosterActive, rosterLegends)
+                  : t.footballRosterCount(countries.length)
+              }`
+            : `${subtitle ? ' · ' : ''}${t.countriesCount(countries.length)}`}
       </p>
 
       {settings.learnFrom === 'region' && !football && !codes && !leaders && (
@@ -268,6 +290,28 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           onPick={(mode) => onChange({ ...settings, mode, mix: null })}
         />
       )}
+
+      {rosterLearn ? (
+        <div className="choice-wrap">
+          {(
+            [
+              ['all', t.playerLearnAll],
+              ['active', t.playerEraActive],
+              ['legend', t.playerEraLegend],
+            ] as const
+          ).map(([era, label]) => (
+            <button
+              key={era}
+              type="button"
+              className={`chip ${playerEra === era ? 'is-active' : ''}`}
+              aria-pressed={playerEra === era}
+              onClick={() => setPlayerEra(era)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       {football && mixModes ? (
         <div className="football-learn-mix">
@@ -468,7 +512,9 @@ function PlayerLearnCard({
   const clues = facts && player ? playerClueSequence(player.id, 4) : []
   return (
     <button type="button" className="learn-card is-leader" onClick={onOpen}>
-      {player ? <LeaderPortrait name={name} wiki={player.wiki} size="card" /> : null}
+      {player ? (
+        <LeaderPortrait name={name} wiki={player.wiki} file={player.wikiFile} flagIso={player.nation} size="card" />
+      ) : null}
       <p className="learn-card-name">
         <FitText>{name}</FitText>
       </p>

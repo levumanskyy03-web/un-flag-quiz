@@ -10,6 +10,7 @@ export interface FootballPlayer {
   en: string
   ru: string
   wiki: string
+  wikiFile?: string
   nation: string
   bornNation: string
   position: PlayerPosition
@@ -44,6 +45,7 @@ function fromRow(row: FootballPlayerRow): FootballPlayer {
     en: row.en,
     ru: row.ru,
     wiki: row.wiki ?? row.en,
+    wikiFile: row.wikiFile,
     nation: row.nation,
     bornNation: row.bornNation ?? row.nation,
     position: row.pos,
@@ -106,17 +108,9 @@ export function footballPlayerWikis(): string[] {
 }
 
 export function footballPlayerPool(difficulty: 'easy' | 'medium' | 'hard' | 'hardcore' = 'hard'): FootballPlayer[] {
-  const wanted: PlayerTier = difficulty === 'easy' ? 'easy' : difficulty === 'medium' ? 'medium' : 'hard'
-  const match = FOOTBALL_PLAYERS.filter((player) => player.tier === wanted)
-  if (match.length >= 4) return match
-  const order: PlayerTier[] = ['easy', 'medium', 'hard']
-  const start = order.indexOf(wanted)
-  for (let span = 1; span < order.length; span += 1) {
-    const from = Math.max(0, start - span)
-    const to = Math.min(order.length - 1, start + span)
-    const allowed = new Set(order.slice(from, to + 1))
-    const expanded = FOOTBALL_PLAYERS.filter((player) => allowed.has(player.tier))
-    if (expanded.length >= 4) return expanded
+  if (difficulty === 'easy') return FOOTBALL_PLAYERS.filter((player) => player.tier === 'easy')
+  if (difficulty === 'medium') {
+    return FOOTBALL_PLAYERS.filter((player) => player.tier === 'easy' || player.tier === 'medium')
   }
   return FOOTBALL_PLAYERS
 }

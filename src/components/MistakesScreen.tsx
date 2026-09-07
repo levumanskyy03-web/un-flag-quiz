@@ -114,7 +114,13 @@ export function MistakesScreen({
                       {leaders && term ? (
                         <LeaderPortrait name={name} wiki={term.wiki} file={portraitFileForTerm(term.id)} size="card" />
                       ) : player ? (
-                        <LeaderPortrait name={name} wiki={player.wiki} size="card" />
+                        <LeaderPortrait
+                          name={name}
+                          wiki={player.wiki}
+                          file={player.wikiFile}
+                          flagIso={player.nation}
+                          size="card"
+                        />
                       ) : football ? (
                         <TeamFlag iso={item.iso} name={name} size="card" />
                       ) : (

@@ -3,7 +3,6 @@ import {
   footballPlayerPool,
   playerById,
   playerCountry,
-  playersWithShirtNumber,
   type FootballPlayer,
 } from '../../data/footballPlayers'
 import { AFCON_EASY_FROM, AFCON_HOSTS, AFCON_WINNERS } from '../../data/afcon'
@@ -143,7 +142,11 @@ export function footballPoolSize(mode: QuizMode, difficulty: QuizDifficulty): nu
   if (mode === 'clubCrestToName') return allFootballClubs().length
   if (mode === 'stadiumToClub') return FOOTBALL_STADIUMS.length
   if (isManagerFootballMode(mode)) return FOOTBALL_MANAGERS.length
-  if (mode === 'playerShirtToName') return Math.max(playersWithShirtNumber().length, footballPlayerPool(difficulty).length)
+  if (mode === 'playerShirtToName') {
+    const pool = footballPlayerPool(difficulty)
+    const numbered = pool.filter((player) => player.number !== undefined)
+    return numbered.length >= 4 ? numbered.length : pool.length
+  }
   if (isPlayerFootballMode(mode)) return footballPlayerPool(difficulty).length
   return footballYearList(mode, difficulty).length
 }
@@ -792,7 +795,7 @@ function createPlayerRound(
   const full = footballPlayerPool(difficulty)
   let pool = playerIds?.length ? full.filter((player) => playerIds.includes(player.id)) : full
   if (mode === 'playerShirtToName') {
-    const numbered = (playerIds?.length ? FOOTBALL_PLAYERS.filter((player) => playerIds.includes(player.id)) : FOOTBALL_PLAYERS).filter(
+    const numbered = (playerIds?.length ? full.filter((player) => playerIds.includes(player.id)) : full).filter(
       (player) => player.number !== undefined,
     )
     pool = numbered.length >= 4 ? numbered : pool.filter((player) => player.number !== undefined)

@@ -1,12 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { flagUrl } from '../lib/quiz'
 import { fetchWikiPortrait, peekWikiPortrait, type WikiPortrait } from '../lib/wikiThumb'
 
 interface LeaderPortraitProps {
   name: string
   wiki: string
   file?: string
+  flagIso?: string
   size?: 'hero' | 'card' | 'thumb'
   compact?: boolean
 }
@@ -69,7 +71,7 @@ function initials(name: string) {
   return letters.toUpperCase() || '?'
 }
 
-export function LeaderPortrait({ name, wiki, file, size = 'card', compact = false }: LeaderPortraitProps) {
+export function LeaderPortrait({ name, wiki, file, flagIso, size = 'card', compact = false }: LeaderPortraitProps) {
   const rootRef = useRef<HTMLSpanElement>(null)
   const [visible, setVisible] = useState(() => size === 'hero' || Boolean(peekWikiPortrait(wiki, file)))
   const [portrait, setPortrait] = useState<WikiPortrait | null>(() => peekWikiPortrait(wiki, file) ?? null)
@@ -122,8 +124,9 @@ export function LeaderPortrait({ name, wiki, file, size = 'card', compact = fals
 
   if (!portrait || failed) {
     return (
-      <span ref={rootRef} className={`leader-fallback is-${size}`} aria-hidden="true">
-        {initials(name)}
+      <span ref={rootRef} className={`leader-fallback is-${size}${flagIso ? ' has-flag' : ''}`} aria-hidden="true">
+        {flagIso ? <img className="leader-fallback-flag" src={flagUrl(flagIso)} alt="" /> : null}
+        <span className="leader-fallback-initials">{initials(name)}</span>
       </span>
     )
   }

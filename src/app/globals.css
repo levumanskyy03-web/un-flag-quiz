@@ -4526,6 +4526,27 @@ html[dir="rtl"] .map-pan {
   font-size: 1.6rem;
 }
 
+.leader-fallback.has-flag {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65);
+}
+
+.leader-fallback-flag {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.45;
+}
+
+.leader-fallback-initials {
+  position: relative;
+  z-index: 1;
+}
+
 .leader-credit {
   margin: 0;
   max-width: 100%;

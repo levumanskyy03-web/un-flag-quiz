@@ -382,11 +382,20 @@ function uniqueFiles(names: Array<string | null | undefined>): string[] {
   return files
 }
 
+function isSaneCommonsFile(file: string): boolean {
+  const name = file.trim().replace(/_/g, ' ')
+  if (!name || name.length > TITLE_MAX || name.includes('/') || name.includes('..') || name.includes('\\')) {
+    return false
+  }
+  return /\.(jpe?g|png|webp|gif|svg|tif{1,2})$/i.test(name)
+}
+
 export async function lookupWikiPortrait(title: string, preferredFile?: string | null): Promise<WikiPortrait | null> {
   const normalized = normalizeWikiTitle(title)
   if (!normalized || !ALLOWED_TITLES.has(normalized)) return null
   const hinted = preferredFile?.trim().replace(/_/g, ' ')
-  const preferred = hinted && isAllowedPortraitFile(hinted) ? hinted : WIKI_PORTRAIT_FILES[normalized]
+  const preferred =
+    hinted && (isAllowedPortraitFile(hinted) || isSaneCommonsFile(hinted)) ? hinted : WIKI_PORTRAIT_FILES[normalized]
 
   const params = new URLSearchParams({
     action: 'query',
