@@ -14,7 +14,17 @@ import { currencyChoiceLabel } from './currencyFakes'
 import { foundedChoiceLabel } from './foundedFakes'
 import { populationChoiceLabel } from './populationFakes'
 import { isRankingMode } from '../data/rankings'
-import { isFootballMode, isLeadersMode, isPlayerFootballMode, type Question, type QuizMode } from './quiz'
+import {
+  codeAnswerKey,
+  codePromptLabel,
+  countryName,
+  isCodeOptionMode,
+  isFootballMode,
+  isLeadersMode,
+  isPlayerFootballMode,
+  type Question,
+  type QuizMode,
+} from './quiz'
 import { isWaterMode, waterAnswerKey } from '../data/water'
 
 export function answerKey(country: Country, mode: QuizMode): string {

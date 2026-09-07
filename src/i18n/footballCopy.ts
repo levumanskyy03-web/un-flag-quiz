@@ -72,18 +72,23 @@ type FootballCopy = Pick<
   | 'playerEraLegend'
 >
 
-function copy(
-  labels: {
-    lostYear: (comp: string, year: number) => string
-    hostedYear: (comp: string, year: number) => string
-    titleYear: (name: string, comp: string) => string
-    leagueAsk: (league: string, year: number) => string
-    stadiumAsk: (name: string) => string
-    shirtAsk: (n: number) => string
-    ballonAsk: (year: number) => string
-    goldenAsk: (event: string, year: number) => string
-  },
-): FootballCopy {
+type FootballLabelStrings = {
+  [K in keyof FootballCopy as FootballCopy[K] extends string ? K : never]: string
+}
+
+type FootballHelpers = {
+  lostYear: (comp: string, year: number) => string
+  hostedYear: (comp: string, year: number) => string
+  titleYear: (name: string, comp: string) => string
+  leagueAsk: (league: string, year: number) => string
+  stadiumAsk: (name: string) => string
+  shirtAsk: (n: number) => string
+  ballonAsk: (year: number) => string
+  goldenAsk: (event: string, year: number) => string
+  whoYear: (comp: string, year: number) => string
+}
+
+function copy(labels: FootballLabelStrings & FootballHelpers): FootballCopy {
   return {
     footballGroupClubs: labels.footballGroupClubs,
     footballGroupManagers: labels.footballGroupManagers,
