@@ -2,7 +2,9 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { type AvatarId } from '../data/avatars'
-import { STRINGS, difficultyLabel, localeTag, mixLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
+import { PAGE_COPY } from '../i18n/pages'
+import { STRINGS, localeTag, mixLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
+import { setupDifficultyText } from './DifficultyPicker'
 import {
   checkNameAvailable,
   fetchAccount,
@@ -27,7 +29,6 @@ import {
   footballHasDifficulty,
   formatClock,
   hasLevels,
-  isCodesMode,
   isFootballMode,
   isLeadersMode,
 } from '../lib/quiz'
@@ -656,14 +657,10 @@ export function SettingsModal({
                 {t.soundsOff}
               </button>
             </div>
-            <p>{t.aboutBody}</p>
-            <p>{t.aboutModes}</p>
+            {PAGE_COPY[lang].about.map((paragraph) => (
+              <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+            ))}
             <p>{t.credit}</p>
-            <p className="legal-inline catalog-inline">
-              <a href="/countries">{t.legalCountries}</a>
-              <a href="/languages">{t.legalLanguages}</a>
-              <a href="/today">{t.legalToday}</a>
-            </p>
             <p className="legal-inline">
               <a href="/about">{t.legalAbout}</a>
               <a href="/privacy">{t.legalPrivacy}</a>
@@ -737,17 +734,15 @@ export function SettingsModal({
 
 function bestSetupLine(record: RoundRecord, lang: Lang): string {
   const clock = formatClock(record.roundMs)
+  const difficulty = setupDifficultyText(record.difficulty, Boolean(record.hardcore), lang)
   if (isFootballMode(record.mode)) {
-    const difficulty = footballHasDifficulty(record.mode) ? difficultyLabel(record.difficulty, lang) : null
-    return [modeLabel(record.mode, lang), difficulty, record.roundSize, clock].filter(Boolean).join(' · ')
-  }
-  if (isCodesMode(record.mode)) {
-    return `${modeLabel(record.mode, lang)} · ${record.roundSize} · ${clock}`
+    const shown = footballHasDifficulty(record.mode) ? difficulty : null
+    return [modeLabel(record.mode, lang), shown, record.roundSize, clock].filter(Boolean).join(' · ')
   }
   if (isLeadersMode(record.mode)) {
-    return `${modeLabel(record.mode, lang)} · ${difficultyLabel(record.difficulty, lang)} · ${record.roundSize} · ${clock}`
+    return `${modeLabel(record.mode, lang)} · ${difficulty} · ${record.roundSize} · ${clock}`
   }
-  return `${record.mix ? mixLabel(record.mix, lang) : modeLabel(record.mode, lang)} · ${regionLabel(record.region, lang)} · ${difficultyLabel(record.difficulty, lang)} · ${record.roundSize} · ${clock}`
+  return `${record.mix ? mixLabel(record.mix, lang) : modeLabel(record.mode, lang)} · ${regionLabel(record.region, lang)} · ${difficulty} · ${record.roundSize} · ${clock}`
 }
 
 function formatPlayedAt(at: number, lang: Lang): string {

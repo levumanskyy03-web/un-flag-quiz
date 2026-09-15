@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { getPassport } from '../data/passports'
-import { rankingAbout, rankingCite, rankingCountries, type RankingMode } from '../data/rankings'
+import { formatRankingValue, rankingAbout, rankingCite, rankingCountries, rankingUnit, type RankingMode } from '../data/rankings'
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import { countryPath } from '../lib/countryCatalog'
 import { countryName } from '../lib/quiz'
@@ -84,6 +84,7 @@ export function RankingAboutDialog({
           {modeLabel(mode, lang)}
         </h2>
         <p className="ranking-about-body">{rankingAbout(mode, lang)}</p>
+        <p className="ranking-about-unit">{rankingUnit(mode, lang)}</p>
         <a className="ranking-about-source" href={cite.url} target="_blank" rel="noreferrer">
           {t.rankingSource}: {cite.source}
         </a>
@@ -100,11 +101,13 @@ export function RankingAboutDialog({
                 const current = highlightIso === country.iso
                 const hasPassport = Boolean(getPassport(country.iso))
                 const href = linkToPages && hasPassport ? countryPath(country.iso) : undefined
+                const value = formatRankingValue(mode, country.iso, lang)
                 const inner = (
                   <>
                     <span className="ranking-about-num">{place}</span>
                     <Flag iso={country.iso} name={name} size="thumb" />
                     <span className="ranking-about-country">{name}</span>
+                    {value ? <span className="ranking-about-value">{value}</span> : null}
                   </>
                 )
                 return (

@@ -8,6 +8,8 @@ import { US_BIOS } from './leaderBiosUs'
 export interface LeaderBio {
   ru: string
   en: string
+  featRu?: string
+  featEn?: string
 }
 
 const BY_ID: Record<string, LeaderBio> = { ...US_BIOS, ...RUS_BIOS, ...POPE_BIOS, ...UK_BIOS }
@@ -16,4 +18,11 @@ export function leaderBio(term: LeaderTerm, lang: Lang): string | null {
   const entry = BY_ID[term.id] ?? BY_ID[term.personId]
   if (!entry) return null
   return lang === 'ru' ? entry.ru : entry.en
+}
+
+export function leaderFeat(term: LeaderTerm, lang: Lang): string | null {
+  const entry = BY_ID[term.id] ?? BY_ID[term.personId]
+  if (!entry) return null
+  const feat = lang === 'ru' ? entry.featRu : entry.featEn
+  return feat?.trim() ? feat : null
 }

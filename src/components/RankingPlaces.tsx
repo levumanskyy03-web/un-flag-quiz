@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { RANKING_MODES, rankingCount, rankingPlaceOf, type RankingMode } from '../data/rankings'
+import { RANKING_MODES, formatRankingValue, rankingCount, rankingPlaceOf, type RankingMode } from '../data/rankings'
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import { RankingAboutDialog } from './RankingAboutDialog'
 
@@ -17,7 +17,8 @@ export function RankingPlaces({ iso, lang, linkToPages = false, onOpenCountry }:
   const [open, setOpen] = useState<RankingMode | null>(null)
   const rows = RANKING_MODES.flatMap((mode) => {
     const place = rankingPlaceOf(mode, iso)
-    return place === null ? [] : [{ mode, place }]
+    if (place === null) return []
+    return [{ mode, place, value: formatRankingValue(mode, iso, lang) }]
   })
 
   if (rows.length === 0) return null
@@ -37,6 +38,7 @@ export function RankingPlaces({ iso, lang, linkToPages = false, onOpenCountry }:
           >
             <p className="passport-ranking-label">{modeLabel(row.mode, lang)}</p>
             <p className="passport-ranking-place">{t.rankingPlace(row.place, rankingCount(row.mode))}</p>
+            {row.value ? <p className="passport-ranking-value">{row.value}</p> : null}
             <span className="passport-ranking-help" aria-hidden="true">
               ?
             </span>

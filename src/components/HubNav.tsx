@@ -11,7 +11,8 @@ interface HubNavProps {
   onSelect: (tab: HubTab) => void
 }
 
-const GEO_TABS: HubTab[] = ['free', 'levels', 'learn', 'map', 'mistakes', 'album']
+export const GEO_HUB_TABS: HubTab[] = ['levels', 'free', 'learn', 'map', 'mistakes', 'album']
+export const WORLD_HUB_TABS: HubTab[] = ['levels', 'free', 'learn', 'mistakes']
 const ICONS: Record<HubTab, 'compass' | 'map' | 'meridians' | 'pin' | 'stamp' | 'hash'> = {
   free: 'compass',
   levels: 'map',
@@ -21,7 +22,7 @@ const ICONS: Record<HubTab, 'compass' | 'map' | 'meridians' | 'pin' | 'stamp' | 
   album: 'stamp',
 }
 
-export function HubNav({ lang, active, tabs = GEO_TABS, onSelect }: HubNavProps) {
+export function HubNav({ lang, active, tabs = GEO_HUB_TABS, onSelect }: HubNavProps) {
   const t = STRINGS[lang]
   const labels: Record<HubTab, string> = {
     free: t.freePlay,

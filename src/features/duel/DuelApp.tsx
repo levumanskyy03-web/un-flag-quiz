@@ -14,6 +14,7 @@ import { fetchAccount } from "@/lib/account";
 import {
   advanceDuelFact,
   answerDuel,
+  bindDuelPlayerId,
   fetchDuel,
   joinDuel,
   leaveDuel,
@@ -50,6 +51,7 @@ function errorMessage(lang: Lang, error: string) {
 
 async function duelName(lang: Lang) {
   const account = await fetchAccount();
+  if (account?.id) bindDuelPlayerId(account.id);
   if (account?.name) return account.name;
   return lang === "ru" ? "Игрок" : "Player";
 }
@@ -80,8 +82,8 @@ export function DuelApp({ code: rawCode }: { code: string }) {
   useEffect(() => {
     document.documentElement.lang = localeTag(lang);
     document.documentElement.dir = langDir(lang);
-    document.title = t.duel;
-  }, [lang, t.duel]);
+    document.title = view?.matchmaking ? t.multiplayer : t.duel;
+  }, [lang, t.duel, t.multiplayer, view?.matchmaking]);
 
   useEffect(() => {
     if (resultTone) {
@@ -252,7 +254,7 @@ export function DuelApp({ code: rawCode }: { code: string }) {
 
   if (!code || fatal) {
     return (
-      <div className="app">
+      <div className="app is-duel">
         <div className="screen duel-lobby">
           <WorldsBack lang={lang} onClick={() => router.push("/")} />
           <p className="account-error">{errorMessage(lang, fatal ?? "missing")}</p>
@@ -265,7 +267,7 @@ export function DuelApp({ code: rawCode }: { code: string }) {
   }
 
   return (
-    <div className={`app${resultTone ? ` is-${resultTone}` : ""}${football ? " is-football" : ""}`}>
+    <div className={`app is-duel${resultTone ? ` is-${resultTone}` : ""}${football ? " is-football" : ""}`}>
       {!view ? null : football ? (
         <div className="pitch-marks" aria-hidden="true">
           <span className="pitch-mid" />
@@ -389,11 +391,6 @@ export function DuelApp({ code: rawCode }: { code: string }) {
           onWorlds={() => void leaveTo("/")}
         />
       ) : null}
-      <nav className="catalog-links">
-        <a href="/countries">{t.legalCountries}</a>
-        <a href="/languages">{t.legalLanguages}</a>
-        <a href="/today">{t.legalToday}</a>
-      </nav>
       <footer className="legal-footer">
         <nav className="legal-links">
           <a href="/about">{t.legalAbout}</a>

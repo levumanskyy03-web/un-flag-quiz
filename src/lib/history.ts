@@ -1,4 +1,4 @@
-import { isCodesMode, isFootballMode, isLeadersMode, isMixKind, isQuizMode, isRegionFilter, type MixKind, type QuizDifficulty, type QuizMode, type RegionFilter, type RoundEnd } from './quiz'
+import { isFootballMode, isLeadersMode, isMixKind, isQuizMode, isRegionFilter, type MixKind, type QuizDifficulty, type QuizMode, type RegionFilter, type RoundEnd } from './quiz'
 
 export const HISTORY_KEY = 'un-flag-quiz-history'
 export const BESTS_KEY = 'un-flag-quiz-bests'
@@ -16,17 +16,21 @@ export interface RoundRecord {
   roundSize: number
   endedBy: RoundEnd
   mix?: MixKind
+  mixModes?: QuizMode[]
   wcYears?: string
   includeExtras?: boolean
+  hardcore?: boolean
 }
 
-export type ConfigKey = Omit<Pick<RoundRecord, 'mode' | 'region' | 'difficulty' | 'roundSize' | 'mix'>, 'mix'> & {
+export type ConfigKey = Omit<Pick<RoundRecord, 'mode' | 'region' | 'difficulty' | 'roundSize' | 'mix' | 'mixModes'>, 'mix' | 'mixModes'> & {
   mix?: MixKind | null
+  mixModes?: QuizMode[]
   includeExtras?: boolean
 }
 
 export function configKey(record: ConfigKey): string {
-  return `${record.mix ?? ''}|${record.mode}|${record.region}|${record.difficulty}|${record.roundSize}|${record.includeExtras ? 'x' : ''}`
+  const custom = record.mix === 'custom' ? (record.mixModes ?? []).join(',') : ''
+  return `${record.mix ?? ''}|${custom}|${record.mode}|${record.region}|${record.difficulty}|${record.roundSize}|${record.includeExtras ? 'x' : ''}`
 }
 
 export function loadHistory(): RoundRecord[] {
@@ -107,12 +111,11 @@ export function isBetter(candidate: RoundRecord, current: RoundRecord): boolean 
 
 function capHistory(records: RoundRecord[]): RoundRecord[] {
   const football = records.filter((item) => isFootballMode(item.mode)).slice(0, HISTORY_LIMIT)
-  const codes = records.filter((item) => isCodesMode(item.mode)).slice(0, HISTORY_LIMIT)
   const leaders = records.filter((item) => isLeadersMode(item.mode)).slice(0, HISTORY_LIMIT)
   const geo = records
-    .filter((item) => !isFootballMode(item.mode) && !isCodesMode(item.mode) && !isLeadersMode(item.mode))
+    .filter((item) => !isFootballMode(item.mode) && !isLeadersMode(item.mode))
     .slice(0, HISTORY_LIMIT)
-  return [...football, ...codes, ...leaders, ...geo].sort((a, b) => b.at - a.at)
+  return [...football, ...leaders, ...geo].sort((a, b) => b.at - a.at)
 }
 
 function scorePercent(record: RoundRecord): number {
@@ -174,7 +177,13 @@ function isRoundRecord(value: unknown): value is RoundRecord {
       record.endedBy === 'timeout' ||
       record.endedBy === 'lives') &&
     (record.mix === undefined || isMixKind(record.mix)) &&
+    (record.mixModes === undefined || (Array.isArray(record.mixModes) && record.mixModes.every(isQuizMode))) &&
     (record.wcYears === undefined || typeof record.wcYears === 'string') &&
-    (record.includeExtras === undefined || typeof record.includeExtras === 'boolean')
+    (record.includeExtras === undefined || typeof record.includeExtras === 'boolean') &&
+    (record.hardcore === undefined || typeof record.hardcore === 'boolean')
   )
+}
+
+export function isRoundHardcore(record: Pick<RoundRecord, 'difficulty' | 'hardcore'>): boolean {
+  return record.hardcore === true || record.difficulty === 'hardcore'
 }

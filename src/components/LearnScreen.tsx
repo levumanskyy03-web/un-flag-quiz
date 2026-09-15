@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import { type Region } from '../data/countries'
 import { findCountry } from '../data/extras'
 import { isFinalLevel } from '../data/levels'
-import { governmentLabel, REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
+import { difficultyLabel, governmentLabel, REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
 import {
   QUIZ_MODES,
   LEVEL_MODES,
   FOOTBALL_MODES,
-  CODES_MODES,
+  EASY_FOOTBALL_MIX_MODES,
+  HARD_FOOTBALL_MIX_MODES,
   codePromptLabel,
   countryName,
   footballLearnCountries,
@@ -17,6 +18,10 @@ import {
   isCodesMode,
   isFootballMode,
   isLeadersMode,
+  isLeaderNumberPrompt,
+  isLeaderPhotoMode,
+  leaderKindOf,
+  LEADERS_DIFFICULTIES,
   isFootballRosterMode,
   isManagerFootballMode,
   isNameToGov,
@@ -41,12 +46,12 @@ import { languageName, quizLanguageId } from '../data/languages'
 import { govKindOf } from '../data/governments'
 import { watersFor } from '../data/water'
 import { formatLeaderNumbers, formatTermNumber, leaderShowsNumber, personYearsLabel, splitLearnTerms, termById, yearsLabel } from '../data/leaders'
-import { leaderBio } from '../data/leaderBios'
+import { leaderBio, leaderFeat } from '../data/leaderBios'
 import { getPassport } from '../data/passports'
-import { rankingCount, rankingPlaceOf } from '../data/rankings'
+import { formatRankingValue, rankingCount, rankingPlaceOf } from '../data/rankings'
 import type { QuizSettings } from './HomeScreen'
 import { ExtrasToggle } from './HomeScreen'
-import { HubNav, type HubTab } from './HubNav'
+import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
 import { GeoModeGrids } from './GeoModeGrids'
 import { Flag, TeamFlag } from './Flag'
 import { FootballLearnTable } from './FootballLearnTable'
@@ -54,27 +59,28 @@ import { FootballModeGrids, FootballSetup } from './FootballModeGrids'
 import { FitText, ChoiceLabel } from './FitText'
 import { LeaderPortrait } from './LeaderPortrait'
 import { LeaderBioModal } from './LeaderBioModal'
-import { LanguageToggle } from './LanguageToggle'
+import { LeaderNoteMark } from './LeaderNoteMark'
+import { LeadersLearnTable } from './LeadersLearnTable'
 import { LeadersSetup } from './LeadersScreen'
 import { PassportModal } from './PassportModal'
 import { WorldsBack } from './WorldsBack'
 import { prefetchWikiPortraits, type PortraitRequest } from '../lib/wikiThumb'
 import { portraitFileForTerm } from '../data/leaderPortraitFiles'
+import { erasForKind, leaderEraOf, type LeaderEraId } from '../data/leaderEras'
 
 interface LearnScreenProps {
   settings: QuizSettings
   onChange: (settings: QuizSettings) => void
   onBack: () => void
   onHub: (tab: HubTab) => void
-  onPractice: () => void
+  onPractice: (isos?: string[]) => void
   onWorlds: () => void
 }
 
 export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onWorlds }: LearnScreenProps) {
   const t = STRINGS[settings.lang]
   const football = isFootballMode(settings.mode)
-  const mixModes = football && settings.mix ? modesForFootballMix(settings.mix) : null
-  const codes = isCodesMode(settings.mode)
+  const mixModes = football && settings.mix ? modesForFootballMix(settings.mix, settings.mixModes) : null
   const leaders = isLeadersMode(settings.mode)
   const pool = getLearnPool(
     settings.learnFrom,
@@ -85,23 +91,31 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   )
   const modes = football
     ? FOOTBALL_MODES
-    : codes
-      ? CODES_MODES
-      : settings.learnFrom === 'level'
-        ? LEVEL_MODES
-        : QUIZ_MODES
+    : settings.learnFrom === 'level'
+      ? LEVEL_MODES
+      : QUIZ_MODES
   const regions: Array<Region | 'all'> = ['all', ...REGIONS]
   const [openIso, setOpenIso] = useState<string | null>(null)
   const [openTermId, setOpenTermId] = useState<string | null>(null)
   const [openPlayerId, setOpenPlayerId] = useState<string | null>(null)
   const [playerEra, setPlayerEra] = useState<'all' | 'active' | 'legend'>('all')
+  const [leaderEra, setLeaderEra] = useState<'all' | LeaderEraId>('all')
+  const [leaderTier, setLeaderTier] = useState<'all' | (typeof LEADERS_DIFFICULTIES)[number]>('all')
+  const [hideAnswers, setHideAnswers] = useState(false)
+  const [revealed, setRevealed] = useState<Set<string>>(() => new Set())
+  const leaderKind = leaders ? leaderKindOf(settings.mode) : null
   const rosterLearn = isFootballRosterMode(settings.mode) && !mixModes
   const countries = (settings.learnFrom === 'level' || football || leaders
     ? pool
     : sortCountriesByName(pool, settings.lang)
   ).filter((country) => {
-    if (!rosterLearn || playerEra === 'all') return true
-    return playerById(country.iso)?.era === playerEra
+    if (rosterLearn && playerEra !== 'all') return playerById(country.iso)?.era === playerEra
+    if (!leaders || settings.learnFrom === 'level') return true
+    const term = termById(country.iso)
+    if (!term) return false
+    if (leaderEra !== 'all' && leaderEraOf(term) !== leaderEra) return false
+    if (leaderTier !== 'all' && term.tier !== leaderTier) return false
+    return true
   })
   const rosterActive = rosterLearn
     ? pool.filter((country) => playerById(country.iso)?.era === 'active').length
@@ -121,16 +135,12 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         : undefined
         : football
           ? t.footballLearnHint
-          : codes
-          ? t.codesSubtitle
           : leaders
             ? t.leadersSubtitle
             : regionLabel(settings.region, settings.lang)
   const hubTabs = football || leaders
-    ? (['free', 'levels', 'learn', 'mistakes'] as const)
-    : codes
-      ? (['free', 'learn', 'mistakes'] as const)
-      : undefined
+    ? WORLD_HUB_TABS
+    : undefined
 
   useEffect(() => {
     const pool = getLearnPool(
@@ -147,7 +157,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         if (term) titles.push({ title: term.wiki, file: portraitFileForTerm(term.id) })
       }
     }
-    const mix = settings.mix && isFootballMode(settings.mode) ? modesForFootballMix(settings.mix) : null
+    const mix = settings.mix && isFootballMode(settings.mode) ? modesForFootballMix(settings.mix, settings.mixModes) : null
     const playerPhoto =
       isPlayerPhotoMode(settings.mode) ||
       isPlayerFactsToName(settings.mode) ||
@@ -162,28 +172,35 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   }, [
     settings.mode,
     settings.mix,
+    settings.mixModes,
     settings.learnFrom,
     settings.level,
     settings.region,
     settings.includeExtras,
   ])
 
+  useEffect(() => {
+    setLeaderEra('all')
+    setLeaderTier('all')
+    setRevealed(new Set())
+  }, [settings.mode, settings.learnFrom, settings.level])
+
   return (
     <div className="screen learn-screen">
-      <WorldsBack lang={settings.lang} onClick={onWorlds} />
+      {settings.learnFrom === 'level' ? (
+        <WorldsBack lang={settings.lang} onClick={onBack} label={t.back} />
+      ) : (
+        <WorldsBack lang={settings.lang} onClick={onWorlds} />
+      )}
       <header className={`quiz-header${settings.learnFrom === 'level' ? '' : ' is-hub'}`}>
         {settings.learnFrom === 'level' ? (
-          <button type="button" className="btn-ghost" onClick={onBack}>
-            {t.back}
+          <button type="button" className="btn-ghost" onClick={onWorlds}>
+            {t.worldsBack}
           </button>
         ) : (
           <HubNav lang={settings.lang} active="learn" tabs={hubTabs ? [...hubTabs] : undefined} onSelect={onHub} />
         )}
         {settings.learnFrom === 'level' ? <h1 className="levels-title">{title}</h1> : null}
-        <LanguageToggle
-          lang={settings.lang}
-          onChange={(lang) => onChange({ ...settings, lang })}
-        />
       </header>
 
       <p className="learn-copy">
@@ -199,7 +216,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
             : `${subtitle ? ' · ' : ''}${t.countriesCount(countries.length)}`}
       </p>
 
-      {settings.learnFrom === 'region' && !football && !codes && !leaders && (
+      {settings.learnFrom === 'region' && !football && !leaders && (
         <div className="choice-wrap">
           {regions.map((region) => (
             <button
@@ -228,7 +245,60 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
       ) : null}
 
       {leaders ? (
-        <LeadersSetup settings={settings} onChange={onChange} />
+        <>
+          <LeadersSetup settings={settings} onChange={onChange} />
+          {settings.learnFrom === 'region' && leaderKind ? (
+            <div className="choice-wrap">
+              <button
+                type="button"
+                className={`chip ${leaderEra === 'all' ? 'is-active' : ''}`}
+                aria-pressed={leaderEra === 'all'}
+                onClick={() => setLeaderEra('all')}
+              >
+                {t.playerLearnAll}
+              </button>
+              {erasForKind(leaderKind).map((era) => (
+                <button
+                  key={era}
+                  type="button"
+                  className={`chip ${leaderEra === era ? 'is-active' : ''}`}
+                  aria-pressed={leaderEra === era}
+                  onClick={() => setLeaderEra(era)}
+                >
+                  {t[eraKey(era)]}
+                </button>
+              ))}
+            </div>
+          ) : null}
+          {settings.learnFrom === 'region' ? (
+            <div className="choice-wrap">
+              {LEADERS_DIFFICULTIES.map((tier) => (
+                <button
+                  key={tier}
+                  type="button"
+                  className={`chip ${leaderTier === tier ? 'is-active' : ''}`}
+                  aria-pressed={leaderTier === tier}
+                  onClick={() => setLeaderTier((current) => (current === tier ? 'all' : tier))}
+                >
+                  {difficultyLabel(tier, settings.lang)}
+                </button>
+              ))}
+            </div>
+          ) : null}
+          <div className="choice-wrap">
+            <button
+              type="button"
+              className={`chip ${hideAnswers ? 'is-active' : ''}`}
+              aria-pressed={hideAnswers}
+              onClick={() => {
+                setHideAnswers((on) => !on)
+                setRevealed(new Set())
+              }}
+            >
+              {t.leaderHideNames}
+            </button>
+          </div>
+        </>
       ) : football ? (
         <>
           {settings.learnFrom === 'region' ? (
@@ -237,7 +307,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 type="button"
                 className={`choice has-note is-wide ${settings.mix === 'easy' ? 'is-active' : ''}`}
                 aria-pressed={settings.mix === 'easy'}
-                onClick={() => onChange({ ...settings, mix: 'easy', mode: 'wcWinners' })}
+                onClick={() => onChange({ ...settings, mix: 'easy', mixModes: [...EASY_FOOTBALL_MIX_MODES], mode: 'wcWinners' })}
               >
                 <FitText minPx={9}>{t.easyMix}</FitText>
                 <FitText className="choice-note" wrap minPx={7}>
@@ -248,11 +318,29 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 type="button"
                 className={`choice has-note is-wide ${settings.mix === 'hard' ? 'is-active' : ''}`}
                 aria-pressed={settings.mix === 'hard'}
-                onClick={() => onChange({ ...settings, mix: 'hard', mode: 'wcWinners' })}
+                onClick={() => onChange({ ...settings, mix: 'hard', mixModes: [...HARD_FOOTBALL_MIX_MODES], mode: 'wcWinners' })}
               >
                 <FitText minPx={9}>{t.hardMix}</FitText>
                 <FitText className="choice-note" wrap minPx={7}>
                   {t.footballHardMixNote}
+                </FitText>
+              </button>
+              <button
+                type="button"
+                className={`choice has-note is-wide ${settings.mix === 'custom' ? 'is-active' : ''}`}
+                aria-pressed={settings.mix === 'custom'}
+                onClick={() =>
+                  onChange({
+                    ...settings,
+                    mix: 'custom',
+                    mixModes: settings.mixModes.length > 0 ? settings.mixModes : [...EASY_FOOTBALL_MIX_MODES],
+                    mode: (settings.mixModes[0] ?? 'wcWinners') as typeof settings.mode,
+                  })
+                }
+              >
+                <FitText minPx={9}>{t.customMix}</FitText>
+                <FitText className="choice-note" wrap minPx={7}>
+                  {t.customMixNote}
                 </FitText>
               </button>
             </div>
@@ -263,13 +351,24 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
               activeMode={settings.mode}
               mix
               selectedModes={mixModes}
-              onPick={(mode) => onChange({ ...settings, mode, mix: null })}
+              hideModes={settings.mix === 'custom' ? ['playerFactsToName'] : undefined}
+              onPick={(mode) => {
+                if (settings.mix === 'custom') {
+                  const selected = settings.mixModes
+                  const next = selected.includes(mode)
+                    ? selected.filter((item) => item !== mode)
+                    : [...selected, mode]
+                  onChange({ ...settings, mix: 'custom', mixModes: next, mode: next[0] ?? mode })
+                  return
+                }
+                onChange({ ...settings, mode, mix: null })
+              }}
             />
           ) : (
             <FootballSetup settings={settings} onChange={(next) => onChange({ ...next, mix: null })} />
           )}
         </>
-      ) : codes || settings.learnFrom === 'level' ? (
+      ) : settings.learnFrom === 'level' ? (
         <div className="choice-grid is-modes">
           {modes.map((mode) => (
             <button
@@ -287,6 +386,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         <GeoModeGrids
           lang={settings.lang}
           activeMode={settings.mode}
+          showRankings={false}
           onPick={(mode) => onChange({ ...settings, mode, mix: null })}
         />
       )}
@@ -361,7 +461,17 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         />
       ) : null}
 
-      {mixModes ? null : (
+      {mixModes ? null : leaders && !isLeaderPhotoMode(settings.mode) ? (
+        <LeadersLearnTable
+          countries={countries}
+          lang={settings.lang}
+          showNumber={isLeaderNumberPrompt(settings.mode)}
+          hideNames={hideAnswers}
+          revealed={revealed}
+          onReveal={(id) => setRevealed((prev) => new Set(prev).add(id))}
+          onOpen={setOpenTermId}
+        />
+      ) : mixModes ? null : (
       <section className={`learn-grid${leaders ? ' is-leaders' : ''}`}>
         {countries.map((country) => {
           const name = countryName(country, settings.lang)
@@ -371,31 +481,46 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           const rankingPlace =
             isRankingMode(settings.mode) ? rankingPlaceOf(settings.mode, country.iso) : null
           const rankingTotal = isRankingMode(settings.mode) ? rankingCount(settings.mode) : 0
+          const rankingValue =
+            isRankingMode(settings.mode) ? formatRankingValue(settings.mode, country.iso, settings.lang) : null
           const quizLang = isNameToLanguage(settings.mode) ? quizLanguageId(country.iso) : null
           const govKind = isNameToGov(settings.mode) ? govKindOf(country.iso) : undefined
           const term = leaders ? termById(country.iso) : undefined
           if (leaders && term) {
             const bio = leaderBio(term, settings.lang)
+            const feat = leaderFeat(term, settings.lang)
             const perTerm = term.kind === 'us' && splitLearnTerms(term)
+            const open = !hideAnswers || revealed.has(term.id)
+            const hidePhotoExtras = hideAnswers && !open && isLeaderPhotoMode(settings.mode)
             return (
-              <button
-                key={country.iso}
-                type="button"
-                className="learn-card is-leader"
-                onClick={() => setOpenTermId(term.id)}
-              >
-                {leaderShowsNumber(term.kind) ? (
+              <div key={country.iso} className={`learn-card is-leader${open ? '' : ' is-concealed'}`}>
+                {leaderShowsNumber(term.kind) && !hidePhotoExtras ? (
                   <p className="leader-num">{perTerm ? formatTermNumber(term) : formatLeaderNumbers(term)}</p>
                 ) : null}
-                <LeaderPortrait name={name} wiki={term.wiki} file={portraitFileForTerm(term.id)} size="card" />
-                <p className="learn-card-name">
-                  <FitText>{name}</FitText>
-                </p>
-                <p className="learn-card-meta">
-                  {perTerm ? yearsLabel(term.from, term.to, t.present) : personYearsLabel(term, t.present)}
-                </p>
-                {bio ? <p className="learn-card-bio">{bio}</p> : null}
-              </button>
+                <button
+                  type="button"
+                  className="leader-card-open"
+                  onClick={() => (open ? setOpenTermId(term.id) : setRevealed((prev) => new Set(prev).add(term.id)))}
+                >
+                  <LeaderPortrait name={name} wiki={term.wiki} file={portraitFileForTerm(term.id)} size="card" />
+                  <p className="learn-card-name">
+                    <FitText>{open ? name : t.leaderHiddenName}</FitText>
+                  </p>
+                </button>
+                {hidePhotoExtras ? null : (
+                  <p className="learn-card-meta">
+                    {perTerm ? yearsLabel(term.from, term.to, t.present) : personYearsLabel(term, t.present)}
+                  </p>
+                )}
+                {open ? <LeaderNoteMark term={term} lang={settings.lang} /> : null}
+                {open && feat ? (
+                  <p className="leader-feat">
+                    <span className="leader-feat-label">{t.leaderFeat}</span>
+                    {feat}
+                  </p>
+                ) : null}
+                {open && bio ? <p className="learn-card-bio">{bio}</p> : null}
+              </div>
             )
           }
           if (isPlayerFootballMode(settings.mode)) {
@@ -426,17 +551,6 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
               </div>
             )
           }
-          if (codes) {
-            return (
-              <div key={country.iso} className="learn-card">
-                <Flag iso={country.iso} name={name} size="card" />
-                <p className="learn-card-name">
-                  <FitText>{name}</FitText>
-                </p>
-                <p className="learn-card-meta is-code">{codePromptLabel(country, settings.mode)}</p>
-              </div>
-            )
-          }
           return (
             <button
               key={waterId ? `${settings.mode}:${waterId}` : country.iso}
@@ -455,7 +569,12 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
               ) : waterLabel ? (
                 <p className="learn-card-meta">{waterLabel}</p>
               ) : rankingPlace !== null ? (
-                <p className="learn-card-meta">{t.rankingPlace(rankingPlace, rankingTotal)}</p>
+                <p className="learn-card-meta">
+                  {t.rankingPlace(rankingPlace, rankingTotal)}
+                  {rankingValue ? ` · ${rankingValue}` : ''}
+                </p>
+              ) : isCodesMode(settings.mode) ? (
+                <p className="learn-card-meta is-code">{codePromptLabel(country, settings.mode)}</p>
               ) : quizLang ? (
                 <p className="learn-card-meta">{languageName(quizLang, settings.lang)}</p>
               ) : govKind ? (
@@ -467,7 +586,12 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
       </section>
       )}
 
-      <button type="button" className="btn-primary" disabled={countries.length === 0 && !mixModes} onClick={onPractice}>
+      <button
+        type="button"
+        className="btn-primary"
+        disabled={countries.length === 0 && !mixModes}
+        onClick={() => onPractice(leaders ? countries.map((country) => country.iso) : undefined)}
+      >
         {t.checkYourself}
       </button>
 
@@ -523,4 +647,33 @@ function PlayerLearnCard({
       ) : null}
     </button>
   )
+}
+
+function eraKey(era: LeaderEraId):
+  | 'leaderEraUsEarly'
+  | 'leaderEraUs1800s'
+  | 'leaderEraUsModern'
+  | 'leaderEraPopeEarly'
+  | 'leaderEraPopeMedieval'
+  | 'leaderEraPopeModern'
+  | 'leaderEraRusKiev'
+  | 'leaderEraRusMoscow'
+  | 'leaderEraRusEmpire'
+  | 'leaderEraRusSoviet'
+  | 'leaderEraUkMedieval'
+  | 'leaderEraUkTudor'
+  | 'leaderEraUkModern' {
+  if (era === 'usEarly') return 'leaderEraUsEarly'
+  if (era === 'us1800s') return 'leaderEraUs1800s'
+  if (era === 'usModern') return 'leaderEraUsModern'
+  if (era === 'popeEarly') return 'leaderEraPopeEarly'
+  if (era === 'popeMedieval') return 'leaderEraPopeMedieval'
+  if (era === 'popeModern') return 'leaderEraPopeModern'
+  if (era === 'rusKiev') return 'leaderEraRusKiev'
+  if (era === 'rusMoscow') return 'leaderEraRusMoscow'
+  if (era === 'rusEmpire') return 'leaderEraRusEmpire'
+  if (era === 'rusSoviet') return 'leaderEraRusSoviet'
+  if (era === 'ukMedieval') return 'leaderEraUkMedieval'
+  if (era === 'ukTudor') return 'leaderEraUkTudor'
+  return 'leaderEraUkModern'
 }

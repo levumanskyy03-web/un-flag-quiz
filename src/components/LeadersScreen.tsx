@@ -1,7 +1,6 @@
-import { useEffect } from 'react'
-import { STRINGS, difficultyLabel, localeTag, modeLabel, type Lang } from '../i18n/strings'
+import { useEffect, useState } from 'react'
+import { STRINGS, localeTag, modeLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
-import type { LevelClear } from '../lib/levelProgress'
 import {
   LEADERS_DIFFICULTIES,
   LEADERS_MODES,
@@ -21,10 +20,11 @@ import {
   type QuizMode,
 } from '../lib/quiz'
 import type { LeaderKind } from '../data/leaders'
-import { AppChrome } from './AppChrome'
 import { GeoIcon } from './GeoIcon'
-import { HubNav, type HubTab } from './HubNav'
+import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
 import { ModeChoice } from './ModeChoice'
+import { DifficultyPicker, setupDifficultyText } from './DifficultyPicker'
+import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
@@ -33,35 +33,29 @@ interface LeadersScreenProps {
   settings: QuizSettings
   history: RoundRecord[]
   bests: RoundRecord[]
-  levelClears: LevelClear[]
-  xp?: number
-  xpReady?: boolean
   onChange: (settings: QuizSettings) => void
   onStart: () => void
   onHub: (tab: HubTab) => void
   onWorlds: () => void
   onClearHistory: () => void
-  onClearBests: () => void
 }
 
 export function LeadersScreen({
   settings,
   history,
   bests,
-  levelClears,
-  xp = 0,
-  xpReady = false,
   onChange,
   onStart,
   onHub,
   onWorlds,
   onClearHistory,
-  onClearBests,
 }: LeadersScreenProps) {
   const t = STRINGS[settings.lang]
   const currentBest = findBest(bests, settings)
   const mode = defaultLeadersMode(settings.mode)
   const poolSize = leaderPoolSize(mode, settings.difficulty)
+
+  const [setupFamily, setSetupFamily] = useState<SetupFamily | null>(null)
 
   useEffect(() => {
     if (!isLeaderPhotoMode(mode)) return
@@ -75,48 +69,50 @@ export function LeadersScreen({
   }
 
   return (
-    <div className="screen codes-screen">
+    <div className="screen leaders-screen">
       <header className="home-header">
-        <AppChrome
-          settings={settings}
-          history={history}
-          bests={bests}
-          levelClears={levelClears}
-          xp={xp}
-          xpReady={xpReady}
-          onChange={onChange}
-          onClearBests={onClearBests}
-        />
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1 className="football-title">
-          <GeoIcon name="crown" size={28} />
+          <GeoIcon name="bust" size={28} />
           {t.leaders}
         </h1>
         <p className="subtitle">{t.leadersSubtitle}</p>
       </header>
 
-      <HubNav lang={settings.lang} active="free" tabs={['free', 'levels', 'learn', 'mistakes']} onSelect={onHub} />
+      <HubNav lang={settings.lang} active="free" tabs={WORLD_HUB_TABS} onSelect={onHub} />
 
       <section className="card settings-card">
-        <LeadersSetup settings={settings} onChange={update} showDifficulty />
-
-        <h2>{t.roundSize}</h2>
-        <div className="choice-grid is-3">
-          {ROUND_SIZES.map((roundSize) => (
-            <button
-              key={roundSize}
-              type="button"
-              className={`choice ${settings.roundSize === roundSize ? 'is-active' : ''}`}
-              aria-pressed={settings.roundSize === roundSize}
-              disabled={roundSize > poolSize}
-              onClick={() => onChange({ ...settings, path: 'pool', roundSize })}
-            >
-              {roundSize}
-            </button>
-          ))}
+        <h2>{t.leaderTopic}</h2>
+        <div className="choice-grid is-4">
+          {LEADERS_TOPICS.map((kind) => {
+            const label =
+              kind === 'pope'
+                ? t.popesLeaders
+                : kind === 'rus'
+                  ? t.askoldToUnion
+                  : kind === 'uk'
+                    ? t.ukMonarchs
+                    : t.usPresidents
+            return (
+              <ModeChoice
+                key={kind}
+                label={label}
+                active={leaderKindOf(mode) === kind}
+                onClick={() => {
+                  const ask = leadersAskOf(mode)
+                  const nextMode = leadersModeOf(kind, ask)
+                  update({ path: 'pool', mix: null, mode: nextMode })
+                  setSetupFamily({ world: 'leaders', id: kind })
+                }}
+              />
+            )
+          })}
         </div>
-        {settings.difficulty === 'hardcore' ? <p className="setting-hint">{t.hardcoreHint}</p> : null}
       </section>
+
+      <p className="current-best home-setup-line">
+        {modeLabel(mode, settings.lang)} · {setupDifficultyText(settings.difficulty, settings.levelHardcore, settings.lang)} · {settings.roundSize}
+      </p>
 
       {currentBest ? (
         <p className="current-best">
@@ -127,6 +123,19 @@ export function LeadersScreen({
       <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
         {t.start}
       </button>
+
+      {setupFamily ? (
+        <ModeSetupModal
+          family={setupFamily}
+          settings={{ ...settings, mode }}
+          onChange={(next) => update(next)}
+          onStart={() => {
+            setSetupFamily(null)
+            onStart()
+          }}
+          onClose={() => setSetupFamily(null)}
+        />
+      ) : null}
 
       {history.length > 0 ? (
         <section className="card history-card">
@@ -215,22 +224,13 @@ export function LeadersSetup({
       </div>
 
       {showDifficulty ? (
-        <>
-          <h2>{t.difficulty}</h2>
-          <div className="choice-grid is-4">
-            {LEADERS_DIFFICULTIES.map((difficulty) => (
-              <button
-                key={difficulty}
-                type="button"
-                className={`choice ${settings.difficulty === difficulty ? 'is-active' : ''}`}
-                aria-pressed={settings.difficulty === difficulty}
-                onClick={() => onChange({ ...settings, path: 'pool', difficulty, levelHardcore: difficulty === 'hardcore' })}
-              >
-                {difficultyLabel(difficulty, settings.lang)}
-              </button>
-            ))}
-          </div>
-        </>
+        <DifficultyPicker
+          lang={settings.lang}
+          difficulties={LEADERS_DIFFICULTIES}
+          difficulty={settings.difficulty}
+          hardcore={settings.levelHardcore}
+          onChange={({ difficulty, hardcore }) => onChange({ ...settings, path: 'pool', difficulty, levelHardcore: hardcore })}
+        />
       ) : null}
     </>
   )
@@ -250,7 +250,7 @@ function LeadersRecordRow({
       <div className="history-main">
         <p className="history-score">{score(record.correct, record.total)}</p>
         <p className="history-setup">
-          {modeLabel(record.mode, lang)} · {difficultyLabel(record.difficulty, lang)} · {record.roundSize} ·{' '}
+          {modeLabel(record.mode, lang)} · {setupDifficultyText(record.difficulty, Boolean(record.hardcore), lang)} · {record.roundSize} ·{' '}
           {formatClock(record.roundMs)}
         </p>
       </div>

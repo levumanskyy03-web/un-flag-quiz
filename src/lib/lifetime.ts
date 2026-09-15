@@ -26,7 +26,7 @@ export interface LifetimeStats {
 }
 
 export function emptyXpByWorld(): Record<QuizWorld, number> {
-  return { geo: 0, football: 0, codes: 0, leaders: 0 }
+  return { geo: 0, football: 0, leaders: 0 }
 }
 
 export function emptyFootballLifetime(): FootballLifetime {
@@ -237,11 +237,15 @@ function parseXpByWorld(value: unknown): Record<QuizWorld, number> {
   const next = emptyXpByWorld()
   if (!value || typeof value !== 'object') return next
   const record = value as Record<string, unknown>
-  for (const world of ['geo', 'football', 'codes', 'leaders'] as const) {
+  for (const world of ['geo', 'football', 'leaders'] as const) {
     const amount = record[world]
     if (typeof amount === 'number' && Number.isFinite(amount) && amount >= 0) {
       next[world] = Math.floor(amount)
     }
+  }
+  const codes = record.codes
+  if (typeof codes === 'number' && Number.isFinite(codes) && codes >= 0) {
+    next.geo += Math.floor(codes)
   }
   return next
 }

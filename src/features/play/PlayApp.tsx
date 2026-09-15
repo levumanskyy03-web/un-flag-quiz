@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { defaultLeadersMode } from "@/components/LeadersScreen";
+import { AppChrome } from "@/components/AppChrome";
 import { type QuizSettings } from "@/components/HomeScreen";
 import { type HubTab } from "@/components/HubNav";
 import { WorldPickScreen, type World } from "@/components/WorldPickScreen";
@@ -24,15 +25,12 @@ import {
   QUESTION_TIME_MS,
   createMixedRound,
   createRound,
-  codeAnswerKey,
-  CODES_MODES,
   LEADERS_MODES,
   FOOTBALL_MODES,
   campaignLevelCount,
   campaignLevelNumbers,
   createFootballRound,
   createFootballMixedRound,
-  createCodesRound,
   createLeadersRound,
   getLevelPool,
   getLearnPool,
@@ -42,7 +40,6 @@ import {
   footballHasDifficulty,
   footballPoolSize,
   isFactsToName,
-  isCodesMode,
   isFootballMode,
   isLeaderPhotoMode,
   isLeadersMode,
@@ -68,8 +65,8 @@ import {
 import { bumpTrainerComplete, clearMistakes, loadMistakes, recordMistakes, clearCorrected, type MistakeEntry } from "@/lib/mistakes";
 import { awardRoundStamps, loadStamps, type StampAlbum } from "@/lib/stamps";
 import { playSfx } from "@/lib/sfx";
+import { softNav } from "@/lib/softNav";
 import { prefetchWikiPortraits } from "@/lib/wikiThumb";
-import { CodesPlay } from "./CodesPlay";
 import { FootballPlay } from "./FootballPlay";
 import { GeoPlay } from "./GeoPlay";
 import { LeadersPlay } from "./LeadersPlay";
@@ -81,7 +78,7 @@ type ResultTone = "success" | "fail" | "gold";
 
 export function worldFromPath(pathname: string): World | null {
   if (pathname === "/football" || pathname.startsWith("/football/")) return "football";
-  if (pathname === "/codes" || pathname.startsWith("/codes/")) return "codes";
+  if (pathname === "/codes" || pathname.startsWith("/codes/")) return "geo";
   if (pathname === "/leaders" || pathname.startsWith("/leaders/")) return "leaders";
   if (pathname === "/geo" || pathname.startsWith("/geo/")) return "geo";
   return null;
@@ -89,6 +86,16 @@ export function worldFromPath(pathname: string): World | null {
 
 export function worldHref(world: World): string {
   return `/${world}`;
+}
+
+function syncWorldAttr(next: World | null) {
+  if (next === "football") {
+    document.documentElement.dataset.world = "football";
+  } else if (next === "leaders") {
+    document.documentElement.dataset.world = "leaders";
+  } else {
+    delete document.documentElement.dataset.world;
+  }
 }
 
 function subscribeLang(onChange: () => void) {
@@ -108,16 +115,19 @@ function publishRatings(clears: LevelClear[], xp: number, createdAt?: number) {
 export default function PlayApp() {
   const router = useRouter();
   const pathname = usePathname();
-  const world = worldFromPath(pathname);
+  const pathWorld = worldFromPath(pathname);
+  const [worldNav, setWorldNav] = useState<World | null | undefined>(undefined);
+  const world = worldNav !== undefined ? worldNav : pathWorld;
   const storedLang = useSyncExternalStore(subscribeLang, getStoredLang, (): Lang => "ru");
   const [lang, setLang] = useState<Lang | null>(null);
   const [settings, setSettings] = useState<Omit<QuizSettings, "lang">>({
     mode: "flagToName",
     mix: null,
+    mixModes: [],
     region: "all",
     difficulty: "easy",
     roundSize: 10,
-    path: "pool",
+    path: "levels",
     level: 1,
     levelHardcore: false,
     levelLives: 3,
@@ -125,7 +135,17 @@ export default function PlayApp() {
     learnFrom: "region",
     includeExtras: false,
   });
-  const [screen, setScreen] = useState<Screen>("home");
+  const [screen, setScreenState] = useState<Screen>("levels");
+  const screenRef = useRef(screen);
+  screenRef.current = screen;
+
+  function setScreen(next: Screen) {
+    if (screenRef.current === next) return;
+    softNav(() => {
+      screenRef.current = next;
+      setScreenState(next);
+    });
+  }
   const [questions, setQuestions] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
   const [selectedIso, setSelectedIso] = useState<string | null>(null);
@@ -188,15 +208,11 @@ export default function PlayApp() {
   }, [resultTone]);
 
   useEffect(() => {
-    if (world === "football") {
-      document.documentElement.dataset.world = "football";
-    } else if (world === "codes") {
-      document.documentElement.dataset.world = "codes";
-    } else if (world === "leaders") {
-      document.documentElement.dataset.world = "leaders";
-    } else {
-      delete document.documentElement.dataset.world;
-    }
+    setWorldNav(undefined);
+  }, [pathname]);
+
+  useEffect(() => {
+    syncWorldAttr(world);
     return () => {
       delete document.documentElement.dataset.world;
     };
@@ -205,46 +221,36 @@ export default function PlayApp() {
   useEffect(() => {
     if (world === "football" && !isFootballMode(settings.mode)) {
       const mode = "playerPhotoToName" as const;
-      const difficulty = footballHasDifficulty(mode)
-        ? settings.difficulty === "medium"
-          ? "hard"
-          : settings.difficulty
-        : "easy";
+      const difficulty =
+        settings.difficulty === "hardcore" || settings.difficulty === "medium" ? "hard" : settings.difficulty
       setSettings((prev) => ({
         ...prev,
         mode,
         mix: null,
-        path: "pool",
+        path: "levels",
         region: "all",
         difficulty,
-      }));
-    } else if (world === "codes" && !isCodesMode(settings.mode)) {
-      setSettings((prev) => ({
-        ...prev,
-        mode: "tldToName",
-        mix: null,
-        path: "pool",
-        region: "all",
-        difficulty: "easy",
+        levelHardcore: prev.levelHardcore || prev.difficulty === "hardcore",
       }));
     } else if (world === "leaders" && !isLeadersMode(settings.mode)) {
       setSettings((prev) => ({
         ...prev,
         mode: defaultLeadersMode(prev.mode),
         mix: null,
-        path: "pool",
+        path: "levels",
         region: "all",
       }));
     } else if (
       world === "geo" &&
-      (isFootballMode(settings.mode) || isCodesMode(settings.mode) || isLeadersMode(settings.mode))
+      (isFootballMode(settings.mode) || isLeadersMode(settings.mode))
     ) {
       setSettings((prev) => ({
         ...prev,
         mode: "flagToName",
         mix: null,
-        path: "pool",
-        difficulty: prev.difficulty === "medium" ? "hard" : prev.difficulty,
+        path: "levels",
+        difficulty: prev.difficulty === "medium" || prev.difficulty === "hardcore" ? "hard" : prev.difficulty,
+        levelHardcore: prev.levelHardcore || prev.difficulty === "hardcore",
       }));
     }
   }, [world, settings.mode, settings.difficulty]);
@@ -425,10 +431,13 @@ export default function PlayApp() {
               roundMs: finishedMs,
               mode: quizSettings.mode,
               mix: quizSettings.path === "pool" ? quizSettings.mix ?? undefined : undefined,
+              mixModes:
+                quizSettings.path === "pool" && quizSettings.mix === "custom" ? quizSettings.mixModes : undefined,
               region: isFootballMode(quizSettings.mode) ? "all" : quizSettings.region,
-              difficulty: footballDifficulty,
+              difficulty: footballDifficulty === "hardcore" ? "hard" : footballDifficulty,
               roundSize: questions.length,
               endedBy,
+              hardcore: quizSettings.levelHardcore || quizSettings.difficulty === "hardcore",
               includeExtras:
                 quizSettings.path === "pool" && !isFootballMode(quizSettings.mode) && !isLeadersMode(quizSettings.mode)
                   ? quizSettings.includeExtras
@@ -499,10 +508,11 @@ export default function PlayApp() {
         modeFallback: quizSettings.mode,
         difficulty:
           quizSettings.path === "levels"
-            ? quizSettings.levelHardcore
-              ? "hardcore"
-              : "hard"
-            : quizSettings.difficulty,
+            ? "hard"
+            : quizSettings.difficulty === "hardcore"
+              ? "hard"
+              : quizSettings.difficulty,
+        hardcore: quizSettings.levelHardcore || quizSettings.difficulty === "hardcore",
         endedBy,
       }),
     );
@@ -531,8 +541,9 @@ export default function PlayApp() {
     }
     setLang(next.lang);
     setSettings({
-      mode: next.mode,
+      mode: isRankingMode(next.mode) ? "flagToName" : next.mode,
       mix: next.mix,
+      mixModes: next.mixModes,
       region: next.region,
       difficulty: next.difficulty,
       roundSize: next.roundSize,
@@ -556,7 +567,7 @@ export default function PlayApp() {
     const mix = path === "pool" ? quizSettings.mix : null;
     const round = mix
       ? createMixedRound(
-          modesForMix(mix),
+          modesForMix(mix, "geo", quizSettings.mixModes),
           getRegionPool(quizSettings.region, quizSettings.includeExtras),
           size,
           (country, mode) => answerKey(country, mode),
@@ -588,12 +599,12 @@ export default function PlayApp() {
   }
 
   function startRound() {
-    if (world === "leaders" || isLeadersMode(quizSettings.mode)) {
-      startLeadersRound();
+    if (isRankingMode(quizSettings.mode)) {
+      setSettings((prev) => ({ ...prev, mode: "flagToName" }));
       return;
     }
-    if (world === "codes" || isCodesMode(quizSettings.mode)) {
-      startCodesRound();
+    if (world === "leaders" || isLeadersMode(quizSettings.mode)) {
+      startLeadersRound();
       return;
     }
     if (world === "football" || isFootballMode(quizSettings.mode)) {
@@ -617,7 +628,7 @@ export default function PlayApp() {
     const mix = path === "levels" ? null : quizSettings.mix;
     const difficulty = quizSettings.difficulty;
     if (mix) {
-      const modes = modesForFootballMix(mix);
+      const modes = modesForFootballMix(mix, quizSettings.mixModes);
       const round = createFootballMixedRound(modes, years ? years.length : quizSettings.roundSize, difficulty);
       if (round.length === 0) return;
       beginPreparedRound(round, path, level, {
@@ -647,17 +658,6 @@ export default function PlayApp() {
       mix: null,
       region: "all",
       difficulty,
-    });
-  }
-
-  function startCodesRound(path: PlayPath = "pool") {
-    const mode = isCodesMode(quizSettings.mode) ? quizSettings.mode : "tldToName";
-    const round = createCodesRound(mode, quizSettings.roundSize, quizSettings.includeExtras);
-    if (round.length === 0) return;
-    beginPreparedRound(round, path, quizSettings.level, {
-      mode,
-      mix: null,
-      region: "all",
     });
   }
 
@@ -779,21 +779,25 @@ export default function PlayApp() {
     setScreen("map");
   }
 
+  function campaignModeForLevels(mode: QuizSettings["mode"]): QuizSettings["mode"] {
+    if (mode === "playerFactsToName") return "playerPhotoToName";
+    if (
+      mode === "neighborsToName" ||
+      mode === "factsToName" ||
+      mode === "nameToLanguage" ||
+      mode === "nameToGov" ||
+      isRankingMode(mode)
+    ) {
+      return "flagToName";
+    }
+    return mode;
+  }
+
   function openLevels() {
     setSettings((prev) => ({
       ...prev,
       path: "levels",
-      mode:
-        prev.mode === "playerFactsToName"
-          ? "playerPhotoToName"
-          : prev.mode === "neighborsToName" ||
-            prev.mode === "factsToName" ||
-            prev.mode === "nameToLanguage" ||
-            prev.mode === "nameToGov" ||
-            isCodesMode(prev.mode) ||
-            isRankingMode(prev.mode)
-          ? "flagToName"
-          : prev.mode,
+      mode: campaignModeForLevels(prev.mode),
     }));
     setScreen("levels");
   }
@@ -834,27 +838,25 @@ export default function PlayApp() {
     setScreen("home");
   }
 
-  function startPractice() {
+  function startPractice(isos?: string[]) {
     if (isFootballMode(quizSettings.mode)) {
       startFootballRound("learn", quizSettings.level);
       return;
     }
     if (isLeadersMode(quizSettings.mode)) {
-      const isos =
-        quizSettings.learnFrom === "level"
-          ? getLearnPool(
-              quizSettings.learnFrom,
-              quizSettings.region,
-              quizSettings.level,
-              quizSettings.mode,
-              quizSettings.includeExtras,
-            ).map((country) => country.iso)
-          : undefined;
-      startLeadersRound("learn", isos);
-      return;
-    }
-    if (isCodesMode(quizSettings.mode)) {
-      startCodesRound("learn");
+      const ids =
+        isos?.length
+          ? isos
+          : quizSettings.learnFrom === "level"
+            ? getLearnPool(
+                quizSettings.learnFrom,
+                quizSettings.region,
+                quizSettings.level,
+                quizSettings.mode,
+                quizSettings.includeExtras,
+              ).map((country) => country.iso)
+            : undefined;
+      startLeadersRound("learn", ids);
       return;
     }
     const pool = getLearnPool(
@@ -884,18 +886,6 @@ export default function PlayApp() {
       const isos = mistakeList.filter((item) => item.mode === quizSettings.mode).map((item) => item.iso);
       if (isos.length === 0) return;
       startLeadersRound("mistakes", isos);
-      return;
-    }
-    if (isCodesMode(quizSettings.mode)) {
-      const isos = new Set(mistakeList.filter((item) => item.mode === quizSettings.mode).map((item) => item.iso));
-      const pool = getRegionPool("all", true).filter((country) => isos.has(country.iso));
-      if (pool.length === 0) return;
-      const mode = quizSettings.mode;
-      beginPreparedRound(
-        createRound(pool, pool.length, (country) => codeAnswerKey(country, mode), mode),
-        "mistakes",
-        quizSettings.level,
-      );
       return;
     }
     const pool = getRegionPool(quizSettings.region, true).filter((country) =>
@@ -971,9 +961,14 @@ export default function PlayApp() {
   }
 
   function goToWorlds() {
-    roundStartRef.current = null
-    setScreen('home')
-    router.push('/')
+    roundStartRef.current = null;
+    softNav(() => {
+      syncWorldAttr(null);
+      setWorldNav(null);
+      screenRef.current = "home";
+      setScreenState("home");
+      router.push("/");
+    });
   }
 
   function goBackFromPlay() {
@@ -994,7 +989,7 @@ export default function PlayApp() {
       setScreen("home");
       return;
     }
-    if (world === "codes" || world === "leaders") {
+    if (world === "leaders") {
       if (quizSettings.path === "learn") {
         setScreen("learn");
         return;
@@ -1031,7 +1026,7 @@ export default function PlayApp() {
   }
 
   function handleClearHistory() {
-    setHistory(clearHistory((item) => isFootballMode(item.mode) || isCodesMode(item.mode) || isLeadersMode(item.mode)));
+    setHistory(clearHistory((item) => isFootballMode(item.mode) || isLeadersMode(item.mode)));
   }
 
   function handleClearBests() {
@@ -1040,10 +1035,6 @@ export default function PlayApp() {
 
   function handleClearFootballHistory() {
     setHistory(clearHistory((item) => !isFootballMode(item.mode)));
-  }
-
-  function handleClearCodesHistory() {
-    setHistory(clearHistory((item) => !isCodesMode(item.mode)));
   }
 
   function handleClearLeadersHistory() {
@@ -1078,14 +1069,12 @@ export default function PlayApp() {
     mistakeList,
     handleSettingsChange,
     startFootballRound,
-    startCodesRound,
     startLeadersRound,
     startRound,
     goHub,
     goToWorlds,
     goBackFromPlay,
     handleClearFootballHistory,
-    handleClearCodesHistory,
     handleClearLeadersHistory,
     handleClearHistory,
     handleClearBests,
@@ -1104,7 +1093,7 @@ export default function PlayApp() {
   };
 
   return (
-    <div className={`app${resultTone ? ` is-${resultTone}` : ""}${world === "football" ? " is-football" : ""}${world === "codes" ? " is-codes" : ""}${world === "leaders" ? " is-leaders" : ""}`}>
+    <div className={`app${resultTone ? ` is-${resultTone}` : ""}${world === "football" ? " is-football" : ""}${world === "leaders" ? " is-leaders" : ""}${world === null ? " is-worlds" : ""}`}>
       {world === "geo" ? (
         <div className="map-marks" aria-hidden="true">
           <span className="map-marks-n">N</span>
@@ -1126,72 +1115,70 @@ export default function PlayApp() {
           <span className="pitch-box is-bottom" />
         </div>
       ) : null}
+      <AppChrome
+        settings={quizSettings}
+        history={history}
+        bests={bests}
+        levelClears={levelClears}
+        xp={xp}
+        xpReady={xpReady}
+        onChange={handleSettingsChange}
+        onClearBests={handleClearBests}
+      />
       {world === null && (
         <WorldPickScreen
           settings={quizSettings}
-          history={history}
-          bests={bests}
-          levelClears={levelClears}
-          xp={xp}
-          xpReady={xpReady}
-          onChange={handleSettingsChange}
-          onClearBests={handleClearBests}
           onPick={(next) => {
-            if (next === "football") {
-              const mode = isFootballMode(quizSettings.mode) ? quizSettings.mode : "playerPhotoToName"
-              const difficulty = footballHasDifficulty(mode)
-                ? quizSettings.difficulty === "medium"
-                  ? "hard"
-                  : quizSettings.difficulty
-                : "easy"
-              handleSettingsChange({
-                ...quizSettings,
-                mode,
-                mix: null,
-                path: "pool",
-                region: "all",
-                difficulty,
-              })
-            } else if (next === "codes") {
-              handleSettingsChange({
-                ...quizSettings,
-                mode: isCodesMode(quizSettings.mode) ? quizSettings.mode : "tldToName",
-                mix: null,
-                path: "pool",
-                region: "all",
-                difficulty: "easy",
-              })
-            } else if (next === "leaders") {
-              handleSettingsChange({
-                ...quizSettings,
-                mode: defaultLeadersMode(quizSettings.mode),
-                mix: null,
-                path: "pool",
-                region: "all",
-              })
-            } else if (next === "geo" && (isFootballMode(quizSettings.mode) || isCodesMode(quizSettings.mode) || isLeadersMode(quizSettings.mode))) {
-              handleSettingsChange({
-                ...quizSettings,
-                mode: "flagToName",
-                mix: null,
-                path: "pool",
-                difficulty: quizSettings.difficulty === "medium" ? "hard" : quizSettings.difficulty,
-              })
-            }
-            setScreen("home");
-            router.push(worldHref(next));
+            softNav(() => {
+              setSettings((prev) => {
+                let nextSettings = prev;
+                if (next === "football") {
+                  const mode = isFootballMode(prev.mode) ? prev.mode : "playerPhotoToName";
+                  const difficulty =
+                    prev.difficulty === "medium" || prev.difficulty === "hardcore" ? "hard" : prev.difficulty;
+                  nextSettings = {
+                    ...prev,
+                    mode,
+                    mix: null,
+                    region: "all",
+                    difficulty,
+                    levelHardcore: prev.levelHardcore || prev.difficulty === "hardcore",
+                  };
+                } else if (next === "leaders") {
+                  nextSettings = {
+                    ...prev,
+                    mode: defaultLeadersMode(prev.mode),
+                    mix: null,
+                    region: "all",
+                  };
+                } else if (next === "geo" && (isFootballMode(prev.mode) || isLeadersMode(prev.mode))) {
+                  nextSettings = {
+                    ...prev,
+                    mode: "flagToName",
+                    mix: null,
+                    difficulty:
+                      prev.difficulty === "medium" || prev.difficulty === "hardcore" ? "hard" : prev.difficulty,
+                    levelHardcore: prev.levelHardcore || prev.difficulty === "hardcore",
+                  };
+                }
+                return {
+                  ...nextSettings,
+                  path: "levels",
+                  mode: campaignModeForLevels(nextSettings.mode),
+                };
+              });
+              syncWorldAttr(next);
+              setWorldNav(next);
+              screenRef.current = "levels";
+              setScreenState("levels");
+              router.push(worldHref(next));
+            });
           }}
         />
       )}
       {world === "football" ? <FootballPlay play={play} /> : null}
-      {world === "codes" ? <CodesPlay play={play} /> : null}
       {world === "leaders" ? <LeadersPlay play={play} /> : null}
       {world === "geo" ? <GeoPlay play={play} /> : null}
-      <nav className="catalog-links">
-        <a href="/countries">{STRINGS[quizSettings.lang].legalCountries}</a>
-        <a href="/languages">{STRINGS[quizSettings.lang].legalLanguages}</a>
-        <a href="/today">{STRINGS[quizSettings.lang].legalToday}</a>
-      </nav>
       <footer className="legal-footer">
         <nav className="legal-links">
           <a href="/about">{STRINGS[quizSettings.lang].legalAbout}</a>

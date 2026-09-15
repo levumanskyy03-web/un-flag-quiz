@@ -3,12 +3,13 @@ import { STRINGS, type Lang } from '../i18n/strings'
 interface WorldsBackProps {
   lang: Lang
   onClick: () => void
+  label?: string
 }
 
-export function WorldsBack({ lang, onClick }: WorldsBackProps) {
+export function WorldsBack({ lang, onClick, label }: WorldsBackProps) {
   return (
     <button type="button" className="btn-ghost worlds-back" onClick={onClick}>
-      {STRINGS[lang].worldsBack}
+      {label ?? STRINGS[lang].worldsBack}
     </button>
   )
 }

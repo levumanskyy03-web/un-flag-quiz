@@ -1,69 +1,58 @@
 import { STRINGS } from '../i18n/strings'
-import type { RoundRecord } from '../lib/history'
-import type { LevelClear } from '../lib/levelProgress'
-import { AppChrome } from './AppChrome'
 import { GeoIcon } from './GeoIcon'
 import type { QuizSettings } from './HomeScreen'
 
-export type World = 'geo' | 'football' | 'codes' | 'leaders'
+export type World = 'geo' | 'football' | 'leaders'
 
 interface WorldPickScreenProps {
   settings: QuizSettings
-  history: RoundRecord[]
-  bests: RoundRecord[]
-  levelClears: LevelClear[]
-  xp?: number
-  xpReady?: boolean
-  onChange: (settings: QuizSettings) => void
   onPick: (world: World) => void
-  onClearBests?: () => void
 }
 
-export function WorldPickScreen({
-  settings,
-  history,
-  bests,
-  levelClears,
-  xp = 0,
-  xpReady = false,
-  onChange,
-  onPick,
-  onClearBests,
-}: WorldPickScreenProps) {
+export function WorldPickScreen({ settings, onPick }: WorldPickScreenProps) {
   const t = STRINGS[settings.lang]
 
   return (
     <div className="screen world-pick-screen">
       <header className="home-header">
-        <AppChrome
-          settings={settings}
-          history={history}
-          bests={bests}
-          levelClears={levelClears}
-          xp={xp}
-          xpReady={xpReady}
-          onChange={onChange}
-          onClearBests={onClearBests}
-        />
         <h1>{t.worldsPick}</h1>
       </header>
 
-      <div className="choice-grid world-pick-grid">
-        <button type="button" className="choice is-wide world-pick" onClick={() => onPick('geo')}>
-          <GeoIcon name="globe" size={22} />
-          {t.geography}
+      <div className="world-pick-grid">
+        <button type="button" className="world-pick is-geo" onClick={() => onPick('geo')}>
+          <span className="world-pick-art" aria-hidden="true">
+            <span className="wp-book">
+              <span className="wp-cover" />
+              <span className="wp-page" />
+            </span>
+          </span>
+          <span className="world-pick-copy">
+            <GeoIcon name="globe" size={22} />
+            {t.geography}
+          </span>
         </button>
-        <button type="button" className="choice is-wide world-pick" onClick={() => onPick('football')}>
-          <GeoIcon name="ball" size={24} />
-          {t.football}
+        <button type="button" className="world-pick is-football" onClick={() => onPick('football')}>
+          <span className="world-pick-art" aria-hidden="true">
+            <span className="wp-ticket">
+              <span className="wp-led" />
+              <span className="wp-pitch" />
+            </span>
+          </span>
+          <span className="world-pick-copy">
+            <GeoIcon name="ball" size={24} />
+            {t.football}
+          </span>
         </button>
-        <button type="button" className="choice is-wide world-pick" onClick={() => onPick('codes')}>
-          <GeoIcon name="hash" size={22} />
-          {t.codes}
-        </button>
-        <button type="button" className="choice is-wide world-pick" onClick={() => onPick('leaders')}>
-          <GeoIcon name="crown" size={22} />
-          {t.leaders}
+        <button type="button" className="world-pick is-leaders" onClick={() => onPick('leaders')}>
+          <span className="world-pick-art" aria-hidden="true">
+            <span className="wp-decree">
+              <span className="wp-bust" />
+            </span>
+          </span>
+          <span className="world-pick-copy">
+            <GeoIcon name="bust" size={22} />
+            {t.leaders}
+          </span>
         </button>
       </div>
     </div>

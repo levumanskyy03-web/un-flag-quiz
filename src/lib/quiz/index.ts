@@ -1,4 +1,3 @@
-import { COUNTRY_CODES } from '../../data/countryCodes'
 import { footballCampaignLevels, footballLevelPlayerIds, footballLevelYears } from '../../data/footballLevels'
 import { LEVEL_COUNT } from '../../data/levels'
 import { quizLanguageId } from '../../data/languages'
@@ -7,7 +6,6 @@ import { canAskWater, countryForWater, isWaterMapMode, isWaterMode, waterCampaig
 import { rankingPlaceOf } from '../../data/rankings'
 import {
   FOOTBALL_MODES,
-  isCodesMode,
   isFootballMode,
   isLeadersMode,
   isManagerFootballMode,
@@ -47,7 +45,6 @@ export function campaignLevelNumbers(mode: QuizMode): number[] {
 export function campaignModesForWorld(world: QuizWorld): QuizMode[] {
   if (world === 'football') return [...FOOTBALL_MODES]
   if (world === 'leaders') return [...LEADERS_MODES]
-  if (world === 'codes') return []
   return [...LEVEL_MODES]
 }
 
@@ -101,9 +98,6 @@ export function getLearnPool(
     }
     const years = learnFrom === 'level' ? footballLevelYears(mode, level) : undefined
     return footballLearnCountries(mode, years)
-  }
-  if (isCodesMode(mode)) {
-    return getRegionPool(region, includeExtras).filter((country) => COUNTRY_CODES[country.iso])
   }
   if (isLeadersMode(mode)) {
     return learnFrom === 'level' ? getLevelPool(level, mode) : leaderLearnCountries(mode)

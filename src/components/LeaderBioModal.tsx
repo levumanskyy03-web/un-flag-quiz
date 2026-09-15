@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { formatLeaderNumbers, leaderShowsNumber, personYearsLabel, type LeaderTerm } from '../data/leaders'
 import { portraitFileForTerm } from '../data/leaderPortraitFiles'
-import { leaderBio } from '../data/leaderBios'
+import { leaderBio, leaderFeat } from '../data/leaderBios'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { LeaderPortrait } from './LeaderPortrait'
+import { LeaderNoteMark } from './LeaderNoteMark'
 
 interface LeaderBioModalProps {
   term: LeaderTerm
@@ -15,6 +16,7 @@ export function LeaderBioModal({ term, lang, onClose }: LeaderBioModalProps) {
   const t = STRINGS[lang]
   const name = lang === 'ru' ? term.ru : term.en
   const bio = leaderBio(term, lang)
+  const feat = leaderFeat(term, lang)
   const numbers = formatLeaderNumbers(term)
   const years = personYearsLabel(term, t.present)
 
@@ -49,6 +51,13 @@ export function LeaderBioModal({ term, lang, onClose }: LeaderBioModalProps) {
           {name}
         </h2>
         <p className="learn-card-meta">{years}</p>
+        <LeaderNoteMark term={term} lang={lang} />
+        {feat ? (
+          <p className="leader-feat">
+            <span className="leader-feat-label">{t.leaderFeat}</span>
+            {feat}
+          </p>
+        ) : null}
         {bio ? <p className="leader-bio-text">{bio}</p> : null}
       </div>
     </div>

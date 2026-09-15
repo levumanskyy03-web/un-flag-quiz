@@ -3,16 +3,16 @@ import { termById, yearsLabel } from '../data/leaders'
 import { portraitFileForTerm } from '../data/leaderPortraitFiles'
 import { playerById } from '../data/footballPlayers'
 import { footballTeamCountry } from '../data/worldCup'
-import { STRINGS, modeLabel } from '../i18n/strings'
+import { STRINGS } from '../i18n/strings'
 import { codePromptLabel, countryName, isCodesMode, isFootballMode, isLeadersMode, isPlayerFootballMode, type QuizMode } from '../lib/quiz'
 import { GeoModeGrids } from './GeoModeGrids'
 import { FootballSetup } from './FootballModeGrids'
 import { geoMistakeCountries, type MistakeEntry } from '../lib/mistakes'
 import type { QuizSettings } from './HomeScreen'
 import { Flag, TeamFlag } from './Flag'
-import { FitText, ChoiceLabel } from './FitText'
+import { FitText } from './FitText'
 import { LeaderPortrait } from './LeaderPortrait'
-import { HubNav, type HubTab } from './HubNav'
+import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
 import { LeadersSetup } from './LeadersScreen'
 import { WorldsBack } from './WorldsBack'
 
@@ -31,7 +31,6 @@ interface MistakesScreenProps {
 export function MistakesScreen({
   settings,
   mistakes,
-  modes,
   tabs,
   onChange,
   onHub,
@@ -41,12 +40,11 @@ export function MistakesScreen({
 }: MistakesScreenProps) {
   const t = STRINGS[settings.lang]
   const football = isFootballMode(settings.mode)
-  const codes = isCodesMode(settings.mode)
   const leaders = isLeadersMode(settings.mode)
-  const byMode = football || codes || leaders
+  const byMode = football || leaders
   const list = byMode ? mistakes.filter((item) => item.mode === settings.mode) : geoMistakeCountries(mistakes)
   const empty = list.length === 0
-  const hubTabs = tabs ?? (football || leaders ? (['free', 'levels', 'learn', 'mistakes'] as HubTab[]) : undefined)
+  const hubTabs = tabs ?? (football || leaders ? WORLD_HUB_TABS : undefined)
 
   return (
     <div className="screen mistakes-screen">
@@ -64,24 +62,11 @@ export function MistakesScreen({
           settings={settings}
           onChange={(next) => onChange({ ...next, mix: null, path: 'mistakes' })}
         />
-      ) : codes ? (
-        <div className="choice-grid is-modes">
-          {modes.map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              className={`choice ${settings.mode === mode ? 'is-active' : ''}`}
-              aria-pressed={settings.mode === mode}
-              onClick={() => onChange({ ...settings, mode, mix: null, path: 'mistakes' })}
-            >
-              <ChoiceLabel>{modeLabel(mode, settings.lang)}</ChoiceLabel>
-            </button>
-          ))}
-        </div>
       ) : (
         <GeoModeGrids
           lang={settings.lang}
           activeMode={settings.mode}
+          showRankings={false}
           onPick={(mode) => onChange({ ...settings, mode, mix: null, path: 'mistakes' })}
         />
       )}
@@ -108,7 +93,7 @@ export function MistakesScreen({
                     : country
                       ? countryName(country, settings.lang)
                       : item.iso
-                  const codeLabel = codes && country ? codePromptLabel(country, item.mode) : ''
+                  const codeLabel = isCodesMode(item.mode) && country ? codePromptLabel(country, item.mode) : ''
                   return (
                     <div key={`${item.mode}:${item.iso}:${item.year ?? ''}`} className="learn-card">
                       {leaders && term ? (

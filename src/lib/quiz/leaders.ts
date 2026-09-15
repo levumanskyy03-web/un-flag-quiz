@@ -1,6 +1,5 @@
 import {
   leaderCountry,
-  leaderShowsNumber,
   neighborsByNumber,
   termsForKind,
   uniquePersons,
@@ -35,9 +34,8 @@ export function leaderLearnCountries(mode: LeadersMode): Country[] {
   const kind = leaderKindOf(mode)
   if (!kind) return []
   const terms = termsForKind(kind)
-  if (kind === 'us') return terms.map(leaderCountry)
-  const list = isLeaderPhotoMode(mode) || !leaderShowsNumber(kind) ? uniquePersons(terms) : terms
-  return list.map(leaderCountry)
+  if (isLeaderPhotoMode(mode) && kind !== 'us') return uniquePersons(terms).map(leaderCountry)
+  return terms.map(leaderCountry)
 }
 
 function rankLeaderTerms(terms: LeaderTerm[]): LeaderTerm[] {
@@ -77,10 +75,11 @@ export function createLeadersRound(
   const distractors = isos?.length ? full : pool
   const picked: LeaderTerm[] = []
   const seenPeople = new Set<string>()
+  const collapsePeople = isLeaderPhotoMode(mode) || !isos?.length
   for (const term of shuffle(pool)) {
     if (picked.length >= count) break
-    if (seenPeople.has(term.personId)) continue
-    seenPeople.add(term.personId)
+    if (collapsePeople && seenPeople.has(term.personId)) continue
+    if (collapsePeople) seenPeople.add(term.personId)
     picked.push(term)
   }
   const questions: Question[] = []

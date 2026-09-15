@@ -1,5 +1,6 @@
 "use client";
 
+import { WORLD_HUB_TABS } from "@/components/HubNav";
 import { defaultLeadersMode, LeadersScreen } from "@/components/LeadersScreen";
 import { LearnScreen } from "@/components/LearnScreen";
 import { LevelsScreen } from "@/components/LevelsScreen";
@@ -24,33 +25,24 @@ export function LeadersPlay({ play }: { play: PlaySession }) {
           settings={play.quizSettings}
           history={play.history.filter((item) => isLeadersMode(item.mode))}
           bests={play.bests.filter((item) => isLeadersMode(item.mode))}
-          levelClears={play.levelClears}
-          xp={play.xp}
-          xpReady={play.xpReady}
           onChange={play.handleSettingsChange}
           onStart={() => play.startLeadersRound()}
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
           onClearHistory={play.handleClearLeadersHistory}
-          onClearBests={play.handleClearBests}
         />
       )}
       {play.screen === "levels" && (
         <LevelsScreen
           settings={play.quizSettings}
           levelClears={play.levelClears}
-          history={play.history}
-          bests={play.bests}
-          xp={play.xp}
-          xpReady={play.xpReady}
           modes={LEADERS_MODES}
           levels={campaignLevelNumbers(defaultLeadersMode(play.quizSettings.mode))}
-          tabs={["free", "levels", "learn", "mistakes"]}
+          tabs={WORLD_HUB_TABS}
           onChange={play.handleSettingsChange}
           onPlay={play.playLevel}
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
-          onClearBests={play.handleClearBests}
         />
       )}
       {play.screen === "learn" && (
@@ -68,7 +60,7 @@ export function LeadersPlay({ play }: { play: PlaySession }) {
           settings={play.quizSettings}
           mistakes={play.mistakeList}
           modes={LEADERS_MODES}
-          tabs={["free", "levels", "learn", "mistakes"]}
+          tabs={WORLD_HUB_TABS}
           onChange={play.handleSettingsChange}
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
@@ -102,11 +94,7 @@ export function LeadersPlay({ play }: { play: PlaySession }) {
         <ResultsScreen
           lang={play.quizSettings.lang}
           mode={play.quizSettings.mode}
-          hardcore={
-            play.quizSettings.path === "levels"
-              ? play.quizSettings.levelHardcore
-              : play.quizSettings.difficulty === "hardcore"
-          }
+          hardcore={play.quizSettings.levelHardcore || play.quizSettings.difficulty === "hardcore"}
           answers={play.answers}
           roundMs={play.roundMs}
           endedBy={play.endedBy}

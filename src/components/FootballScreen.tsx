@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react'
-import { STRINGS, difficultyLabel, localeTag, mixLabel, modeLabel, type Lang } from '../i18n/strings'
+import { STRINGS, localeTag, mixLabel, modeLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
-import type { LevelClear } from '../lib/levelProgress'
 import {
-  FACTS_DIFFICULTIES,
   FOOTBALL_MODES,
-  LEADERS_DIFFICULTIES,
-  PLAY_DIFFICULTIES,
-  ROUND_SIZES,
   fitRoundSize,
   footballMixPoolSize,
   footballPoolSize,
@@ -17,75 +12,76 @@ import {
   modesForFootballMix,
 } from '../lib/quiz'
 import type { FactsDuelConfig } from '../lib/factsRules'
-import { AppChrome } from './AppChrome'
 import { DuelCreateModal } from './DuelCreateModal'
-import { FootballModeGrids, FootballSetup } from './FootballModeGrids'
 import { GeoIcon } from './GeoIcon'
-import { HubNav, type HubTab } from './HubNav'
+import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
+import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
-import { FitText, ChoiceLabel } from './FitText'
+import { FitText } from './FitText'
+import { setupDifficultyText } from './DifficultyPicker'
 import { footballPlayerPool } from '../data/footballPlayers'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
+import {
+  FOOTBALL_PLAY_FAMILIES,
+  difficultyForMode,
+  footballFamilyLabel,
+  footballFamilyOf,
+  settingsForFootballFamily,
+} from '../lib/modeFamilies'
 
 interface FootballScreenProps {
   settings: QuizSettings
   history: RoundRecord[]
   bests: RoundRecord[]
-  levelClears: LevelClear[]
-  xp?: number
-  xpReady?: boolean
   onChange: (settings: QuizSettings) => void
   onStart: () => void
   onHub: (tab: HubTab) => void
   onWorlds: () => void
   onCreateDuel: (modes: QuizSettings['mode'][], facts?: FactsDuelConfig) => void
+  onMatchDuel: (modes: QuizSettings['mode'][], facts?: FactsDuelConfig) => void
   onJoinDuel: (code: string) => void
   duelError?: string | null
   onClearHistory: () => void
-  onClearBests: () => void
 }
 
 export function FootballScreen({
   settings,
   history,
   bests,
-  levelClears,
-  xp = 0,
-  xpReady = false,
   onChange,
   onStart,
   onHub,
   onWorlds,
   onCreateDuel,
+  onMatchDuel,
   onJoinDuel,
   duelError,
   onClearHistory,
-  onClearBests,
 }: FootballScreenProps) {
   const t = STRINGS[settings.lang]
   const mix = settings.mix
-  const factsMode = !mix && isPlayerFactsToName(settings.mode)
   const photoMode = !mix && isPlayerPhotoMode(settings.mode)
-  const difficulties = factsMode ? FACTS_DIFFICULTIES : photoMode ? LEADERS_DIFFICULTIES : PLAY_DIFFICULTIES
   const poolSize = mix
-    ? footballMixPoolSize(mix, settings.difficulty)
+    ? footballMixPoolSize(mix, settings.difficulty, settings.mixModes)
     : footballPoolSize(settings.mode, settings.difficulty)
   const currentBest = findBest(bests, settings)
   const [joinCode, setJoinCode] = useState('')
-  const [duelSetupOpen, setDuelSetupOpen] = useState(false)
+  const [duelSetup, setDuelSetup] = useState<'create' | 'match' | null>(null)
+  const [setupFamily, setSetupFamily] = useState<SetupFamily | null>(null)
+  const activeFamily = footballFamilyOf(settings.mode, settings.mix)
 
   useEffect(() => {
     const photo =
       photoMode ||
-      (mix ? modesForFootballMix(mix).some((mode) => isPlayerPhotoMode(mode) || isPlayerFactsToName(mode)) : false)
+      (mix ? modesForFootballMix(mix, settings.mixModes).some((mode) => isPlayerPhotoMode(mode) || isPlayerFactsToName(mode)) : false)
     if (!photo) return
     prefetchWikiPortraits(
       footballPlayerPool(settings.difficulty)
         .map((player) => ({ title: player.wiki, file: player.wikiFile }))
         .slice(0, 24),
     )
-  }, [mix, photoMode, settings.difficulty])
+  }, [mix, photoMode, settings.difficulty, settings.mixModes])
 
   function update(patch: Partial<QuizSettings>) {
     const next = { ...settings, ...patch }
@@ -94,7 +90,7 @@ export function FootballScreen({
       roundSize: fitRoundSize(
         next.roundSize,
         next.mix
-          ? footballMixPoolSize(next.mix, next.difficulty)
+          ? footballMixPoolSize(next.mix, next.difficulty, next.mixModes)
           : footballPoolSize(next.mode, next.difficulty),
       ),
     })
@@ -104,31 +100,14 @@ export function FootballScreen({
     update({
       ...next,
       path: 'pool',
-      difficulty: isPlayerFactsToName(next.mode)
-        ? next.difficulty === 'hardcore'
-          ? 'hard'
-          : next.difficulty
-        : isPlayerPhotoMode(next.mode)
-          ? next.difficulty
-          : PLAY_DIFFICULTIES.includes(next.difficulty)
-            ? next.difficulty
-            : 'easy',
+      difficulty: difficultyForMode(next.mode, next.difficulty),
+      levelHardcore: next.levelHardcore || next.difficulty === 'hardcore',
     })
   }
 
   return (
     <div className="screen football-screen">
       <header className="home-header">
-        <AppChrome
-          settings={settings}
-          history={history}
-          bests={bests}
-          levelClears={levelClears}
-          xp={xp}
-          xpReady={xpReady}
-          onChange={onChange}
-          onClearBests={onClearBests}
-        />
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1 className="football-title">
           <GeoIcon name="ball" size={34} />
@@ -136,82 +115,50 @@ export function FootballScreen({
         </h1>
       </header>
 
-      <HubNav lang={settings.lang} active="free" tabs={['free', 'levels', 'learn', 'mistakes']} onSelect={onHub} />
+      <HubNav lang={settings.lang} active="free" tabs={WORLD_HUB_TABS} onSelect={onHub} />
 
       <section className="card settings-card">
-        <div className="choice-grid">
-          <button
-            type="button"
-            className={`choice has-note is-wide ${mix === 'easy' ? 'is-active' : ''}`}
-            aria-pressed={mix === 'easy'}
-            onClick={() => update({ path: 'pool', mix: 'easy', mode: 'wcWinners' })}
-          >
-            <FitText minPx={9}>{t.easyMix}</FitText>
-            <FitText className="choice-note" wrap minPx={7}>
-              {t.footballEasyMixNote}
-            </FitText>
-          </button>
-          <button
-            type="button"
-            className={`choice has-note is-wide ${mix === 'hard' ? 'is-active' : ''}`}
-            aria-pressed={mix === 'hard'}
-            onClick={() => update({ path: 'pool', mix: 'hard', mode: 'wcWinners' })}
-          >
-            <FitText minPx={9}>{t.hardMix}</FitText>
-            <FitText className="choice-note" wrap minPx={7}>
-              {t.footballHardMixNote}
-            </FitText>
-          </button>
-        </div>
-        {mix ? (
-          <FootballModeGrids
-            lang={settings.lang}
-            activeMode={settings.mode}
-            mix
-            selectedModes={modesForFootballMix(mix)}
-            onPick={(mode) => applyFootballSettings({ ...settings, mix: null, mode })}
-          />
-        ) : (
-          <FootballSetup settings={settings} onChange={applyFootballSettings} />
-        )}
-
-        <h2>{t.difficulty}</h2>
-        <div className={`choice-grid ${difficulties.length === 4 ? 'is-4' : 'is-3'}`}>
-          {difficulties.map((difficulty) => (
+        <h2>{t.mode}</h2>
+        <div className="choice-grid is-modes">
+          {FOOTBALL_PLAY_FAMILIES.map((id) => (
             <button
-              key={difficulty}
+              key={id}
               type="button"
-              className={`choice ${settings.difficulty === difficulty ? 'is-active' : ''}`}
-              aria-pressed={settings.difficulty === difficulty}
-              onClick={() => update({ path: 'pool', difficulty, levelHardcore: difficulty === 'hardcore' })}
+              className={`choice ${activeFamily === id ? 'is-active' : ''}`}
+              aria-pressed={activeFamily === id}
+              onClick={() => {
+                applyFootballSettings({ ...settings, ...settingsForFootballFamily(settings, id) })
+                setSetupFamily({ world: 'football', id })
+              }}
             >
-              <ChoiceLabel>{difficultyLabel(difficulty, settings.lang)}</ChoiceLabel>
+              <FitText minPx={9}>{footballFamilyLabel(id, settings.lang)}</FitText>
             </button>
           ))}
         </div>
-
-        {factsMode ? <p className="setting-hint">{t.playerFactsHint}</p> : null}
-
-        {factsMode ? null : (
-        <>
-        <h2>{t.footballRoundSize}</h2>
-        <div className="choice-grid is-3">
-          {ROUND_SIZES.map((roundSize) => (
-            <button
-              key={roundSize}
-              type="button"
-              className={`choice ${settings.roundSize === roundSize ? 'is-active' : ''}`}
-              aria-pressed={settings.roundSize === roundSize}
-              disabled={roundSize > poolSize}
-              onClick={() => onChange({ ...settings, path: 'pool', roundSize })}
-            >
-              {roundSize}
-            </button>
-          ))}
+        <div className="mode-aside">
+          <h2>{t.familyMix}</h2>
+          <button
+            type="button"
+            className={`choice has-note is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
+            aria-pressed={activeFamily === 'mix'}
+            onClick={() => {
+              applyFootballSettings({ ...settings, ...settingsForFootballFamily(settings, 'mix') })
+              setSetupFamily({ world: 'football', id: 'mix' })
+            }}
+          >
+            <FitText minPx={9}>{mix ? mixLabel(mix, settings.lang) : t.familyMix}</FitText>
+            <FitText className="choice-note" wrap minPx={7}>
+              {t.customMixNote}
+            </FitText>
+          </button>
         </div>
-        </>
-        )}
       </section>
+
+      <p className="current-best home-setup-line">
+        {mix ? mixLabel(mix, settings.lang) : modeLabel(settings.mode, settings.lang)} ·{' '}
+        {setupDifficultyText(settings.difficulty, settings.levelHardcore, settings.lang)}
+        {isPlayerFactsToName(settings.mode) && !mix ? '' : ` · ${settings.roundSize}`}
+      </p>
 
       {currentBest ? (
         <p className="current-best">
@@ -219,13 +166,21 @@ export function FootballScreen({
         </p>
       ) : null}
 
-      <button type="button" className="btn-primary" onClick={onStart}>
+      <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
         {t.start}
       </button>
 
       <section className="card settings-card">
+        <h2>{t.multiplayer}</h2>
+        <button type="button" className="btn-primary" onClick={() => setDuelSetup('match')}>
+          {t.multiplayerPlay}
+        </button>
+      </section>
+
+      <section className="card settings-card">
         <h2>{t.duel}</h2>
-        <button type="button" className="btn-secondary" onClick={() => setDuelSetupOpen(true)}>
+        <p className="setting-hint">{t.duelHint}</p>
+        <button type="button" className="btn-secondary" onClick={() => setDuelSetup('create')}>
           {t.duelCreate}
         </button>
         <form
@@ -251,17 +206,33 @@ export function FootballScreen({
         {duelError ? <p className="account-error">{duelError}</p> : null}
       </section>
 
-      {duelSetupOpen ? (
+      {setupFamily ? (
+        <ModeSetupModal
+          family={setupFamily}
+          settings={settings}
+          onChange={(next) => applyFootballSettings(next)}
+          onStart={() => {
+            setSetupFamily(null)
+            onStart()
+          }}
+          onClose={() => setSetupFamily(null)}
+        />
+      ) : null}
+
+      {duelSetup ? (
         <DuelCreateModal
           lang={settings.lang}
           initialMode={settings.mode}
           region="all"
           modeCatalog={FOOTBALL_MODES}
           showMix={false}
-          onCancel={() => setDuelSetupOpen(false)}
+          intent={duelSetup}
+          onCancel={() => setDuelSetup(null)}
           onConfirm={(modes, facts) => {
-            setDuelSetupOpen(false)
-            onCreateDuel(modes, facts)
+            const kind = duelSetup
+            setDuelSetup(null)
+            if (kind === 'match') onMatchDuel(modes, facts)
+            else onCreateDuel(modes, facts)
           }}
         />
       ) : null}
@@ -300,7 +271,7 @@ function FootballRecordRow({
         <p className="history-score">{score(record.correct, record.total)}</p>
         <p className="history-setup">
           {record.mix ? mixLabel(record.mix, lang) : modeLabel(record.mode, lang)}
-          {` · ${difficultyLabel(record.difficulty, lang)}`} · {record.roundSize} ·{' '}
+          {` · ${setupDifficultyText(record.difficulty, Boolean(record.hardcore), lang)}`} · {record.roundSize} ·{' '}
           {formatClock(record.roundMs)}
         </p>
       </div>

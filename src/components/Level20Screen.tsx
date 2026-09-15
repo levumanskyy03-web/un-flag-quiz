@@ -22,10 +22,10 @@ export function Level20Screen({ settings, levelClears, onPlay, onBack, onWorlds 
 
   return (
     <div className="screen levels-screen">
-      <WorldsBack lang={settings.lang} onClick={onWorlds} />
+      <WorldsBack lang={settings.lang} onClick={onBack} label={t.back} />
       <header className="quiz-header">
-        <button type="button" className="btn-ghost" onClick={onBack}>
-          {t.back}
+        <button type="button" className="btn-ghost" onClick={onWorlds}>
+          {t.worldsBack}
         </button>
         <h1 className="levels-title">{t.finalLevel}</h1>
         <span className="levels-header-spacer" aria-hidden="true" />

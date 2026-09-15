@@ -158,11 +158,15 @@ export function FactsScreen({
 
   return (
     <div className="screen quiz-screen facts-screen">
-      {onWorlds ? <WorldsBack lang={lang} onClick={onWorlds} /> : null}
+      <WorldsBack lang={lang} onClick={onBack} label={t.back} />
       <header className="quiz-header">
-        <button type="button" className="btn-ghost" onClick={onBack}>
-          {t.back}
-        </button>
+        {onWorlds ? (
+          <button type="button" className="btn-ghost" onClick={onWorlds}>
+            {t.worldsBack}
+          </button>
+        ) : (
+          <span className="levels-header-spacer" aria-hidden="true" />
+        )}
         <div className="progress-copy">{t.questionOf(index + 1, total)}</div>
         {duel ? (
           <div className="facts-header-end">

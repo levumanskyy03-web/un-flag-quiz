@@ -4,7 +4,6 @@ import type { LevelClear } from './levelProgress'
 import {
   footballHasDifficulty,
   levelQuestionCount,
-  isCodesMode,
   isFootballMode,
   isLeadersMode,
   isRankingMode,
@@ -168,7 +167,6 @@ export function xpForFootballRound(
 
 export function xpPerFreePlayCorrect(difficulty: QuizDifficulty, mode: QuizMode): number {
   if (isFootballMode(mode)) return xpPerFootballCorrect(mode, difficulty)
-  if (isCodesMode(mode)) return 1
   if (isLeadersMode(mode)) {
     if (difficulty === 'hardcore') return 4
     if (difficulty === 'hard') return 2

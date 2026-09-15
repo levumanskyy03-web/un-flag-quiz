@@ -1,5 +1,6 @@
 import { COUNTRIES } from '../data/countries'
 import {
+  CODES_MODES,
   isCorrect,
   isRankingMode,
   QUIZ_MODES,
@@ -15,7 +16,7 @@ export const STAMP_TOTAL = COUNTRIES.length
 export const STAMP_MAX = 5
 
 const COUNTRY_ISOS = new Set(COUNTRIES.map((country) => country.iso))
-const GEO_MODES = new Set<string>(QUIZ_MODES)
+const GEO_MODES = new Set<string>([...QUIZ_MODES, ...CODES_MODES])
 
 export interface StampEntry {
   n: number
@@ -29,6 +30,7 @@ export interface StampAwardContext {
   modeFallback: QuizMode
   difficulty: QuizDifficulty
   endedBy: RoundEnd
+  hardcore?: boolean
 }
 
 export function isStampIso(iso: string): boolean {
@@ -113,12 +115,13 @@ function canEarnNext(
   difficulty: QuizDifficulty,
   perfect: boolean,
   completed: boolean,
+  hardcore: boolean,
 ): boolean {
   if (next === 1) return true
   if (next === 2) return !modes.includes(mode)
   if (next === 3) return difficulty === 'hard' || difficulty === 'hardcore'
   if (next === 4) return perfect
-  if (next === 5) return difficulty === 'hardcore' && completed
+  if (next === 5) return (hardcore || difficulty === 'hardcore') && completed
   return false
 }
 
@@ -141,7 +144,7 @@ export function awardRoundStamps(answers: readonly RoundAnswer[], ctx: StampAwar
     const entry = album[iso] ?? { n: 0, modes: [] }
     if (entry.n >= STAMP_MAX) continue
     const next = entry.n + 1
-    if (!canEarnNext(next, mode, entry.modes, ctx.difficulty, perfect, completed)) continue
+    if (!canEarnNext(next, mode, entry.modes, ctx.difficulty, perfect, completed, Boolean(ctx.hardcore))) continue
 
     awarded.add(iso)
     album[iso] = {

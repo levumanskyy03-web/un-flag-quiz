@@ -1,5 +1,8 @@
+import { localeTag, type Lang } from '../i18n/lang'
 import { COUNTRIES, type Country } from './countries'
+import { formatPopulation } from './passports'
 import { RANKING_ORDERS } from './rankingOrders'
+import { RANKING_VALUES } from './rankingValues'
 
 export const RANKING_MODES = [
   'rankGdp',
@@ -330,6 +333,80 @@ export function rankingEasyCount(mode: RankingMode): number {
 export function isRankingEasy(iso: string, mode: RankingMode): boolean {
   const place = rankingPlaceOf(mode, iso)
   return place !== null && place <= rankingEasyCount(mode)
+}
+
+export { rankingUnit } from './rankingUnits'
+
+export function rankingScore(mode: RankingMode, iso: string): number | null {
+  const value = RANKING_VALUES[mode]?.[iso]
+  return typeof value === 'number' ? value : null
+}
+
+function compactNumber(value: number, lang: Lang, digits = 1): string {
+  return new Intl.NumberFormat(localeTag(lang), {
+    notation: 'compact',
+    compactDisplay: 'short',
+    maximumFractionDigits: digits,
+  }).format(value)
+}
+
+function plainNumber(value: number, lang: Lang, maxDigits: number, minDigits = 0): string {
+  return new Intl.NumberFormat(localeTag(lang), {
+    maximumFractionDigits: maxDigits,
+    minimumFractionDigits: minDigits,
+  }).format(value)
+}
+
+function usdCompact(value: number, lang: Lang): string {
+  return new Intl.NumberFormat(localeTag(lang), {
+    style: 'currency',
+    currency: 'USD',
+    notation: 'compact',
+    compactDisplay: 'short',
+    maximumFractionDigits: 1,
+  }).format(value)
+}
+
+export function formatRankingValue(mode: RankingMode, iso: string, lang: Lang): string | null {
+  const value = rankingScore(mode, iso)
+  if (value === null) return null
+  switch (mode) {
+    case 'rankGdp':
+    case 'rankGdpPpp':
+      return usdCompact(value * 1_000_000_000, lang)
+    case 'rankGdpPc':
+      return new Intl.NumberFormat(localeTag(lang), {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(value)
+    case 'rankArea':
+      return `${compactNumber(value, lang)} km²`
+    case 'rankPopulation':
+      return formatPopulation(value, lang)
+    case 'rankHdi':
+      return plainNumber(value, lang, 3, 3)
+    case 'rankHappiness':
+    case 'rankPeace':
+      return plainNumber(value, lang, 3)
+    case 'rankLife':
+      return plainNumber(value, lang, 1, 1)
+    case 'rankGini':
+    case 'rankPress':
+      return plainNumber(value, lang, 1)
+    case 'rankCpi':
+    case 'rankPassport':
+    case 'rankBillionaires':
+    case 'rankOlympics':
+    case 'rankHeritage':
+      return plainNumber(value, lang, 0)
+    case 'rankMillionaires':
+      return compactNumber(value, lang)
+    case 'rankCo2':
+      return `${plainNumber(value, lang, value >= 100 ? 0 : 1)} Mt`
+    default:
+      return plainNumber(value, lang, 1)
+  }
 }
 
 export function rankingCite(mode: RankingMode, lang: string): RankingCite {

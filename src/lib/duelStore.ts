@@ -5,7 +5,9 @@ import { FOOTBALL_PLAYERS } from '../data/footballPlayers'
 import { playerClueSequence } from './playerFacts'
 import { isPlayerId, sanitizeName } from './leaderboard'
 import { isNameAllowed } from './nameFilter'
-import type { DuelQuestionWire, DuelView } from './duelTypes'
+import type { DuelAnswer, DuelPlayer, DuelQuestionWire, DuelRatingSnapshot, DuelView } from './duelTypes'
+import { BOT_FILL_MS, isBotPlayer, makeBotPlayer, maybeAnswerAsBot, rematchDelayMs } from './duelBot'
+import { applyDuelMatch, duelWorldOf } from './duelRatingStore'
 import { answerKey } from './quizAnswers'
 import { clueSequence, mulberry32, seedFrom } from './countryFacts'
 import {
@@ -28,6 +30,7 @@ import {
   isPlayerFactsToName,
   isQuizDifficulty,
   isQuizMode,
+  isRankingMode,
   isRegionFilter,
   isRoundSize,
   orderedModes,
@@ -37,28 +40,7 @@ import {
   type RegionFilter,
 } from './quiz'
 
-export type { DuelQuestionWire, DuelView }
-
-const REDIS_PREFIX = 'passport-duel:'
-const FILE_NAME = 'duels.json'
-const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-const ROOM_MS = 45 * 60 * 1000
-
-function revealMs(room: DuelRoom, index = room.index): number {
-  return Math.max(1200, answerPauseMs(questionModeOf(room, index)))
-}
-
-export interface DuelAnswer {
-  iso: string | null
-  timeMs: number
-}
-
-export interface DuelPlayer {
-  id: string
-  name: string
-  answers: Array<DuelAnswer | null>
-  wrongs: number[]
-}
+export type { DuelQuestionWire, DuelView, DuelPlayer, DuelAnswer }
 
 export interface DuelRoom {
   version: number
@@ -84,6 +66,21 @@ export interface DuelRoom {
   revealUntil: number
   hostRematch: boolean
   guestRematch: boolean
+  open?: boolean
+  botAnswerAt: number
+  botRematchAt: number
+  rating?: DuelRatingSnapshot
+}
+
+const REDIS_PREFIX = 'passport-duel:'
+const QUEUE_PREFIX = 'passport-duel-queue:'
+const FILE_NAME = 'duels.json'
+const QUEUE_FILE = 'duel-queues.json'
+const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+const ROOM_MS = 45 * 60 * 1000
+
+function revealMs(room: DuelRoom, index = room.index): number {
+  return Math.max(1200, answerPauseMs(questionModeOf(room, index)))
 }
 
 export function normalizeCode(value: unknown): string | null {
@@ -107,6 +104,7 @@ export async function createDuelRoom(input: {
   roundSize: number
   facts?: FactsDuelConfig
   includeExtras?: boolean
+  open?: boolean
 }): Promise<{ ok: true; room: DuelRoom } | { ok: false; error: 'offline' | 'empty' }> {
   const facts = input.facts && isFactsToName(input.modes[0] ?? input.mode) ? input.facts : undefined
   const factsMode = facts ? (isQuizMode(input.modes[0] ?? input.mode) ? (input.modes[0] ?? input.mode) : 'factsToName') : undefined
@@ -143,6 +141,9 @@ export async function createDuelRoom(input: {
       revealUntil: 0,
       hostRematch: false,
       guestRematch: false,
+      open: input.open === true,
+      botAnswerAt: 0,
+      botRematchAt: 0,
     }
     await saveRoom(room)
     return { ok: true, room }
@@ -168,14 +169,40 @@ export async function joinDuelRoom(
       current.playStartedAt = now
       current.playEndedAt = 0
       current.expiresAt = now + ROOM_MS
+      current.botAnswerAt = 0
+      current.botRematchAt = 0
       return current
     })
     if (!room) return { ok: false, error: 'missing' }
-    return { ok: true, room }
+    if (room.open) await clearQueueForRoom(room)
+    return { ok: true, room: await settleDuel(room) }
   } catch (error) {
     if (error instanceof DuelError && error.code === 'full') return { ok: false, error: 'full' }
     throw error
   }
+}
+
+export async function matchDuelRoom(input: {
+  playerId: string
+  name: string
+  mode: QuizMode
+  modes: QuizMode[]
+  region: RegionFilter
+  difficulty: QuizDifficulty
+  roundSize: number
+  facts?: FactsDuelConfig
+  includeExtras?: boolean
+}): Promise<{ ok: true; room: DuelRoom } | { ok: false; error: 'offline' | 'empty' }> {
+  const key = matchKey(input)
+  const queued = await getQueue(key)
+  if (queued) {
+    const joined = await joinDuelRoom(queued, input.playerId, input.name)
+    if (joined.ok) return joined
+  }
+  const created = await createDuelRoom({ ...input, open: true })
+  if (!created.ok) return created
+  await setQueue(key, created.room.code)
+  return created
 }
 
 export async function answerDuel(
@@ -184,7 +211,7 @@ export async function answerDuel(
   iso: string | null,
 ): Promise<DuelRoom | null> {
   try {
-    return await mutateRoom(code, (current) => {
+    const room = await mutateRoom(code, (current) => {
       const now = Date.now()
       const ticked = tickRoom(current, now)
       const player = playerOf(ticked, playerId)
@@ -239,6 +266,7 @@ export async function answerDuel(
       }
       return ticked
     })
+    return room ? settleDuel(room) : null
   } catch (error) {
     if (error instanceof DuelError) return null
     throw error
@@ -247,7 +275,7 @@ export async function answerDuel(
 
 export async function advanceDuelFact(code: string, playerId: string): Promise<DuelRoom | null> {
   try {
-    return await mutateRoom(code, (current) => {
+    const room = await mutateRoom(code, (current) => {
       const now = Date.now()
       const ticked = tickRoom(current, now)
       if (!playerOf(ticked, playerId)) return 'forbidden'
@@ -256,6 +284,7 @@ export async function advanceDuelFact(code: string, playerId: string): Promise<D
       advanceSharedFact(ticked, now)
       return ticked
     })
+    return room
   } catch (error) {
     if (error instanceof DuelError) return null
     throw error
@@ -264,8 +293,9 @@ export async function advanceDuelFact(code: string, playerId: string): Promise<D
 
 export async function rematchDuel(code: string, playerId: string): Promise<DuelRoom | null> {
   try {
-    return await mutateRoom(code, (current) => {
-      const ticked = tickRoom(current, Date.now())
+    const room = await mutateRoom(code, (current) => {
+      const now = Date.now()
+      const ticked = tickRoom(current, now)
       if (ticked.phase !== 'done') return ticked
       const player = playerOf(ticked, playerId)
       if (!player) return 'forbidden'
@@ -274,8 +304,13 @@ export async function rematchDuel(code: string, playerId: string): Promise<DuelR
       if (ticked.hostRematch && ticked.guestRematch && ticked.guest) {
         return restartRound(ticked)
       }
+      const opponent = ticked.host.id === playerId ? ticked.guest : ticked.host
+      if (isBotPlayer(opponent) && !ticked.botRematchAt) {
+        ticked.botRematchAt = now + rematchDelayMs(ticked)
+      }
       return ticked
     })
+    return room
   } catch (error) {
     if (error instanceof DuelError) return null
     throw error
@@ -283,7 +318,11 @@ export async function rematchDuel(code: string, playerId: string): Promise<DuelR
 }
 
 export async function leaveDuel(code: string, playerId: string): Promise<void> {
-  await mutateRoom(code, (current) => {
+  const existing = await getRoom(code)
+  if (existing?.phase === 'waiting' && existing.host.id === playerId) {
+    await clearQueueForRoom(existing)
+  }
+  const room = await mutateRoom(code, (current) => {
     if (current.phase === 'waiting' && current.host.id === playerId) return 'delete'
     if (current.phase === 'waiting' && current.guest?.id === playerId) {
       current.guest = null
@@ -300,11 +339,13 @@ export async function leaveDuel(code: string, playerId: string): Promise<void> {
     if (!current.playEndedAt) current.playEndedAt = now
     return current
   })
+  if (room) await settleDuel(room)
 }
 
 export async function readDuel(code: string): Promise<DuelRoom | null> {
   const room = await mutateRoom(code, (current) => tickRoom(current, Date.now()))
-  return room
+  if (room?.open && room.guest) await clearQueueForRoom(room)
+  return room ? settleDuel(room) : null
 }
 
 export function viewFor(room: DuelRoom, playerId: string): DuelView | null {
@@ -367,6 +408,10 @@ export function viewFor(room: DuelRoom, playerId: string): DuelView | null {
     youWrongs: factsRoom ? you.wrongs[room.index] ?? 0 : undefined,
     factsMax: factsRoom ? factsMaxFor(room.facts) : undefined,
     factsWrongLimit: factsRoom ? factsWrongLimit(room.facts) : undefined,
+    youRating: room.rating ? (role === 'host' ? room.rating.host.elo : room.rating.guest.elo) : undefined,
+    youRatingDelta: room.rating ? (role === 'host' ? room.rating.host.delta : room.rating.guest.delta) : undefined,
+    opponentRating: room.rating ? (role === 'host' ? room.rating.guest.elo : room.rating.host.elo) : undefined,
+    matchmaking: room.open === true,
   }
 }
 
@@ -421,9 +466,9 @@ export function parseCreateBody(body: unknown): {
 }
 
 function parseModes(record: Record<string, unknown>): QuizMode[] | null {
-  const fromList = Array.isArray(record.modes) ? orderedModes(record.modes) : []
+  const fromList = Array.isArray(record.modes) ? orderedModes(record.modes).filter((mode) => !isRankingMode(mode)) : []
   if (fromList.length > 0) return fromList
-  if (isQuizMode(record.mode)) return [record.mode]
+  if (isQuizMode(record.mode) && !isRankingMode(record.mode)) return [record.mode]
   return null
 }
 
@@ -444,6 +489,7 @@ function emptyPlayer(id: string, name: string, total: number): DuelPlayer {
   return {
     id,
     name,
+    kind: 'human',
     answers: Array.from({ length: total }, () => null),
     wrongs: Array.from({ length: total }, () => 0),
   }
@@ -477,7 +523,34 @@ function duelCorrectIso(question: DuelQuestionWire): string {
 }
 
 function tickRoom(room: DuelRoom, now: number): DuelRoom {
-  if (room.phase === 'waiting' || room.phase === 'done') return room
+  if (room.phase === 'waiting') {
+    if (room.open && !room.guest && now - room.createdAt >= BOT_FILL_MS) {
+      room.guest = makeBotPlayer(room, room.questions.length)
+      room.phase = 'question'
+      room.questionStartedAt = now
+      room.playStartedAt = now
+      room.playEndedAt = 0
+      room.botAnswerAt = 0
+    } else {
+      return room
+    }
+  }
+  if (room.phase === 'done') {
+    if (room.botRematchAt > 0 && now >= room.botRematchAt && room.guest) {
+      if (isBotPlayer(room.guest)) room.guestRematch = true
+      if (isBotPlayer(room.host)) room.hostRematch = true
+      if (room.hostRematch && room.guestRematch) return restartRound(room)
+    }
+    return room
+  }
+  maybeAnswerAsBot(room, now, {
+    questionMode: (item) => questionModeOf(item as DuelRoom),
+    isFactsRoom: (item) => isFactsRoom(item as DuelRoom),
+    duelCorrectIso,
+    acceptIso: acceptDuelIso,
+    bothAnswered: (item) => bothAnswered(item as DuelRoom),
+    revealMs: (item) => revealMs(item as DuelRoom),
+  })
   if (isFactsRoom(room) && room.phase === 'question') {
     const limitMs = factsClueTimeMs(room.facts, room.factIndex)
     if (now - room.questionStartedAt >= limitMs) {
@@ -506,6 +579,7 @@ function tickRoom(room: DuelRoom, now: number): DuelRoom {
       room.phase = 'question'
       room.questionStartedAt = now
       room.revealUntil = 0
+      room.botAnswerAt = 0
     }
   }
   return room
@@ -526,6 +600,10 @@ function playState(room: DuelRoom): string {
     hostRematch: room.hostRematch,
     guestRematch: room.guestRematch,
     playEndedAt: room.playEndedAt,
+    botAnswerAt: room.botAnswerAt,
+    botRematchAt: room.botRematchAt,
+    rating: room.rating ?? null,
+    guestKind: room.guest?.kind ?? null,
   })
 }
 
@@ -632,6 +710,9 @@ function restartRound(room: DuelRoom): DuelRoom {
   room.revealUntil = 0
   room.hostRematch = false
   room.guestRematch = false
+  room.botAnswerAt = 0
+  room.botRematchAt = 0
+  room.rating = undefined
   room.host.answers = Array.from({ length: questions.length }, () => null)
   room.host.wrongs = Array.from({ length: questions.length }, () => 0)
   if (room.guest) {
@@ -808,10 +889,15 @@ function parseRoom(value: unknown): DuelRoom | null {
     room.guestRematch = Boolean(room.guestRematch)
     room.factIndex = typeof room.factIndex === 'number' ? room.factIndex : 0
     room.facts = isFactsDuelConfig(room.facts) ? room.facts : undefined
+    room.open = room.open === true
+    room.botAnswerAt = typeof room.botAnswerAt === 'number' ? room.botAnswerAt : 0
+    room.botRematchAt = typeof room.botRematchAt === 'number' ? room.botRematchAt : 0
+    room.host.kind = room.host.kind === 'bot' ? 'bot' : 'human'
     room.host.wrongs = Array.isArray(room.host.wrongs)
       ? room.host.wrongs
       : Array.from({ length: room.questions.length }, () => 0)
     if (room.guest) {
+      room.guest.kind = room.guest.kind === 'bot' ? 'bot' : 'human'
       room.guest.wrongs = Array.isArray(room.guest.wrongs)
         ? room.guest.wrongs
         : Array.from({ length: room.questions.length }, () => 0)
@@ -869,4 +955,115 @@ async function saveFileStore(store: Record<string, DuelRoom>): Promise<void> {
 
 function filePath(): string {
   return path.join(process.cwd(), '.data', FILE_NAME)
+}
+
+async function settleDuel(room: DuelRoom): Promise<DuelRoom> {
+  if (room.phase !== 'done' || room.rating || !room.guest || !room.open) return room
+  const snapshot = await applyDuelMatch({
+    matchId: `${room.code}:${room.playStartedAt}`,
+    world: duelWorldOf(room.modes),
+    host: {
+      id: room.host.id,
+      name: room.host.name,
+      bot: isBotPlayer(room.host),
+      elo: room.host.elo,
+      score: scoreOf(room, room.host),
+    },
+    guest: {
+      id: room.guest.id,
+      name: room.guest.name,
+      bot: isBotPlayer(room.guest),
+      elo: room.guest.elo,
+      score: scoreOf(room, room.guest),
+    },
+  })
+  const saved = await mutateRoom(room.code, (current) => {
+    if (current.rating || current.phase !== 'done' || current.playStartedAt !== room.playStartedAt) {
+      return current
+    }
+    current.rating = snapshot
+    return current
+  })
+  return saved ?? { ...room, rating: snapshot }
+}
+
+function matchKey(input: {
+  modes: QuizMode[]
+  region: RegionFilter
+  difficulty: QuizDifficulty
+  roundSize: number
+  facts?: FactsDuelConfig
+  includeExtras?: boolean
+}): string {
+  return [
+    orderedModes(input.modes).join(','),
+    input.region,
+    input.difficulty,
+    String(input.roundSize),
+    input.includeExtras ? '1' : '0',
+    input.facts ? JSON.stringify(input.facts) : '',
+  ].join('|')
+}
+
+async function clearQueueForRoom(room: DuelRoom): Promise<void> {
+  await delQueue(matchKey(room), room.code)
+}
+
+async function getQueue(key: string): Promise<string | null> {
+  const redis = redisConfig()
+  if (redis) {
+    const result = await redisCommand(redis, ['GET', QUEUE_PREFIX + key])
+    return typeof result === 'string' ? normalizeCode(result) : null
+  }
+  if (process.env.VERCEL === '1') return null
+  const queues = await loadQueueFile()
+  return normalizeCode(queues[key] ?? null)
+}
+
+async function setQueue(key: string, code: string): Promise<void> {
+  const redis = redisConfig()
+  if (redis) {
+    await redisCommand(redis, ['SET', QUEUE_PREFIX + key, code, 'EX', '120'])
+    return
+  }
+  if (process.env.VERCEL === '1') return
+  const queues = await loadQueueFile()
+  queues[key] = code
+  await saveQueueFile(queues)
+}
+
+async function delQueue(key: string, code: string): Promise<void> {
+  const redis = redisConfig()
+  if (redis) {
+    const current = await redisCommand(redis, ['GET', QUEUE_PREFIX + key])
+    if (current === code) await redisCommand(redis, ['DEL', QUEUE_PREFIX + key])
+    return
+  }
+  if (process.env.VERCEL === '1') return
+  const queues = await loadQueueFile()
+  if (queues[key] === code) {
+    delete queues[key]
+    await saveQueueFile(queues)
+  }
+}
+
+async function loadQueueFile(): Promise<Record<string, string>> {
+  try {
+    const raw = await readFile(queueFilePath(), 'utf8')
+    const parsed: unknown = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object') return {}
+    return parsed as Record<string, string>
+  } catch {
+    return {}
+  }
+}
+
+async function saveQueueFile(queues: Record<string, string>): Promise<void> {
+  const dest = queueFilePath()
+  await mkdir(path.dirname(dest), { recursive: true })
+  await writeFile(dest, JSON.stringify(queues))
+}
+
+function queueFilePath(): string {
+  return path.join(process.cwd(), '.data', QUEUE_FILE)
 }

@@ -4,7 +4,7 @@ import { type Country } from '../data/countries'
 import { footballTeamCountry, isNamedFootballTeam } from '../data/worldCup'
 import type { DuelQuestionWire, DuelView } from './duelTypes'
 import type { FactsDuelConfig } from './factsRules'
-import { isPlayerId } from './leaderboard'
+import { isPlayerId, loadPlayer } from './leaderboard'
 import { isFactsToName, isFootballMode, isFootballYearChoice, isQuizMode, type Question } from './quiz'
 
 const DUEL_ID_KEY = 'pq-duel-player'
@@ -15,11 +15,20 @@ export function duelPlayerId(): string {
   try {
     const existing = sessionStorage.getItem(DUEL_ID_KEY)
     if (existing && isPlayerId(existing)) return existing
-    const id = crypto.randomUUID()
+    const id = loadPlayer().id
     sessionStorage.setItem(DUEL_ID_KEY, id)
     return id
   } catch {
     return crypto.randomUUID()
+  }
+}
+
+export function bindDuelPlayerId(id: string) {
+  if (!isPlayerId(id)) return
+  try {
+    sessionStorage.setItem(DUEL_ID_KEY, id)
+  } catch {
+    /* private mode */
   }
 }
 
@@ -77,6 +86,27 @@ export async function createDuel(input: {
   includeExtras?: boolean
 }): Promise<{ ok: true; room: DuelView } | { ok: false; error: string }> {
   return post('/api/duel/create', {
+    ...input,
+    playerId: duelPlayerId(),
+    name: input.name || 'Player',
+    mode: input.modes[0],
+    facts: input.facts,
+    factsEnd: input.facts?.end,
+    factsHardcore: input.facts?.hardcore,
+    factsSeries: input.facts?.series,
+  })
+}
+
+export async function matchDuel(input: {
+  name: string
+  modes: DuelView['modes']
+  region: DuelView['region']
+  difficulty: DuelView['difficulty']
+  roundSize: number
+  facts?: FactsDuelConfig
+  includeExtras?: boolean
+}): Promise<{ ok: true; room: DuelView } | { ok: false; error: string }> {
+  return post('/api/duel/match', {
     ...input,
     playerId: duelPlayerId(),
     name: input.name || 'Player',
@@ -166,4 +196,52 @@ async function parseResponse(
   const room = (body as { room?: unknown }).room
   if (!room || typeof room !== 'object') return { ok: false, error: 'offline' }
   return { ok: true, room: room as DuelView }
+}
+
+export async function fetchDuelRatings(
+  world: 'all' | 'geo' | 'football',
+  playerId: string,
+): Promise<{ entries: Array<{
+  id: string
+  name: string
+  elo: number
+  wins: number
+  losses: number
+  draws: number
+  you?: boolean
+}>; configured: boolean }> {
+  try {
+    const params = new URLSearchParams({ world, me: playerId })
+    const response = await fetch(`/api/duel/ratings?${params}`, { credentials: 'include', cache: 'no-store' })
+    if (!response.ok) return { entries: [], configured: false }
+    const body: unknown = await response.json()
+    if (!body || typeof body !== 'object') return { entries: [], configured: false }
+    const record = body as Record<string, unknown>
+    const entries = Array.isArray(record.entries)
+      ? record.entries.filter((item): item is {
+          id: string
+          name: string
+          elo: number
+          wins: number
+          losses: number
+          draws: number
+          you?: boolean
+        } => {
+          if (!item || typeof item !== 'object') return false
+          const row = item as Record<string, unknown>
+          return (
+            typeof row.id === 'string' &&
+            isPlayerId(row.id) &&
+            typeof row.name === 'string' &&
+            typeof row.elo === 'number' &&
+            typeof row.wins === 'number' &&
+            typeof row.losses === 'number' &&
+            typeof row.draws === 'number'
+          )
+        })
+      : []
+    return { entries, configured: record.configured !== false }
+  } catch {
+    return { entries: [], configured: false }
+  }
 }

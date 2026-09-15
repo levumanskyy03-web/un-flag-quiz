@@ -166,7 +166,7 @@ function parseEntry(body: unknown): null | {
     if (typeof record.level !== 'number' || !Number.isInteger(record.level)) return null
     if (record.xp < 1 || record.xp > RATING_XP_MAX) return null
     if (record.level < 1 || record.level > RATING_LEVEL_MAX) return null
-    const world = record.world === undefined || record.world === 'all' ? 'all' : record.world
+    const world = record.world === undefined || record.world === 'all' ? 'all' : record.world === 'codes' ? 'geo' : record.world
     if (world !== 'all' && !isQuizWorld(world)) return null
     return {
       board: { kind: 'xp', world, period: 'all' },
@@ -178,7 +178,7 @@ function parseEntry(body: unknown): null | {
   if (boardName === 'clears') {
     if (record.levelsCleared < 1 || record.levelsCleared > RATING_CLEARS_MAX) return null
     const world = record.world === undefined ? 'geo' : record.world
-    if (!isQuizWorld(world) || world === 'codes') return null
+    if (!isQuizWorld(world)) return null
     return {
       board: { kind: 'clears', hardcore: record.hardcore, world },
       entry: { levelsCleared: record.levelsCleared, totalMs: 0 },

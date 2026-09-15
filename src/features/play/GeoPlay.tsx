@@ -18,7 +18,6 @@ import { WORLD_RECORD_XP } from "@/lib/xp";
 import {
   campaignLevelCount,
   campaignLevelNumbers,
-  isCodesMode,
   isFactsToName,
   isFootballMode,
   isLeadersMode,
@@ -35,28 +34,21 @@ export function GeoPlay({ play }: { play: PlaySession }) {
           settings={play.quizSettings}
           history={play.history}
           bests={play.bests}
-          levelClears={play.levelClears}
-          xp={play.xp}
-          xpReady={play.xpReady}
           duelError={duel.error}
           onChange={play.handleSettingsChange}
           onStart={play.startRound}
           onCreateDuel={(modes, facts) => void duel.create(modes, facts)}
+          onMatchDuel={(modes, facts) => void duel.match(modes, facts)}
           onJoinDuel={duel.join}
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
           onClearHistory={play.handleClearHistory}
-          onClearBests={play.handleClearBests}
         />
       )}
       {play.screen === "levels" && (
         <LevelsScreen
           settings={play.quizSettings}
           levelClears={play.levelClears}
-          history={play.history}
-          bests={play.bests}
-          xp={play.xp}
-          xpReady={play.xpReady}
           levels={
             isWaterMode(play.quizSettings.mode) ? campaignLevelNumbers(play.quizSettings.mode) : undefined
           }
@@ -64,7 +56,6 @@ export function GeoPlay({ play }: { play: PlaySession }) {
           onPlay={play.playLevel}
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
-          onClearBests={play.handleClearBests}
         />
       )}
       {play.screen === "level20" && (
@@ -103,22 +94,15 @@ export function GeoPlay({ play }: { play: PlaySession }) {
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
           onPractice={play.startMistakesPractice}
-          onClear={() => play.setMistakeList(clearMistakes((item) => isFootballMode(item.mode) || isCodesMode(item.mode) || isLeadersMode(item.mode)))}
+          onClear={() => play.setMistakeList(clearMistakes((item) => isFootballMode(item.mode) || isLeadersMode(item.mode)))}
         />
       )}
       {play.screen === "album" && (
         <AlbumScreen
           settings={play.quizSettings}
           stamps={play.stamps}
-          history={play.history}
-          bests={play.bests}
-          levelClears={play.levelClears}
-          xp={play.xp}
-          xpReady={play.xpReady}
-          onChange={play.handleSettingsChange}
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
-          onClearBests={play.handleClearBests}
         />
       )}
       {play.screen === "quiz" && play.questions[play.index] && (
@@ -166,11 +150,7 @@ export function GeoPlay({ play }: { play: PlaySession }) {
         <ResultsScreen
           lang={play.quizSettings.lang}
           mode={play.quizSettings.mode}
-          hardcore={
-            play.quizSettings.path === "levels"
-              ? play.quizSettings.levelHardcore
-              : play.quizSettings.difficulty === "hardcore"
-          }
+          hardcore={play.quizSettings.levelHardcore || play.quizSettings.difficulty === "hardcore"}
           answers={play.answers}
           roundMs={play.roundMs}
           endedBy={play.endedBy}

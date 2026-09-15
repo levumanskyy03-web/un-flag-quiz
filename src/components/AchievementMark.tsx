@@ -390,60 +390,6 @@ function Icon({ id }: { id: AchievementId }) {
           <circle cx="12" cy="17.2" r="3" />
         </>
       )
-    case 'cdKickoff':
-      return (
-        <>
-          <circle cx="12" cy="12" r="8" />
-          <path d="M8.2 12h7.6M12 8.2v7.6" />
-          <path d="M9.2 9.2h5.6v5.6H9.2z" />
-        </>
-      )
-    case 'cdTld':
-      return (
-        <>
-          <circle cx="12" cy="12" r="8" />
-          <path d="M12 8.5v0.01" />
-          <circle cx="12" cy="8.5" r="1.1" fill="currentColor" stroke="none" />
-          <path d="M8 15.2h8" />
-        </>
-      )
-    case 'cdCalling':
-      return (
-        <>
-          <rect x="7" y="3.8" width="10" height="16.4" rx="2.2" />
-          <path d="M10 6.2h4M10 17.6h4" />
-        </>
-      )
-    case 'cdCar':
-      return (
-        <>
-          <rect x="3.5" y="9" width="17" height="7.2" rx="1.6" />
-          <path d="M6.5 9 8.2 6.2h7.6L17.5 9" />
-          <circle cx="7.5" cy="16.6" r="1.4" />
-          <circle cx="16.5" cy="16.6" r="1.4" />
-        </>
-      )
-    case 'cdAllModes':
-      return (
-        <>
-          <rect x="4" y="5" width="16" height="14" rx="1.8" />
-          <path d="M7 9h10M7 12h10M7 15h6" />
-        </>
-      )
-    case 'cdPerfect':
-      return (
-        <>
-          <rect x="5" y="4.5" width="14" height="15" rx="1.6" />
-          <path d="M8.2 12.2 10.6 14.6 15.6 9.2" />
-        </>
-      )
-    case 'cdTen':
-      return (
-        <>
-          <path d="M6 6.5h12M6 12h12M6 17.5h8" />
-          <path d="M4.2 6.5l1.2 1.2 2-2.2M4.2 12l1.2 1.2 2-2.2" />
-        </>
-      )
     case 'stFirst':
       return (
         <>

@@ -26,7 +26,7 @@ export function AppChrome({
   onClearBests,
 }: AppChromeProps) {
   return (
-    <div className="home-top">
+    <div className="home-top app-chrome">
       <PlayerHud
         lang={settings.lang}
         history={history}

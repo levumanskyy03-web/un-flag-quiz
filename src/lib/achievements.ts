@@ -2,7 +2,7 @@ import { ACHIEVEMENTS, type AchievementId } from '../data/achievements'
 import { REGIONS, type Region } from '../data/countries'
 import { footballCampaignLevels } from '../data/footballLevels'
 import { FINAL_LEVEL, LEVEL_COUNT } from '../data/levels'
-import type { RoundRecord } from './history'
+import { isRoundHardcore, type RoundRecord } from './history'
 import { campaignStats } from './leaderboard'
 import type { LevelClear } from './levelProgress'
 import { countLifetimeSeed, loadLifetime } from './lifetime'
@@ -146,13 +146,13 @@ export function listAchievements(
     threeModes: completedModes.size >= 6,
     campaign8: campaignMax >= 12,
     hardcoreComplete: anyComplete(
-      (round) => round.difficulty === 'hardcore' && accurate(round, 0.8, 10),
+      (round) => isRoundHardcore(round) && accurate(round, 0.8, 10),
     ),
     rank10: rank >= 12,
     play1h: lifetime.playMs >= 2 * HOUR_MS,
     veteranMonth: ageMs >= 30 * DAY_MS,
     perfect20: anyComplete((round) => perfect(round, 20) && hardPlus(round.difficulty)),
-    allModes: QUIZ_MODES.every((mode) => completedModes.has(mode)),
+    allModes: [...QUIZ_MODES, ...CODES_MODES].every((mode) => completedModes.has(mode)),
     campaign15: campaignMax >= 18,
     hardcoreLevel: levelClears.some((item) => item.hardcore && item.level >= 5),
     completes10: lifetime.completes >= 20,
@@ -163,12 +163,12 @@ export function listAchievements(
       (item) => item.level === FINAL_LEVEL && (item.hardcore || item.livesLimit === 1),
     ),
     perfectHardcore: anyComplete(
-      (round) => round.difficulty === 'hardcore' && round.total >= 10 && round.correct === round.total,
+      (round) => isRoundHardcore(round) && round.total >= 10 && round.correct === round.total,
     ),
     worldPerfect: anyComplete(
       (round) =>
         isAllRegions(round.region) &&
-        round.difficulty === 'hardcore' &&
+        isRoundHardcore(round) &&
         round.total >= 10 &&
         round.correct === round.total,
     ),
@@ -192,16 +192,9 @@ export function listAchievements(
         (round.difficulty === 'hard' || round.difficulty === 'hardcore'),
     ),
     fbTenMatches: football.completes >= 20,
-    fbHardcore: footballComplete.some((round) => round.difficulty === 'hardcore' && finished(round, 10)),
+    fbHardcore: footballComplete.some((round) => isRoundHardcore(round) && finished(round, 10)),
     fbLevel: footballCampaignMax >= 1 || levelClears.some((item) => isFootballMode(item.mode)),
     fbCampaign: footballCampaignFull,
-    cdKickoff: codesComplete.length > 0 || pool.some((round) => isCodesMode(round.mode)),
-    cdTld: codesComplete.some((round) => round.mode === 'tldToName' || round.mode === 'nameToTld'),
-    cdCalling: codesComplete.some((round) => round.mode === 'callingToName' || round.mode === 'nameToCalling'),
-    cdCar: codesComplete.some((round) => round.mode === 'carToName' || round.mode === 'nameToCar'),
-    cdAllModes: CODES_MODES.every((mode) => codesModes.has(mode)),
-    cdPerfect: codesComplete.some((round) => round.total >= 10 && round.correct === round.total),
-    cdTen: codesComplete.length >= 20,
     stFirst: stamps >= 1,
     stTen: stamps >= 20,
     stFifty: stamps >= 75,
@@ -224,7 +217,6 @@ export function listAchievements(
         round.difficulty === 'hard' &&
         perfect(round, 10) &&
         !isFootballMode(round.mode) &&
-        !isCodesMode(round.mode) &&
         !isLeadersMode(round.mode) &&
         !isRankingMode(round.mode),
     ),
@@ -235,7 +227,7 @@ export function listAchievements(
     fbIron: footballComplete.some((round) => perfect(round, 10) && hardPlus(round.difficulty)),
     mythWorld: anyComplete(
       (round) =>
-        isAllRegions(round.region) && round.difficulty === 'hardcore' && perfect(round, 20),
+        isAllRegions(round.region) && isRoundHardcore(round) && perfect(round, 20),
     ),
     mythGoldRoad: hardcoreCampaignMax >= LEVEL_COUNT,
     mythAtlas:

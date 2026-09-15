@@ -10,7 +10,7 @@ type GeoIconName =
   | 'ball'
   | 'stamp'
   | 'hash'
-  | 'crown'
+  | 'bust'
   | 'speaker'
   | 'speakerOff'
 
@@ -137,21 +137,16 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
           <path d="M6.1 2.8 5 13.2M11.1 2.8 10 13.2M2.6 6.2h10.8M2.6 9.8h10.8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
         </>
       ) : null}
-      {name === 'crown' ? (
+      {name === 'bust' ? (
         <>
+          <circle cx="8" cy="5.15" r="2.45" stroke="currentColor" strokeWidth="1.2" />
           <path
-            d="M2.4 11.6h11.2V13c0 .6-.5 1.1-1.1 1.1H3.5c-.6 0-1.1-.5-1.1-1.1v-1.4Z"
+            d="M4.15 14.15c.35-2.55 1.85-4.05 3.85-4.05s3.5 1.5 3.85 4.05"
             stroke="currentColor"
             strokeWidth="1.2"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M2.6 11.4 4.2 6.4 8 9.1l3.8-4.7 1.6 7"
-            stroke="currentColor"
-            strokeWidth="1.25"
-            strokeLinejoin="round"
             strokeLinecap="round"
           />
+          <path d="M3.15 14.2h9.7" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
         </>
       ) : null}
       {name === 'speaker' || name === 'speakerOff' ? (

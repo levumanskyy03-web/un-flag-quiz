@@ -1,24 +1,14 @@
 import { useState } from 'react'
-import type { Region } from '../data/countries'
-import { REGIONS, STRINGS, difficultyLabel, localeTag, mixLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
+import { STRINGS, localeTag, mixLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
-import type { LevelClear } from '../lib/levelProgress'
 import {
-  PLAY_DIFFICULTIES,
-  FACTS_DIFFICULTIES,
-  LANGUAGE_DIFFICULTIES,
-  ROUND_SIZES,
   fitRoundSize,
   formatClock,
   getPool,
   getRegionPool,
   isFactsToName,
-  isNameToLanguage,
   isFootballMode,
-  isCodesMode,
   isLeadersMode,
-  isRegionSelected,
-  toggleRegion,
   type LearnFrom,
   type MixKind,
   type PlayPath,
@@ -28,17 +18,24 @@ import {
   type RoundSize,
 } from '../lib/quiz'
 import type { FactsDuelConfig } from '../lib/factsRules'
-import { AppChrome } from './AppChrome'
 import { HubNav, type HubTab } from './HubNav'
 import { DuelCreateModal } from './DuelCreateModal'
-import { GeoModeGrids, RankingModeGrid } from './GeoModeGrids'
+import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
-import { ChoiceLabel, FitText } from './FitText'
+import { FitText } from './FitText'
+import { setupDifficultyText } from './DifficultyPicker'
+import {
+  GEO_PLAY_FAMILIES,
+  geoFamilyLabel,
+  geoFamilyOf,
+  settingsForGeoFamily,
+} from '../lib/modeFamilies'
 
 export interface QuizSettings {
   lang: Lang
   mode: QuizMode
   mix: MixKind | null
+  mixModes: QuizMode[]
   region: RegionFilter
   difficulty: QuizDifficulty
   roundSize: RoundSize
@@ -55,75 +52,60 @@ interface HomeScreenProps {
   settings: QuizSettings
   history: RoundRecord[]
   bests: RoundRecord[]
-  levelClears: LevelClear[]
-  xp?: number
-  xpReady?: boolean
   duelError?: string | null
   onChange: (settings: QuizSettings) => void
   onStart: () => void
   onCreateDuel: (modes: QuizMode[], facts?: FactsDuelConfig) => void
+  onMatchDuel: (modes: QuizMode[], facts?: FactsDuelConfig) => void
   onJoinDuel: (code: string) => void
   onHub: (tab: HubTab) => void
   onWorlds: () => void
   onClearHistory: () => void
-  onClearBests: () => void
 }
 
 export function HomeScreen({
   settings,
   history,
   bests,
-  levelClears,
-  xp = 0,
-  xpReady = false,
   duelError,
   onChange,
   onStart,
   onCreateDuel,
+  onMatchDuel,
   onJoinDuel,
   onHub,
   onWorlds,
   onClearHistory,
-  onClearBests,
 }: HomeScreenProps) {
   const t = STRINGS[settings.lang]
   const factsMode = !settings.mix && isFactsToName(settings.mode)
-  const languageMode = !settings.mix && isNameToLanguage(settings.mode)
-  const poolSize = settings.mix
-    ? getRegionPool(settings.region, settings.includeExtras).length
-    : getPool(settings.region, settings.difficulty, settings.mode, settings.includeExtras).length
-  const regions: Array<Region | 'all'> = ['all', ...REGIONS]
-  const difficulties = languageMode
-    ? LANGUAGE_DIFFICULTIES
-    : factsMode
-      ? FACTS_DIFFICULTIES
-      : PLAY_DIFFICULTIES
+  const poolSize =
+    settings.mix === 'custom' && settings.mixModes.length === 0
+      ? 0
+      : settings.mix
+        ? getRegionPool(settings.region, settings.includeExtras).length
+        : getPool(settings.region, settings.difficulty, settings.mode, settings.includeExtras).length
   const currentBest = findBest(bests, settings)
-  const geoHistory = history.filter((item) => !isFootballMode(item.mode) && !isCodesMode(item.mode) && !isLeadersMode(item.mode))
+  const geoHistory = history.filter((item) => !isFootballMode(item.mode) && !isLeadersMode(item.mode))
   const [joinCode, setJoinCode] = useState('')
-  const [duelSetupOpen, setDuelSetupOpen] = useState(false)
+  const [duelSetup, setDuelSetup] = useState<'create' | 'match' | null>(null)
+  const [setupFamily, setSetupFamily] = useState<SetupFamily | null>(null)
+  const activeFamily = geoFamilyOf(settings.mode, settings.mix)
 
   function update(patch: Partial<QuizSettings>) {
     const next = { ...settings, ...patch }
-    const nextPool = next.mix
-      ? getRegionPool(next.region, next.includeExtras).length
-      : getPool(next.region, next.difficulty, next.mode, next.includeExtras).length
+    const nextPool =
+      next.mix === 'custom' && next.mixModes.length === 0
+        ? 0
+        : next.mix
+          ? getRegionPool(next.region, next.includeExtras).length
+          : getPool(next.region, next.difficulty, next.mode, next.includeExtras).length
     onChange({ ...next, roundSize: fitRoundSize(next.roundSize, nextPool) })
   }
 
   return (
     <div className="screen home-screen">
       <header className="home-header">
-        <AppChrome
-          settings={settings}
-          history={history}
-          bests={bests}
-          levelClears={levelClears}
-          xp={xp}
-          xpReady={xpReady}
-          onChange={onChange}
-          onClearBests={onClearBests}
-        />
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1>{t.title}</h1>
         <p className="subtitle">{t.subtitle}</p>
@@ -133,102 +115,46 @@ export function HomeScreen({
 
       <section className="card settings-card">
         <h2>{t.mode}</h2>
-        <div className="choice-grid">
-          <button
-            type="button"
-            className={`choice has-note is-wide ${settings.mix === 'easy' ? 'is-active' : ''}`}
-            aria-pressed={settings.mix === 'easy'}
-            onClick={() => update({ path: 'pool', mix: 'easy', mode: 'flagToName' })}
-          >
-            <FitText minPx={9}>{t.easyMix}</FitText>
-            <FitText className="choice-note" wrap minPx={7}>
-              {t.easyMixNote}
-            </FitText>
-          </button>
-          <button
-            type="button"
-            className={`choice has-note is-wide ${settings.mix === 'hard' ? 'is-active' : ''}`}
-            aria-pressed={settings.mix === 'hard'}
-            onClick={() => update({ path: 'pool', mix: 'hard', mode: 'flagToName' })}
-          >
-            <FitText minPx={9}>{t.hardMix}</FitText>
-            <FitText className="choice-note" wrap minPx={7}>
-              {t.hardMixNote}
-            </FitText>
-          </button>
-        </div>
-        <GeoModeGrids
-          lang={settings.lang}
-          activeMode={settings.mode}
-          mix={Boolean(settings.mix)}
-          showRankings={false}
-          onPick={(mode) =>
-            update({
-              path: 'pool',
-              mix: null,
-              mode,
-              difficulty: nextDifficultyForMode(mode, settings.difficulty),
-            })
-          }
-        />
-        <h2>{t.region}</h2>
-        <div className="choice-wrap">
-          {regions.map((region) => (
+        <div className="choice-grid is-modes">
+          {GEO_PLAY_FAMILIES.map((id) => (
             <button
-              key={region}
+              key={id}
               type="button"
-              className={`chip ${isRegionSelected(settings.region, region) ? 'is-active' : ''}`}
-              aria-pressed={isRegionSelected(settings.region, region)}
-              onClick={() => update({ path: 'pool', region: toggleRegion(settings.region, region) })}
+              className={`choice ${activeFamily === id ? 'is-active' : ''}`}
+              aria-pressed={activeFamily === id}
+              onClick={() => {
+                update(settingsForGeoFamily(settings, id))
+                setSetupFamily({ world: 'geo', id })
+              }}
             >
-              {regionLabel(region, settings.lang)}
+              <FitText minPx={9}>{geoFamilyLabel(id, settings.lang)}</FitText>
             </button>
           ))}
         </div>
-
-        <ExtrasToggle settings={settings} onChange={(includeExtras) => update({ includeExtras })} />
-
-        <h2>{t.difficulty}</h2>
-        <div className={`choice-grid ${difficulties.length === 4 ? 'is-4' : 'is-3'}`}>
-          {difficulties.map((difficulty) => (
-            <button
-              key={difficulty}
-              type="button"
-              className={`choice ${settings.difficulty === difficulty ? 'is-active' : ''}`}
-              aria-pressed={settings.difficulty === difficulty}
-              onClick={() =>
-                update({
-                  path: 'pool',
-                  difficulty,
-                  levelHardcore: difficulty === 'hardcore',
-                })
-              }
-            >
-              <ChoiceLabel>{difficultyLabel(difficulty, settings.lang)}</ChoiceLabel>
-            </button>
-          ))}
+        <div className="mode-aside">
+          <h2>{t.familyMix}</h2>
+          <button
+            type="button"
+            className={`choice has-note is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
+            aria-pressed={activeFamily === 'mix'}
+            onClick={() => {
+              update(settingsForGeoFamily(settings, 'mix'))
+              setSetupFamily({ world: 'geo', id: 'mix' })
+            }}
+          >
+            <FitText minPx={9}>{settings.mix ? mixLabel(settings.mix, settings.lang) : t.familyMix}</FitText>
+            <FitText className="choice-note" wrap minPx={7}>
+              {t.customMixNote}
+            </FitText>
+          </button>
         </div>
-
-        {!factsMode ? (
-          <>
-            <h2>{t.roundSize}</h2>
-            <div className="choice-grid is-3">
-              {ROUND_SIZES.map((roundSize) => (
-                <button
-                  key={roundSize}
-                  type="button"
-                  className={`choice ${settings.roundSize === roundSize ? 'is-active' : ''}`}
-                  aria-pressed={settings.roundSize === roundSize}
-                  disabled={poolSize > 0 && roundSize > poolSize}
-                  onClick={() => onChange({ ...settings, path: 'pool', roundSize })}
-                >
-                  {roundSize}
-                </button>
-              ))}
-            </div>
-          </>
-        ) : null}
       </section>
+
+      <p className="current-best home-setup-line">
+        {settings.mix ? mixLabel(settings.mix, settings.lang) : modeLabel(settings.mode, settings.lang)} ·{' '}
+        {regionLabel(settings.region, settings.lang)} · {setupDifficultyText(settings.difficulty, settings.levelHardcore, settings.lang)}
+        {factsMode ? '' : ` · ${settings.roundSize}`}
+      </p>
 
       {currentBest && (
         <p className="current-best">
@@ -236,13 +162,31 @@ export function HomeScreen({
         </p>
       )}
 
-      <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
-        {t.start}
-      </button>
+      <div className="home-launch">
+        <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
+          {t.start}
+        </button>
+        <button
+          type="button"
+          className={`choice home-launch-rankings ${setupFamily?.id === 'rankings' ? 'is-active' : ''}`}
+          aria-pressed={setupFamily?.id === 'rankings'}
+          onClick={() => setSetupFamily({ world: 'geo', id: 'rankings' })}
+        >
+          <FitText minPx={9}>{t.rankings}</FitText>
+        </button>
+      </div>
+
+      <section className="card settings-card">
+        <h2>{t.multiplayer}</h2>
+        <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={() => setDuelSetup('match')}>
+          {t.multiplayerPlay}
+        </button>
+      </section>
 
       <section className="card settings-card">
         <h2>{t.duel}</h2>
-        <button type="button" className="btn-secondary" disabled={poolSize === 0} onClick={() => setDuelSetupOpen(true)}>
+        <p className="setting-hint">{t.duelHint}</p>
+        <button type="button" className="btn-secondary" disabled={poolSize === 0} onClick={() => setDuelSetup('create')}>
           {t.duelCreate}
         </button>
         <form
@@ -268,32 +212,31 @@ export function HomeScreen({
         {duelError ? <p className="account-error">{duelError}</p> : null}
       </section>
 
-      <section className="card settings-card">
-        <RankingModeGrid
-          lang={settings.lang}
-          activeMode={settings.mode}
-          mix={Boolean(settings.mix)}
-          standalone
-          onPick={(mode) =>
-            update({
-              path: 'pool',
-              mix: null,
-              mode,
-              difficulty: nextDifficultyForMode(mode, settings.difficulty),
-            })
-          }
+      {setupFamily ? (
+        <ModeSetupModal
+          family={setupFamily}
+          settings={settings}
+          onChange={(next) => update(next)}
+          onStart={() => {
+            setSetupFamily(null)
+            onStart()
+          }}
+          onClose={() => setSetupFamily(null)}
         />
-      </section>
+      ) : null}
 
-      {duelSetupOpen ? (
+      {duelSetup ? (
         <DuelCreateModal
           lang={settings.lang}
           initialMode={settings.mode}
           region={settings.region}
-          onCancel={() => setDuelSetupOpen(false)}
+          intent={duelSetup}
+          onCancel={() => setDuelSetup(null)}
           onConfirm={(modes, facts) => {
-            setDuelSetupOpen(false)
-            onCreateDuel(modes, facts)
+            const kind = duelSetup
+            setDuelSetup(null)
+            if (kind === 'match') onMatchDuel(modes, facts)
+            else onCreateDuel(modes, facts)
           }}
         />
       ) : null}
@@ -332,7 +275,7 @@ function RecordRow({
         <p className="history-score">{score(record.correct, record.total)}</p>
         <p className="history-setup">
           {record.mix ? mixLabel(record.mix, lang) : modeLabel(record.mode, lang)} · {regionLabel(record.region, lang)} ·{' '}
-          {difficultyLabel(record.difficulty, lang)} · {record.roundSize} · {formatClock(record.roundMs)}
+          {setupDifficultyText(record.difficulty, Boolean(record.hardcore), lang)} · {record.roundSize} · {formatClock(record.roundMs)}
         </p>
       </div>
       <p className="history-when">{formatPlayedAt(record.at, lang)}</p>
@@ -359,24 +302,18 @@ export function ExtrasToggle({
   const t = STRINGS[settings.lang]
   return (
     <>
-      <h2>{t.includeExtras}</h2>
-      <div className="choice-wrap">
+      <div className="choice-wrap extras-toggle-row">
         <button
           type="button"
-          className={`chip ${settings.includeExtras ? 'is-active' : ''}`}
+          className={`extras-toggle ${settings.includeExtras ? 'is-active' : ''}`}
           aria-pressed={settings.includeExtras}
           onClick={() => onChange(!settings.includeExtras)}
         >
+          <span className="region-dot" aria-hidden />
           {t.includeExtras}
         </button>
       </div>
       <p className="setting-hint extras-hint">{t.includeExtrasHint}</p>
     </>
   )
-}
-
-function nextDifficultyForMode(mode: QuizMode, difficulty: QuizDifficulty): QuizDifficulty {
-  if (mode === 'factsToName' || mode === 'playerFactsToName') return difficulty === 'hardcore' ? 'hard' : difficulty
-  if (mode === 'nameToLanguage') return difficulty
-  return difficulty === 'medium' ? 'hard' : difficulty
 }

@@ -1,11 +1,18 @@
-/** Commons files to prefer over Wikipedia infobox images (coins, tombs, inscribed plates). */
+/** Commons files to prefer over Wikipedia infobox images. One person facing the viewer; no captions on the picture. */
 export const WIKI_PORTRAIT_FILES: Record<string, string> = {
   'Lilian Thuram': 'Lilian Thuram 2007.jpg',
   'Iziaslav I of Kiev': 'Izyaslav I Yaroslavich.png',
   'Sviatopolk I of Kiev': 'Sviatopolk I of Kiev.jpg',
   'Sviatopolk II of Kiev': 'Svyatopolk II - fresco of the Novospassky Monastery.png',
   'Vladimir II Monomakh': 'Vladimir monomakh.jpg',
-  'Edward II of England': 'King Edward II.jpg',
+  'William the Conqueror': 'P89-William the Conqueror.jpg',
+  'Henry I of England': 'BL MS Royal 14 C VII f.8v (Henry I).jpg',
+  'Stephen, King of England': 'BL MS Royal 14 C VII f.8v (Stephen).jpg',
+  'Richard I of England': 'Richard I of England in the Brief Abridgement of the Chronicles of England.jpg',
+  'John, King of England': 'King John.jpg',
+  'Henry III of England': 'P276-Henry III.jpg',
+  'Edward II of England': 'King Edward II of England.jpg',
+  'Edward V of England': 'British (English) School - Edward V (1470–1483) (^) - 222828 - National Trust.jpg',
   'Grover Cleveland': 'President Grover Cleveland.jpg',
   'Pope Fabian': '20-St.Fabian.jpg',
   'Pope Stephen I': '23-St.Stephen I.jpg',

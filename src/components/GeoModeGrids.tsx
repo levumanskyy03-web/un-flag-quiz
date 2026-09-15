@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { findCountry } from '../data/extras'
 import { getPassport } from '../data/passports'
-import { RANKING_MODES, rankingCite, type RankingMode } from '../data/rankings'
+import { RANKING_MODES, rankingCite, rankingUnit, type RankingMode } from '../data/rankings'
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import { ChoiceLabel } from './FitText'
-import { QUIZ_MODES, type QuizMode } from '../lib/quiz'
+import { CODES_MODES, QUIZ_MODES, type QuizMode } from '../lib/quiz'
 import { PassportModal } from './PassportModal'
 import { RankingAboutDialog } from './RankingAboutDialog'
 
@@ -19,7 +19,7 @@ interface RankingFootnoteProps {
 export function RankingFootnote({ mode, lang, onOpen }: RankingFootnoteProps) {
   const t = STRINGS[lang]
   const cite = rankingCite(mode, lang)
-  const text = `${t.rankingFootnote(cite.asOf, cite.source, cite.count)}${cite.note ? ` ${cite.note}` : ''}`
+  const text = `${t.rankingFootnote(cite.asOf, cite.source, cite.count)} ${rankingUnit(mode, lang)}${cite.note ? ` ${cite.note}` : ''}`
   if (onOpen) {
     return (
       <button type="button" className="ranking-footnote is-openable" onClick={onOpen}>
@@ -39,7 +39,10 @@ interface GeoModeGridsProps {
   mix?: boolean
   onPick: (mode: QuizMode) => void
   selectedModes?: readonly QuizMode[]
+  hideModes?: readonly QuizMode[]
   showRankings?: boolean
+  showCodes?: boolean
+  hideHeading?: boolean
 }
 
 export function GeoModeGrids({
@@ -48,7 +51,9 @@ export function GeoModeGrids({
   mix = false,
   onPick,
   selectedModes,
+  hideModes,
   showRankings = true,
+  showCodes = true,
 }: GeoModeGridsProps) {
   return (
     <>
@@ -58,18 +63,60 @@ export function GeoModeGrids({
         activeMode={activeMode}
         mix={mix}
         selectedModes={selectedModes}
+        hideModes={hideModes}
         onPick={onPick}
       />
+      {showCodes ? (
+        <CodesModeGrid
+          lang={lang}
+          activeMode={activeMode}
+          mix={mix}
+          selectedModes={selectedModes}
+          hideModes={hideModes}
+          onPick={onPick}
+        />
+      ) : null}
       {showRankings ? (
         <RankingModeGrid
           lang={lang}
           activeMode={activeMode}
           mix={mix}
           selectedModes={selectedModes}
+          hideModes={hideModes}
           onPick={onPick}
         />
       ) : null}
     </>
+  )
+}
+
+export function CodesModeGrid({
+  lang,
+  activeMode,
+  mix = false,
+  onPick,
+  selectedModes,
+  standalone = false,
+  hideHeading = false,
+}: GeoModeGridsProps & { standalone?: boolean; hideHeading?: boolean }) {
+  const t = STRINGS[lang]
+  return (
+    <div className={`ranking-modes${standalone || hideHeading ? ' is-standalone' : ''}`}>
+      {hideHeading ? null : (
+        <>
+          <h2>{t.codes}</h2>
+          <p className="setting-hint">{t.codesSubtitle}</p>
+        </>
+      )}
+      <ModeButtons
+        lang={lang}
+        modes={CODES_MODES}
+        activeMode={activeMode}
+        mix={mix}
+        selectedModes={selectedModes}
+        onPick={onPick}
+      />
+    </div>
   )
 }
 
@@ -80,19 +127,25 @@ export function RankingModeGrid({
   onPick,
   selectedModes,
   standalone = false,
-}: GeoModeGridsProps & { standalone?: boolean }) {
+  hideHeading = false,
+}: GeoModeGridsProps & { standalone?: boolean; hideHeading?: boolean }) {
   const t = STRINGS[lang]
-  const rankingActive = !mix && RANKING_MODES.includes(activeMode as RankingMode)
+  const [picked, setPicked] = useState<RankingMode | null>(() =>
+    RANKING_MODES.includes(activeMode as RankingMode) ? (activeMode as RankingMode) : null,
+  )
+  const rankingActive = picked ?? (!mix && RANKING_MODES.includes(activeMode as RankingMode) ? (activeMode as RankingMode) : null)
   const [open, setOpen] = useState<RankingMode | null>(null)
   const [passportIso, setPassportIso] = useState<string | null>(null)
   const passportCountry = passportIso ? findCountry(passportIso) : undefined
 
   return (
-    <div className={`ranking-modes${standalone ? ' is-standalone' : ''}`}>
-      <h2>{t.rankings}</h2>
+    <div className={`ranking-modes${standalone || hideHeading ? ' is-standalone' : ''}`}>
+      {hideHeading ? null : <h2>{t.rankings}</h2>}
       <div className="choice-grid is-modes">
         {RANKING_MODES.map((mode) => {
-          const active = selectedModes ? selectedModes.includes(mode) : !mix && activeMode === mode
+          const active = selectedModes
+            ? selectedModes.includes(mode)
+            : rankingActive === mode
           return (
             <div key={mode} className="ranking-choice-wrap">
               <button
@@ -101,7 +154,10 @@ export function RankingModeGrid({
                 aria-pressed={active}
                 onClick={() => {
                   onPick(mode)
-                  if (!selectedModes) setOpen(mode)
+                  if (!selectedModes) {
+                    setPicked(mode)
+                    setOpen(mode)
+                  }
                 }}
               >
                 <ChoiceLabel>{modeLabel(mode, lang)}</ChoiceLabel>
@@ -120,7 +176,7 @@ export function RankingModeGrid({
         })}
       </div>
       {rankingActive ? (
-        <RankingFootnote mode={activeMode as RankingMode} lang={lang} onOpen={() => setOpen(activeMode as RankingMode)} />
+        <RankingFootnote mode={rankingActive} lang={lang} onOpen={() => setOpen(rankingActive)} />
       ) : null}
       {open ? (
         <RankingAboutDialog
@@ -150,6 +206,7 @@ function ModeButtons({
   activeMode,
   mix,
   selectedModes,
+  hideModes,
   onPick,
 }: {
   lang: Lang
@@ -157,11 +214,15 @@ function ModeButtons({
   activeMode: QuizMode
   mix: boolean
   selectedModes?: readonly QuizMode[]
+  hideModes?: readonly QuizMode[]
   onPick: (mode: QuizMode) => void
 }) {
+  const hidden = new Set(hideModes ?? [])
   return (
     <div className="choice-grid is-modes">
-      {modes.map((mode) => {
+      {modes
+        .filter((mode) => !hidden.has(mode))
+        .map((mode) => {
         const active = selectedModes ? selectedModes.includes(mode) : !mix && activeMode === mode
         return (
           <button

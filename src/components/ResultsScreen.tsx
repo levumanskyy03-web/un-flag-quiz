@@ -88,7 +88,7 @@ export function ResultsScreen({
 
   return (
     <div className={`screen results-screen ${success ? 'is-success' : 'is-fail'}`}>
-      {onWorlds ? <WorldsBack lang={lang} onClick={onWorlds} /> : null}
+      <WorldsBack lang={lang} onClick={onMenu} label={t.back} />
       <section className={`card score-card ${success ? 'is-success' : 'is-fail'}`}>
         <p className="score-kicker">{t.results}</p>
         <p className="score-value">{t.score(correctCount, total)}</p>
@@ -195,8 +195,8 @@ export function ResultsScreen({
         <button type="button" className={success && onNextLevel ? 'btn-secondary' : 'btn-primary'} onClick={onAgain}>
           {t.playAgain}
         </button>
-        <button type="button" className="btn-secondary" onClick={onMenu}>
-          {menuLabel ?? t.backToMenu}
+        <button type="button" className="btn-secondary" onClick={onWorlds ?? onMenu}>
+          {onWorlds ? t.worldsBack : (menuLabel ?? t.backToMenu)}
         </button>
       </div>
     </div>

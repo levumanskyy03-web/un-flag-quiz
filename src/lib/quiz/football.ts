@@ -151,8 +151,12 @@ export function footballPoolSize(mode: QuizMode, difficulty: QuizDifficulty): nu
   return footballYearList(mode, difficulty).length
 }
 
-export function footballMixPoolSize(mix: MixKind, difficulty: QuizDifficulty): number {
-  return modesForFootballMix(mix).reduce((sum, mode) => sum + footballPoolSize(mode, difficulty), 0)
+export function footballMixPoolSize(
+  mix: MixKind,
+  difficulty: QuizDifficulty,
+  custom: readonly QuizMode[] = [],
+): number {
+  return modesForFootballMix(mix, custom).reduce((sum, mode) => sum + footballPoolSize(mode, difficulty), 0)
 }
 
 export function footballLearnCountries(

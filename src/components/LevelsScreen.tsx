@@ -5,7 +5,6 @@ import { LEVEL_NUMBERS, isFinalLevel } from '../data/levels'
 import { STRINGS, modeLabel } from '../i18n/strings'
 import type { LevelClear } from '../lib/levelProgress'
 import { findLevelClear, isLevelUnlocked } from '../lib/levelProgress'
-import type { RoundRecord } from '../lib/history'
 import { fetchLevelBests, type LevelBest } from '../lib/leaderboard'
 import { MAX_LIVES, LEVEL_MODES, formatClock, hasGeoFinale, isLeadersMode, type QuizMode } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
@@ -14,17 +13,13 @@ import { FootballSetup, isFootballCatalog } from './FootballModeGrids'
 import { modeCampaignPercent } from '../lib/campaignPercent'
 import { LeadersSetup } from './LeadersScreen'
 import { ModeChoice } from './ModeChoice'
-import { PlayerHud } from './PlayerHud'
+import { HardcoreToggle } from './DifficultyPicker'
 import { Lives } from './Lives'
 import { WorldsBack } from './WorldsBack'
 
 interface LevelsScreenProps {
   settings: QuizSettings
   levelClears: LevelClear[]
-  history: RoundRecord[]
-  bests: RoundRecord[]
-  xp?: number
-  xpReady?: boolean
   modes?: readonly QuizMode[]
   levels?: readonly number[]
   tabs?: HubTab[]
@@ -32,16 +27,11 @@ interface LevelsScreenProps {
   onPlay: (level: number) => void
   onHub: (tab: HubTab) => void
   onWorlds: () => void
-  onClearBests?: () => void
 }
 
 export function LevelsScreen({
   settings,
   levelClears,
-  history,
-  bests,
-  xp = 0,
-  xpReady = false,
   modes = LEVEL_MODES,
   levels = LEVEL_NUMBERS,
   tabs,
@@ -49,7 +39,6 @@ export function LevelsScreen({
   onPlay,
   onHub,
   onWorlds,
-  onClearBests,
 }: LevelsScreenProps) {
   const t = STRINGS[settings.lang]
   const [worldBests, setWorldBests] = useState<Record<number, LevelBest>>({})
@@ -81,17 +70,6 @@ export function LevelsScreen({
       </header>
 
       <section className="card settings-card">
-        <PlayerHud
-          lang={settings.lang}
-          history={history}
-          bests={bests}
-          levelClears={levelClears}
-          xp={xp}
-          xpReady={xpReady}
-          onLangChange={(lang) => onChange({ ...settings, lang })}
-          onClearBests={onClearBests}
-        />
-
         {isLeadersMode(settings.mode) ? (
           <LeadersSetup
             settings={settings}
@@ -171,7 +149,17 @@ export function LevelsScreen({
           ) : null}
         </p>
 
-        <div className="choice-grid">
+        {settings.levelLearn ? null : (
+          <div className="levels-hardcore-row">
+            <HardcoreToggle
+              lang={settings.lang}
+              on={settings.levelHardcore}
+              onChange={(on) => onChange({ ...settings, path: 'levels', levelHardcore: on })}
+            />
+          </div>
+        )}
+
+        <div className="levels-extra-row">
           <button
             type="button"
             className={`choice ${settings.levelLearn ? 'is-active' : ''}`}
@@ -179,14 +167,6 @@ export function LevelsScreen({
             onClick={() => onChange({ ...settings, path: 'levels', levelLearn: !settings.levelLearn })}
           >
             {t.learn}
-          </button>
-          <button
-            type="button"
-            className={`choice ${settings.levelHardcore ? 'is-active' : ''}`}
-            aria-pressed={settings.levelHardcore}
-            onClick={() => onChange({ ...settings, path: 'levels', levelHardcore: !settings.levelHardcore })}
-          >
-            {t.hardcore}
           </button>
         </div>
       </section>

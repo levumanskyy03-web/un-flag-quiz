@@ -34,7 +34,6 @@ import { countryName } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
 import { HubNav, type HubTab } from './HubNav'
 import { HoldoutModal } from './HoldoutModal'
-import { LanguageToggle } from './LanguageToggle'
 import { PassportModal } from './PassportModal'
 import { WorldsBack } from './WorldsBack'
 
@@ -370,10 +369,6 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
       <WorldsBack lang={settings.lang} onClick={onWorlds} />
       <header className="quiz-header is-hub">
         <HubNav lang={settings.lang} active="map" onSelect={onHub} />
-        <LanguageToggle
-          lang={settings.lang}
-          onChange={(lang) => onChange({ ...settings, lang })}
-        />
       </header>
 
       <div className="map-toolbar">

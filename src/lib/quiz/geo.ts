@@ -132,6 +132,17 @@ function levelChunksFor(mode: QuizMode): Country[][] {
     LEVEL_CHUNKS.set(mode, chunks)
     return chunks
   }
+  if (isCodesMode(mode)) {
+    const ranked = rankedForMode(mode).filter((country) => COUNTRY_CODES[country.iso])
+    const chunks: Country[][] = []
+    let offset = 0
+    for (const group of LEVEL_ISOS) {
+      chunks.push(ranked.slice(offset, offset + group.length))
+      offset += group.length
+    }
+    LEVEL_CHUNKS.set(mode, chunks)
+    return chunks
+  }
   if (mode === 'flagToName' || mode === 'nameToFlag') {
     const byIso = new Map(COUNTRIES.map((country) => [country.iso, country]))
     const chunks = LEVEL_ISOS.map((group) =>
@@ -159,7 +170,9 @@ export function getGeoLevelPool(level: number, mode: QuizMode = 'flagToName'): C
     return waterLevelChunks(mode)[level - 1] ?? []
   }
   if (!isLevelNumber(level)) return []
-  if (isFinalLevel(level)) return [...COUNTRIES]
+  if (isFinalLevel(level)) {
+    return isCodesMode(mode) ? COUNTRIES.filter((country) => COUNTRY_CODES[country.iso]) : [...COUNTRIES]
+  }
   return levelChunksFor(mode)[level - 1] ?? []
 }
 
@@ -184,6 +197,9 @@ export function poolForMode(
   } else if (isNameToGov(mode)) {
     next = pool.filter((country) => govKindOf(country.iso))
     if (next.length < 4) next = COUNTRIES.filter((country) => govKindOf(country.iso))
+  } else if (isCodesMode(mode)) {
+    next = pool.filter((country) => COUNTRY_CODES[country.iso])
+    if (next.length < 4) next = COUNTRIES.filter((country) => COUNTRY_CODES[country.iso])
   }
   if (!difficulty) return next
   const filtered = next.filter((country) => matchesPlayDifficulty(country, mode, difficulty))

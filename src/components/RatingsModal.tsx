@@ -15,6 +15,7 @@ import {
   type RatingPeriod,
   type RatingWorld,
 } from '../lib/leaderboard'
+import { fetchDuelRatings } from '../lib/duel'
 import type { LevelClear } from '../lib/levelProgress'
 import {
   campaignLevelCount,
@@ -35,10 +36,10 @@ interface RatingsModalProps {
   onClose: () => void
 }
 
-type Tab = 'xp' | 'levels'
+type Tab = 'xp' | 'levels' | 'duel'
 type ModeFilter = 'all' | QuizMode
 
-const SCOPES: RatingWorld[] = ['all', 'geo', 'football', 'codes', 'leaders']
+const SCOPES: RatingWorld[] = ['all', 'geo', 'football', 'leaders']
 
 export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }: RatingsModalProps) {
   const t = STRINGS[lang]
@@ -51,6 +52,15 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
   const [signedIn, setSignedIn] = useState(false)
   const [posted, setPosted] = useState(false)
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
+  const [duelEntries, setDuelEntries] = useState<Array<{
+    id: string
+    name: string
+    elo: number
+    wins: number
+    losses: number
+    draws: number
+    you?: boolean
+  }>>([])
   const [boardReady, setBoardReady] = useState(true)
   const [profileId, setProfileId] = useState<string | null>(null)
 
@@ -58,6 +68,7 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
   const hasCampaign = topic === 'geo' || topic === 'football' || topic === 'leaders'
   const campaignModes = topic ? campaignModesForWorld(topic) : []
   const showLevels = tab === 'levels' && hasCampaign
+  const showDuel = tab === 'duel'
 
   const board = useMemo<RatingBoard>(() => {
     if (tab !== 'levels' || !hasCampaign) {
@@ -109,7 +120,7 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
   }, [levelClears, xp, history, bests])
 
   useEffect(() => {
-    if (!posted) return
+    if (!posted || tab === 'duel') return
     let cancelled = false
     const player = loadPlayer()
     fetchRating(board, player.id)
@@ -126,7 +137,34 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
     return () => {
       cancelled = true
     }
-  }, [board, posted])
+  }, [board, posted, tab])
+
+  useEffect(() => {
+    if (!posted || tab !== 'duel') return
+    let cancelled = false
+    const player = loadPlayer()
+    const world = scope === 'football' || scope === 'geo' ? scope : 'all'
+    if (scope === 'leaders') {
+      setDuelEntries([])
+      setBoardReady(true)
+      return
+    }
+    fetchDuelRatings(world, player.id)
+      .then((result) => {
+        if (cancelled) return
+        setDuelEntries(result.entries)
+        setBoardReady(result.configured)
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setDuelEntries([])
+          setBoardReady(false)
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [posted, tab, scope])
 
   const total =
     showLevels && mode !== 'all'
@@ -134,7 +172,9 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
       : topic
         ? campaignMaxForWorld(topic)
         : 0
-  const hint = showLevels
+  const hint = showDuel
+    ? t.ratingsDuelHint
+    : showLevels
     ? hardcore
       ? t.ratingsHardcoreHint
       : t.ratingsLevelsHint
@@ -147,7 +187,7 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
   function pickScope(next: RatingWorld) {
     setScope(next)
     setMode('all')
-    if (next === 'all' || next === 'codes') setTab('xp')
+    if (next === 'all' && tab === 'levels') setTab('xp')
   }
 
   return (
@@ -186,9 +226,7 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
                       ? 'globe'
                       : item === 'football'
                         ? 'ball'
-                        : item === 'codes'
-                          ? 'hash'
-                          : 'crown'
+                        : 'bust'
                 }
               />
               {scopeLabel(item, lang)}
@@ -196,17 +234,17 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
           ))}
         </div>
 
-        {hasCampaign ? (
-          <div className="choice-grid">
-            <button
-              type="button"
-              className={`choice ratings-choice ${tab === 'xp' ? 'is-active' : ''}`}
-              aria-pressed={tab === 'xp'}
-              onClick={() => setTab('xp')}
-            >
-              <GeoIcon name="meridians" />
-              {t.ratingsXp}
-            </button>
+        <div className="choice-grid">
+          <button
+            type="button"
+            className={`choice ratings-choice ${tab === 'xp' ? 'is-active' : ''}`}
+            aria-pressed={tab === 'xp'}
+            onClick={() => setTab('xp')}
+          >
+            <GeoIcon name="meridians" />
+            {t.ratingsXp}
+          </button>
+          {hasCampaign ? (
             <button
               type="button"
               className={`choice ratings-choice ${tab === 'levels' ? 'is-active' : ''}`}
@@ -216,10 +254,19 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
               <GeoIcon name="map" />
               {t.ratingsLevels}
             </button>
-          </div>
-        ) : null}
+          ) : null}
+          <button
+            type="button"
+            className={`choice ratings-choice ${tab === 'duel' ? 'is-active' : ''}`}
+            aria-pressed={tab === 'duel'}
+            onClick={() => setTab('duel')}
+          >
+            <GeoIcon name="trophy" />
+            {t.ratingsDuel}
+          </button>
+        </div>
 
-        {tab === 'xp' || !hasCampaign ? (
+        {showDuel ? null : tab === 'xp' || !hasCampaign ? (
           <div className="choice-grid is-4">
             {RATING_PERIODS.map((item) => (
               <button
@@ -272,10 +319,33 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
         )}
 
         <p className="setting-hint ratings-hint">{hint}</p>
-        {!signedIn ? <p className="setting-hint">{t.accountNeeded}</p> : null}
+        {!signedIn && !showDuel ? <p className="setting-hint">{t.accountNeeded}</p> : null}
 
         {!boardReady ? (
           <p className="leaderboard-empty">{t.leaderboardOffline}</p>
+        ) : showDuel ? (
+          duelEntries.length === 0 ? (
+            <p className="leaderboard-empty">{t.ratingsDuelEmpty}</p>
+          ) : (
+            <ol className="leaderboard-list">
+              {duelEntries.map((entry, index) => (
+                <li key={entry.id}>
+                  <button
+                    type="button"
+                    className={`leaderboard-row${entry.you ? ' is-you' : ''}`}
+                    onClick={() => setProfileId(entry.id)}
+                    aria-label={`${t.playerProfile}: ${entry.name}`}
+                  >
+                    <span className="leaderboard-rank">{index + 1}</span>
+                    <span className="leaderboard-name">{entry.name}</span>
+                    <span className="leaderboard-score">
+                      {entry.elo} · {t.ratingsDuelRecord(entry.wins, entry.losses, entry.draws)}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          )
         ) : entries.length === 0 ? (
           <p className="leaderboard-empty">
             {tab === 'xp' && period !== 'all' ? t.ratingsPeriodEmpty : t.leaderboardEmpty}
@@ -330,7 +400,6 @@ function scopeLabel(scope: RatingWorld, lang: Lang): string {
   if (scope === 'all') return t.ratingsWorld
   if (scope === 'geo') return t.geography
   if (scope === 'football') return t.football
-  if (scope === 'codes') return t.codes
   return t.leaders
 }
 

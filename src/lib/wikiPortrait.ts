@@ -382,6 +382,54 @@ function uniqueFiles(names: Array<string | null | undefined>): string[] {
   return files
 }
 
+const SKIP_COMMONS_FILE =
+  /logo|crest|kit\b|wordmark|flag of|signature|autograph|coat of arms|\.svg$/i
+
+function commonsFileTitle(title: string): string | null {
+  const name = title.replace(/^File:/i, '').trim().replace(/_/g, ' ')
+  return isSaneCommonsFile(name) && !SKIP_COMMONS_FILE.test(name) ? name.replace(/ /g, '_') : null
+}
+
+async function commonsSearchFiles(query: string, limit = 8): Promise<string[]> {
+  const params = new URLSearchParams({
+    action: 'query',
+    format: 'json',
+    formatversion: '2',
+    list: 'search',
+    srsearch: query,
+    srnamespace: '6',
+    srlimit: String(limit),
+  })
+  try {
+    const data = await wikiJson(`https://commons.wikimedia.org/w/api.php?${params}`)
+    const hits =
+      data && typeof data === 'object'
+        ? (data as { query?: { search?: Array<{ title?: string }> } }).query?.search
+        : undefined
+    if (!Array.isArray(hits)) return []
+    return uniqueFiles(hits.map((hit) => commonsFileTitle(hit.title ?? '')))
+  } catch {
+    return []
+  }
+}
+
+async function portraitFromCommonsSearch(title: string): Promise<WikiPortrait | null> {
+  const name = title.replace(/\s*\([^)]*\)\s*$/, '').trim()
+  const queries = name.includes(' ')
+    ? [`"${name}" footballer`, `"${name}"`]
+    : [`"${name}" footballer`, `${name} footballer`]
+  const seen = new Set<string>()
+  for (const query of queries) {
+    for (const fileName of await commonsSearchFiles(query, 8)) {
+      if (seen.has(fileName)) continue
+      seen.add(fileName)
+      const portrait = await portraitFromFile(fileName)
+      if (portrait) return portrait
+    }
+  }
+  return null
+}
+
 function isSaneCommonsFile(file: string): boolean {
   const name = file.trim().replace(/_/g, ' ')
   if (!name || name.length > TITLE_MAX || name.includes('/') || name.includes('..') || name.includes('\\')) {
@@ -423,5 +471,5 @@ export async function lookupWikiPortrait(title: string, preferredFile?: string |
     const portrait = await portraitFromFile(fileName)
     if (portrait) return portrait
   }
-  return null
+  return portraitFromCommonsSearch(normalized)
 }

@@ -3,6 +3,30 @@ import type { PlayerFactClue } from './playerFacts'
 import type { FactsDuelConfig } from './factsRules'
 import type { QuizDifficulty, QuizMode, RegionFilter } from './quiz'
 
+export interface DuelAnswer {
+  iso: string | null
+  timeMs: number
+}
+
+export interface DuelPlayer {
+  id: string
+  name: string
+  answers: Array<DuelAnswer | null>
+  wrongs: number[]
+  kind?: 'human' | 'bot'
+  elo?: number
+}
+
+export interface DuelRatingSide {
+  elo: number
+  delta: number
+}
+
+export interface DuelRatingSnapshot {
+  host: DuelRatingSide
+  guest: DuelRatingSide
+}
+
 export interface DuelQuestionWire {
   countryIso: string
   optionIsos: string[]
@@ -46,4 +70,8 @@ export interface DuelView {
   youWrongs?: number
   factsMax?: number
   factsWrongLimit?: number
+  youRating?: number
+  youRatingDelta?: number
+  opponentRating?: number
+  matchmaking?: boolean
 }

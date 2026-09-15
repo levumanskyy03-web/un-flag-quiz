@@ -18,6 +18,7 @@ import {
   codeAnswerKey,
   codePromptLabel,
   countryName,
+  isCodesMode,
   isCodeOptionMode,
   isFootballMode,
   isLeadersMode,
@@ -32,9 +33,7 @@ export function answerKey(country: Country, mode: QuizMode): string {
     return country.iso
   }
   if (isWaterMode(mode)) return waterAnswerKey(country.iso, mode)
-  if (mode === 'nameToTld' || mode === 'nameToCalling' || mode === 'nameToCar') {
-    return codeAnswerKey(country, mode)
-  }
+  if (isCodesMode(mode)) return codeAnswerKey(country, mode)
   if (mode === 'neighborsToName') return `neighbors:${neighborKey(country.iso)}`
   if (mode === 'nameToFounded') return `founded:${foundedYear(country.iso) ?? country.iso}`
   if (mode === 'nameToGov') return `gov:${govKindOf(country.iso) ?? country.iso}`
@@ -92,5 +91,5 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
     const id = quizLanguageId(country.iso)
     return id ? languageName(id, lang) : countryName(country, lang)
   }
-  return formatPopulation(passport.population, lang)
+  return countryName(country, lang)
 }

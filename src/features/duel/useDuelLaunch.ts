@@ -4,14 +4,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { QuizSettings } from "@/components/HomeScreen";
 import { fetchAccount } from "@/lib/account";
-import { createDuel } from "@/lib/duel";
+import { bindDuelPlayerId, createDuel, matchDuel } from "@/lib/duel";
 import type { FactsDuelConfig } from "@/lib/factsRules";
 import { STRINGS } from "@/i18n/strings";
+import { MATCH_DIFFICULTY, MATCH_ROUND_SIZE } from "@/lib/duelMatch";
 import type { QuizMode } from "@/lib/quiz";
 import { duelHref, normalizeDuelCode } from "./paths";
 
 async function duelName(lang: QuizSettings["lang"]) {
   const account = await fetchAccount();
+  if (account?.id) bindDuelPlayerId(account.id);
   if (account?.name) return account.name;
   return lang === "ru" ? "Игрок" : "Player";
 }
@@ -46,6 +48,25 @@ export function useDuelLaunch(settings: QuizSettings) {
     router.push(duelHref(result.room.code));
   }
 
+  async function match(modes: QuizMode[], facts?: FactsDuelConfig) {
+    setError(null);
+    const nextModes = modes.length > 0 ? modes : [settings.mode];
+    const result = await matchDuel({
+      name: await duelName(settings.lang),
+      modes: nextModes,
+      region: "all",
+      difficulty: MATCH_DIFFICULTY,
+      roundSize: MATCH_ROUND_SIZE,
+      facts,
+      includeExtras: false,
+    });
+    if (!result.ok) {
+      setError(errorMessage(settings.lang, result.error));
+      return;
+    }
+    router.push(duelHref(result.room.code));
+  }
+
   function join(code: string) {
     setError(null);
     const normalized = normalizeDuelCode(code);
@@ -56,5 +77,5 @@ export function useDuelLaunch(settings: QuizSettings) {
     router.push(duelHref(normalized));
   }
 
-  return { error, create, join };
+  return { error, create, match, join };
 }

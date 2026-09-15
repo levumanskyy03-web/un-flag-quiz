@@ -9,8 +9,8 @@ export interface PortraitRequest {
 
 const cache = new Map<string, WikiPortrait | null>()
 const inflight = new Map<string, Promise<WikiPortrait | null>>()
-const STORE_KEY = 'unfq-wiki-portraits-v13'
-const PORTRAIT_API_VER = '13'
+const STORE_KEY = 'unfq-wiki-portraits-v15'
+const PORTRAIT_API_VER = '15'
 const STORE_MS = 14 * 24 * 60 * 60 * 1000
 const NULL_STORE_MS = 30 * 60 * 1000
 const PREFETCH_WORKERS = 4

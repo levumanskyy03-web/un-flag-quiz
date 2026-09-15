@@ -1,11 +1,17 @@
 import { REGIONS } from '../data/countries'
 import { type GovKind } from '../data/governments'
 import {
+  CLUB_FOOTBALL_MATCH_MIX,
+  CODES_MODES,
   EASY_FOOTBALL_MIX_MODES,
   EASY_MIX_MODES,
+  FLAGS_MIX_MODES,
   FOOTBALL_MODES,
   HARD_FOOTBALL_MIX_MODES,
   HARD_MIX_MODES,
+  MAP_MIX_MODES,
+  PLAYER_FOOTBALL_MATCH_MIX,
+  WC_FOOTBALL_MATCH_MIX,
   isAllRegions,
   isFootballMode,
   isLeadersMode,
@@ -163,6 +169,13 @@ export type Strings = {
   footballXpHint: (n: number) => string
   codes: string
   codesSubtitle: string
+  familyMix: string
+  familyFlags: string
+  familyMap: string
+  familyWater: string
+  modeSetup: string
+  rankingSetup: string
+  mixPickModes: string
   tldToName: string
   nameToTld: string
   callingToName: string
@@ -198,6 +211,29 @@ export type Strings = {
   leaderAskYears: string
   leaderAskNumber: string
   leaderAskPhoto: string
+  leaderHideNames: string
+  leaderHiddenName: string
+  leaderEraUsEarly: string
+  leaderEraUs1800s: string
+  leaderEraUsModern: string
+  leaderEraPopeEarly: string
+  leaderEraPopeMedieval: string
+  leaderEraPopeModern: string
+  leaderEraRusKiev: string
+  leaderEraRusMoscow: string
+  leaderEraRusEmpire: string
+  leaderEraRusSoviet: string
+  leaderEraUkMedieval: string
+  leaderEraUkTudor: string
+  leaderEraUkModern: string
+  leaderLearnName: string
+  leaderFeat: string
+  leaderNoteDeJure: string
+  leaderNoteParallel: string
+  leaderNoteDisputed: string
+  leaderNoteAbdicated: string
+  leaderNoteVpDeath: string
+  leaderNoteVpResign: string
   usYearsPrompt: (range: string) => string
   usNumberPrompt: (n: number) => string
   popeYearsPrompt: (range: string) => string
@@ -492,6 +528,10 @@ export type Strings = {
   ratingsXpHintPeriod: string
   ratingsXpHintTopic: string
   ratingsPeriodEmpty: string
+  ratingsDuel: string
+  ratingsDuelHint: string
+  ratingsDuelEmpty: string
+  ratingsDuelRecord: (wins: number, losses: number, draws: number) => string
   worldRecord: string
   worldRecordBeat: string
   worldRecordBonus: (amount: string) => string
@@ -500,6 +540,9 @@ export type Strings = {
   worldRecordHint: string
   tapPassport: string
   capital: string
+  tld: string
+  callingCode: string
+  carCode: string
   population: string
   currency: string
   government: string
@@ -510,6 +553,10 @@ export type Strings = {
   credit: string
   duel: string
   duelHint: string
+  duelPlay: string
+  multiplayer: string
+  multiplayerPlay: string
+  multiplayerWaiting: string
   duelCreate: string
   duelJoin: string
   duelCode: string
@@ -523,8 +570,10 @@ export type Strings = {
   duelPickModesHint: string
   easyMix: string
   hardMix: string
+  customMix: string
   easyMixNote: string
   hardMixNote: string
+  customMixNote: string
   footballEasyMixNote: string
   footballHardMixNote: string
   duelVs: (name: string) => string
@@ -539,6 +588,7 @@ export type Strings = {
   duelRematchHint: string
   duelRematchWaiting: string
   duelRematchOffered: string
+  duelRating: (rating: number, delta: number) => string
   factsHint: string
   factOf: (i: number, total: number) => string
   factUniqueness: (n: number) => string
@@ -776,6 +826,13 @@ export const STRINGS: Record<Lang, Strings> = {
     footballXpHint: (n) => `Верный ответ: +${n} опыта. Полный матч и идеал дают бонус.`,
     codes: 'Коды стран',
     codesSubtitle: 'Домен, телефон и автокод.',
+    familyMix: 'Микс',
+    familyFlags: 'Флаги',
+    familyMap: 'Карта',
+    familyWater: 'Моря и реки',
+    modeSetup: 'Настройка раунда',
+    rankingSetup: 'Справочник, не раунд. Выберите рейтинг, чтобы открыть таблицу.',
+    mixPickModes: 'Отметьте любые режимы для своего микса',
     tldToName: 'Домен → страна',
     nameToTld: 'Страна → домен',
     callingToName: 'Телефон → страна',
@@ -789,7 +846,7 @@ export const STRINGS: Record<Lang, Strings> = {
     nameToCallingAsk: (name) => `Какой телефонный код у страны ${name}?`,
     nameToCarAsk: (name) => `Какой автомобильный код у страны ${name}?`,
     leaders: 'Лидеры стран',
-    leadersSubtitle: 'Президенты США, папы римские, правители от Аскольда до Союза и короли Англии. Портреты — Wikimedia Commons, только свободные лицензии.',
+    leadersSubtitle: 'Президенты США, папы римские, правители от Аскольда до Союза и короли Англии. Портреты — Wikimedia Commons, только свободные лицензии. Метки у спорных случаев можно нажать — откроется разъяснение.',
     present: 'н. в.',
     usYearsToName: 'США · годы',
     usNumberToName: 'США · номер',
@@ -811,6 +868,29 @@ export const STRINGS: Record<Lang, Strings> = {
     leaderAskYears: 'Годы',
     leaderAskNumber: 'Номер',
     leaderAskPhoto: 'Фото',
+    leaderHideNames: 'Скрыть имена',
+    leaderHiddenName: '???',
+    leaderEraUsEarly: 'Основание',
+    leaderEraUs1800s: 'XIX век',
+    leaderEraUsModern: 'XX–XXI',
+    leaderEraPopeEarly: 'Ранние',
+    leaderEraPopeMedieval: 'Средневековье',
+    leaderEraPopeModern: 'Новое время',
+    leaderEraRusKiev: 'Киев',
+    leaderEraRusMoscow: 'Москва',
+    leaderEraRusEmpire: 'Империя',
+    leaderEraRusSoviet: 'СССР',
+    leaderEraUkMedieval: 'Средние века',
+    leaderEraUkTudor: 'Тюдоры и Стюарты',
+    leaderEraUkModern: 'Ганноверы+',
+    leaderLearnName: 'Имя',
+    leaderFeat: 'Чем запомнился',
+    leaderNoteDeJure: 'де-юре · фактически не руководил',
+    leaderNoteParallel: 'параллельное правление',
+    leaderNoteDisputed: 'спорный',
+    leaderNoteAbdicated: 'отречение',
+    leaderNoteVpDeath: 'вице-президент · вступил после смерти',
+    leaderNoteVpResign: 'вице-президент · вступил после отставки (импичмент)',
     usYearsPrompt: (range) => `Кто был президентом США в ${range}?`,
     usNumberPrompt: (n) => `Кто был ${n}-м президентом США?`,
     popeYearsPrompt: (range) => `Кто был папой римским в ${range}?`,
@@ -1043,7 +1123,7 @@ export const STRINGS: Record<Lang, Strings> = {
     xpHowLead: 'Опыт копится за игру. Уровень аккаунта растёт от всей суммы.',
     xpHowFreeTitle: 'Свободная игра',
     xpHowFree:
-      'Вольный режим даёт мало. География: 1 / 2 / 4 за верный ответ (легко / сложно / хардкор). Карта, население, основание, соседи, факты, моря и реки — на 1 больше. Коды стран: 1 за верный ответ. Лидеры: 1 / 2 / 4 (легко и средне / сложно / хардкор). Училка и тренажёр ошибок опыт не дают.',
+      'Вольный режим даёт мало. География: 1 / 2 / 4 за верный ответ (легко / сложно / хардкор). Карта, население, основание, соседи, факты, моря и реки — на 1 больше. Лидеры: 1 / 2 / 4 (легко и средне / сложно / хардкор). Училка и тренажёр ошибок опыт не дают.',
     xpHowFootballTitle: 'Футбол',
     xpHowFootball:
       'Вольный матч: 1 за верный ответ, годы титула 2. Хозяева и Евро на «сложно» — 2, на хардкоре — 4. Полный матч: +1 за вопрос. Идеал: ещё +2 за вопрос.',
@@ -1111,6 +1191,10 @@ export const STRINGS: Record<Lang, Strings> = {
     ratingsXpHintPeriod: 'Опыт, набранный за этот период',
     ratingsXpHintTopic: 'Опыт только в этой теме',
     ratingsPeriodEmpty: 'Пока пусто за этот период',
+    ratingsDuel: 'Мультиплеер',
+    ratingsDuelHint: 'Рейтинг онлайн-матчей. Стартовые 1000, после каждой законченной игры.',
+    ratingsDuelEmpty: 'Пока пусто — сыграйте онлайн',
+    ratingsDuelRecord: (wins, losses, draws) => `${wins}–${losses}–${draws}`,
     worldRecord: 'Мировой рекорд',
     worldRecordBeat: 'Рекорд обновлён!',
     worldRecordBonus: (amount) => `+${amount} опыта за рекорд`,
@@ -1119,6 +1203,9 @@ export const STRINGS: Record<Lang, Strings> = {
     worldRecordHint: 'Нажмите уровень — лучший результат среди всех игроков.',
     tapPassport: 'Нажмите страну — откроется паспорт',
     capital: 'Столица',
+    tld: 'Домен',
+    callingCode: 'Телефон',
+    carCode: 'Автокод',
     population: 'Население',
     currency: 'Валюта',
     government: 'Гос. устройство',
@@ -1134,7 +1221,11 @@ export const STRINGS: Record<Lang, Strings> = {
     legalToday: 'Страна дня',
     legalLanguages: 'Языки',
     duel: 'Дуэль',
-    duelHint: 'Один на один: создайте комнату или введите код.',
+    duelHint: 'Один на один с другом: создайте комнату или введите код.',
+    duelPlay: 'Играть',
+    multiplayer: 'Мультиплеер',
+    multiplayerPlay: 'Играть онлайн',
+    multiplayerWaiting: 'Ищем соперника',
     duelCreate: 'Создать комнату',
     duelJoin: 'Войти',
     duelCode: 'Код комнаты',
@@ -1148,8 +1239,10 @@ export const STRINGS: Record<Lang, Strings> = {
     duelPickModesHint: 'Можно выбрать несколько — вопросы будут чередоваться',
     easyMix: 'Простой микс',
     hardMix: 'Сложный микс',
+    customMix: 'Свой микс',
     easyMixNote: 'Флаг → страна · Страна → флаг · Страна → столица',
-    hardMixNote: 'Все режимы, кроме фактов: флаги, карта, соседи, моря и реки',
+    hardMixNote: 'Все режимы, кроме фактов: флаги, карта, соседи, моря и реки, коды стран',
+    customMixNote: 'Любые режимы, кроме фактов',
     footballEasyMixNote: 'Победители ЧМ · Победители Евро · Хозяева ЧМ · Победители ЛЧ',
     footballHardMixNote: 'Все футбольные режимы, кроме фактов про игроков',
     duelVs: (name) => `против ${name}`,
@@ -1164,6 +1257,8 @@ export const STRINGS: Record<Lang, Strings> = {
     duelRematchHint: 'Если оба нажмут — сыграете ещё раз в этой комнате.',
     duelRematchWaiting: 'Ждём, пока соперник примет реванш.',
     duelRematchOffered: 'Соперник предлагает реванш.',
+    duelRating: (rating, delta) =>
+      delta === 0 ? String(rating) : `${rating} (${delta > 0 ? '+' : ''}${delta})`,
     factsHint: 'Не входит в уровни. Первые 5 фактов — 10 секунд, дальше — 15. 10 фактов, 3 ошибки — попытка проиграна.',
     factOf: (i, total) => `Факт ${i} из ${total}`,
     factUniqueness: (n) => `уникальность ${n}`,
@@ -1390,6 +1485,13 @@ export const STRINGS: Record<Lang, Strings> = {
     footballXpHint: (n) => `Correct answer: +${n} XP. Finish and go perfect for a bonus.`,
     codes: 'Country codes',
     codesSubtitle: 'Domain, calling code, and car plate.',
+    familyMix: 'Mix',
+    familyFlags: 'Flags',
+    familyMap: 'Map',
+    familyWater: 'Seas and rivers',
+    modeSetup: 'Round setup',
+    rankingSetup: 'A reference list, not a round. Pick a ranking to open the table.',
+    mixPickModes: 'Pick any modes for your mix',
     tldToName: 'Domain → country',
     nameToTld: 'Country → domain',
     callingToName: 'Calling code → country',
@@ -1403,7 +1505,7 @@ export const STRINGS: Record<Lang, Strings> = {
     nameToCallingAsk: (name) => `What is the calling code for ${name}?`,
     nameToCarAsk: (name) => `What is the car code for ${name}?`,
     leaders: 'Country leaders',
-    leadersSubtitle: 'U.S. presidents, popes, rulers from Askold to the Union, and kings of England. Portraits from Wikimedia Commons, free licenses only.',
+    leadersSubtitle: 'U.S. presidents, popes, rulers from Askold to the Union, and kings of England. Portraits from Wikimedia Commons, free licenses only. Tap a label on a disputed case for the explanation.',
     present: 'present',
     usYearsToName: 'USA · years',
     usNumberToName: 'USA · number',
@@ -1425,6 +1527,29 @@ export const STRINGS: Record<Lang, Strings> = {
     leaderAskYears: 'Years',
     leaderAskNumber: 'Number',
     leaderAskPhoto: 'Photo',
+    leaderHideNames: 'Hide names',
+    leaderHiddenName: '???',
+    leaderEraUsEarly: 'Founding',
+    leaderEraUs1800s: '19th century',
+    leaderEraUsModern: '20th–21st',
+    leaderEraPopeEarly: 'Early',
+    leaderEraPopeMedieval: 'Medieval',
+    leaderEraPopeModern: 'Modern',
+    leaderEraRusKiev: 'Kiev',
+    leaderEraRusMoscow: 'Moscow',
+    leaderEraRusEmpire: 'Empire',
+    leaderEraRusSoviet: 'USSR',
+    leaderEraUkMedieval: 'Medieval',
+    leaderEraUkTudor: 'Tudors & Stuarts',
+    leaderEraUkModern: 'Hanover+',
+    leaderLearnName: 'Name',
+    leaderFeat: 'What stands out',
+    leaderNoteDeJure: 'de jure · did not actually rule',
+    leaderNoteParallel: 'parallel rule',
+    leaderNoteDisputed: 'disputed',
+    leaderNoteAbdicated: 'abdicated',
+    leaderNoteVpDeath: 'vice president · took office after death',
+    leaderNoteVpResign: 'vice president · took office after resignation (impeachment)',
     usYearsPrompt: (range) => `Who was U.S. president in ${range}?`,
     usNumberPrompt: (n) => `Who was the ${ordinalEn(n)} U.S. president?`,
     popeYearsPrompt: (range) => `Who was pope in ${range}?`,
@@ -1657,7 +1782,7 @@ export const STRINGS: Record<Lang, Strings> = {
     xpHowLead: 'XP builds as you play. Account level follows the total.',
     xpHowFreeTitle: 'Free play',
     xpHowFree:
-      'Free play pays little. Geography: 1 / 2 / 4 XP per correct answer (easy / hard / hardcore). Map, population, founded, neighbours, facts, seas and rivers add 1. Country codes: 1 per correct answer. Leaders: 1 / 2 / 4 (easy and medium / hard / hardcore). Learn and the mistakes trainer award no XP.',
+      'Free play pays little. Geography: 1 / 2 / 4 XP per correct answer (easy / hard / hardcore). Map, population, founded, neighbours, facts, seas and rivers add 1. Leaders: 1 / 2 / 4 (easy and medium / hard / hardcore). Learn and the mistakes trainer award no XP.',
     xpHowFootballTitle: 'Football',
     xpHowFootball:
       'Free match: 1 per correct answer, title years 2. Hosts and Euros on Hard are 2, Hardcore 4. Finish the round: +1 per question. Perfect finish: another +2 per question.',
@@ -1719,6 +1844,10 @@ export const STRINGS: Record<Lang, Strings> = {
     ratingsXpHintPeriod: 'XP earned in this period',
     ratingsXpHintTopic: 'XP from this topic only',
     ratingsPeriodEmpty: 'Empty for this period',
+    ratingsDuel: 'Multiplayer',
+    ratingsDuelHint: 'Rating from online matches. Everyone starts at 1000; it updates after each finished game.',
+    ratingsDuelEmpty: 'Empty for now — play online',
+    ratingsDuelRecord: (wins, losses, draws) => `${wins}–${losses}–${draws}`,
     worldRecord: 'World record',
     worldRecordBeat: 'Record broken!',
     worldRecordBonus: (amount) => `+${amount} XP for the record`,
@@ -1727,6 +1856,9 @@ export const STRINGS: Record<Lang, Strings> = {
     worldRecordHint: 'Tap a level — the best result among all players.',
     tapPassport: 'Tap a country to open its passport',
     capital: 'Capital',
+    tld: 'Domain',
+    callingCode: 'Calling code',
+    carCode: 'Car plate',
     population: 'Population',
     currency: 'Currency',
     government: 'Government',
@@ -1742,7 +1874,11 @@ export const STRINGS: Record<Lang, Strings> = {
     legalToday: 'Country of the day',
     legalLanguages: 'Languages',
     duel: 'Duel',
-    duelHint: 'One on one: create a room or enter a code.',
+    duelHint: 'One on one with a friend: create a room or enter a code.',
+    duelPlay: 'Play',
+    multiplayer: 'Multiplayer',
+    multiplayerPlay: 'Play online',
+    multiplayerWaiting: 'Looking for an opponent',
     duelCreate: 'Create room',
     duelJoin: 'Join',
     duelCode: 'Room code',
@@ -1756,8 +1892,10 @@ export const STRINGS: Record<Lang, Strings> = {
     duelPickModesHint: 'Pick several — questions will alternate between them',
     easyMix: 'Easy mix',
     hardMix: 'Hard mix',
+    customMix: 'Custom mix',
     easyMixNote: 'Flag → country · Country → flag · Country → capital',
-    hardMixNote: 'All modes except facts: flags, map, neighbours, seas and rivers',
+    hardMixNote: 'All modes except facts: flags, map, neighbours, seas and rivers, country codes',
+    customMixNote: 'Any modes except facts',
     footballEasyMixNote: 'World Cup winners · Euro winners · World Cup hosts · Champions League',
     footballHardMixNote: 'All football modes except player facts',
     duelVs: (name) => `vs ${name}`,
@@ -1772,6 +1910,8 @@ export const STRINGS: Record<Lang, Strings> = {
     duelRematchHint: 'If both accept, the same room starts another round.',
     duelRematchWaiting: 'Waiting for your opponent to accept the rematch.',
     duelRematchOffered: 'Your opponent wants a rematch.',
+    duelRating: (rating, delta) =>
+      delta === 0 ? String(rating) : `${rating} (${delta > 0 ? '+' : ''}${delta})`,
     factsHint: 'Not in the campaign. First 5 facts are 10 seconds, then 15. 10 facts, 3 wrong guesses fail the attempt.',
     factOf: (i, total) => `Fact ${i} of ${total}`,
     factUniqueness: (n) => `uniqueness ${n}`,
@@ -1985,17 +2125,26 @@ export function modesLabel(modes: readonly QuizMode[], lang: Lang): string {
   const selected = [...QUIZ_MODES, ...RANKING_MODES].filter((mode) => modes.includes(mode))
   if (sameModes(selected, EASY_MIX_MODES)) return t.easyMix
   if (sameModes(selected, HARD_MIX_MODES)) return t.hardMix
+  if (sameModes(selected, FLAGS_MIX_MODES)) return t.familyFlags
+  if (sameModes(selected, MAP_MIX_MODES)) return t.familyMap
+  const codes = CODES_MODES.filter((mode) => modes.includes(mode))
+  if (sameModes(codes, CODES_MODES) && selected.length === 0) return t.codes
   if (selected.length > 0) return selected.map((mode) => modeLabel(mode, lang)).join(' · ')
   const football = FOOTBALL_MODES.filter((mode) => modes.includes(mode))
   if (sameModes(football, EASY_FOOTBALL_MIX_MODES)) return t.easyMix
   if (sameModes(football, HARD_FOOTBALL_MIX_MODES)) return t.hardMix
+  if (sameModes(football, WC_FOOTBALL_MATCH_MIX)) return t.footballGroupWc
+  if (sameModes(football, PLAYER_FOOTBALL_MATCH_MIX)) return t.footballGroupPlayers
+  if (sameModes(football, CLUB_FOOTBALL_MATCH_MIX)) return t.footballGroupClubs
   if (football.length > 0) return football.map((mode) => modeLabel(mode, lang)).join(' · ')
   if (modes.length === 0) return modeLabel('flagToName', lang)
   return modes.map((mode) => modeLabel(mode, lang)).join(' · ')
 }
 
 export function mixLabel(mix: MixKind, lang: Lang): string {
-  return mix === 'easy' ? STRINGS[lang].easyMix : STRINGS[lang].hardMix
+  if (mix === 'easy') return STRINGS[lang].easyMix
+  if (mix === 'hard') return STRINGS[lang].hardMix
+  return STRINGS[lang].customMix
 }
 
 export function mixAskHint(mode: QuizMode, lang: Lang): string {

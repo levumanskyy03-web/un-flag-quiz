@@ -2,6 +2,7 @@
 
 import { foundedYear } from "../data/founded";
 import { govKindOf } from "../data/governments";
+import { codesOf, formatCalling, formatCar, formatTld } from "../data/countryCodes";
 import { landNeighbors } from "../data/neighbors";
 import {
   formatPopulation,
@@ -62,6 +63,22 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
           <dt>{t.currency}</dt>
           <dd>{passportCurrency(passport, lang, country.iso)}</dd>
         </div>
+        {codesOf(country.iso) ? (
+          <>
+            <div>
+              <dt>{t.tld}</dt>
+              <dd>{formatTld(country.iso)}</dd>
+            </div>
+            <div>
+              <dt>{t.callingCode}</dt>
+              <dd>{formatCalling(country.iso)}</dd>
+            </div>
+            <div>
+              <dt>{t.carCode}</dt>
+              <dd>{formatCar(country.iso)}</dd>
+            </div>
+          </>
+        ) : null}
         {govKind ? (
           <div>
             <dt>{t.government}</dt>

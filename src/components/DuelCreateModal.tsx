@@ -10,6 +10,7 @@ import {
   HARD_MIX_MODES,
   QUIZ_MODES,
   isFactsToName,
+  isRankingMode,
   isRegionSelected,
   orderedModes,
   sameModes,
@@ -23,6 +24,13 @@ import {
   type FactsEnd,
   type FactsSeries,
 } from '../lib/factsRules'
+import {
+  initialMatchModes,
+  matchQueueNote,
+  matchQueueTitle,
+  matchQueues,
+  type MatchQueue,
+} from '../lib/duelMatch'
 import type { Region } from '../data/countries'
 
 interface DuelCreateModalProps {
@@ -31,6 +39,7 @@ interface DuelCreateModalProps {
   region: RegionFilter
   modeCatalog?: readonly QuizMode[]
   showMix?: boolean
+  intent?: 'create' | 'match'
   onCancel: () => void
   onConfirm: (modes: QuizMode[], facts?: FactsDuelConfig) => void
 }
@@ -41,12 +50,18 @@ export function DuelCreateModal({
   region,
   modeCatalog = QUIZ_MODES,
   showMix = true,
+  intent = 'create',
   onCancel,
   onConfirm,
 }: DuelCreateModalProps) {
   const t = STRINGS[lang]
   const [step, setStep] = useState<'modes' | 'facts'>('modes')
-  const [selected, setSelected] = useState<QuizMode[]>(() => orderedModes([initialMode]))
+  const footballCatalog = isFootballCatalog(modeCatalog)
+  const [selected, setSelected] = useState<QuizMode[]>(() =>
+    intent === 'match'
+      ? initialMatchModes(initialMode, footballCatalog)
+      : orderedModes([isRankingMode(initialMode) ? 'flagToName' : initialMode]),
+  )
   const [factsRegion, setFactsRegion] = useState<RegionFilter>(region)
   const [factsEnd, setFactsEnd] = useState<FactsEnd>('threeWrong')
   const [factsHardcore, setFactsHardcore] = useState(false)
@@ -67,14 +82,16 @@ export function DuelCreateModal({
   }, [onCancel])
 
   const modes = orderedModes(selected)
-  const factsOnly = modes.length === 1 && isFactsToName(modes[0])
-  const football = isFootballCatalog(modeCatalog)
+  const factsOnly = intent !== 'match' && modes.length === 1 && isFactsToName(modes[0])
+  const football = footballCatalog
   const easyMix = football ? sameModes(modes, EASY_FOOTBALL_MIX_MODES) : sameModes(modes, EASY_MIX_MODES)
   const hardMix = football ? sameModes(modes, HARD_FOOTBALL_MIX_MODES) : sameModes(modes, HARD_MIX_MODES)
   const mixButtons = showMix || football
+  const queues = matchQueues(football)
 
   function toggleMode(mode: QuizMode) {
     setSelected((prev) => {
+      if (isRankingMode(mode)) return prev
       if (isFactsToName(mode)) return prev.includes(mode) && prev.length === 1 ? prev : [mode]
       const withoutFacts = prev.filter((item) => !isFactsToName(item))
       if (withoutFacts.includes(mode)) {
@@ -108,9 +125,36 @@ export function DuelCreateModal({
         {step === 'modes' ? (
           <>
             <h2 id="duel-setup-title" className="passport-title">
-              {t.duelPickModes}
+              {intent === 'match' ? t.multiplayer : t.duelPickModes}
             </h2>
-            {mixButtons ? (
+            {intent === 'match' ? (
+              <>
+                <div className="choice-grid">
+                  {queues.mixes.map((queue) => (
+                    <MatchQueueButton
+                      key={queue.id}
+                      queue={queue}
+                      lang={lang}
+                      active={sameModes(modes, queue.modes)}
+                      onPick={() => setSelected([...queue.modes])}
+                    />
+                  ))}
+                </div>
+                <div className="choice-grid is-modes">
+                  {queues.singles.map((queue) => (
+                    <button
+                      key={queue.id}
+                      type="button"
+                      className={`choice ${sameModes(modes, queue.modes) ? 'is-active' : ''}`}
+                      aria-pressed={sameModes(modes, queue.modes)}
+                      onClick={() => setSelected([...queue.modes])}
+                    >
+                      <ChoiceLabel>{matchQueueTitle(queue, lang)}</ChoiceLabel>
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : mixButtons ? (
             <div className="choice-grid">
               <button
                 type="button"
@@ -136,11 +180,12 @@ export function DuelCreateModal({
               </button>
             </div>
             ) : null}
-            {showMix ? (
+            {intent === 'match' ? null : showMix ? (
               <GeoModeGrids
                 lang={lang}
                 activeMode={selected[0] ?? 'flagToName'}
                 selectedModes={selected}
+                showRankings={false}
                 onPick={toggleMode}
               />
             ) : football ? (
@@ -170,7 +215,7 @@ export function DuelCreateModal({
             </div>
             )}
             <button type="button" className="btn-primary" disabled={modes.length === 0} onClick={confirmModes}>
-              {factsOnly ? t.duelFactsRules : t.duelCreate}
+              {factsOnly ? t.duelFactsRules : intent === 'match' ? t.multiplayerPlay : t.duelCreate}
             </button>
           </>
         ) : (
@@ -253,11 +298,40 @@ export function DuelCreateModal({
                 })
               }
             >
-              {t.duelCreate}
+              {intent === 'match' ? t.multiplayerPlay : t.duelCreate}
             </button>
           </>
         )}
       </div>
     </div>
+  )
+}
+
+function MatchQueueButton({
+  queue,
+  lang,
+  active,
+  onPick,
+}: {
+  queue: MatchQueue
+  lang: Lang
+  active: boolean
+  onPick: () => void
+}) {
+  const note = matchQueueNote(queue, lang)
+  return (
+    <button
+      type="button"
+      className={`choice has-note is-wide ${active ? 'is-active' : ''}`}
+      aria-pressed={active}
+      onClick={onPick}
+    >
+      <FitText minPx={9}>{matchQueueTitle(queue, lang)}</FitText>
+      {note ? (
+        <FitText className="choice-note" wrap minPx={7}>
+          {note}
+        </FitText>
+      ) : null}
+    </button>
   )
 }

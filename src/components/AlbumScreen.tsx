@@ -13,42 +13,20 @@ import {
   type StampAlbum,
 } from '../lib/stamps'
 import type { QuizSettings } from './HomeScreen'
-import { AppChrome } from './AppChrome'
 import { Flag } from './Flag'
 import { FitText } from './FitText'
 import { HubNav, type HubTab } from './HubNav'
 import { PassportModal } from './PassportModal'
 import { WorldsBack } from './WorldsBack'
-import type { RoundRecord } from '../lib/history'
-import type { LevelClear } from '../lib/levelProgress'
 
 interface AlbumScreenProps {
   settings: QuizSettings
   stamps: StampAlbum
-  history: RoundRecord[]
-  bests: RoundRecord[]
-  levelClears: LevelClear[]
-  xp?: number
-  xpReady?: boolean
-  onChange: (settings: QuizSettings) => void
   onHub: (tab: HubTab) => void
   onWorlds: () => void
-  onClearBests?: () => void
 }
 
-export function AlbumScreen({
-  settings,
-  stamps,
-  history,
-  bests,
-  levelClears,
-  xp = 0,
-  xpReady = false,
-  onChange,
-  onHub,
-  onWorlds,
-  onClearBests,
-}: AlbumScreenProps) {
+export function AlbumScreen({ settings, stamps, onHub, onWorlds }: AlbumScreenProps) {
   const t = STRINGS[settings.lang]
   const [openIso, setOpenIso] = useState<string | null>(null)
   const openCountry = openIso ? findCountry(openIso) : undefined
@@ -58,16 +36,6 @@ export function AlbumScreen({
   return (
     <div className="screen album-screen">
       <header className="home-header">
-        <AppChrome
-          settings={settings}
-          history={history}
-          bests={bests}
-          levelClears={levelClears}
-          xp={xp}
-          xpReady={xpReady}
-          onChange={onChange}
-          onClearBests={onClearBests}
-        />
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1>{t.album}</h1>
         <p className="learn-copy">{t.albumCount(copies, countries, STAMP_TOTAL)}</p>

@@ -3,6 +3,7 @@
 import { FactsScreen } from "@/components/FactsScreen";
 import { FootballScreen } from "@/components/FootballScreen";
 import { LearnScreen } from "@/components/LearnScreen";
+import { WORLD_HUB_TABS } from "@/components/HubNav";
 import { LevelsScreen } from "@/components/LevelsScreen";
 import { MistakesScreen } from "@/components/MistakesScreen";
 import { QuizScreen } from "@/components/QuizScreen";
@@ -13,7 +14,6 @@ import { clearMistakes } from "@/lib/mistakes";
 import {
   campaignLevelCount,
   campaignLevelNumbers,
-  footballHasDifficulty,
   FOOTBALL_MODES,
   isFactsToName,
   isFootballMode,
@@ -29,36 +29,28 @@ export function FootballPlay({ play }: { play: PlaySession }) {
           settings={play.quizSettings}
           history={play.history.filter((item) => isFootballMode(item.mode))}
           bests={play.bests.filter((item) => isFootballMode(item.mode))}
-          levelClears={play.levelClears}
-          xp={play.xp}
-          xpReady={play.xpReady}
           duelError={duel.error}
           onChange={play.handleSettingsChange}
           onStart={() => play.startFootballRound()}
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
           onCreateDuel={(modes, facts) => void duel.create(modes, facts)}
+          onMatchDuel={(modes, facts) => void duel.match(modes, facts)}
           onJoinDuel={duel.join}
           onClearHistory={play.handleClearFootballHistory}
-          onClearBests={play.handleClearBests}
         />
       )}
       {play.screen === "levels" && (
         <LevelsScreen
           settings={play.quizSettings}
           levelClears={play.levelClears}
-          history={play.history}
-          bests={play.bests}
-          xp={play.xp}
-          xpReady={play.xpReady}
           modes={FOOTBALL_MODES}
           levels={campaignLevelNumbers(isFootballMode(play.quizSettings.mode) ? play.quizSettings.mode : "playerPhotoToName")}
-          tabs={["free", "levels", "learn", "mistakes"]}
+          tabs={WORLD_HUB_TABS}
           onChange={play.handleSettingsChange}
           onPlay={play.playLevel}
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
-          onClearBests={play.handleClearBests}
         />
       )}
       {play.screen === "learn" && (
@@ -127,11 +119,7 @@ export function FootballPlay({ play }: { play: PlaySession }) {
         <ResultsScreen
           lang={play.quizSettings.lang}
           mode={play.quizSettings.mode}
-          hardcore={
-            play.quizSettings.path === "levels"
-              ? play.quizSettings.levelHardcore
-              : footballHasDifficulty(play.quizSettings.mode) && play.quizSettings.difficulty === "hardcore"
-          }
+          hardcore={play.quizSettings.levelHardcore || play.quizSettings.difficulty === "hardcore"}
           answers={play.answers}
           roundMs={play.roundMs}
           endedBy={play.endedBy}
