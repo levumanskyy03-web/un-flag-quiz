@@ -326,6 +326,10 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
               <p className="setting-hint">{t.playerFactsHint}</p>
             ) : null}
 
+            {family.world === 'football' && family.id === 'players' && !settings.mix ? (
+              <p className="setting-hint">{t.playerClubNote}</p>
+            ) : null}
+
             {factsMode ? null : (
               <>
                 <h2>{family.world === 'football' ? t.footballRoundSize : t.roundSize}</h2>

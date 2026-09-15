@@ -3,6 +3,7 @@ import {
   footballPlayerPool,
   playerById,
   playerCountry,
+  playerCurrentClubId,
   type FootballPlayer,
 } from '../../data/footballPlayers'
 import { AFCON_EASY_FROM, AFCON_HOSTS, AFCON_WINNERS } from '../../data/afcon'
@@ -835,10 +836,10 @@ function createPlayerRound(
       continue
     }
     if (mode === 'playerToClub') {
-      const clubId = player.clubs[0]
+      const clubId = playerCurrentClubId(player)
       if (!clubId) continue
       const club = footballTeamCountry(clubId)
-      const other = shuffle(allFootballClubs().filter((item) => item.id !== clubId && !player.clubs.includes(item.id)))
+      const other = shuffle(allFootballClubs().filter((item) => item.id !== clubId))
         .slice(0, 3)
         .map((item) => footballTeamCountry(item.id))
       questions.push({
@@ -850,9 +851,9 @@ function createPlayerRound(
       continue
     }
     if (mode === 'playerClubToName') {
-      const clubId = player.clubs[0]
+      const clubId = playerCurrentClubId(player)
       if (!clubId) continue
-      const others = distractors.filter((item) => item.id !== player.id && !item.clubs.includes(clubId))
+      const others = distractors.filter((item) => item.id !== player.id && playerCurrentClubId(item) !== clubId)
       questions.push({
         country,
         mode,

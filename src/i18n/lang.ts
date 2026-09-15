@@ -1,6 +1,7 @@
 export const LANGS = ['ru', 'en', 'de', 'zh', 'es', 'hi', 'ar', 'bn', 'pt', 'ja', 'he'] as const
 export type Lang = (typeof LANGS)[number]
 
+/** Add a lang here when it is written right-to-left. Mode labels keep "from → to" in copy. */
 const RTL_LANGS = new Set<Lang>(['ar', 'he'])
 
 export const LANG_NATIVE: Record<Lang, string> = {
@@ -51,6 +52,11 @@ export function isLang(value: unknown): value is Lang {
 
 export function isRtl(lang: Lang): boolean {
   return RTL_LANGS.has(lang)
+}
+
+/** Flip "from → to" arrows so they point at the target in RTL layout. */
+export function rtlModeArrows(text: string, lang: Lang): string {
+  return isRtl(lang) ? text.replaceAll('→', '←') : text
 }
 
 export function localeTag(lang: Lang): string {

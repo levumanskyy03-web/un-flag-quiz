@@ -367,6 +367,9 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           ) : (
             <FootballSetup settings={settings} onChange={(next) => onChange({ ...next, mix: null })} />
           )}
+          {isPlayerFootballMode(settings.mode) && !mixModes ? (
+            <p className="setting-hint">{t.playerClubNote}</p>
+          ) : null}
         </>
       ) : settings.learnFrom === 'level' ? (
         <div className="choice-grid is-modes">

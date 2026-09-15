@@ -215,6 +215,9 @@ export function QuizScreen({
       ) : (
         <section className={`card question-card${mixHint ? ' has-mix-ask' : ''}`}>
           {mixHint ? <p className="mix-ask-hint">{mixHint}</p> : null}
+          {activeMode === 'playerToClub' || activeMode === 'playerClubToName' ? (
+            <p className="mix-ask-hint">{t.playerClubNote}</p>
+          ) : null}
           {activeMode === 'flagToName' ? (
             <Flag iso={question.country.iso} name={correctName} size="hero" />
           ) : isFootballYearChoice(activeMode) ? (

@@ -10,7 +10,7 @@ type GeoIconName =
   | 'ball'
   | 'stamp'
   | 'hash'
-  | 'bust'
+  | 'laurel'
   | 'speaker'
   | 'speakerOff'
 
@@ -27,7 +27,7 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
       className="geo-icon"
       width={size}
       height={size}
-      viewBox={name === 'trophy' ? '0 0 20 20' : name === 'ball' ? '0 0 24 24' : '0 0 16 16'}
+      viewBox={name === 'trophy' ? '0 0 20 20' : name === 'ball' || name === 'laurel' ? '0 0 24 24' : '0 0 16 16'}
       fill="none"
       aria-hidden="true"
     >
@@ -137,17 +137,20 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
           <path d="M6.1 2.8 5 13.2M11.1 2.8 10 13.2M2.6 6.2h10.8M2.6 9.8h10.8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
         </>
       ) : null}
-      {name === 'bust' ? (
-        <>
-          <circle cx="8" cy="5.15" r="2.45" stroke="currentColor" strokeWidth="1.2" />
-          <path
-            d="M4.15 14.15c.35-2.55 1.85-4.05 3.85-4.05s3.5 1.5 3.85 4.05"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-          />
-          <path d="M3.15 14.2h9.7" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-        </>
+      {name === 'laurel' ? (
+        <g fill="currentColor">
+          <ellipse cx="9.05" cy="6.35" rx="1.28" ry="2.35" transform="rotate(-50 9.05 6.35)" />
+          <ellipse cx="7.05" cy="9.15" rx="1.32" ry="2.45" transform="rotate(-30 7.05 9.15)" />
+          <ellipse cx="6.45" cy="12.25" rx="1.32" ry="2.5" transform="rotate(-8 6.45 12.25)" />
+          <ellipse cx="7.25" cy="15.35" rx="1.28" ry="2.35" transform="rotate(16 7.25 15.35)" />
+          <ellipse cx="9.2" cy="17.85" rx="1.22" ry="2.2" transform="rotate(38 9.2 17.85)" />
+          <ellipse cx="14.95" cy="6.35" rx="1.28" ry="2.35" transform="rotate(50 14.95 6.35)" />
+          <ellipse cx="16.95" cy="9.15" rx="1.32" ry="2.45" transform="rotate(30 16.95 9.15)" />
+          <ellipse cx="17.55" cy="12.25" rx="1.32" ry="2.5" transform="rotate(8 17.55 12.25)" />
+          <ellipse cx="16.75" cy="15.35" rx="1.28" ry="2.35" transform="rotate(-16 16.75 15.35)" />
+          <ellipse cx="14.8" cy="17.85" rx="1.22" ry="2.2" transform="rotate(-38 14.8 17.85)" />
+          <path d="M10.2 18.85c.55.95 1.2 1.55 1.8 1.55s1.25-.6 1.8-1.55c-.55.28-1.15.42-1.8.42s-1.25-.14-1.8-.42Z" />
+        </g>
       ) : null}
       {name === 'speaker' || name === 'speakerOff' ? (
         <>

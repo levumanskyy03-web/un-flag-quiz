@@ -11,6 +11,7 @@ interface AppChromeProps {
   levelClears: LevelClear[]
   xp?: number
   xpReady?: boolean
+  geoCatalog?: boolean
   onChange: (settings: QuizSettings) => void
   onClearBests?: () => void
 }
@@ -22,6 +23,7 @@ export function AppChrome({
   levelClears,
   xp = 0,
   xpReady = false,
+  geoCatalog = false,
   onChange,
   onClearBests,
 }: AppChromeProps) {
@@ -34,6 +36,7 @@ export function AppChrome({
         levelClears={levelClears}
         xp={xp}
         xpReady={xpReady}
+        geoCatalog={geoCatalog}
         onLangChange={(lang) => onChange({ ...settings, lang })}
         onClearBests={onClearBests}
       />

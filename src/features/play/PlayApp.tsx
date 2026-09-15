@@ -1122,6 +1122,7 @@ export default function PlayApp() {
         levelClears={levelClears}
         xp={xp}
         xpReady={xpReady}
+        geoCatalog={world === "geo"}
         onChange={handleSettingsChange}
         onClearBests={handleClearBests}
       />
@@ -1180,6 +1181,13 @@ export default function PlayApp() {
       {world === "leaders" ? <LeadersPlay play={play} /> : null}
       {world === "geo" ? <GeoPlay play={play} /> : null}
       <footer className="legal-footer">
+        {world === "geo" ? (
+          <nav className="legal-links">
+            <a href="/countries">{STRINGS[quizSettings.lang].legalCountries}</a>
+            <a href="/languages">{STRINGS[quizSettings.lang].legalLanguages}</a>
+            <a href="/today">{STRINGS[quizSettings.lang].legalToday}</a>
+          </nav>
+        ) : null}
         <nav className="legal-links">
           <a href="/about">{STRINGS[quizSettings.lang].legalAbout}</a>
           <a href="/privacy">{STRINGS[quizSettings.lang].legalPrivacy}</a>

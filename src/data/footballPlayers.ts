@@ -103,6 +103,11 @@ export function playerClubName(id: string, lang: 'en' | 'ru'): string {
   return id
 }
 
+/** Current club, or the club where the player ended their career. */
+export function playerCurrentClubId(player: Pick<FootballPlayer, 'clubs'>): string | undefined {
+  return player.clubs.at(-1)
+}
+
 export function footballPlayerWikis(): string[] {
   return FOOTBALL_PLAYERS.map((player) => player.wiki)
 }

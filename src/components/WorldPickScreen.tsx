@@ -46,11 +46,11 @@ export function WorldPickScreen({ settings, onPick }: WorldPickScreenProps) {
         <button type="button" className="world-pick is-leaders" onClick={() => onPick('leaders')}>
           <span className="world-pick-art" aria-hidden="true">
             <span className="wp-decree">
-              <span className="wp-bust" />
+              <GeoIcon name="laurel" size={40} />
             </span>
           </span>
           <span className="world-pick-copy">
-            <GeoIcon name="bust" size={22} />
+            <GeoIcon name="laurel" size={22} />
             {t.leaders}
           </span>
         </button>

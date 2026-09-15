@@ -50,6 +50,7 @@ interface SettingsModalProps {
   history: RoundRecord[]
   bests: RoundRecord[]
   levelClears: LevelClear[]
+  geoCatalog?: boolean
   onLangChange: (lang: Lang) => void
   onClose: () => void
   onAuth?: (account: Account | null) => void
@@ -61,6 +62,7 @@ export function SettingsModal({
   history,
   bests,
   levelClears,
+  geoCatalog = false,
   onLangChange,
   onClose,
   onAuth,
@@ -661,6 +663,13 @@ export function SettingsModal({
               <p key={paragraph.slice(0, 40)}>{paragraph}</p>
             ))}
             <p>{t.credit}</p>
+            {geoCatalog ? (
+              <p className="legal-inline">
+                <a href="/countries">{t.legalCountries}</a>
+                <a href="/languages">{t.legalLanguages}</a>
+                <a href="/today">{t.legalToday}</a>
+              </p>
+            ) : null}
             <p className="legal-inline">
               <a href="/about">{t.legalAbout}</a>
               <a href="/privacy">{t.legalPrivacy}</a>

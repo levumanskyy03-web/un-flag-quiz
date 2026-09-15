@@ -73,7 +73,7 @@ export function LeadersScreen({
       <header className="home-header">
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1 className="football-title">
-          <GeoIcon name="bust" size={28} />
+          <GeoIcon name="laurel" size={28} />
           {t.leaders}
         </h1>
         <p className="subtitle">{t.leadersSubtitle}</p>

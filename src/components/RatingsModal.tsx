@@ -226,7 +226,7 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
                       ? 'globe'
                       : item === 'football'
                         ? 'ball'
-                        : 'bust'
+                        : 'laurel'
                 }
               />
               {scopeLabel(item, lang)}

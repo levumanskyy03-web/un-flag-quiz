@@ -4,6 +4,7 @@ import {
   playerById,
   playerClubName,
   playerCountry,
+  playerCurrentClubId,
   type FootballPlayer,
 } from '../data/footballPlayers'
 import { footballTeamCountry } from '../data/worldCup'
@@ -100,7 +101,8 @@ function buildBank() {
     if (player.clubs.includes('barca') && player.clubs.includes('real')) {
       add(player.id, { id: 'clasico', kind: 'playerBothClasico' }, 'clasico')
     }
-    for (const clubId of player.clubs) {
+    const clubId = playerCurrentClubId(player)
+    if (clubId) {
       add(player.id, { id: `club:${clubId}`, kind: 'playerClub', clubId }, `club:${clubId}`)
     }
   }

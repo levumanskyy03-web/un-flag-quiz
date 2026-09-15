@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { footballClub } from '../data/footballClubs'
-import { playerClubName, type FootballPlayer } from '../data/footballPlayers'
+import { playerClubName, playerCurrentClubId, type FootballPlayer } from '../data/footballPlayers'
 import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { countryName } from '../lib/quiz'
@@ -22,8 +22,9 @@ export function PlayerCardModal({ player, lang, onClose }: PlayerCardModalProps)
   const lived = player.died ? `${player.born}–${player.died}` : `${player.born}–${t.present}`
   const nation = countryName(footballTeamCountry(player.nation), lang)
   const bornNation = countryName(footballTeamCountry(player.bornNation), lang)
-  const clubs = player.clubs.map((id) => playerClubName(id, lang === 'ru' ? 'ru' : 'en')).join(', ')
-  const clubCountries = unique(player.clubs.map((id) => footballClub(id)?.nation ?? '').filter(Boolean)).map((iso) =>
+  const currentClubId = playerCurrentClubId(player)
+  const clubs = currentClubId ? playerClubName(currentClubId, lang === 'ru' ? 'ru' : 'en') : ''
+  const clubCountries = unique((currentClubId ? [currentClubId] : []).map((id) => footballClub(id)?.nation ?? '').filter(Boolean)).map((iso) =>
     countryName(footballTeamCountry(iso), lang),
   )
   const trophies: string[] = []
@@ -132,7 +133,10 @@ export function PlayerCardModal({ player, lang, onClose }: PlayerCardModalProps)
           {clubs ? (
             <div className="is-wide">
               <dt>{t.playerCardClubs}</dt>
-              <dd>{clubs}</dd>
+              <dd>
+                {clubs}
+                <p className="setting-hint">{t.playerClubNote}</p>
+              </dd>
             </div>
           ) : null}
           {clubCountries.length > 0 ? (

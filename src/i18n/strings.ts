@@ -27,10 +27,10 @@ import {
   type RegionFilter,
 } from '../lib/quiz'
 import { EXTRA_STRINGS } from './extra'
-import { type Lang } from './lang'
+import { isRtl, rtlModeArrows, type Lang } from './lang'
 
 export { REGIONS }
-export { LANGS, LANG_NATIVE, LANG_SHORT, isLang, isRtl, langDir, localeTag, type Lang } from './lang'
+export { LANGS, LANG_NATIVE, LANG_SHORT, isLang, isRtl, langDir, localeTag, rtlModeArrows, type Lang } from './lang'
 
 export type Strings = {
   title: string
@@ -101,6 +101,7 @@ export type Strings = {
   playerToClubPrompt: string
   playerClubToName: string
   playerClubPrompt: string
+  playerClubNote: string
   playerShirtToName: string
   playerShirtPrompt: (n: number) => string
   ballonDorWinners: string
@@ -680,6 +681,17 @@ function ordinalEn(n: number) {
   return `${n}th`
 }
 
+function withRtlModeArrows(lang: Lang, pack: Strings): Strings {
+  if (!isRtl(lang)) return pack
+  const next = { ...pack }
+  for (const [key, value] of Object.entries(next)) {
+    if (typeof value === 'string') {
+      ;(next as Record<string, unknown>)[key] = rtlModeArrows(value, lang)
+    }
+  }
+  return next
+}
+
 export const STRINGS: Record<Lang, Strings> = {
   ru: {
     title: 'Паспорт страны',
@@ -747,9 +759,10 @@ export const STRINGS: Record<Lang, Strings> = {
     playerToNation: 'Футболист → страна',
     playerToNationPrompt: 'За какую страну играет этот футболист?',
     playerToClub: 'Футболист → клуб',
-    playerToClubPrompt: 'В каком клубе он наиболее известен?',
+    playerToClubPrompt: 'Какой у него клуб?',
     playerClubToName: 'Клуб → футболист',
-    playerClubPrompt: 'Кто из этих игроков выступал за этот клуб?',
+    playerClubPrompt: 'Кто из этих игроков в этом клубе?',
+    playerClubNote: 'Текущий клуб — или последний, если карьера окончена.',
     playerShirtToName: 'Номер и флаг',
     playerShirtPrompt: (n) => `Кто играл под номером ${n} в этой сборной?`,
     ballonDorWinners: 'Золотой мяч',
@@ -796,7 +809,7 @@ export const STRINGS: Record<Lang, Strings> = {
     playerPositionFw: 'нападающий',
     playerFactNation: (name) => `Играл за сборную: ${name}.`,
     playerFactPosition: (pos) => `Амплуа — ${pos}.`,
-    playerFactClub: (name) => `Играл в клубе ${name}.`,
+    playerFactClub: (name) => `Клуб (сейчас или последний): ${name}.`,
     playerFactWcWinner: 'Выигрывал чемпионат мира.',
     playerFactEuroWinner: 'Выигрывал чемпионат Европы.',
     playerFactCopaWinner: 'Выигрывал Копа Америка.',
@@ -1406,9 +1419,10 @@ export const STRINGS: Record<Lang, Strings> = {
     playerToNation: 'Player to country',
     playerToNationPrompt: 'Which country does this player represent?',
     playerToClub: 'Player to club',
-    playerToClubPrompt: 'Which club is this player best known for?',
+    playerToClubPrompt: 'Which club is he at?',
     playerClubToName: 'Club to player',
-    playerClubPrompt: 'Which of these players appeared for this club?',
+    playerClubPrompt: 'Which of these players is at this club?',
+    playerClubNote: 'Current club, or last club if retired.',
     playerShirtToName: 'Number and flag',
     playerShirtPrompt: (n) => `Who wore number ${n} for this national team?`,
     ballonDorWinners: 'Ballon d’Or',
@@ -1455,7 +1469,7 @@ export const STRINGS: Record<Lang, Strings> = {
     playerPositionFw: 'forward',
     playerFactNation: (name) => `Played for ${name}.`,
     playerFactPosition: (pos) => `Position: ${pos}.`,
-    playerFactClub: (name) => `Played for ${name}.`,
+    playerFactClub: (name) => `Club (current or last): ${name}.`,
     playerFactWcWinner: 'Won the World Cup.',
     playerFactEuroWinner: 'Won the European Championship.',
     playerFactCopaWinner: 'Won Copa América.',
@@ -1996,6 +2010,10 @@ export const STRINGS: Record<Lang, Strings> = {
   ...EXTRA_STRINGS,
 }
 
+for (const lang of Object.keys(STRINGS) as Lang[]) {
+  STRINGS[lang] = withRtlModeArrows(lang, STRINGS[lang])
+}
+
 export function regionLabel(region: RegionFilter, lang: Lang): string {
   const t = STRINGS[lang]
   if (isAllRegions(region)) return t.allRegions
@@ -2024,7 +2042,7 @@ export function modeLabel(mode: QuizMode, lang: Lang): string {
     const askLabel = ask === 'photo' ? t.leaderAskPhoto : ask === 'number' ? t.leaderAskNumber : t.leaderAskYears
     return `${topic} · ${askLabel}`
   }
-  return STRINGS[lang][mode]
+  return rtlModeArrows(STRINGS[lang][mode], lang)
 }
 
 export function footballQuestionPrompt(

@@ -15,6 +15,7 @@ export interface SettingsButtonProps {
   history?: RoundRecord[]
   bests?: RoundRecord[]
   levelClears?: LevelClear[]
+  geoCatalog?: boolean
   onLangChange?: (lang: Lang) => void
   onAuth?: (account: Account | null) => void
   onClearBests?: () => void
@@ -25,6 +26,7 @@ export function SettingsButton({
   history = [],
   bests = [],
   levelClears = [],
+  geoCatalog = false,
   onLangChange,
   onAuth,
   onClearBests,
@@ -68,6 +70,7 @@ export function SettingsButton({
           history={history}
           bests={bests}
           levelClears={levelClears}
+          geoCatalog={geoCatalog}
           onClearBests={onClearBests}
           onLangChange={(next) => onLangChange?.(next)}
           onClose={() => {
