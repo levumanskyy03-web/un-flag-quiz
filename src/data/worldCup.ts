@@ -11,7 +11,10 @@ export interface WorldCupHost {
   hostIds: string[]
 }
 
-import { footballClub } from './footballClubs'
+import { footballClub, footballClubName } from './footballClubs'
+import type { Lang } from '../i18n/lang'
+import HISTORIC_TEAMS from './i18n/historicTeams.json'
+import { named } from './i18n/named'
 
 const TEAM_NAMES: Record<string, { nameEn: string; nameRu: string }> = {
   eng: { nameEn: 'England', nameRu: 'Англия' },
@@ -89,9 +92,9 @@ export function wcHostAnswerId(hostIds: readonly string[]): string {
 }
 
 export function footballTeamCountry(id: string): Country {
-  const named = TEAM_NAMES[id]
-  if (named) {
-    return { iso: id, nameEn: named.nameEn, nameRu: named.nameRu, region: 'europe', difficulty: 'easy' }
+  const historic = TEAM_NAMES[id]
+  if (historic) {
+    return { iso: id, nameEn: historic.nameEn, nameRu: historic.nameRu, region: 'europe', difficulty: 'easy' }
   }
   const club = footballClub(id)
   if (club) {
@@ -102,6 +105,13 @@ export function footballTeamCountry(id: string): Country {
     return { iso: id, nameEn: id, nameRu: id, region: 'europe', difficulty: 'easy' }
   }
   return country
+}
+
+export function footballTeamName(id: string, lang: Lang): string {
+  const historic = TEAM_NAMES[id]
+  if (historic) return named(HISTORIC_TEAMS, id, lang, historic.nameRu, historic.nameEn)
+  if (footballClub(id)) return footballClubName(id, lang)
+  return footballTeamCountry(id).nameEn
 }
 
 export function wcChampionCountries(): Country[] {

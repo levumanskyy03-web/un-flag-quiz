@@ -1,6 +1,9 @@
 import { COUNTRIES, REGIONS, type Country, type Difficulty, type Region } from '../../data/countries'
 import { clubNation } from '../../data/footballClubs'
-import { footballTeamCountry, isNamedFootballTeam } from '../../data/worldCup'
+import { playerById, playerDisplayName } from '../../data/footballPlayers'
+import { managerById, managerDisplayName } from '../../data/footballManagers'
+import { leaderDisplayName, termById, type LeaderKind } from '../../data/leaders'
+import { footballTeamCountry, footballTeamName, isNamedFootballTeam } from '../../data/worldCup'
 import { isRankingEasy, isRankingMode, RANKING_MODES, type RankingMode } from '../../data/rankings'
 import { isEasyForMode, factsDifficultyOf, languageDifficultyOf } from '../../data/modeDifficulty'
 import { quizLanguageId } from '../../data/languages'
@@ -10,7 +13,6 @@ import { localeTag, type Lang } from '../../i18n/lang'
 import { clueSequence, type FactClue } from '../countryFacts'
 import { playerClueSequence, type PlayerFactClue } from '../playerFacts'
 import { FACTS_CLUE_TIME_MS } from '../factsRules'
-import type { LeaderKind } from '../../data/leaders'
 
 export type { Country, Difficulty, Region } from '../../data/countries'
 export { isRankingMode, RANKING_MODES, type RankingMode } from '../../data/rankings'
@@ -639,7 +641,13 @@ export function countryName(country: Country, lang: Lang): string {
       return parts.join(', ')
     }
   }
-  if (isNamedFootballTeam(country.iso)) return lang === 'ru' ? country.nameRu : country.nameEn
+  const player = playerById(country.iso)
+  if (player) return playerDisplayName(player, lang)
+  const manager = managerById(country.iso)
+  if (manager) return managerDisplayName(manager, lang)
+  const term = termById(country.iso)
+  if (term) return leaderDisplayName(term, lang)
+  if (isNamedFootballTeam(country.iso)) return footballTeamName(country.iso, lang)
   if (lang === 'ru') return country.nameRu
   if (lang === 'en') return country.nameEn
   try {

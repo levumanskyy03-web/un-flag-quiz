@@ -4,6 +4,7 @@ import {
   accountFromRequest,
   authResponse,
   changePassword,
+  parseCountryIso,
   parsePassword,
   publicAccountName,
   readCookie,
@@ -62,10 +63,17 @@ export async function PATCH(request: Request) {
     if (!isAvatarId(record.avatarId)) return authResponse({ error: 'invalid' }, undefined, 400)
     avatarId = record.avatarId
   }
+  let countryIso: string | undefined
+  if (record.countryIso !== undefined) {
+    const parsed = parseCountryIso(record.countryIso)
+    if (!parsed) return authResponse({ error: 'invalid' }, undefined, 400)
+    countryIso = parsed
+  }
   try {
     const result = await updateAccount(token, {
       name,
       avatarId,
+      countryIso,
     })
     if (!result.ok) {
       const status =

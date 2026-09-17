@@ -1,6 +1,8 @@
 export const LANGS = ['ru', 'en', 'de', 'zh', 'es', 'hi', 'ar', 'bn', 'pt', 'ja', 'he'] as const
 export type Lang = (typeof LANGS)[number]
 
+export const SITE_LANG_KEY = 'un-flag-quiz-lang'
+
 /** Add a lang here when it is written right-to-left. Mode labels keep "from → to" in copy. */
 const RTL_LANGS = new Set<Lang>(['ar', 'he'])
 

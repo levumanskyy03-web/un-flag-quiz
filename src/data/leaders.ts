@@ -4,6 +4,9 @@ import { POPES } from './popes'
 import { US_PRESIDENTS } from './usPresidents'
 import { UK_MONARCHS } from './englishMonarchs'
 import { RUS_LEADERS } from './varangianLeaders'
+import type { Lang } from '../i18n/lang'
+import { named } from './i18n/named'
+import LEADER_NAMES from './i18n/leaderNames.json'
 
 export type { LeaderKind, LeaderTier } from './leaderFame'
 export { leaderShowsNumber } from './leaderFame'
@@ -55,6 +58,11 @@ export function leaderCountry(term: LeaderTerm): Country {
     region: 'americas',
     difficulty: term.tier === 'easy' ? 'easy' : 'hard',
   }
+}
+
+export function leaderDisplayName(term: LeaderTerm, lang: Lang): string {
+  const extra = LEADER_NAMES as Record<string, { de?: string; zh?: string; es?: string; hi?: string; ar?: string; bn?: string; pt?: string; ja?: string; he?: string }>
+  return named(extra, extra[term.id] ? term.id : term.personId, lang, term.ru, term.en)
 }
 
 export function uniquePersons(terms: LeaderTerm[]): LeaderTerm[] {

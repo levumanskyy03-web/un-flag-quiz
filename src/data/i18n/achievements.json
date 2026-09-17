@@ -1,0 +1,1898 @@
+{
+  "firstRound": {
+    "title": {
+      "de": "Erster Schritt",
+      "zh": "第一步",
+      "es": "Primer paso",
+      "hi": "पहला कदम",
+      "ar": "الخطوة الأولى",
+      "bn": "প্রথম পদক্ষেপ",
+      "pt": "Primeiro passo",
+      "ja": "第一歩",
+      "he": "צעד ראשון"
+    },
+    "hint": {
+      "de": "Beenden Sie eine beliebige Runde",
+      "zh": "完成任意一轮",
+      "es": "Termina cualquier ronda",
+      "hi": "कोई भी राउंड पूरा करें",
+      "ar": "أنهِ أي جولة",
+      "bn": "যেকোনো রাউন্ড শেষ করুন",
+      "pt": "Termine qualquer rodada",
+      "ja": "任意のラウンドを終える",
+      "he": "סיימו סיבוב כלשהו"
+    }
+  },
+  "firstHit": {
+    "title": {
+      "de": "Treffer",
+      "zh": "首次答对",
+      "es": "En el marcador",
+      "hi": "पहली सही",
+      "ar": "إصابة",
+      "bn": "প্রথম সঠিক",
+      "pt": "No placar",
+      "ja": "初得点",
+      "he": "פגיעה ראשונה"
+    },
+    "hint": {
+      "de": "Geben Sie mindestens eine richtige Antwort",
+      "zh": "至少答对一题",
+      "es": "Acierte al menos una respuesta",
+      "hi": "कम से कम एक सही उत्तर दें",
+      "ar": "أجب إجابة صحيحة واحدة على الأقل",
+      "bn": "অন্তত একটি সঠিক উত্তর দিন",
+      "pt": "Acerte pelo menos uma resposta",
+      "ja": "少なくとも1問正解する",
+      "he": "ענו נכון לפחות פעם אחת"
+    }
+  },
+  "completeFive": {
+    "title": {
+      "de": "Fünf durch",
+      "zh": "五题过关",
+      "es": "Cinco seguidas",
+      "hi": "पाँच पार",
+      "ar": "خمس متتالية",
+      "bn": "পাঁচ পেরিয়ে",
+      "pt": "Cinco concluídas",
+      "ja": "五問クリア",
+      "he": "חמש ברצף"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde mit 5+ Fragen und mindestens 4 Richtigen",
+      "zh": "完成一轮 5 题以上且至少答对 4 题",
+      "es": "Termina una ronda de 5+ con al menos 4 aciertos",
+      "hi": "5+ प्रश्नों का राउंड कम से कम 4 सही के साथ पूरा करें",
+      "ar": "أنهِ جولة من 5 أسئلة فأكثر مع 4 إجابات صحيحة على الأقل",
+      "bn": "৫+ প্রশ্নের রাউন্ড অন্তত ৪টি সঠিক নিয়ে শেষ করুন",
+      "pt": "Termine uma rodada de 5+ com pelo menos 4 acertos",
+      "ja": "5問以上のラウンドを4問以上正解で終える",
+      "he": "סיימו סיבוב של 5+ שאלות עם לפחות 4 נכונות"
+    }
+  },
+  "campaign1": {
+    "title": {
+      "de": "Kampagnenstart",
+      "zh": "战役起步",
+      "es": "Inicio de campaña",
+      "hi": "अभियान की शुरुआत",
+      "ar": "انطلاقة الحملة",
+      "bn": "ক্যাম্পেইনের শুরু",
+      "pt": "Arranque da campanha",
+      "ja": "キャンペーン開始",
+      "he": "פתיחת מסע"
+    },
+    "hint": {
+      "de": "Schließen Sie Kampagnenlevel 1 ab",
+      "zh": "通关战役第 1 关",
+      "es": "Supera el nivel 1 de campaña",
+      "hi": "अभियान स्तर 1 पूरा करें",
+      "ar": "اجتز المستوى 1 من الحملة",
+      "bn": "ক্যাম্পেইন লেভেল ১ শেষ করুন",
+      "pt": "Conclua o nível 1 da campanha",
+      "ja": "キャンペーンのレベル1をクリア",
+      "he": "עברו שלב 1 במסע"
+    }
+  },
+  "flagComplete": {
+    "title": {
+      "de": "Flaggenleser",
+      "zh": "识旗者",
+      "es": "Lector de banderas",
+      "hi": "झंडा पाठक",
+      "ar": "قارئ الأعلام",
+      "bn": "পতাকা পাঠক",
+      "pt": "Leitor de bandeiras",
+      "ja": "旗の読み手",
+      "he": "קורא דגלים"
+    },
+    "hint": {
+      "de": "Beenden Sie Flagge → Land mit mindestens 60 % richtig",
+      "zh": "完成「旗帜 → 国家」，正确率至少 60%",
+      "es": "Termina Bandera → país con al menos 60 % de aciertos",
+      "hi": "झंडा → देश कम से कम 60% सही के साथ पूरा करें",
+      "ar": "أنهِ علم → بلد بدقة لا تقل عن 60%",
+      "bn": "পতাকা → দেশ অন্তত ৬০% সঠিক নিয়ে শেষ করুন",
+      "pt": "Termine Bandeira → país com pelo menos 60% de acertos",
+      "ja": "「旗 → 国」を正答率60%以上で終える",
+      "he": "סיימו דגל → מדינה עם לפחות 60% נכונות"
+    }
+  },
+  "play10m": {
+    "title": {
+      "de": "Zwanzig Minuten",
+      "zh": "二十分钟",
+      "es": "Veinte minutos",
+      "hi": "बीस मिनट",
+      "ar": "عشرون دقيقة",
+      "bn": "বিশ মিনিট",
+      "pt": "Vinte minutos",
+      "ja": "二十分",
+      "he": "עשרים דקות"
+    },
+    "hint": {
+      "de": "Spielen Sie insgesamt 20 Minuten",
+      "zh": "累计游玩 20 分钟",
+      "es": "Juega 20 minutos en total",
+      "hi": "कुल 20 मिनट खेलें",
+      "ar": "العب 20 دقيقة إجمالًا",
+      "bn": "মোট ২০ মিনিট খেলুন",
+      "pt": "Jogue 20 minutos no total",
+      "ja": "合計20分プレイする",
+      "he": "שחקו 20 דקות במצטבר"
+    }
+  },
+  "veteranDay": {
+    "title": {
+      "de": "Ein Tag",
+      "zh": "一天",
+      "es": "Un día",
+      "hi": "एक दिन",
+      "ar": "يوم واحد",
+      "bn": "এক দিন",
+      "pt": "Um dia",
+      "ja": "一日",
+      "he": "יום אחד"
+    },
+    "hint": {
+      "de": "Behalten Sie ein Konto 1 Tag lang",
+      "zh": "账号满 1 天",
+      "es": "Mantén una cuenta durante 1 día",
+      "hi": "खाता 1 दिन तक रखें",
+      "ar": "احتفظ بحساب ليوم واحد",
+      "bn": "অ্যাকাউন্ট ১ দিন রাখুন",
+      "pt": "Mantenha uma conta por 1 dia",
+      "ja": "アカウントを1日保つ",
+      "he": "שמרו חשבון יום אחד"
+    }
+  },
+  "eightOfTen": {
+    "title": {
+      "de": "Neun von zehn",
+      "zh": "十题九对",
+      "es": "Nueve de diez",
+      "hi": "दस में नौ",
+      "ar": "تسعة من عشرة",
+      "bn": "দশে নয়",
+      "pt": "Nove de dez",
+      "ja": "十問中九問",
+      "he": "תשע מתוך עשר"
+    },
+    "hint": {
+      "de": "Erreichen Sie 9/10 oder besser in einer Runde",
+      "zh": "单轮达到 9/10 或更好",
+      "es": "Consigue 9/10 o más en una ronda",
+      "hi": "एक राउंड में 9/10 या बेहतर",
+      "ar": "احرز 9/10 أو أفضل في جولة واحدة",
+      "bn": "এক রাউন্ডে ৯/১০ বা তার বেশি",
+      "pt": "Faça 9/10 ou melhor numa rodada",
+      "ja": "1ラウンドで9/10以上",
+      "he": "הגיעו ל-9/10 או יותר בסיבוב אחד"
+    }
+  },
+  "perfect5": {
+    "title": {
+      "de": "Fünf von fünf",
+      "zh": "五题全对",
+      "es": "Cinco de cinco",
+      "hi": "पाँच में पाँच",
+      "ar": "خمسة من خمسة",
+      "bn": "পাঁচে পাঁচ",
+      "pt": "Cinco de cinco",
+      "ja": "五問全問正解",
+      "he": "חמש מתוך חמש"
+    },
+    "hint": {
+      "de": "Erreichen Sie 5/5 auf Schwer oder Hardcore",
+      "zh": "在「较难」或「硬核」上拿到 5/5",
+      "es": "Consigue 5/5 en Más difícil o Hardcore",
+      "hi": "कठिन या हार्डकोर पर 5/5",
+      "ar": "احرز 5/5 على أصعب أو متطرف",
+      "bn": "কঠিন বা হার্ডকোরে ৫/৫",
+      "pt": "Faça 5/5 em Mais difícil ou Hardcore",
+      "ja": "「むずかしい」またはハードコアで5/5",
+      "he": "הגיעו ל-5/5 בקשה יותר או בהארדקור"
+    }
+  },
+  "hardComplete": {
+    "title": {
+      "de": "Ohne Stützräder",
+      "zh": "告别辅助",
+      "es": "Sin ruedines",
+      "hi": "बिना सहारे",
+      "ar": "بدون عجلات مساعدة",
+      "bn": "সাহায্য ছাড়া",
+      "pt": "Sem rodinhas",
+      "ja": "補助なし",
+      "he": "בלי גלגלי עזר"
+    },
+    "hint": {
+      "de": "Beenden Sie 5+ Fragen auf Schwer oder Hardcore mit mindestens 70 % richtig",
+      "zh": "在「较难」或「硬核」完成 5 题以上，正确率至少 70%",
+      "es": "Termina 5+ preguntas en Más difícil o Hardcore con al menos 70 % de aciertos",
+      "hi": "कठिन या हार्डकोर पर 5+ प्रश्न कम से कम 70% सही के साथ पूरा करें",
+      "ar": "أنهِ 5 أسئلة فأكثر على أصعب أو متطرف بدقة 70% على الأقل",
+      "bn": "কঠিন বা হার্ডকোরে ৫+ প্রশ্ন অন্তত ৭০% সঠিক নিয়ে শেষ করুন",
+      "pt": "Termine 5+ perguntas em Mais difícil ou Hardcore com pelo menos 70% de acertos",
+      "ja": "「むずかしい」またはハードコアで5問以上を正答率70%以上で終える",
+      "he": "סיימו 5+ שאלות בקשה יותר או בהארדקור עם לפחות 70% נכונות"
+    }
+  },
+  "campaign3": {
+    "title": {
+      "de": "Fünf Level",
+      "zh": "五关",
+      "es": "Cinco niveles",
+      "hi": "पाँच स्तर",
+      "ar": "خمسة مستويات",
+      "bn": "পাঁচ লেভেল",
+      "pt": "Cinco níveis",
+      "ja": "五レベル",
+      "he": "חמישה שלבים"
+    },
+    "hint": {
+      "de": "Schließen Sie 5 Kampagnenlevel in einem Modus ab",
+      "zh": "在同一模式通关 5 个战役关卡",
+      "es": "Supera 5 niveles de campaña en un modo",
+      "hi": "एक मोड में 5 अभियान स्तर पूरे करें",
+      "ar": "اجتز 5 مستويات حملة في وضع واحد",
+      "bn": "এক মোডে ৫টি ক্যাম্পেইন লেভেল শেষ করুন",
+      "pt": "Conclua 5 níveis de campanha num modo",
+      "ja": "1つのモードでキャンペーン5レベルをクリア",
+      "he": "עברו 5 שלבי מסע במצב אחד"
+    }
+  },
+  "twoModes": {
+    "title": {
+      "de": "Vier Modi",
+      "zh": "四种模式",
+      "es": "Cuatro modos",
+      "hi": "चार मोड",
+      "ar": "أربعة أوضاع",
+      "bn": "চার মোড",
+      "pt": "Quatro modos",
+      "ja": "四モード",
+      "he": "ארבעה מצבים"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Pool-Runde in vier verschiedenen Modi",
+      "zh": "在四种不同模式各完成一轮常规对局",
+      "es": "Termina una ronda de pool en cuatro modos distintos",
+      "hi": "चार अलग मोड में पूल राउंड पूरा करें",
+      "ar": "أنهِ جولة عادية في أربعة أوضاع مختلفة",
+      "bn": "চারটি ভিন্ন মোডে পুল রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de pool em quatro modos diferentes",
+      "ja": "4つの異なるモードで通常ラウンドを終える",
+      "he": "סיימו סיבוב רגיל בארבעה מצבים שונים"
+    }
+  },
+  "rank5": {
+    "title": {
+      "de": "Level sechs",
+      "zh": "六级",
+      "es": "Nivel seis",
+      "hi": "छठा स्तर",
+      "ar": "المستوى السادس",
+      "bn": "ষষ্ঠ লেভেল",
+      "pt": "Nível seis",
+      "ja": "レベル6",
+      "he": "רמה שש"
+    },
+    "hint": {
+      "de": "Erreichen Sie Kontostufe 6",
+      "zh": "账号达到 6 级",
+      "es": "Alcanza el nivel de cuenta 6",
+      "hi": "खाता स्तर 6 तक पहुँचें",
+      "ar": "اوصل إلى مستوى الحساب 6",
+      "bn": "অ্যাকাউন্ট লেভেল ৬-এ পৌঁছান",
+      "pt": "Chegue ao nível de conta 6",
+      "ja": "アカウントレベル6に達する",
+      "he": "הגיעו לרמת חשבון 6"
+    }
+  },
+  "veteranWeek": {
+    "title": {
+      "de": "Eine Woche",
+      "zh": "一周",
+      "es": "Una semana",
+      "hi": "एक सप्ताह",
+      "ar": "أسبوع واحد",
+      "bn": "এক সপ্তাহ",
+      "pt": "Uma semana",
+      "ja": "一週間",
+      "he": "שבוע אחד"
+    },
+    "hint": {
+      "de": "Behalten Sie ein Konto 7 Tage lang",
+      "zh": "账号满 7 天",
+      "es": "Mantén una cuenta durante 7 días",
+      "hi": "खाता 7 दिन तक रखें",
+      "ar": "احتفظ بحساب لمدة 7 أيام",
+      "bn": "অ্যাকাউন্ট ৭ দিন রাখুন",
+      "pt": "Mantenha uma conta por 7 dias",
+      "ja": "アカウントを7日保つ",
+      "he": "שמרו חשבון 7 ימים"
+    }
+  },
+  "perfect10": {
+    "title": {
+      "de": "Zehn von zehn",
+      "zh": "十题全对",
+      "es": "Diez de diez",
+      "hi": "दस में दस",
+      "ar": "عشرة من عشرة",
+      "bn": "দশে দশ",
+      "pt": "Dez de dez",
+      "ja": "十問全問正解",
+      "he": "עשר מתוך עשר"
+    },
+    "hint": {
+      "de": "Erreichen Sie 10/10",
+      "zh": "拿到 10/10",
+      "es": "Consigue 10/10",
+      "hi": "10/10 स्कोर करें",
+      "ar": "احرز 10/10",
+      "bn": "১০/১০ স্কোর করুন",
+      "pt": "Faça 10/10",
+      "ja": "10/10を取る",
+      "he": "הגיעו ל-10/10"
+    }
+  },
+  "fiveRegions": {
+    "title": {
+      "de": "Weltreise",
+      "zh": "环游世界",
+      "es": "Vuelta al mundo",
+      "hi": "विश्व भ्रमण",
+      "ar": "جولة حول العالم",
+      "bn": "বিশ্বভ্রমণ",
+      "pt": "Volta ao mundo",
+      "ja": "世界一周",
+      "he": "סיבוב עולם"
+    },
+    "hint": {
+      "de": "Beenden Sie je eine Runde in jeder der fünf Regionen, Region für Region",
+      "zh": "五个地区各单独完成一轮",
+      "es": "Termina una ronda en cada una de las cinco regiones, de una en una",
+      "hi": "पाँचों क्षेत्रों में अलग-अलग एक राउंड पूरा करें",
+      "ar": "أنهِ جولة في كل من المناطق الخمس على حدة",
+      "bn": "পাঁচটি অঞ্চলে আলাদা আলাদা একটি রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada em cada uma das cinco regiões, uma de cada vez",
+      "ja": "5つの地域でそれぞれラウンドを終える",
+      "he": "סיימו סיבוב בכל אחד מחמשת האזורים בנפרד"
+    }
+  },
+  "threeModes": {
+    "title": {
+      "de": "Sechs Modi",
+      "zh": "六种模式",
+      "es": "Seis modos",
+      "hi": "छह मोड",
+      "ar": "ستة أوضاع",
+      "bn": "ছয় মোড",
+      "pt": "Seis modos",
+      "ja": "六モード",
+      "he": "שישה מצבים"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Pool-Runde in sechs verschiedenen Modi",
+      "zh": "在六种不同模式各完成一轮常规对局",
+      "es": "Termina una ronda de pool en seis modos distintos",
+      "hi": "छह अलग मोड में पूल राउंड पूरा करें",
+      "ar": "أنهِ جولة عادية في ستة أوضاع مختلفة",
+      "bn": "ছয়টি ভিন্ন মোডে পুল রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de pool em seis modos diferentes",
+      "ja": "6つの異なるモードで通常ラウンドを終える",
+      "he": "סיימו סיבוב רגיל בשישה מצבים שונים"
+    }
+  },
+  "campaign8": {
+    "title": {
+      "de": "Zwölf Level",
+      "zh": "十二关",
+      "es": "Doce niveles",
+      "hi": "बारह स्तर",
+      "ar": "اثنا عشر مستوى",
+      "bn": "বারো লেভেল",
+      "pt": "Doze níveis",
+      "ja": "十二レベル",
+      "he": "שניים-עשר שלבים"
+    },
+    "hint": {
+      "de": "Schließen Sie 12 Kampagnenlevel in einem Modus ab",
+      "zh": "在同一模式通关 12 个战役关卡",
+      "es": "Supera 12 niveles de campaña en un modo",
+      "hi": "एक मोड में 12 अभियान स्तर पूरे करें",
+      "ar": "اجتز 12 مستوى حملة في وضع واحد",
+      "bn": "এক মোডে ১২টি ক্যাম্পেইন লেভেল শেষ করুন",
+      "pt": "Conclua 12 níveis de campanha num modo",
+      "ja": "1つのモードでキャンペーン12レベルをクリア",
+      "he": "עברו 12 שלבי מסע במצב אחד"
+    }
+  },
+  "hardcoreComplete": {
+    "title": {
+      "de": "Hardcore",
+      "zh": "硬核",
+      "es": "Hardcore",
+      "hi": "हार्डकोर",
+      "ar": "متطرف",
+      "bn": "হার্ডকোর",
+      "pt": "Hardcore",
+      "ja": "ハードコア",
+      "he": "הארדקור"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Hardcore-Runde mit 10+ Fragen und mindestens 80 % richtig",
+      "zh": "完成硬核 10 题以上，正确率至少 80%",
+      "es": "Termina una ronda Hardcore de 10+ con al menos 80 % de aciertos",
+      "hi": "हार्डकोर राउंड 10+ प्रश्नों का कम से कम 80% सही के साथ पूरा करें",
+      "ar": "أنهِ جولة متطرف من 10 أسئلة فأكثر بدقة 80% على الأقل",
+      "bn": "হার্ডকোর রাউন্ড ১০+ প্রশ্ন অন্তত ৮০% সঠিক নিয়ে শেষ করুন",
+      "pt": "Termine uma rodada Hardcore de 10+ com pelo menos 80% de acertos",
+      "ja": "ハードコアで10問以上を正答率80%以上で終える",
+      "he": "סיימו סיבוב הארדקור של 10+ עם לפחות 80% נכונות"
+    }
+  },
+  "rank10": {
+    "title": {
+      "de": "Level zwölf",
+      "zh": "十二级",
+      "es": "Nivel doce",
+      "hi": "बारहवाँ स्तर",
+      "ar": "المستوى الثاني عشر",
+      "bn": "দ্বাদশ লেভেল",
+      "pt": "Nível doze",
+      "ja": "レベル12",
+      "he": "רמה שתים-עשרה"
+    },
+    "hint": {
+      "de": "Erreichen Sie Kontostufe 12",
+      "zh": "账号达到 12 级",
+      "es": "Alcanza el nivel de cuenta 12",
+      "hi": "खाता स्तर 12 तक पहुँचें",
+      "ar": "اوصل إلى مستوى الحساب 12",
+      "bn": "অ্যাকাউন্ট লেভেল ১২-এ পৌঁছান",
+      "pt": "Chegue ao nível de conta 12",
+      "ja": "アカウントレベル12に達する",
+      "he": "הגיעו לרמת חשבון 12"
+    }
+  },
+  "play1h": {
+    "title": {
+      "de": "Zwei Stunden",
+      "zh": "两小时",
+      "es": "Dos horas",
+      "hi": "दो घंटे",
+      "ar": "ساعتان",
+      "bn": "দুই ঘণ্টা",
+      "pt": "Duas horas",
+      "ja": "二時間",
+      "he": "שעתיים"
+    },
+    "hint": {
+      "de": "Spielen Sie insgesamt 2 Stunden",
+      "zh": "累计游玩 2 小时",
+      "es": "Juega 2 horas en total",
+      "hi": "कुल 2 घंटे खेलें",
+      "ar": "العب ساعتين إجمالًا",
+      "bn": "মোট ২ ঘণ্টা খেলুন",
+      "pt": "Jogue 2 horas no total",
+      "ja": "合計2時間プレイする",
+      "he": "שחקו שעתיים במצטבר"
+    }
+  },
+  "veteranMonth": {
+    "title": {
+      "de": "Ein Monat",
+      "zh": "一个月",
+      "es": "Un mes",
+      "hi": "एक महीना",
+      "ar": "شهر واحد",
+      "bn": "এক মাস",
+      "pt": "Um mês",
+      "ja": "一か月",
+      "he": "חודש אחד"
+    },
+    "hint": {
+      "de": "Behalten Sie ein Konto 30 Tage lang",
+      "zh": "账号满 30 天",
+      "es": "Mantén una cuenta durante 30 días",
+      "hi": "खाता 30 दिन तक रखें",
+      "ar": "احتفظ بحساب لمدة 30 يومًا",
+      "bn": "অ্যাকাউন্ট ৩০ দিন রাখুন",
+      "pt": "Mantenha uma conta por 30 dias",
+      "ja": "アカウントを30日保つ",
+      "he": "שמרו חשבון 30 ימים"
+    }
+  },
+  "perfect20": {
+    "title": {
+      "de": "Zwanzig von zwanzig",
+      "zh": "二十题全对",
+      "es": "Veinte de veinte",
+      "hi": "बीस में बीस",
+      "ar": "عشرون من عشرين",
+      "bn": "বিশে বিশ",
+      "pt": "Vinte de vinte",
+      "ja": "二十問全問正解",
+      "he": "עשרים מתוך עשרים"
+    },
+    "hint": {
+      "de": "Erreichen Sie 20/20 auf Schwer oder Hardcore",
+      "zh": "在「较难」或「硬核」上拿到 20/20",
+      "es": "Consigue 20/20 en Más difícil o Hardcore",
+      "hi": "कठिन या हार्डकोर पर 20/20",
+      "ar": "احرز 20/20 على أصعب أو متطرف",
+      "bn": "কঠিন বা হার্ডকোরে ২০/২০",
+      "pt": "Faça 20/20 em Mais difícil ou Hardcore",
+      "ja": "「むずかしい」またはハードコアで20/20",
+      "he": "הגיעו ל-20/20 בקשה יותר או בהארדקור"
+    }
+  },
+  "allModes": {
+    "title": {
+      "de": "Alle Modi",
+      "zh": "全部模式",
+      "es": "Todos los modos",
+      "hi": "सभी मोड",
+      "ar": "كل الأوضاع",
+      "bn": "সব মোড",
+      "pt": "Todos os modos",
+      "ja": "全モード",
+      "he": "כל המצבים"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Pool-Runde in jedem Geografiemodus, inklusive Ländercodes",
+      "zh": "在每个地理模式各完成一轮常规对局，含国家代码",
+      "es": "Termina una ronda de pool en cada modo de geografía, incluidos códigos de país",
+      "hi": "हर भूगोल मोड में पूल राउंड पूरा करें, देश कोड सहित",
+      "ar": "أنهِ جولة عادية في كل وضع جغرافي، بما في ذلك رموز الدول",
+      "bn": "প্রতিটি ভূগোল মোডে পুল রাউন্ড শেষ করুন, দেশের কোডসহ",
+      "pt": "Termine uma rodada de pool em cada modo de geografia, incluindo códigos de país",
+      "ja": "地理の全モード（国コード含む）で通常ラウンドを終える",
+      "he": "סיימו סיבוב רגיל בכל מצב גאוגרפיה, כולל קודי מדינות"
+    }
+  },
+  "campaign15": {
+    "title": {
+      "de": "Achtzehn Level",
+      "zh": "十八关",
+      "es": "Dieciocho niveles",
+      "hi": "अठारह स्तर",
+      "ar": "ثمانية عشر مستوى",
+      "bn": "আঠারো লেভেল",
+      "pt": "Dezoito níveis",
+      "ja": "十八レベル",
+      "he": "שמונה-עשר שלבים"
+    },
+    "hint": {
+      "de": "Schließen Sie 18 Kampagnenlevel in einem Modus ab",
+      "zh": "在同一模式通关 18 个战役关卡",
+      "es": "Supera 18 niveles de campaña en un modo",
+      "hi": "एक मोड में 18 अभियान स्तर पूरे करें",
+      "ar": "اجتز 18 مستوى حملة في وضع واحد",
+      "bn": "এক মোডে ১৮টি ক্যাম্পেইন লেভেল শেষ করুন",
+      "pt": "Conclua 18 níveis de campanha num modo",
+      "ja": "1つのモードでキャンペーン18レベルをクリア",
+      "he": "עברו 18 שלבי מסע במצב אחד"
+    }
+  },
+  "hardcoreLevel": {
+    "title": {
+      "de": "Goldenes Level",
+      "zh": "黄金关卡",
+      "es": "Nivel de oro",
+      "hi": "स्वर्ण स्तर",
+      "ar": "مستوى ذهبي",
+      "bn": "সোনালি লেভেল",
+      "pt": "Nível de ouro",
+      "ja": "ゴールドレベル",
+      "he": "שלב זהב"
+    },
+    "hint": {
+      "de": "Schließen Sie Kampagnenlevel 5 oder höher auf Hardcore ab",
+      "zh": "在硬核通关战役第 5 关或更高",
+      "es": "Supera el nivel 5 de campaña o superior en Hardcore",
+      "hi": "हार्डकोर पर अभियान स्तर 5 या उससे ऊपर पूरा करें",
+      "ar": "اجتز المستوى 5 من الحملة أو أعلى على متطرف",
+      "bn": "হার্ডকোরে ক্যাম্পেইন লেভেল ৫ বা তার উপরে শেষ করুন",
+      "pt": "Conclua o nível 5 da campanha ou superior em Hardcore",
+      "ja": "ハードコアでキャンペーンレベル5以上をクリア",
+      "he": "עברו שלב מסע 5 או יותר בהארדקור"
+    }
+  },
+  "completes10": {
+    "title": {
+      "de": "Zwanzig Ziele",
+      "zh": "二十次完赛",
+      "es": "Veinte finales",
+      "hi": "बीस समापन",
+      "ar": "عشرون إنهاءً",
+      "bn": "বিশ ফিনিশ",
+      "pt": "Vinte chegadas",
+      "ja": "二十回完走",
+      "he": "עשרים סיומים"
+    },
+    "hint": {
+      "de": "Beenden Sie 20 Runden vollständig",
+      "zh": "完整完成 20 轮",
+      "es": "Termina 20 rondas hasta el final",
+      "hi": "20 राउंड अंत तक पूरा करें",
+      "ar": "أنهِ 20 جولة حتى النهاية",
+      "bn": "২০টি রাউন্ড শেষ পর্যন্ত শেষ করুন",
+      "pt": "Termine 20 rodadas até o fim",
+      "ja": "20ラウンドを最後まで終える",
+      "he": "סיימו 20 סיבובים עד הסוף"
+    }
+  },
+  "rank20": {
+    "title": {
+      "de": "Level fünfundzwanzig",
+      "zh": "二十五级",
+      "es": "Nivel veinticinco",
+      "hi": "पच्चीसवाँ स्तर",
+      "ar": "المستوى الخامس والعشرون",
+      "bn": "পঁচিশতম লেভেল",
+      "pt": "Nível vinte e cinco",
+      "ja": "レベル25",
+      "he": "רמה עשרים וחמש"
+    },
+    "hint": {
+      "de": "Erreichen Sie Kontostufe 25",
+      "zh": "账号达到 25 级",
+      "es": "Alcanza el nivel de cuenta 25",
+      "hi": "खाता स्तर 25 तक पहुँचें",
+      "ar": "اوصل إلى مستوى الحساب 25",
+      "bn": "অ্যাকাউন্ট লেভেল ২৫-এ পৌঁছান",
+      "pt": "Chegue ao nível de conta 25",
+      "ja": "アカウントレベル25に達する",
+      "he": "הגיעו לרמת חשבון 25"
+    }
+  },
+  "campaign20": {
+    "title": {
+      "de": "Kampagne geschafft",
+      "zh": "战役通关",
+      "es": "Campaña hecha",
+      "hi": "अभियान पूरा",
+      "ar": "الحملة اكتملت",
+      "bn": "ক্যাম্পেইন শেষ",
+      "pt": "Campanha concluída",
+      "ja": "キャンペーン完了",
+      "he": "המסע הושלם"
+    },
+    "hint": {
+      "de": "Schließen Sie Kampagnenlevel 20 ab",
+      "zh": "通关战役第 20 关",
+      "es": "Supera el nivel 20 de campaña",
+      "hi": "अभियान स्तर 20 पूरा करें",
+      "ar": "اجتز المستوى 20 من الحملة",
+      "bn": "ক্যাম্পেইন লেভেল ২০ শেষ করুন",
+      "pt": "Conclua o nível 20 da campanha",
+      "ja": "キャンペーンのレベル20をクリア",
+      "he": "עברו שלב 20 במסע"
+    }
+  },
+  "goldTen": {
+    "title": {
+      "de": "Fünfzehn Gold",
+      "zh": "十五金关",
+      "es": "Quince oros",
+      "hi": "पंद्रह स्वर्ण",
+      "ar": "خمسة عشر ذهبًا",
+      "bn": "পনেরো স্বর্ণ",
+      "pt": "Quinze ouros",
+      "ja": "十五の金",
+      "he": "חמישה-עשר זהב"
+    },
+    "hint": {
+      "de": "Schließen Sie 15 Kampagnenlevel auf Hardcore in einem Modus ab",
+      "zh": "在同一模式以硬核通关 15 个战役关卡",
+      "es": "Supera 15 niveles de campaña en Hardcore en un modo",
+      "hi": "एक मोड में हार्डकोर पर 15 अभियान स्तर पूरे करें",
+      "ar": "اجتز 15 مستوى حملة على متطرف في وضع واحد",
+      "bn": "এক মোডে হার্ডকোরে ১৫টি ক্যাম্পেইন লেভেল শেষ করুন",
+      "pt": "Conclua 15 níveis de campanha em Hardcore num modo",
+      "ja": "1つのモードでハードコアのキャンペーン15レベルをクリア",
+      "he": "עברו 15 שלבי מסע בהארדקור במצב אחד"
+    }
+  },
+  "goldFinal": {
+    "title": {
+      "de": "Finale am Limit",
+      "zh": "极限决赛",
+      "es": "Final al límite",
+      "hi": "सीमा पर फ़ाइनल",
+      "ar": "النهائي على الحافة",
+      "bn": "সীমায় ফাইনাল",
+      "pt": "Final no limite",
+      "ja": "崖っぷちの決勝",
+      "he": "גמר על הקצה"
+    },
+    "hint": {
+      "de": "Schließen Sie Level 20 mit einem Leben ab",
+      "zh": "只剩一条命通关第 20 关",
+      "es": "Supera el nivel 20 con una vida",
+      "hi": "एक जान के साथ स्तर 20 पूरा करें",
+      "ar": "اجتز المستوى 20 بحياة واحدة",
+      "bn": "এক জীবন নিয়ে লেভেল ২০ শেষ করুন",
+      "pt": "Conclua o nível 20 com uma vida",
+      "ja": "ライフ1つでレベル20をクリア",
+      "he": "עברו שלב 20 עם חיים אחד"
+    }
+  },
+  "perfectHardcore": {
+    "title": {
+      "de": "Perfektes Hardcore",
+      "zh": "完美硬核",
+      "es": "Hardcore perfecto",
+      "hi": "परफेक्ट हार्डकोर",
+      "ar": "متطرف مثالي",
+      "bn": "নিখুঁত হার্ডকোর",
+      "pt": "Hardcore perfeito",
+      "ja": "パーフェクトハードコア",
+      "he": "הארדקור מושלם"
+    },
+    "hint": {
+      "de": "Erreichen Sie 10/10 auf Hardcore",
+      "zh": "在硬核拿到 10/10",
+      "es": "Consigue 10/10 en Hardcore",
+      "hi": "हार्डकोर पर 10/10",
+      "ar": "احرز 10/10 على متطرف",
+      "bn": "হার্ডকোরে ১০/১০",
+      "pt": "Faça 10/10 em Hardcore",
+      "ja": "ハードコアで10/10",
+      "he": "הגיעו ל-10/10 בהארדקור"
+    }
+  },
+  "worldPerfect": {
+    "title": {
+      "de": "Die ganze Welt",
+      "zh": "整个世界",
+      "es": "El mundo entero",
+      "hi": "पूरी दुनिया",
+      "ar": "العالم كله",
+      "bn": "সারা বিশ্ব",
+      "pt": "O mundo inteiro",
+      "ja": "全世界",
+      "he": "כל העולם"
+    },
+    "hint": {
+      "de": "Erreichen Sie 10/10 bei allen Ländern, Hardcore",
+      "zh": "在「所有国家」硬核拿到 10/10",
+      "es": "Consigue 10/10 en todos los países, Hardcore",
+      "hi": "सभी देशों पर हार्डकोर में 10/10",
+      "ar": "احرز 10/10 على كل البلدان في متطرف",
+      "bn": "সব দেশে হার্ডকোরে ১০/১০",
+      "pt": "Faça 10/10 em todos os países, Hardcore",
+      "ja": "全国家・ハードコアで10/10",
+      "he": "הגיעו ל-10/10 בכל המדינות בהארדקור"
+    }
+  },
+  "play10h": {
+    "title": {
+      "de": "Fünfzehn Stunden",
+      "zh": "十五小时",
+      "es": "Quince horas",
+      "hi": "पंद्रह घंटे",
+      "ar": "خمس عشرة ساعة",
+      "bn": "পনেরো ঘণ্টা",
+      "pt": "Quinze horas",
+      "ja": "十五時間",
+      "he": "חמש-עשרה שעות"
+    },
+    "hint": {
+      "de": "Spielen Sie insgesamt 15 Stunden",
+      "zh": "累计游玩 15 小时",
+      "es": "Juega 15 horas en total",
+      "hi": "कुल 15 घंटे खेलें",
+      "ar": "العب 15 ساعة إجمالًا",
+      "bn": "মোট ১৫ ঘণ্টা খেলুন",
+      "pt": "Jogue 15 horas no total",
+      "ja": "合計15時間プレイする",
+      "he": "שחקו 15 שעות במצטבר"
+    }
+  },
+  "recordBreak1": {
+    "title": {
+      "de": "Rekordbrecher",
+      "zh": "破纪录",
+      "es": "Rompe-récords",
+      "hi": "रिकॉर्ड तोड़ने वाला",
+      "ar": "كاسر الأرقام",
+      "bn": "রেকর্ড ভাঙা",
+      "pt": "Quebra-recordes",
+      "ja": "記録更新",
+      "he": "שובר שיאים"
+    },
+    "hint": {
+      "de": "Brechen Sie einen Weltrekord auf einem Kampagnenlevel",
+      "zh": "刷新一个战役关卡的世界纪录",
+      "es": "Bate un récord mundial en un nivel de campaña",
+      "hi": "अभियान स्तर पर विश्व रिकॉर्ड तोड़ें",
+      "ar": "اكسر رقمًا عالميًا في مستوى حملة",
+      "bn": "ক্যাম্পেইন লেভেলে একটি বিশ্ব রেকর্ড ভাঙুন",
+      "pt": "Bata um recorde mundial num nível de campanha",
+      "ja": "キャンペーンレベルで世界記録を更新する",
+      "he": "שברו שיא עולמי בשלב מסע"
+    }
+  },
+  "recordBreak10": {
+    "title": {
+      "de": "Fünfzehn Rekorde",
+      "zh": "十五项纪录",
+      "es": "Quince récords",
+      "hi": "पंद्रह रिकॉर्ड",
+      "ar": "خمسة عشر رقمًا",
+      "bn": "পনেরো রেকর্ড",
+      "pt": "Quinze recordes",
+      "ja": "十五の記録",
+      "he": "חמישה-עשר שיאים"
+    },
+    "hint": {
+      "de": "Brechen Sie 15 Weltrekorde auf Kampagnenleveln",
+      "zh": "刷新 15 个战役关卡世界纪录",
+      "es": "Bate 15 récords mundiales en niveles de campaña",
+      "hi": "अभियान स्तरों पर 15 विश्व रिकॉर्ड तोड़ें",
+      "ar": "اكسر 15 رقمًا عالميًا في مستويات الحملة",
+      "bn": "ক্যাম্পেইন লেভেলে ১৫টি বিশ্ব রেকর্ড ভাঙুন",
+      "pt": "Bata 15 recordes mundiais em níveis de campanha",
+      "ja": "キャンペーンレベルで世界記録を15更新する",
+      "he": "שברו 15 שיאי עולם בשלבי מסע"
+    }
+  },
+  "fbKickoff": {
+    "title": {
+      "de": "Anstoß",
+      "zh": "开球",
+      "es": "Saque inicial",
+      "hi": "किक-ऑफ़",
+      "ar": "صافرة البداية",
+      "bn": "কিক-অফ",
+      "pt": "Pontapé de saída",
+      "ja": "キックオフ",
+      "he": "בעיטת פתיחה"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Fußballrunde",
+      "zh": "完成一轮足球",
+      "es": "Termina una ronda de fútbol",
+      "hi": "एक फ़ुटबॉल राउंड पूरा करें",
+      "ar": "أنهِ جولة كرة قدم",
+      "bn": "একটি ফুটবল রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de futebol",
+      "ja": "サッカーのラウンドを終える",
+      "he": "סיימו סיבוב כדורגל"
+    }
+  },
+  "fbFirstGoal": {
+    "title": {
+      "de": "Erstes Tor",
+      "zh": "首球",
+      "es": "Primer gol",
+      "hi": "पहला गोल",
+      "ar": "الهدف الأول",
+      "bn": "প্রথম গোল",
+      "pt": "Primeiro golo",
+      "ja": "初ゴール",
+      "he": "שער ראשון"
+    },
+    "hint": {
+      "de": "Geben Sie eine richtige Fußballantwort",
+      "zh": "在足球中答对一题",
+      "es": "Acierte una respuesta de fútbol",
+      "hi": "फ़ुटबॉल में एक सही उत्तर दें",
+      "ar": "أجب إجابة صحيحة في كرة القدم",
+      "bn": "ফুটবলে একটি সঠিক উত্তর দিন",
+      "pt": "Acerte uma resposta de futebol",
+      "ja": "サッカーで1問正解する",
+      "he": "ענו נכון בכדורגל"
+    }
+  },
+  "fbHatTrick": {
+    "title": {
+      "de": "Hattrick",
+      "zh": "帽子戏法",
+      "es": "Hat-trick",
+      "hi": "हैटट्रिक",
+      "ar": "هاتريك",
+      "bn": "হ্যাটট্রিক",
+      "pt": "Hat-trick",
+      "ja": "ハットトリック",
+      "he": "האטריק"
+    },
+    "hint": {
+      "de": "Geben Sie 5 richtige Antworten in einer Fußballrunde",
+      "zh": "一轮足球中答对 5 题",
+      "es": "Consigue 5 aciertos en una ronda de fútbol",
+      "hi": "एक फ़ुटबॉल राउंड में 5 सही उत्तर",
+      "ar": "أحرز 5 إجابات صحيحة في جولة كرة قدم واحدة",
+      "bn": "এক ফুটবল রাউন্ডে ৫টি সঠিক উত্তর",
+      "pt": "Acerte 5 respostas numa rodada de futebol",
+      "ja": "サッカー1ラウンドで5問正解する",
+      "he": "5 תשובות נכונות בסיבוב כדורגל אחד"
+    }
+  },
+  "fbCleanSheet": {
+    "title": {
+      "de": "Zu Null",
+      "zh": "零封",
+      "es": "Portería a cero",
+      "hi": "क्लीन शीट",
+      "ar": "شباك نظيفة",
+      "bn": "ক্লিন শিট",
+      "pt": "Jogo sem golos sofridos",
+      "ja": "クリーンシート",
+      "he": "רשת נקייה"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Fußballrunde mit 10 Fragen ohne Fehler",
+      "zh": "完成 10 题足球轮且零失误",
+      "es": "Termina una ronda de fútbol de 10 sin errores",
+      "hi": "10 प्रश्नों का फ़ुटबॉल राउंड बिना गलती पूरा करें",
+      "ar": "أنهِ جولة كرة قدم من 10 أسئلة بلا أخطاء",
+      "bn": "১০ প্রশ্নের ফুটবল রাউন্ড ভুল ছাড়া শেষ করুন",
+      "pt": "Termine uma rodada de futebol de 10 sem erros",
+      "ja": "サッカー10問をミスなしで終える",
+      "he": "סיימו סיבוב כדורגל של 10 בלי טעויות"
+    }
+  },
+  "fbWorldCup": {
+    "title": {
+      "de": "Weltmeister",
+      "zh": "世界冠军",
+      "es": "Campeones del mundo",
+      "hi": "विश्व विजेता",
+      "ar": "أبطال العالم",
+      "bn": "বিশ্ব চ্যাম্পিয়ন",
+      "pt": "Campeões do mundo",
+      "ja": "ワールドチャンピオン",
+      "he": "אלופות העולם"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde WM-Sieger",
+      "zh": "完成一轮「世界杯冠军」",
+      "es": "Termina una ronda de Campeones del Mundial",
+      "hi": "विश्व कप विजेता राउंड पूरा करें",
+      "ar": "أنهِ جولة أبطال كأس العالم",
+      "bn": "বিশ্বকাপ জয়ী রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de Campeões do Mundial",
+      "ja": "「W杯優勝国」のラウンドを終える",
+      "he": "סיימו סיבוב של זוכות המונדיאל"
+    }
+  },
+  "fbFinal": {
+    "title": {
+      "de": "Finalisten",
+      "zh": "决赛队伍",
+      "es": "Finalistas",
+      "hi": "फ़ाइनलिस्ट",
+      "ar": "أصحاب النهائي",
+      "bn": "ফাইনালিস্ট",
+      "pt": "Finalistas",
+      "ja": "決勝進出",
+      "he": "סגניות"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde WM-Finalisten",
+      "zh": "完成一轮「世界杯亚军」",
+      "es": "Termina una ronda de Finalistas del Mundial",
+      "hi": "विश्व कप फ़ाइनलिस्ट राउंड पूरा करें",
+      "ar": "أنهِ جولة أصحاب المركز الثاني في كأس العالم",
+      "bn": "বিশ্বকাপ ফাইনালিস্ট রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de Finalistas do Mundial",
+      "ja": "「W杯準優勝」のラウンドを終える",
+      "he": "סיימו סיבוב של סגניות המונדיאל"
+    }
+  },
+  "fbHosts": {
+    "title": {
+      "de": "Gastgeber",
+      "zh": "东道主",
+      "es": "Anfitrión",
+      "hi": "मेज़बान देश",
+      "ar": "الدولة المضيفة",
+      "bn": "আয়োজক দেশ",
+      "pt": "Anfitrião",
+      "ja": "開催国",
+      "he": "מארחת"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde WM-Gastgeber",
+      "zh": "完成一轮「世界杯主办国」",
+      "es": "Termina una ronda de Sedes del Mundial",
+      "hi": "विश्व कप मेजबान राउंड पूरा करें",
+      "ar": "أنهِ جولة الدول المستضيفة لكأس العالم",
+      "bn": "বিশ্বকাপ আয়োজক রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de Anfitriões do Mundial",
+      "ja": "「W杯開催国」のラウンドを終える",
+      "he": "סיימו סיבוב של מארחות המונדיאל"
+    }
+  },
+  "fbYears": {
+    "title": {
+      "de": "Titeljahre",
+      "zh": "夺冠年份",
+      "es": "Años de título",
+      "hi": "खिताब के साल",
+      "ar": "سنوات اللقب",
+      "bn": "শিরোপার বছর",
+      "pt": "Anos de título",
+      "ja": "優勝年",
+      "he": "שנות הזכייה"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Titeljahr-Runde",
+      "zh": "完成一轮「夺冠年份」",
+      "es": "Termina una ronda de año del título",
+      "hi": "खिताब का साल राउंड पूरा करें",
+      "ar": "أنهِ جولة سنة اللقب",
+      "bn": "শিরোপা বছর রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de ano do título",
+      "ja": "「優勝年」のラウンドを終える",
+      "he": "סיימו סיבוב של שנת הזכייה"
+    }
+  },
+  "fbEuro": {
+    "title": {
+      "de": "EM-Nacht",
+      "zh": "欧洲之夜",
+      "es": "Noche de la Euro",
+      "hi": "यूरो की रात",
+      "ar": "ليلة اليورو",
+      "bn": "ইউরোর রাত",
+      "pt": "Noite da Euro",
+      "ja": "ユーロの夜",
+      "he": "ליל היורו"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde EM-Sieger",
+      "zh": "完成一轮「欧洲杯冠军」",
+      "es": "Termina una ronda de Campeones de la Euro",
+      "hi": "यूरो विजेता राउंड पूरा करें",
+      "ar": "أنهِ جولة أبطال اليورو",
+      "bn": "ইউরো জয়ী রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de Campeões da Euro",
+      "ja": "「欧州選手権優勝国」のラウンドを終える",
+      "he": "סיימו סיבוב של זוכות היורו"
+    }
+  },
+  "fbAllModes": {
+    "title": {
+      "de": "Ganzes Feld",
+      "zh": "全场铺开",
+      "es": "Campo completo",
+      "hi": "पूरा मैदान",
+      "ar": "الملعب كاملًا",
+      "bn": "পুরো মাঠ",
+      "pt": "Campo inteiro",
+      "ja": "ピッチ全部",
+      "he": "כל המגרש"
+    },
+    "hint": {
+      "de": "Beenden Sie jeden Fußballmodus",
+      "zh": "完成每一种足球模式",
+      "es": "Termina todos los modos de fútbol",
+      "hi": "हर फ़ुटबॉल मोड पूरा करें",
+      "ar": "أنهِ كل أوضاع كرة القدم",
+      "bn": "প্রতিটি ফুটবল মোড শেষ করুন",
+      "pt": "Termine todos os modos de futebol",
+      "ja": "サッカーの全モードを終える",
+      "he": "סיימו כל מצב כדורגל"
+    }
+  },
+  "fbPerfect10": {
+    "title": {
+      "de": "Goldener Schuh",
+      "zh": "金靴",
+      "es": "Bota de oro",
+      "hi": "गोल्डन बूट",
+      "ar": "الحذاء الذهبي",
+      "bn": "গোল্ডেন বুট",
+      "pt": "Chuteira de ouro",
+      "ja": "ゴールデンブーツ",
+      "he": "נעל הזהב"
+    },
+    "hint": {
+      "de": "Erreichen Sie 10/10 in einer Fußballrunde",
+      "zh": "一轮足球拿到 10/10",
+      "es": "Consigue 10/10 en una ronda de fútbol",
+      "hi": "फ़ुटबॉल राउंड में 10/10",
+      "ar": "احرز 10/10 في جولة كرة قدم",
+      "bn": "ফুটবল রাউন্ডে ১০/১০",
+      "pt": "Faça 10/10 numa rodada de futebol",
+      "ja": "サッカーのラウンドで10/10",
+      "he": "הגיעו ל-10/10 בסיבוב כדורגל"
+    }
+  },
+  "fbHard": {
+    "title": {
+      "de": "Auswärtsspiel",
+      "zh": "客场作战",
+      "es": "Partido fuera",
+      "hi": "बाहर का मैच",
+      "ar": "مباراة خارج الأرض",
+      "bn": "অ্যাওয়ে ম্যাচ",
+      "pt": "Jogo fora",
+      "ja": "アウェー",
+      "he": "משחק חוץ"
+    },
+    "hint": {
+      "de": "Beenden Sie Gastgeber oder EM auf Schwer oder Hardcore",
+      "zh": "在「较难」或「硬核」完成主办国或欧洲杯",
+      "es": "Termina sedes o Euros en Más difícil o Hardcore",
+      "hi": "मेजबान या यूरो को कठिन या हार्डकोर पर पूरा करें",
+      "ar": "أنهِ المستضيفين أو اليورو على أصعب أو متطرف",
+      "bn": "আয়োজক বা ইউরো কঠিন বা হার্ডকোরে শেষ করুন",
+      "pt": "Termine anfitriões ou Euros em Mais difícil ou Hardcore",
+      "ja": "開催国または欧州選手権を「むずかしい」またはハードコアで終える",
+      "he": "סיימו מארחות או יורו בקשה יותר או בהארדקור"
+    }
+  },
+  "fbTenMatches": {
+    "title": {
+      "de": "Zwanzig Spiele",
+      "zh": "二十场",
+      "es": "Veinte partidos",
+      "hi": "बीस मैच",
+      "ar": "عشرون مباراة",
+      "bn": "বিশ ম্যাচ",
+      "pt": "Vinte jogos",
+      "ja": "二十試合",
+      "he": "עשרים משחקים"
+    },
+    "hint": {
+      "de": "Schließen Sie 20 Fußballrunden ab",
+      "zh": "完整完成 20 轮足球",
+      "es": "Completa 20 rondas de fútbol",
+      "hi": "20 फ़ुटबॉल राउंड पूरा करें",
+      "ar": "أكمل 20 جولة كرة قدم",
+      "bn": "২০টি ফুটবল রাউন্ড শেষ করুন",
+      "pt": "Conclua 20 rodadas de futebol",
+      "ja": "サッカーラウンドを20回終える",
+      "he": "סיימו 20 סיבובי כדורגל"
+    }
+  },
+  "fbHardcore": {
+    "title": {
+      "de": "Verlängerung",
+      "zh": "加时赛",
+      "es": "Prórroga",
+      "hi": "अतिरिक्त समय",
+      "ar": "الوقت الإضافي",
+      "bn": "অতিরিক্ত সময়",
+      "pt": "Prolongamento",
+      "ja": "延長戦",
+      "he": "הארכה"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Hardcore-Fußballrunde mit 10+",
+      "zh": "完成硬核足球 10 题以上",
+      "es": "Termina una ronda Hardcore de fútbol de 10+",
+      "hi": "हार्डकोर फ़ुटबॉल राउंड 10+ पूरा करें",
+      "ar": "أنهِ جولة كرة قدم متطرف من 10+",
+      "bn": "হার্ডকোর ফুটবল রাউন্ড ১০+ শেষ করুন",
+      "pt": "Termine uma rodada Hardcore de futebol de 10+",
+      "ja": "ハードコアのサッカー10問以上を終える",
+      "he": "סיימו סיבוב כדורגל הארדקור של 10+"
+    }
+  },
+  "fbLevel": {
+    "title": {
+      "de": "Tabelle",
+      "zh": "积分榜",
+      "es": "Clasificación",
+      "hi": "लीग तालिका",
+      "ar": "جدول الترتيب",
+      "bn": "লিগ টেবিল",
+      "pt": "Classificação",
+      "ja": "順位表",
+      "he": "טבלת הליגה"
+    },
+    "hint": {
+      "de": "Schließen Sie ein Fußball-Kampagnenlevel ab",
+      "zh": "通关一个足球战役关卡",
+      "es": "Supera un nivel de campaña de fútbol",
+      "hi": "फ़ुटबॉल अभियान स्तर पूरा करें",
+      "ar": "اجتز مستوى حملة كرة قدم",
+      "bn": "একটি ফুটবল ক্যাম্পেইন লেভেল শেষ করুন",
+      "pt": "Conclua um nível de campanha de futebol",
+      "ja": "サッカーキャンペーンのレベルをクリア",
+      "he": "עברו שלב במסע הכדורגל"
+    }
+  },
+  "fbCampaign": {
+    "title": {
+      "de": "Ganzes Turnier",
+      "zh": "整场赛事",
+      "es": "Torneo completo",
+      "hi": "पूरा टूर्नामेंट",
+      "ar": "البطولة كاملة",
+      "bn": "পুরো টুর্নামেন্ট",
+      "pt": "Torneio completo",
+      "ja": "トーナメント全部",
+      "he": "כל הטורניר"
+    },
+    "hint": {
+      "de": "Schließen Sie jedes Kampagnenlevel in einem Fußballmodus ab",
+      "zh": "在同一足球模式通关全部战役关卡",
+      "es": "Supera todos los niveles de campaña en un modo de fútbol",
+      "hi": "एक फ़ुटबॉल मोड में सभी अभियान स्तर पूरे करें",
+      "ar": "اجتز كل مستويات الحملة في وضع كرة قدم واحد",
+      "bn": "এক ফুটবল মোডে সব ক্যাম্পেইন লেভেল শেষ করুন",
+      "pt": "Conclua todos os níveis de campanha num modo de futebol",
+      "ja": "1つのサッカーモードで全キャンペーンレベルをクリア",
+      "he": "עברו כל שלבי המסע במצב כדורגל אחד"
+    }
+  },
+  "stFirst": {
+    "title": {
+      "de": "Erste Briefmarke",
+      "zh": "第一枚邮票",
+      "es": "Primer sello",
+      "hi": "पहली टिकट",
+      "ar": "الطابع الأول",
+      "bn": "প্রথম ডাকটিকিট",
+      "pt": "Primeiro selo",
+      "ja": "最初の切手",
+      "he": "בול ראשון"
+    },
+    "hint": {
+      "de": "Verdienen Sie eine Marke mit einer richtigen gewerteten Antwort",
+      "zh": "在计分对局中答对并获得一枚邮票",
+      "es": "Gana un sello con una respuesta correcta puntuada",
+      "hi": "स्कोर वाले सही उत्तर से टिकट कमाएँ",
+      "ar": "اربح طابعًا بإجابة صحيحة محسوبة",
+      "bn": "স্কোর করা সঠিক উত্তরে একটি স্ট্যাম্প অর্জন করুন",
+      "pt": "Ganhe um selo com uma resposta correta pontuada",
+      "ja": "得点対象の正解で切手を得る",
+      "he": "הרוויחו בול מתשובה נכונה בסיבוב שנחשב"
+    }
+  },
+  "stTen": {
+    "title": {
+      "de": "Zwanzig Marken",
+      "zh": "二十枚邮票",
+      "es": "Veinte sellos",
+      "hi": "बीस टिकटें",
+      "ar": "عشرون طابعًا",
+      "bn": "বিশ স্ট্যাম্প",
+      "pt": "Vinte selos",
+      "ja": "二十の切手",
+      "he": "עשרים בולים"
+    },
+    "hint": {
+      "de": "Sammeln Sie 20 Marken",
+      "zh": "收集 20 枚邮票",
+      "es": "Reúne 20 sellos",
+      "hi": "20 टिकटें इकट्ठा करें",
+      "ar": "اجمع 20 طابعًا",
+      "bn": "২০টি স্ট্যাম্প সংগ্রহ করুন",
+      "pt": "Colete 20 selos",
+      "ja": "切手を20枚集める",
+      "he": "אספו 20 בולים"
+    }
+  },
+  "stFifty": {
+    "title": {
+      "de": "Fünfundsiebzig Marken",
+      "zh": "七十五枚邮票",
+      "es": "Setenta y cinco sellos",
+      "hi": "पचहत्तर टिकटें",
+      "ar": "خمسة وسبعون طابعًا",
+      "bn": "পঁচাত্তর স্ট্যাম্প",
+      "pt": "Setenta e cinco selos",
+      "ja": "七十五の切手",
+      "he": "שבעים וחמישה בולים"
+    },
+    "hint": {
+      "de": "Sammeln Sie 75 Marken",
+      "zh": "收集 75 枚邮票",
+      "es": "Reúne 75 sellos",
+      "hi": "75 टिकटें इकट्ठा करें",
+      "ar": "اجمع 75 طابعًا",
+      "bn": "৭৫টি স্ট্যাম্প সংগ্রহ করুন",
+      "pt": "Colete 75 selos",
+      "ja": "切手を75枚集める",
+      "he": "אספו 75 בולים"
+    }
+  },
+  "stAlbum": {
+    "title": {
+      "de": "Volles Album",
+      "zh": "全集邮册",
+      "es": "Álbum completo",
+      "hi": "पूरा एल्बम",
+      "ar": "الألبوم كاملًا",
+      "bn": "পূর্ণ অ্যালবাম",
+      "pt": "Álbum completo",
+      "ja": "アルバム完成",
+      "he": "אלבום מלא"
+    },
+    "hint": {
+      "de": "Sammeln Sie eine Marke für jedes UN-Mitglied",
+      "zh": "为每个联合国会员国收集一枚邮票",
+      "es": "Reúne un sello de cada miembro de la ONU",
+      "hi": "हर संयुक्त राष्ट्र सदस्य के लिए एक टिकट इकट्ठा करें",
+      "ar": "اجمع طابعًا لكل عضو في الأمم المتحدة",
+      "bn": "প্রতিটি জাতিসংঘ সদস্যের জন্য একটি স্ট্যাম্প সংগ্রহ করুন",
+      "pt": "Colete um selo de cada membro da ONU",
+      "ja": "国連加盟国すべてで切手を集める",
+      "he": "אספו בול לכל חבר באו\"ם"
+    }
+  },
+  "msFirst": {
+    "title": {
+      "de": "Nachsitzen",
+      "zh": "再练一遍",
+      "es": "Repaso",
+      "hi": "दोबारा",
+      "ar": "إعادة",
+      "bn": "পুনরায়",
+      "pt": "Repetição",
+      "ja": "やり直し",
+      "he": "חוזרים"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde im Fehlertrainer",
+      "zh": "完成一轮错题训练",
+      "es": "Termina una ronda del entrenador de errores",
+      "hi": "गलती ट्रेनर का राउंड पूरा करें",
+      "ar": "أنهِ جولة في مدرب الأخطاء",
+      "bn": "ভুল ট্রেনারের রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada no treino de erros",
+      "ja": "間違いトレーナーのラウンドを終える",
+      "he": "סיימו סיבוב במאמן הטעויות"
+    }
+  },
+  "msPerfect": {
+    "title": {
+      "de": "Sauberer Nachholer",
+      "zh": "干净复盘",
+      "es": "Repaso limpio",
+      "hi": "साफ़ दोहराव",
+      "ar": "إعادة نظيفة",
+      "bn": "নির্ভুল পুনরাবৃত্তি",
+      "pt": "Repetição limpa",
+      "ja": "やり直し無ミス",
+      "he": "חזרה נקייה"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Fehlertrainer-Runde ohne Fehler",
+      "zh": "完成一轮错题训练且零失误",
+      "es": "Termina una ronda del entrenador sin fallos",
+      "hi": "गलती ट्रेनर राउंड बिना चूक पूरा करें",
+      "ar": "أنهِ جولة مدرب الأخطاء بلا أخطاء",
+      "bn": "ভুল ট্রেনার রাউন্ড ভুল ছাড়া শেষ করুন",
+      "pt": "Termine uma rodada do treino de erros sem falhas",
+      "ja": "間違いトレーナーをミスなしで終える",
+      "he": "סיימו סיבוב מאמן בלי פספוסים"
+    }
+  },
+  "seaCoast": {
+    "title": {
+      "de": "Küste",
+      "zh": "海岸",
+      "es": "Costa",
+      "hi": "तट",
+      "ar": "ساحل",
+      "bn": "উপকূল",
+      "pt": "Costa",
+      "ja": "海岸",
+      "he": "חוף"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde Meere und Ozeane",
+      "zh": "完成一轮海洋与大洋",
+      "es": "Termina una ronda de mares y océanos",
+      "hi": "समुद्र और महासागर राउंड पूरा करें",
+      "ar": "أنهِ جولة البحار والمحيطات",
+      "bn": "সমুদ্র ও মহাসাগর রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de mares e oceanos",
+      "ja": "海と大洋のラウンドを終える",
+      "he": "סיימו סיבוב של ימים ואוקיינוסים"
+    }
+  },
+  "riverBank": {
+    "title": {
+      "de": "Flussufer",
+      "zh": "河岸",
+      "es": "Orilla",
+      "hi": "नदी तट",
+      "ar": "ضفة النهر",
+      "bn": "নদীর তীর",
+      "pt": "Margem",
+      "ja": "川岸",
+      "he": "גדה"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde Flüsse und Seen",
+      "zh": "完成一轮河流与湖泊",
+      "es": "Termina una ronda de ríos y lagos",
+      "hi": "नदियाँ और झीलें राउंड पूरा करें",
+      "ar": "أنهِ جولة الأنهار والبحيرات",
+      "bn": "নদী ও হ্রদ রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de rios e lagos",
+      "ja": "川と湖のラウンドを終える",
+      "he": "סיימו סיבוב של נהרות ואגמים"
+    }
+  },
+  "waterLevel": {
+    "title": {
+      "de": "Wasserkampagne",
+      "zh": "水域战役",
+      "es": "Campaña de agua",
+      "hi": "जल अभियान",
+      "ar": "حملة مائية",
+      "bn": "জল ক্যাম্পেইন",
+      "pt": "Campanha de água",
+      "ja": "水のキャンペーン",
+      "he": "מסע המים"
+    },
+    "hint": {
+      "de": "Schließen Sie 3 Kampagnenlevel zu Meeren oder Flüssen ab",
+      "zh": "通关 3 个海洋或河流战役关卡",
+      "es": "Supera 3 niveles de campaña de mares o ríos",
+      "hi": "समुद्र या नदियों के 3 अभियान स्तर पूरे करें",
+      "ar": "اجتز 3 مستويات حملة للبحار أو الأنهار",
+      "bn": "সমুদ্র বা নদীর ৩টি ক্যাম্পেইন লেভেল শেষ করুন",
+      "pt": "Conclua 3 níveis de campanha de mares ou rios",
+      "ja": "海または川のキャンペーンを3レベルクリア",
+      "he": "עברו 3 שלבי מסע של ימים או נהרות"
+    }
+  },
+  "langFluent": {
+    "title": {
+      "de": "Polyglott",
+      "zh": "通晓多语",
+      "es": "Políglota",
+      "hi": "बहुभाषी",
+      "ar": "متعدد اللغات",
+      "bn": "বহুভাষী",
+      "pt": "Poliglota",
+      "ja": "ポリグロット",
+      "he": "פוליגלוט"
+    },
+    "hint": {
+      "de": "Schwer. 10/10 in Land → Sprache auf Schwer oder Hardcore",
+      "zh": "较难。在「国家 → 语言」的「较难」或「硬核」拿到 10/10",
+      "es": "Difícil. 10/10 en País → lengua en Más difícil o Hardcore",
+      "hi": "कठिन। देश → भाषा में कठिन या हार्डकोर पर 10/10",
+      "ar": "صعب. 10/10 في بلد → لغة على أصعب أو متطرف",
+      "bn": "কঠিন। দেশ → ভাষায় কঠিন বা হার্ডকোরে ১০/১০",
+      "pt": "Difícil. 10/10 em País → língua em Mais difícil ou Hardcore",
+      "ja": "難しい。「国 → 言語」をむずかしいまたはハードコアで10/10",
+      "he": "קשה. 10/10 ב מדינה → שפה בקשה יותר או בהארדקור"
+    }
+  },
+  "rankAtlas": {
+    "title": {
+      "de": "Rangierte Welt",
+      "zh": "数字中的世界",
+      "es": "Mundo clasificado",
+      "hi": "रैंकिंग वाली दुनिया",
+      "ar": "عالم مُرتَّب",
+      "bn": "র‍্যাঙ্কিংয়ের বিশ্ব",
+      "pt": "Mundo ranqueado",
+      "ja": "順位の世界",
+      "he": "עולם מדורג"
+    },
+    "hint": {
+      "de": "Schwer. Beenden Sie 10 verschiedene Ranking-Modi",
+      "zh": "较难。完成 10 种不同的排行模式",
+      "es": "Difícil. Termina 10 modos de ranking distintos",
+      "hi": "कठिन। 10 अलग रैंकिंग मोड पूरे करें",
+      "ar": "صعب. أنهِ 10 أوضاع تصنيف مختلفة",
+      "bn": "কঠিন। ১০টি ভিন্ন র‍্যাঙ্কিং মোড শেষ করুন",
+      "pt": "Difícil. Termine 10 modos de ranking diferentes",
+      "ja": "難しい。ランキングモードを10種類終える",
+      "he": "קשה. סיימו 10 מצבי דירוג שונים"
+    }
+  },
+  "ldThree": {
+    "title": {
+      "de": "Vier Höfe",
+      "zh": "四座宫廷",
+      "es": "Cuatro cortes",
+      "hi": "चार दरबार",
+      "ar": "أربع محاكم",
+      "bn": "চার দরবার",
+      "pt": "Quatro cortes",
+      "ja": "四つの宮廷",
+      "he": "ארבעה חצרות"
+    },
+    "hint": {
+      "de": "Schwer. Beenden Sie eine Führerrunde zu US-Präsidenten, Päpsten, der Rus und englischen Monarchen",
+      "zh": "较难。完成一轮美国总统、教皇、罗斯统治者与英格兰君主",
+      "es": "Difícil. Termina una ronda de líderes de presidentes de EE. UU., papas, Rus e monarcas ingleses",
+      "hi": "कठिन। अमेरिका, पोप, रूस और अंग्रेज़ी राजाओं का नेता राउंड पूरा करें",
+      "ar": "صعب. أنهِ جولة قادة للرؤساء الأمريكيين والباباوات وروس وملوك إنجلترا",
+      "bn": "কঠিন। মার্কিন প্রেসিডেন্ট, পোপ, রুস ও ইংরেজ রাজাদের নেতা রাউন্ড শেষ করুন",
+      "pt": "Difícil. Termine uma rodada de líderes de presidentes dos EUA, papas, Rus e monarcas ingleses",
+      "ja": "難しい。米大統領・教皇・ルーシ・イングランド君主の指導者ラウンドを終える",
+      "he": "קשה. סיימו סיבוב מנהיגים של נשיאי ארה\"ב, אפיפיורים, רוס ומלכי אנגליה"
+    }
+  },
+  "mixIron": {
+    "title": {
+      "de": "Eisenmix",
+      "zh": "铁混",
+      "es": "Mezcla de hierro",
+      "hi": "लोहा मिक्स",
+      "ar": "مزيج حديدي",
+      "bn": "লোহার মিক্স",
+      "pt": "Mistura de ferro",
+      "ja": "アイアンミックス",
+      "he": "מיקס ברזל"
+    },
+    "hint": {
+      "de": "Schwer. 10/10 in einem schweren Mix",
+      "zh": "较难。在较难混合中拿到 10/10",
+      "es": "Difícil. 10/10 en una mezcla difícil",
+      "hi": "कठिन। कठिन मिक्स में 10/10",
+      "ar": "صعب. 10/10 في مزيج أصعب",
+      "bn": "কঠিন। কঠিন মিক্সে ১০/১০",
+      "pt": "Difícil. 10/10 num mix difícil",
+      "ja": "難しい。難しいミックスで10/10",
+      "he": "קשה. 10/10 במיקס קשה"
+    }
+  },
+  "stampsCentury": {
+    "title": {
+      "de": "Hundert Marken",
+      "zh": "百枚邮票",
+      "es": "Cien sellos",
+      "hi": "सौ टिकटें",
+      "ar": "مئة طابع",
+      "bn": "একশ স্ট্যাম্প",
+      "pt": "Cem selos",
+      "ja": "百の切手",
+      "he": "מאה בולים"
+    },
+    "hint": {
+      "de": "Schwer. Sammeln Sie 100 Marken",
+      "zh": "较难。收集 100 枚邮票",
+      "es": "Difícil. Reúne 100 sellos",
+      "hi": "कठिन। 100 टिकटें इकट्ठा करें",
+      "ar": "صعب. اجمع 100 طابع",
+      "bn": "কঠিন। ১০০টি স্ট্যাম্প সংগ্রহ করুন",
+      "pt": "Difícil. Colete 100 selos",
+      "ja": "難しい。切手を100枚集める",
+      "he": "קשה. אספו 100 בולים"
+    }
+  },
+  "geoHardTen": {
+    "title": {
+      "de": "Schwere Welt",
+      "zh": "较难世界",
+      "es": "Mundo difícil",
+      "hi": "कठिन दुनिया",
+      "ar": "عالم أصعب",
+      "bn": "কঠিন বিশ্ব",
+      "pt": "Mundo difícil",
+      "ja": "むずかしい世界",
+      "he": "עולם קשה"
+    },
+    "hint": {
+      "de": "Schwer. 10/10 bei allen Ländern, Schwer",
+      "zh": "较难。在「所有国家」的「较难」拿到 10/10",
+      "es": "Difícil. 10/10 en todos los países, Más difícil",
+      "hi": "कठिन। सभी देशों पर कठिन में 10/10",
+      "ar": "صعب. 10/10 على كل البلدان على أصعب",
+      "bn": "কঠিন। সব দেশে কঠিনে ১০/১০",
+      "pt": "Difícil. 10/10 em todos os países, Mais difícil",
+      "ja": "難しい。全国家・むずかしいで10/10",
+      "he": "קשה. 10/10 בכל המדינות בקשה יותר"
+    }
+  },
+  "campaignTriple": {
+    "title": {
+      "de": "Drei Kampagnen",
+      "zh": "三条战役",
+      "es": "Tres campañas",
+      "hi": "तीन अभियान",
+      "ar": "ثلاث حملات",
+      "bn": "তিন ক্যাম্পেইন",
+      "pt": "Três campanhas",
+      "ja": "三つのキャンペーン",
+      "he": "שלושה מסעות"
+    },
+    "hint": {
+      "de": "Schwer. Schließen Sie 8 Kampagnenlevel in drei verschiedenen Modi ab",
+      "zh": "较难。在三种不同模式各通关 8 个战役关卡",
+      "es": "Difícil. Supera 8 niveles de campaña en tres modos distintos",
+      "hi": "कठिन। तीन अलग मोड में 8-8 अभियान स्तर पूरे करें",
+      "ar": "صعب. اجتز 8 مستويات حملة في ثلاثة أوضاع مختلفة",
+      "bn": "কঠিন। তিন ভিন্ন মোডে ৮টি করে ক্যাম্পেইন লেভেল শেষ করুন",
+      "pt": "Difícil. Conclua 8 níveis de campanha em três modos diferentes",
+      "ja": "難しい。3つのモードでそれぞれキャンペーン8レベルをクリア",
+      "he": "קשה. עברו 8 שלבי מסע בשלושה מצבים שונים"
+    }
+  },
+  "speedTen": {
+    "title": {
+      "de": "Blitz",
+      "zh": "电光",
+      "es": "Destello",
+      "hi": "चमक",
+      "ar": "ومضة",
+      "bn": "ঝলক",
+      "pt": "Relâmpago",
+      "ja": "一瞬",
+      "he": "הבזק"
+    },
+    "hint": {
+      "de": "Schwer. 10/10 auf Schwer oder Hardcore in 45 Sekunden oder weniger",
+      "zh": "较难。在「较难」或「硬核」于 45 秒内拿到 10/10",
+      "es": "Difícil. 10/10 en Más difícil o Hardcore en 45 segundos o menos",
+      "hi": "कठिन। कठिन या हार्डकोर पर 45 सेकंड या उससे तेज़ में 10/10",
+      "ar": "صعب. 10/10 على أصعب أو متطرف في 45 ثانية أو أقل",
+      "bn": "কঠিন। কঠিন বা হার্ডকোরে ৪৫ সেকেন্ড বা তার কম সময়ে ১০/১০",
+      "pt": "Difícil. 10/10 em Mais difícil ou Hardcore em 45 segundos ou menos",
+      "ja": "難しい。むずかしいまたはハードコアで45秒以内に10/10",
+      "he": "קשה. 10/10 בקשה יותר או בהארדקור תוך 45 שניות או פחות"
+    }
+  },
+  "fbIron": {
+    "title": {
+      "de": "Eiserner Schuh",
+      "zh": "铁靴",
+      "es": "Bota de hierro",
+      "hi": "लोहे का बूट",
+      "ar": "الحذاء الحديدي",
+      "bn": "লোহার বুট",
+      "pt": "Chuteira de ferro",
+      "ja": "アイアンブーツ",
+      "he": "נעל ברזל"
+    },
+    "hint": {
+      "de": "Schwer. 10/10 im Fußball auf Schwer oder Hardcore",
+      "zh": "较难。足球「较难」或「硬核」拿到 10/10",
+      "es": "Difícil. 10/10 en fútbol en Más difícil o Hardcore",
+      "hi": "कठिन। फ़ुटबॉल में कठिन या हार्डकोर पर 10/10",
+      "ar": "صعب. 10/10 في كرة القدم على أصعب أو متطرف",
+      "bn": "কঠিন। ফুটবলে কঠিন বা হার্ডকোরে ১০/১০",
+      "pt": "Difícil. 10/10 no futebol em Mais difícil ou Hardcore",
+      "ja": "難しい。サッカーをむずかしいまたはハードコアで10/10",
+      "he": "קשה. 10/10 בכדורגל בקשה יותר או בהארדקור"
+    }
+  },
+  "mythWorld": {
+    "title": {
+      "de": "Hardcore-Erde",
+      "zh": "硬核地球",
+      "es": "Tierra Hardcore",
+      "hi": "हार्डकोर धरती",
+      "ar": "أرض متطرفة",
+      "bn": "হার্ডকোর পৃথিবী",
+      "pt": "Terra Hardcore",
+      "ja": "ハードコア地球",
+      "he": "כדור הארץ הארדקור"
+    },
+    "hint": {
+      "de": "Sehr schwer. 20/20 bei allen Ländern, Hardcore",
+      "zh": "极难。在「所有国家」硬核拿到 20/20",
+      "es": "Muy difícil. 20/20 en todos los países, Hardcore",
+      "hi": "बहुत कठिन। सभी देशों पर हार्डकोर में 20/20",
+      "ar": "صعب جدًا. 20/20 على كل البلدان في متطرف",
+      "bn": "অত্যন্ত কঠিন। সব দেশে হার্ডকোরে ২০/২০",
+      "pt": "Muito difícil. 20/20 em todos os países, Hardcore",
+      "ja": "とても難しい。全国家・ハードコアで20/20",
+      "he": "קשה מאוד. 20/20 בכל המדינות בהארדקור"
+    }
+  },
+  "mythGoldRoad": {
+    "title": {
+      "de": "Goldene Straße",
+      "zh": "黄金之路",
+      "es": "Camino de oro",
+      "hi": "स्वर्ण पथ",
+      "ar": "الطريق الذهبي",
+      "bn": "সোনালি পথ",
+      "pt": "Estrada dourada",
+      "ja": "黄金の道",
+      "he": "דרך הזהב"
+    },
+    "hint": {
+      "de": "Sehr schwer. Schließen Sie alle 20 Kampagnenlevel auf Hardcore in einem Modus ab",
+      "zh": "极难。在同一模式以硬核通关全部 20 个战役关卡",
+      "es": "Muy difícil. Supera los 20 niveles de campaña en Hardcore en un modo",
+      "hi": "बहुत कठिन। एक मोड में हार्डकोर पर सभी 20 अभियान स्तर पूरे करें",
+      "ar": "صعب جدًا. اجتز كل مستويات الحملة العشرين على متطرف في وضع واحد",
+      "bn": "অত্যন্ত কঠিন। এক মোডে হার্ডকোরে সব ২০টি ক্যাম্পেইন লেভেল শেষ করুন",
+      "pt": "Muito difícil. Conclua os 20 níveis de campanha em Hardcore num modo",
+      "ja": "とても難しい。1つのモードでハードコアの全20レベルをクリア",
+      "he": "קשה מאוד. עברו את כל 20 שלבי המסע בהארדקור במצב אחד"
+    }
+  },
+  "mythAtlas": {
+    "title": {
+      "de": "Drei Welten",
+      "zh": "三个世界",
+      "es": "Tres mundos",
+      "hi": "तीन संसार",
+      "ar": "ثلاثة عوالم",
+      "bn": "তিন জগৎ",
+      "pt": "Três mundos",
+      "ja": "三つの世界",
+      "he": "שלושה עולמות"
+    },
+    "hint": {
+      "de": "Sehr schwer. Beenden Sie jeden Geografie-, Fußball- und Führermodus",
+      "zh": "极难。完成地理、足球和领袖的每一种模式",
+      "es": "Muy difícil. Termina todos los modos de geografía, fútbol y líderes",
+      "hi": "बहुत कठिन। भूगोल, फ़ुटबॉल और नेता के हर मोड पूरे करें",
+      "ar": "صعب جدًا. أنهِ كل أوضاع الجغرافيا وكرة القدم والقادة",
+      "bn": "অত্যন্ত কঠিন। ভূগোল, ফুটবল ও নেতাদের প্রতিটি মোড শেষ করুন",
+      "pt": "Muito difícil. Termine todos os modos de geografia, futebol e líderes",
+      "ja": "とても難しい。地理・サッカー・指導者の全モードを終える",
+      "he": "קשה מאוד. סיימו כל מצב בגאוגרפיה, כדורגל ומנהיגים"
+    }
+  },
+  "mythRankings": {
+    "title": {
+      "de": "Jedes Ranking",
+      "zh": "全部排行",
+      "es": "Todos los rankings",
+      "hi": "सभी रैंकिंग",
+      "ar": "كل التصنيفات",
+      "bn": "সব র‍্যাঙ্কিং",
+      "pt": "Todos os rankings",
+      "ja": "全ランキング",
+      "he": "כל הדירוגים"
+    },
+    "hint": {
+      "de": "Sehr schwer. Beenden Sie jeden Ranking-Modus",
+      "zh": "极难。完成每一种排行模式",
+      "es": "Muy difícil. Termina todos los modos de ranking",
+      "hi": "बहुत कठिन। हर रैंकिंग मोड पूरा करें",
+      "ar": "صعب جدًا. أنهِ كل أوضاع التصنيف",
+      "bn": "অত্যন্ত কঠিন। প্রতিটি র‍্যাঙ্কিং মোড শেষ করুন",
+      "pt": "Muito difícil. Termine todos os modos de ranking",
+      "ja": "とても難しい。ランキングの全モードを終える",
+      "he": "קשה מאוד. סיימו כל מצב דירוג"
+    }
+  },
+  "mythRegions": {
+    "title": {
+      "de": "Fünf Kronen",
+      "zh": "五顶王冠",
+      "es": "Cinco coronas",
+      "hi": "पाँच मुकुट",
+      "ar": "خمسة تيجان",
+      "bn": "পাঁচ মুকুট",
+      "pt": "Cinco coroas",
+      "ja": "五つの王冠",
+      "he": "חמישה כתרים"
+    },
+    "hint": {
+      "de": "Sehr schwer. 10/10 auf Schwer oder Hardcore in jeder der fünf Regionen",
+      "zh": "极难。五个地区各在「较难」或「硬核」拿到 10/10",
+      "es": "Muy difícil. 10/10 en Más difícil o Hardcore en cada una de las cinco regiones",
+      "hi": "बहुत कठिन। पाँचों क्षेत्रों में कठिन या हार्डकोर पर 10/10",
+      "ar": "صعب جدًا. 10/10 على أصعب أو متطرف في كل من المناطق الخمس",
+      "bn": "অত্যন্ত কঠিন। পাঁচটি অঞ্চলে কঠিন বা হার্ডকোরে ১০/১০",
+      "pt": "Muito difícil. 10/10 em Mais difícil ou Hardcore em cada uma das cinco regiões",
+      "ja": "とても難しい。5地域それぞれでむずかしいまたはハードコアの10/10",
+      "he": "קשה מאוד. 10/10 בקשה יותר או בהארדקור בכל אחד מחמשת האזורים"
+    }
+  },
+  "mythLevel40": {
+    "title": {
+      "de": "Level vierzig",
+      "zh": "四十级",
+      "es": "Nivel cuarenta",
+      "hi": "चालीसवाँ स्तर",
+      "ar": "المستوى الأربعون",
+      "bn": "চল্লিশতম লেভেল",
+      "pt": "Nível quarenta",
+      "ja": "レベル40",
+      "he": "רמה ארבעים"
+    },
+    "hint": {
+      "de": "Sehr schwer. Erreichen Sie Kontostufe 40",
+      "zh": "极难。账号达到 40 级",
+      "es": "Muy difícil. Alcanza el nivel de cuenta 40",
+      "hi": "बहुत कठिन। खाता स्तर 40 तक पहुँचें",
+      "ar": "صعب جدًا. اوصل إلى مستوى الحساب 40",
+      "bn": "অত্যন্ত কঠিন। অ্যাকাউন্ট লেভেল ৪০-এ পৌঁছান",
+      "pt": "Muito difícil. Chegue ao nível de conta 40",
+      "ja": "とても難しい。アカウントレベル40に達する",
+      "he": "קשה מאוד. הגיעו לרמת חשבון 40"
+    }
+  },
+  "mythHundred": {
+    "title": {
+      "de": "Hundert Ziele",
+      "zh": "百次完赛",
+      "es": "Cien finales",
+      "hi": "सौ समापन",
+      "ar": "مئة إنهاء",
+      "bn": "একশ ফিনিশ",
+      "pt": "Cem chegadas",
+      "ja": "百回完走",
+      "he": "מאה סיומים"
+    },
+    "hint": {
+      "de": "Sehr schwer. Beenden Sie 100 Runden vollständig",
+      "zh": "极难。完整完成 100 轮",
+      "es": "Muy difícil. Termina 100 rondas hasta el final",
+      "hi": "बहुत कठिन। 100 राउंड अंत तक पूरा करें",
+      "ar": "صعب جدًا. أنهِ 100 جولة حتى النهاية",
+      "bn": "অত্যন্ত কঠিন। ১০০টি রাউন্ড শেষ পর্যন্ত শেষ করুন",
+      "pt": "Muito difícil. Termine 100 rodadas até o fim",
+      "ja": "とても難しい。100ラウンドを最後まで終える",
+      "he": "קשה מאוד. סיימו 100 סיבובים עד הסוף"
+    }
+  },
+  "mythLeaders": {
+    "title": {
+      "de": "Ganzes Kabinett",
+      "zh": "整届内阁",
+      "es": "Gabinete completo",
+      "hi": "पूरी कैबिनेट",
+      "ar": "الحكومة كاملة",
+      "bn": "পূর্ণ মন্ত্রিসভা",
+      "pt": "Gabinete completo",
+      "ja": "内閣全部",
+      "he": "כל הקבינט"
+    },
+    "hint": {
+      "de": "Sehr schwer. Beenden Sie jeden Führermodus",
+      "zh": "极难。完成每一种领袖模式",
+      "es": "Muy difícil. Termina todos los modos de líderes",
+      "hi": "बहुत कठिन। हर नेता मोड पूरा करें",
+      "ar": "صعب جدًا. أنهِ كل أوضاع القادة",
+      "bn": "অত্যন্ত কঠিন। প্রতিটি নেতা মোড শেষ করুন",
+      "pt": "Muito difícil. Termine todos os modos de líderes",
+      "ja": "とても難しい。指導者の全モードを終える",
+      "he": "קשה מאוד. סיימו כל מצב מנהיגים"
+    }
+  },
+  "veteranYear": {
+    "title": {
+      "de": "Ein Jahr",
+      "zh": "一年",
+      "es": "Un año",
+      "hi": "एक वर्ष",
+      "ar": "سنة واحدة",
+      "bn": "এক বছর",
+      "pt": "Um ano",
+      "ja": "一年",
+      "he": "שנה אחת"
+    },
+    "hint": {
+      "de": "Sehr schwer. Behalten Sie ein Konto 365 Tage lang",
+      "zh": "极难。账号满 365 天",
+      "es": "Muy difícil. Mantén una cuenta durante 365 días",
+      "hi": "बहुत कठिन। खाता 365 दिन तक रखें",
+      "ar": "صعب جدًا. احتفظ بحساب لمدة 365 يومًا",
+      "bn": "অত্যন্ত কঠিন। অ্যাকাউন্ট ৩৬৫ দিন রাখুন",
+      "pt": "Muito difícil. Mantenha uma conta por 365 dias",
+      "ja": "とても難しい。アカウントを365日保つ",
+      "he": "קשה מאוד. שמרו חשבון 365 ימים"
+    }
+  }
+}

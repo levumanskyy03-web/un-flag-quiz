@@ -1,4 +1,6 @@
 import type { Lang } from '../i18n/lang'
+import ACHIEVEMENT_I18N from './i18n/achievements.json'
+import { pickRow } from '../i18n/text11'
 
 export const ACHIEVEMENT_TIERS = [1, 2, 3, 4, 5, 6] as const
 export type AchievementTier = (typeof ACHIEVEMENT_TIERS)[number]
@@ -750,7 +752,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
 
 export function achievementCopy(id: AchievementId, lang: Lang) {
   const item = ACHIEVEMENTS.find((entry) => entry.id === id) ?? ACHIEVEMENTS[0]
-  return lang === 'ru'
-    ? { title: item.ru, hint: item.ruHint }
-    : { title: item.en, hint: item.enHint }
+  const extra = ACHIEVEMENT_I18N[item.id as keyof typeof ACHIEVEMENT_I18N]
+  return {
+    title: lang === 'ru' ? item.ru : lang === 'en' ? item.en : pickRow(extra?.title, lang, item.en),
+    hint: lang === 'ru' ? item.ruHint : lang === 'en' ? item.enHint : pickRow(extra?.hint, lang, item.enHint),
+  }
 }

@@ -12,6 +12,7 @@ import {
   isPlayerId,
   sanitizeName,
 } from './leaderboard'
+import { countryByIso } from './countryCatalog'
 import { isNameAllowed } from './nameFilter'
 import { isNameCooldown } from './nameRules'
 import { accountLevel } from './xp'
@@ -26,6 +27,7 @@ export interface PublicAccount {
   id: string
   name: string
   avatarId?: string
+  countryIso?: string
   nameChangedAt?: number
   createdAt?: number
 }
@@ -34,6 +36,7 @@ export interface PublicPlayerProfile {
   id: string
   name: string
   avatarId?: string
+  countryIso?: string
   createdAt: number
   xp: number
   level: number
@@ -84,11 +87,19 @@ export function publicAccountName(
   return { ok: true, name }
 }
 
+export function parseCountryIso(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  return countryByIso(value)?.iso ?? null
+}
+
 export async function registerAccount(
   name: string,
   password: string,
   avatarId?: string,
-): Promise<{ ok: true; user: PublicAccount; token: string } | { ok: false; error: 'taken' | 'offline' }> {
+  countryIso?: string,
+): Promise<{ ok: true; user: PublicAccount; token: string } | { ok: false; error: 'taken' | 'offline' | 'invalid' }> {
+  const country = parseCountryIso(countryIso)
+  if (!country) return { ok: false, error: 'invalid' }
   const store = await loadStore()
   if (store === null) return { ok: false, error: 'offline' }
   const key = normalizeName(name)
@@ -97,6 +108,7 @@ export async function registerAccount(
     id: crypto.randomUUID(),
     name,
     avatarId,
+    countryIso: country,
     hash: await hashPassword(password),
     createdAt: Date.now(),
   }
@@ -124,7 +136,7 @@ export async function loginAccount(name: string, password: string): Promise<
 
 export async function updateAccount(
   token: string | undefined,
-  patch: { name?: string; avatarId?: string },
+  patch: { name?: string; avatarId?: string; countryIso?: string },
 ): Promise<
   { ok: true; user: PublicAccount } | { ok: false; error: 'auth' | 'taken' | 'offline' | 'invalid' | 'cooldown' }
 > {
@@ -137,6 +149,7 @@ export async function updateAccount(
   if (!entry) return { ok: false, error: 'auth' }
   const [currentKey, user] = entry
   if (patch.avatarId) user.avatarId = patch.avatarId
+  if (patch.countryIso) user.countryIso = patch.countryIso
   if (patch.name && patch.name !== user.name) {
     const nextKey = normalizeName(patch.name)
     if (nextKey !== currentKey && store.users[nextKey]) return { ok: false, error: 'taken' }
@@ -150,6 +163,30 @@ export async function updateAccount(
   }
   await saveStore(store)
   return { ok: true, user: toPublic(user) }
+}
+
+export async function deleteAccount(
+  token: string | undefined,
+  password: string,
+): Promise<{ ok: true } | { ok: false; error: 'auth' | 'offline' | 'invalid' }> {
+  if (!token) return { ok: false, error: 'auth' }
+  const store = await loadStore()
+  if (store === null) return { ok: false, error: 'offline' }
+  const session = store.sessions[token]
+  if (!session || session.exp < Date.now() || !isPlayerId(session.userId)) return { ok: false, error: 'auth' }
+  const entry = Object.entries(store.users).find(([, item]) => item.id === session.userId)
+  if (!entry) return { ok: false, error: 'auth' }
+  const [key, user] = entry
+  if (!(await verifyPassword(password, user.hash))) return { ok: false, error: 'auth' }
+  delete store.users[key]
+  for (const [sessionToken, item] of Object.entries(store.sessions)) {
+    if (item.userId === user.id) delete store.sessions[sessionToken]
+  }
+  await saveStore(pruneSessions(store))
+  const { purgeDuelRatings } = await import('./duelRatingStore')
+  const { purgePlayerRatings } = await import('./leaderboardStore')
+  await Promise.allSettled([purgePlayerRatings(user.id), purgeDuelRatings(user.id)])
+  return { ok: true }
 }
 
 export async function changePassword(
@@ -194,6 +231,7 @@ function toPublic(user: AccountRecord): PublicAccount {
     id: user.id,
     name: user.name,
     avatarId: user.avatarId,
+    countryIso: user.countryIso,
     nameChangedAt: user.nameChangedAt,
     createdAt: user.createdAt,
   }
@@ -212,6 +250,7 @@ export async function publicProfileById(id: string): Promise<PublicPlayerProfile
     id: user.id,
     name: user.name,
     avatarId: user.avatarId,
+    countryIso: user.countryIso,
     createdAt: user.createdAt,
     xp,
     level: storedLevel >= 1 ? storedLevel : accountLevel(xp),
@@ -266,6 +305,23 @@ export async function dropSession(token: string | undefined): Promise<void> {
   if (store === null || !store.sessions[token]) return
   delete store.sessions[token]
   await saveStore(store)
+}
+
+export async function dropAllSessions(
+  token: string | undefined,
+): Promise<{ ok: true } | { ok: false; error: 'auth' | 'offline' }> {
+  if (!token) return { ok: false, error: 'auth' }
+  const store = await loadStore()
+  if (store === null) return { ok: false, error: 'offline' }
+  const session = store.sessions[token]
+  if (!session || session.exp < Date.now() || !isPlayerId(session.userId)) {
+    return { ok: false, error: 'auth' }
+  }
+  for (const [sessionToken, item] of Object.entries(store.sessions)) {
+    if (item.userId === session.userId) delete store.sessions[sessionToken]
+  }
+  await saveStore(pruneSessions(store))
+  return { ok: true }
 }
 
 function cookieOptions(maxAge: number, expires?: Date) {

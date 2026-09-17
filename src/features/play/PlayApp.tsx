@@ -8,10 +8,13 @@ import { type QuizSettings } from "@/components/HomeScreen";
 import { type HubTab } from "@/components/HubNav";
 import { WorldPickScreen, type World } from "@/components/WorldPickScreen";
 import { footballLevelPlayerIds, footballLevelYears } from "@/data/footballLevels";
+import { portraitFileForTerm } from "@/data/leaderPortraitFiles";
 import { playerById } from "@/data/footballPlayers";
 import { termById } from "@/data/leaders";
 import { FINAL_LEVEL, isFinalLevel } from "@/data/levels";
 import { STRINGS, isLang, langDir, localeTag, type Lang } from "@/i18n/strings";
+import { SITE_LANG_KEY } from "@/i18n/lang";
+import { persistLang } from "@/i18n/persistLang";
 import { clearBests, clearHistory, loadBests, loadHistory, saveRound, type RoundRecord } from "@/lib/history";
 import { loadLevelClears, saveLevelClear, findLevelClear, isLevelUnlocked, type LevelClear } from "@/lib/levelProgress";
 import { addPlayMs, bumpFootballLifetime, bumpLifetime, bumpRecordBreaks, countLifetimeSeed, seedLifetimeIfEmpty } from "@/lib/lifetime";
@@ -71,8 +74,6 @@ import { FootballPlay } from "./FootballPlay";
 import { GeoPlay } from "./GeoPlay";
 import { LeadersPlay } from "./LeadersPlay";
 
-const LANG_KEY = "un-flag-quiz-lang";
-
 type Screen = "home" | "levels" | "level20" | "learn" | "map" | "quiz" | "results" | "mistakes" | "album";
 type ResultTone = "success" | "fail" | "gold";
 
@@ -104,7 +105,7 @@ function subscribeLang(onChange: () => void) {
 }
 
 function getStoredLang(): Lang {
-  const stored = localStorage.getItem(LANG_KEY);
+  const stored = localStorage.getItem(SITE_LANG_KEY);
   return isLang(stored) ? stored : "ru";
 }
 
@@ -194,6 +195,7 @@ export default function PlayApp() {
   const currentPath: PlayPath = quizSettings.path;
 
   useEffect(() => {
+    persistLang(quizSettings.lang);
     document.documentElement.lang = localeTag(quizSettings.lang);
     document.documentElement.dir = langDir(quizSettings.lang);
     document.title = STRINGS[quizSettings.lang].title;
@@ -282,13 +284,15 @@ export default function PlayApp() {
   }, [screen]);
 
   useEffect(() => {
-    const titles: string[] = [];
+    const titles: Array<{ title: string; file?: string }> = [];
     const add = (question: Question | null | undefined) => {
       if (!question) return;
       const mode = question.mode ?? quizSettings.mode;
       if (!isLeaderPhotoMode(mode) && !isPlayerPhotoMode(mode)) return;
-      const wiki = termById(question.country.iso)?.wiki ?? playerById(question.country.iso)?.wiki;
-      if (wiki) titles.push(wiki);
+      const player = playerById(question.country.iso);
+      const term = termById(question.country.iso);
+      const wiki = term?.wiki ?? player?.wiki;
+      if (wiki) titles.push({ title: wiki, file: player?.wikiFile ?? (term ? portraitFileForTerm(term.id) : undefined) });
     };
     for (const question of questions) add(question);
     if (titles.length > 0) prefetchWikiPortraits(titles);
@@ -537,7 +541,7 @@ export default function PlayApp() {
 
   function handleSettingsChange(next: QuizSettings) {
     if (next.lang !== quizSettings.lang) {
-      localStorage.setItem(LANG_KEY, next.lang);
+      persistLang(next.lang);
     }
     setLang(next.lang);
     setSettings({
@@ -1191,6 +1195,7 @@ export default function PlayApp() {
         <nav className="legal-links">
           <a href="/about">{STRINGS[quizSettings.lang].legalAbout}</a>
           <a href="/privacy">{STRINGS[quizSettings.lang].legalPrivacy}</a>
+          <a href="/terms">{STRINGS[quizSettings.lang].legalTerms}</a>
           <a href="/contacts">{STRINGS[quizSettings.lang].legalContacts}</a>
         </nav>
         <p className="credit">{STRINGS[quizSettings.lang].credit}</p>

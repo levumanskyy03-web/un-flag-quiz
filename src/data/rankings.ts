@@ -1,5 +1,7 @@
-import { localeTag, type Lang } from '../i18n/lang'
+import { isLang, localeTag, type Lang } from '../i18n/lang'
+import { pickRow } from '../i18n/text11'
 import { COUNTRIES, type Country } from './countries'
+import RANKING_META_I18N from './i18n/rankingMeta.json'
 import { formatPopulation } from './passports'
 import { RANKING_ORDERS } from './rankingOrders'
 import { RANKING_VALUES } from './rankingValues'
@@ -154,7 +156,7 @@ const META: Record<RankingMode, RankingMeta> = {
       ru: 'Демографические данные приложения (оценки населения в паспорте)',
       en: 'In-app passport population estimates',
     },
-    url: 'https://un-flag-quiz.vercel.app/countries',
+    url: 'https://www.geoguiz.online/countries',
     about: {
       ru: 'Численность населения — сколько людей живёт в стране. Здесь те же оценки, что в паспорте страны.',
       en: 'Population is how many people live in the country. These are the same estimates as in the country passport.',
@@ -411,19 +413,28 @@ export function formatRankingValue(mode: RankingMode, iso: string, lang: Lang): 
 
 export function rankingCite(mode: RankingMode, lang: string): RankingCite {
   const meta = META[mode]
-  const ru = lang === 'ru'
+  const extra = RANKING_META_I18N[mode]
+  const key = isLang(lang) ? lang : 'en'
+  const extraNote = extra && 'note' in extra ? extra.note : undefined
+  const asOf = pickRow({ ru: meta.asOf.ru, en: meta.asOf.en, ...extra?.asOf }, key, meta.asOf.en)
+  const source = pickRow({ ru: meta.source.ru, en: meta.source.en, ...extra?.source }, key, meta.source.en)
+  const note = meta.note
+    ? pickRow({ ru: meta.note.ru, en: meta.note.en, ...extraNote }, key, meta.note.en)
+    : undefined
   return {
-    asOf: ru ? meta.asOf.ru : meta.asOf.en,
-    source: ru ? meta.source.ru : meta.source.en,
+    asOf,
+    source,
     url: meta.url,
     count: rankingCount(mode),
-    note: meta.note ? (ru ? meta.note.ru : meta.note.en) : undefined,
+    note,
   }
 }
 
 export function rankingAbout(mode: RankingMode, lang: string): string {
   const about = META[mode].about
-  return lang === 'ru' ? about.ru : about.en
+  const extra = RANKING_META_I18N[mode]?.about
+  const key = isLang(lang) ? lang : 'en'
+  return pickRow({ ru: about.ru, en: about.en, ...extra }, key, about.en)
 }
 
 export function rankingPlacesFor(iso: string): Array<{ mode: RankingMode; place: number }> {

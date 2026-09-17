@@ -268,7 +268,7 @@ export function QuizScreen({
             <div className="leader-prompt">
               <p className="neighbors-prompt-label">{footballAsk ?? t.leaderPhotoPrompt}</p>
               <LeaderPortrait
-                name={question.promptEntity ? countryName(question.promptEntity, lang) : manager ? (lang === 'ru' ? manager.ru : manager.en) : correctName}
+                name={question.promptEntity ? countryName(question.promptEntity, lang) : countryName(question.country, lang)}
                 wiki={player?.wiki ?? manager?.wiki ?? ''}
                 file={player?.wikiFile ?? (leaderTerm ? portraitFileForTerm(leaderTerm.id) : undefined)}
                 flagIso={player?.nation}

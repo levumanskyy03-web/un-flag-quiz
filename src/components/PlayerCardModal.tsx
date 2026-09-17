@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { footballClub } from '../data/footballClubs'
-import { playerClubName, playerCurrentClubId, type FootballPlayer } from '../data/footballPlayers'
+import { playerClubName, playerCurrentClubId, playerDisplayName, type FootballPlayer } from '../data/footballPlayers'
 import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { countryName } from '../lib/quiz'
@@ -18,13 +18,15 @@ function unique(ids: string[]): string[] {
 
 export function PlayerCardModal({ player, lang, onClose }: PlayerCardModalProps) {
   const t = STRINGS[lang]
-  const name = lang === 'ru' ? player.ru : player.en
+  const name = playerDisplayName(player, lang)
   const lived = player.died ? `${player.born}–${player.died}` : `${player.born}–${t.present}`
   const nation = countryName(footballTeamCountry(player.nation), lang)
   const bornNation = countryName(footballTeamCountry(player.bornNation), lang)
   const currentClubId = playerCurrentClubId(player)
-  const clubs = currentClubId ? playerClubName(currentClubId, lang === 'ru' ? 'ru' : 'en') : ''
-  const clubCountries = unique((currentClubId ? [currentClubId] : []).map((id) => footballClub(id)?.nation ?? '').filter(Boolean)).map((iso) =>
+  const pastClubIds = unique(player.clubs.filter((id) => id !== currentClubId))
+  const pastClubs = pastClubIds.map((id) => playerClubName(id, lang)).filter(Boolean)
+  const currentClub = currentClubId ? playerClubName(currentClubId, lang) : ''
+  const clubCountries = unique(player.clubs.map((id) => footballClub(id)?.nation ?? '').filter(Boolean)).map((iso) =>
     countryName(footballTeamCountry(iso), lang),
   )
   const trophies: string[] = []
@@ -130,12 +132,21 @@ export function PlayerCardModal({ player, lang, onClose }: PlayerCardModalProps)
               </dd>
             </div>
           ) : null}
-          {clubs ? (
+          {currentClub || pastClubs.length > 0 ? (
             <div className="is-wide">
               <dt>{t.playerCardClubs}</dt>
               <dd>
-                {clubs}
-                <p className="setting-hint">{t.playerClubNote}</p>
+                <div className="player-card-clubs">
+                  {pastClubs.length > 0 ? <p className="player-card-clubs-past">{pastClubs.join(' · ')}</p> : null}
+                  {currentClub ? (
+                    <p className="player-card-club-now">
+                      <span>{currentClub}</span>
+                      <span className="player-card-club-badge">
+                        {player.era === 'legend' ? t.playerClubBadgeLast : t.playerClubBadgeNow}
+                      </span>
+                    </p>
+                  ) : null}
+                </div>
               </dd>
             </div>
           ) : null}

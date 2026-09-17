@@ -9,11 +9,11 @@ export interface PortraitRequest {
 
 const cache = new Map<string, WikiPortrait | null>()
 const inflight = new Map<string, Promise<WikiPortrait | null>>()
-const STORE_KEY = 'unfq-wiki-portraits-v15'
-const PORTRAIT_API_VER = '15'
+const STORE_KEY = 'unfq-wiki-portraits-v16'
+const PORTRAIT_API_VER = '16'
 const STORE_MS = 14 * 24 * 60 * 60 * 1000
 const NULL_STORE_MS = 30 * 60 * 1000
-const PREFETCH_WORKERS = 4
+const PREFETCH_WORKERS = 6
 const STORE_MAX = 480
 let activeFetches = 0
 const fetchWaiters: Array<() => void> = []
@@ -118,11 +118,11 @@ export async function fetchWikiPortrait(title: string, file?: string): Promise<W
       const params = new URLSearchParams({ title: title.trim().replace(/_/g, ' '), v: PORTRAIT_API_VER })
       if (file?.trim()) params.set('file', file.trim().replace(/_/g, ' '))
       let response: Response | null = null
-      for (let attempt = 0; attempt < 4; attempt += 1) {
+      for (let attempt = 0; attempt < 2; attempt += 1) {
         response = await fetch(`/api/wiki-portrait?${params}`)
         if (response.ok || (response.status !== 503 && response.status !== 429 && response.status !== 502)) break
         await new Promise((resolve) => {
-          setTimeout(resolve, 700 * (attempt + 1))
+          setTimeout(resolve, 500 * (attempt + 1))
         })
       }
       if (!response?.ok) return null

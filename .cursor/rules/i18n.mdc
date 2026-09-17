@@ -1,0 +1,19 @@
+---
+description: Every UI string and visible dataset must ship in all 11 site languages
+alwaysApply: true
+---
+
+# 11 languages
+
+Site langs (`src/i18n/lang.ts`): `ru`, `en`, `de`, `zh`, `es`, `hi`, `ar`, `bn`, `pt`, `ja`, `he`.
+
+When you add or change user-visible text, fill **all 11** in the same change. Do not ship Russian-only or Russian+English copy.
+
+- Quiz chrome: add the key to `Strings` in `src/i18n/strings.ts`, then `ru` + `en` there and the other nine in `src/i18n/extra.ts`.
+- Mode names like «страна → столица» always use `→` in translations. RTL langs (`ar`, `he`, and later entries in `RTL_LANGS`) get `←` automatically via `rtlModeArrows` — do not hand-write the flipped glyph.
+- Catalog / legal / passport page prose: `src/i18n/pages.ts` (`PAGE_COPY`).
+- Country names: `countryName(country, lang)` (Intl), never `nameRu` in UI.
+- Language names: `languageName(id, lang)`.
+- Passport capital / currency / fact: `passportCapital` / `passportCurrency` / `passportFact` plus `src/data/passportI18n.json` for non-en/ru. If you add a country passport, add its i18n row (and translate the fact) in that JSON.
+
+Hardcoded Russian (or English-only) in components and `src/app/**` pages is a bug. Public pages read the same `un-flag-quiz-lang` as the quiz.

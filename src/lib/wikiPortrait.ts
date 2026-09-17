@@ -1,9 +1,10 @@
+import { SITE_UA } from './site'
+import { allFootballClubs } from '../data/footballClubs'
 import { footballPlayerWikis } from '../data/footballPlayers'
 import { ALL_LEADER_TERMS } from '../data/leaders'
 import { WIKI_PORTRAIT_FILES, isAllowedPortraitFile } from '../data/leaderPortraitFiles'
 
-export const WIKI_UA =
-  'PassportCountry/1.0 (https://un-flag-quiz.vercel.app; levumanskyy03@gmail.com)'
+export const WIKI_UA = SITE_UA
 
 export type FreeLicenseKind = 'pd' | 'cc-by' | 'cc-by-sa'
 
@@ -16,11 +17,12 @@ export interface WikiPortrait {
 }
 
 const TITLE_MAX = 180
-const THUMB_WIDTH = 480
+const THUMB_WIDTH = 500
 const ALLOWED_TITLES = new Set(
   [
     ...ALL_LEADER_TERMS.map((term) => term.wiki),
     ...footballPlayerWikis(),
+    ...allFootballClubs().map((club) => club.wiki ?? club.nameEn),
   ]
     .map((title) => normalizeWikiTitle(title))
     .filter((title): title is string => Boolean(title)),
@@ -211,9 +213,10 @@ function pickCommonsUrl(urls: Array<string | undefined>): string | null {
   return best
 }
 
-const WIKI_WORKERS = 4
+const WIKI_WORKERS = 8
 let wikiActive = 0
 const wikiWaiters: Array<() => void> = []
+const wikiMemo = new Map<string, Promise<unknown>>()
 
 async function acquireWikiSlot() {
   if (wikiActive >= WIKI_WORKERS) {
@@ -230,15 +233,29 @@ function releaseWikiSlot() {
 }
 
 async function wikiJson(url: string): Promise<unknown> {
+  const hit = wikiMemo.get(url)
+  if (hit) return hit
+  const request = wikiJsonUncached(url)
+  wikiMemo.set(url, request)
+  try {
+    return await request
+  } catch (error) {
+    wikiMemo.delete(url)
+    throw error
+  }
+}
+
+async function wikiJsonUncached(url: string): Promise<unknown> {
   let lastError: Error | null = null
-  for (let attempt = 0; attempt < 3; attempt += 1) {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
     await acquireWikiSlot()
     try {
       const response = await fetch(url, {
         headers: { 'User-Agent': WIKI_UA, Accept: 'application/json' },
-        cache: 'no-store',
-        signal: AbortSignal.timeout(12_000),
-      })
+        cache: 'force-cache',
+        next: { revalidate: 604800 },
+        signal: AbortSignal.timeout(8_000),
+      } as RequestInit)
       if (response.status === 429 || response.status === 503) {
         lastError = new Error('wiki')
       } else {
@@ -250,13 +267,10 @@ async function wikiJson(url: string): Promise<unknown> {
     } catch (error) {
       lastError = error instanceof Error ? error : new Error('wiki')
     } finally {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 80)
-      })
       releaseWikiSlot()
     }
     await new Promise((resolve) => {
-      setTimeout(resolve, 400 * (attempt + 1))
+      setTimeout(resolve, 500 * (attempt + 1))
     })
   }
   throw lastError ?? new Error('wiki')
@@ -298,6 +312,7 @@ async function readFileInfos(fileName: string): Promise<NonNullable<MediaWikiPag
       if (!info) continue
       infos.push(info)
       if (pickCommonsUrl([info.thumburl, info.url]) && hasLicenseMeta(info)) return infos
+      if (origin.includes('commons') && pickCommonsUrl([info.thumburl, info.url])) return infos
     } catch {
       /* try the other origin */
     }
@@ -445,6 +460,11 @@ export async function lookupWikiPortrait(title: string, preferredFile?: string |
   const preferred =
     hinted && (isAllowedPortraitFile(hinted) || isSaneCommonsFile(hinted)) ? hinted : WIKI_PORTRAIT_FILES[normalized]
 
+  if (preferred) {
+    const portrait = await portraitFromFile(preferred)
+    if (portrait) return portrait
+  }
+
   const params = new URLSearchParams({
     action: 'query',
     format: 'json',
@@ -458,7 +478,7 @@ export async function lookupWikiPortrait(title: string, preferredFile?: string |
   })
   const article = firstPage(await wikiJson(`https://en.wikipedia.org/w/api.php?${params}`))
   const pageFile = article?.pageimage?.replace(/ /g, '_')
-  const files = uniqueFiles([preferred, article?.pageimage])
+  const files = uniqueFiles([article?.pageimage])
   for (const fileName of files) {
     const fallback = fileName === pageFile ? article?.thumbnail?.source : undefined
     const portrait = await portraitFromFile(fileName, fallback)
@@ -467,9 +487,10 @@ export async function lookupWikiPortrait(title: string, preferredFile?: string |
   const qid = article?.pageprops?.wikibase_item
   const extra = qid ? await wikidataImage(qid) : null
   for (const fileName of uniqueFiles([extra])) {
-    if (files.includes(fileName)) continue
+    if (files.includes(fileName) || (preferred && fileName === preferred.replace(/ /g, '_'))) continue
     const portrait = await portraitFromFile(fileName)
     if (portrait) return portrait
   }
+  if (preferred) return null
   return portraitFromCommonsSearch(normalized)
 }

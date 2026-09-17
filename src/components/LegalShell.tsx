@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { STRINGS } from "../i18n/strings";
 import { LanguageToggle } from "./LanguageToggle";
+import { SfxButton } from "./SfxButton";
 import { WorldsBackLink } from "./WorldsBack";
 import { SiteLangProvider, useSiteLang } from "../i18n/siteLang";
 
@@ -27,6 +28,7 @@ function LegalShellInner({ title, children, catalogBack = false }: LegalShellPro
           ) : null}
         </div>
         <div className="legal-nav-links">
+          <SfxButton lang={lang} />
           <LanguageToggle lang={lang} onChange={setLang} />
           <a href="/countries">{t.legalCountries}</a>
           <a href="/languages">{t.legalLanguages}</a>
@@ -41,6 +43,7 @@ function LegalShellInner({ title, children, catalogBack = false }: LegalShellPro
         <nav className="legal-links">
           <a href="/about">{t.legalAbout}</a>
           <a href="/privacy">{t.legalPrivacy}</a>
+          <a href="/terms">{t.legalTerms}</a>
           <a href="/contacts">{t.legalContacts}</a>
         </nav>
         <p className="credit">{t.credit}</p>

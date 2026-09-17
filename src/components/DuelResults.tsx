@@ -1,6 +1,8 @@
 import { STRINGS, type Lang } from '../i18n/strings'
 import { formatClock } from '../lib/quiz'
+import { SITE_ORIGIN } from '../lib/site'
 import type { DuelView } from '../lib/duelTypes'
+import { ShareButton } from './ShareButton'
 import { WorldsBack } from './WorldsBack'
 
 interface DuelResultsProps {
@@ -46,6 +48,12 @@ export function DuelResults({ lang, room, roundMs, onRematch, onMenu, onWorlds }
       <button type="button" className="btn-primary" onClick={onRematch} disabled={room.youRematch}>
         {t.duelRematch}
       </button>
+      <ShareButton
+        lang={lang}
+        className="btn-secondary"
+        url={SITE_ORIGIN}
+        text={t.shareResult(t.duelScore(room.youScore, room.opponentScore ?? 0, room.total), SITE_ORIGIN)}
+      />
       <button type="button" className="btn-ghost" onClick={onWorlds}>
         {t.worldsBack}
       </button>

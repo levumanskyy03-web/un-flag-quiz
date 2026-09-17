@@ -1,0 +1,17 @@
+---
+description: Where play worlds and quiz engine live after the split
+alwaysApply: true
+---
+
+# Play structure
+
+The quiz is not a single SPA file. Do not add modes or screens to `src/App.tsx`.
+
+- Worlds have URL entries: `/geo`, `/football`, `/leaders`. Picker is `/`. `/codes` redirects into `/geo`.
+- World UI: `src/features/play/GeoPlay.tsx`, `FootballPlay.tsx`, `LeadersPlay.tsx`.
+- Shared session/orchestration: `src/features/play/PlayApp.tsx` and `session.ts`.
+- Country codes (TLD / calling / car) are geography modes, not a separate world. Quiz helpers: `src/lib/quiz/codes.ts`.
+- 1v1 duel lives on `/duel/[code]` (`src/features/duel/`). Create/join from geo and football homes navigate there. Do not put duel polling or room state back into PlayApp.
+- Quiz engine by world: `src/lib/quiz/geo.ts`, `football.ts`, `leaders.ts`. Shared types/helpers: `src/lib/quiz/core.ts`. Barrel: `src/lib/quiz/index.ts`.
+
+When changing a mode, edit that world's quiz module and play file first. Do not read `src/data/facts/all.json` or `src/data/languageData.ts`. For UI strings, grep `src/i18n/strings.ts` / `src/i18n/extra.ts` for a key instead of loading the whole file.

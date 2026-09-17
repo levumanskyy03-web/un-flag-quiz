@@ -1,4 +1,6 @@
 import type { Lang } from '../i18n/lang'
+import AVATAR_I18N from './i18n/avatars.json'
+import { named } from './i18n/named'
 
 export const AVATAR_IDS = [
   'globe',
@@ -78,5 +80,5 @@ export function avatarInfo(id: string | undefined): AvatarInfo {
 
 export function avatarLabel(id: string | undefined, lang: Lang): string {
   const info = avatarInfo(id)
-  return lang === 'ru' ? info.ru : info.en
+  return named(AVATAR_I18N, info.id, lang, info.ru, info.en)
 }

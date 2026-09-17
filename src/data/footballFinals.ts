@@ -1,3 +1,7 @@
+import { type Lang } from '../i18n/lang'
+import { pickRow } from '../i18n/text11'
+import CITIES from './i18n/cities.json'
+
 export interface FootballFinal {
   year: number
   score: string
@@ -76,6 +80,8 @@ export function formatFinalScore(
   return final.score
 }
 
-export function finalCity(final: FootballFinal, lang: string): string {
-  return lang === 'ru' ? final.cityRu : final.cityEn
+export function finalCity(final: FootballFinal, lang: Lang): string {
+  if (lang === 'ru') return final.cityRu
+  if (lang === 'en') return final.cityEn
+  return pickRow(CITIES[final.cityEn as keyof typeof CITIES], lang, final.cityEn)
 }

@@ -24,7 +24,7 @@ import { isNameAllowed } from '../lib/nameFilter'
 import { isNameCooldown } from '../lib/nameRules'
 import { statsByMode } from '../lib/modeStats'
 import { loadProfile, saveProfile } from '../lib/profile'
-import { isSfxMuted, playSfx, setSfxMuted, subscribeSfxMute } from '../lib/sfx'
+import { isMusicMuted, isSfxMuted, playSfx, setAllAudioMuted, setMusicMuted, setSfxMuted, subscribeAudio } from '../lib/sfx'
 import {
   footballHasDifficulty,
   formatClock,
@@ -37,8 +37,12 @@ import { countLifetimeSeed, loadLifetime } from '../lib/lifetime'
 import { AchievementGallery } from './AchievementGallery'
 import { AvatarMark } from './AvatarMark'
 import { AvatarPicker } from './AvatarPicker'
+import { CountryMark, CountryPicker } from './CountryPicker'
 import { LanguageToggle } from './LanguageToggle'
 import { PasswordModal } from './PasswordModal'
+import { DeleteAccountModal } from './DeleteAccountModal'
+import { downloadPlayerExport } from '../lib/dataExport'
+import { trackFunnel } from '../lib/funnel'
 
 const REPORT_EMAIL = 'levumanskyy03@gmail.com'
 
@@ -84,14 +88,25 @@ export function SettingsModal({
   const [saved, setSaved] = useState(false)
   const [passwordSaved, setPasswordSaved] = useState(false)
   const [passwordOpen, setPasswordOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [exported, setExported] = useState(false)
   const [nameFree, setNameFree] = useState<boolean | null>(null)
   const [reportTitle, setReportTitle] = useState('')
   const [reportBody, setReportBody] = useState('')
   const [reportOpened, setReportOpened] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [countryIso, setCountryIso] = useState('')
   const [sfxMuted, setSfxMutedState] = useState(isSfxMuted)
+  const [musicMuted, setMusicMutedState] = useState(isMusicMuted)
 
-  useEffect(() => subscribeSfxMute(setSfxMutedState), [])
+  useEffect(
+    () =>
+      subscribeAudio(() => {
+        setSfxMutedState(isSfxMuted())
+        setMusicMutedState(isMusicMuted())
+      }),
+    [],
+  )
   const authBlockRef = useRef<HTMLDivElement>(null)
   const stats = useMemo(() => statsByMode(history, bests, levelClears), [history, bests, levelClears])
   const xp = loadLifetime(countLifetimeSeed(history, levelClears)).xp
@@ -108,6 +123,7 @@ export function SettingsModal({
       setAccount(user)
       if (user) {
         setName(user.name)
+        setCountryIso(user.countryIso ?? '')
         const local = loadProfile()
         setProfile(local)
         void submitRatings(
@@ -273,10 +289,16 @@ export function SettingsModal({
       setError('mismatch')
       return
     }
+    if (authTab === 'register' && !countryIso) {
+      setError('invalid')
+      return
+    }
     setBusy(true)
     setError(null)
     const result =
-      authTab === 'register' ? await registerAccount(trimmed, password) : await loginAccount(trimmed, password)
+      authTab === 'register'
+        ? await registerAccount(trimmed, password, countryIso)
+        : await loginAccount(trimmed, password)
     setBusy(false)
     if (!result.ok) {
       setError(result.error)
@@ -288,16 +310,21 @@ export function SettingsModal({
     setProfile(loadProfile())
     setPassword('')
     setRepeat('')
+    if (authTab === 'register') trackFunnel('register')
     onAuth?.(result.user)
   }
 
-  async function signOut() {
+  async function signOut(everywhere = false) {
     if (busy) return
-    const previousName = account?.name ?? name.trim()
     setBusy(true)
     setError(null)
-    await logoutAccount()
+    await logoutAccount(everywhere)
     setBusy(false)
+    resetSignedOut()
+  }
+
+  function resetSignedOut() {
+    const previousName = account?.name ?? name.trim()
     const local = loadProfile()
     setAccount(null)
     setAuthTab('login')
@@ -307,6 +334,7 @@ export function SettingsModal({
     setPassword('')
     setRepeat('')
     setPasswordOpen(false)
+    setDeleteOpen(false)
     setPasswordSaved(false)
     setSaved(false)
     setNameFree(null)
@@ -386,6 +414,7 @@ export function SettingsModal({
                     {t.accountRegistered(formatRegisteredAt(account.createdAt, lang))}
                   </p>
                 ) : null}
+                <CountryMark iso={account?.countryIso} lang={lang} />
                 <p className="account-level">{t.accountLevel(rank.level)}</p>
                 <p className="profile-xp">
                   {t.xpTotal(formatXp(xp, lang))} · {t.accountLevelNext(formatXp(rank.remain, lang))}
@@ -477,6 +506,9 @@ export function SettingsModal({
                       />
                     </label>
                   ) : null}
+                  {authTab === 'register' ? (
+                    <CountryPicker lang={lang} value={countryIso} onChange={setCountryIso} />
+                  ) : null}
                   <p className="setting-hint">{t.passwordHint}</p>
                   {error ? <p className="account-error">{authErrorText(error, t)}</p> : null}
                   <button type="submit" className="btn-primary" disabled={busy}>
@@ -511,11 +543,32 @@ export function SettingsModal({
                   {t.saveProfile}
                 </button>
                 {saved ? <p className="settings-ok">{t.profileSaved}</p> : null}
+                <CountryPicker
+                  lang={lang}
+                  value={account.countryIso ?? countryIso}
+                  onChange={(iso) => {
+                    setCountryIso(iso)
+                    void updateAccountProfile({ countryIso: iso }).then((result) => {
+                      if (result.ok) setAccount(result.user)
+                    })
+                  }}
+                />
               </>
             ) : null}
 
             <h3 className="settings-sub">{t.profileLanguage}</h3>
             <LanguageToggle lang={lang} onChange={onLangChange} />
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => {
+                downloadPlayerExport(account)
+                setExported(true)
+              }}
+            >
+              {t.exportData}
+            </button>
+            {exported ? <p className="settings-ok">{t.exportDataDone}</p> : null}
 
             {authReady && account ? (
               <div className="settings-account-actions">
@@ -531,8 +584,20 @@ export function SettingsModal({
                   {t.passwordChange}
                 </button>
                 {passwordSaved ? <p className="settings-ok">{t.passwordChanged}</p> : null}
-                <button type="button" className="btn-sign-out" onClick={() => void signOut()} disabled={busy}>
+                <button type="button" className="btn-secondary" onClick={() => void signOut()} disabled={busy}>
                   {t.signOut}
+                </button>
+                <button type="button" className="btn-secondary" onClick={() => void signOut(true)} disabled={busy}>
+                  {t.signOutAll}
+                </button>
+                <p className="setting-hint">{t.signOutAllHint}</p>
+                <button
+                  type="button"
+                  className="btn-sign-out"
+                  onClick={() => setDeleteOpen(true)}
+                  disabled={busy}
+                >
+                  {t.deleteAccount}
                 </button>
               </div>
             ) : null}
@@ -633,6 +698,28 @@ export function SettingsModal({
 
         {tab === 'about' ? (
           <div className="settings-pane settings-copy">
+            <p className="settings-sub">{t.audioAll}</p>
+            <div className="choice-grid">
+              <button
+                type="button"
+                className={`choice ${!sfxMuted && !musicMuted ? 'is-active' : ''}`}
+                aria-pressed={!sfxMuted && !musicMuted}
+                onClick={() => {
+                  setAllAudioMuted(false)
+                  playSfx('correct')
+                }}
+              >
+                {t.soundsOn}
+              </button>
+              <button
+                type="button"
+                className={`choice ${sfxMuted && musicMuted ? 'is-active' : ''}`}
+                aria-pressed={sfxMuted && musicMuted}
+                onClick={() => setAllAudioMuted(true)}
+              >
+                {t.audioAllOff}
+              </button>
+            </div>
             <p className="settings-sub">{t.sounds}</p>
             <div className="choice-grid">
               <button
@@ -641,7 +728,6 @@ export function SettingsModal({
                 aria-pressed={!sfxMuted}
                 onClick={() => {
                   setSfxMuted(false)
-                  setSfxMutedState(false)
                   playSfx('correct')
                 }}
               >
@@ -651,10 +737,26 @@ export function SettingsModal({
                 type="button"
                 className={`choice ${sfxMuted ? 'is-active' : ''}`}
                 aria-pressed={sfxMuted}
-                onClick={() => {
-                  setSfxMuted(true)
-                  setSfxMutedState(true)
-                }}
+                onClick={() => setSfxMuted(true)}
+              >
+                {t.soundsOff}
+              </button>
+            </div>
+            <p className="settings-sub">{t.music}</p>
+            <div className="choice-grid">
+              <button
+                type="button"
+                className={`choice ${musicMuted ? '' : 'is-active'}`}
+                aria-pressed={!musicMuted}
+                onClick={() => setMusicMuted(false)}
+              >
+                {t.soundsOn}
+              </button>
+              <button
+                type="button"
+                className={`choice ${musicMuted ? 'is-active' : ''}`}
+                aria-pressed={musicMuted}
+                onClick={() => setMusicMuted(true)}
               >
                 {t.soundsOff}
               </button>
@@ -673,6 +775,7 @@ export function SettingsModal({
             <p className="legal-inline">
               <a href="/about">{t.legalAbout}</a>
               <a href="/privacy">{t.legalPrivacy}</a>
+              <a href="/terms">{t.legalTerms}</a>
               <a href="/contacts">{t.legalContacts}</a>
             </p>
           </div>
@@ -725,6 +828,13 @@ export function SettingsModal({
             setPasswordSaved(true)
             onAuth?.(user)
           }}
+        />
+      ) : null}
+      {deleteOpen ? (
+        <DeleteAccountModal
+          lang={lang}
+          onClose={() => setDeleteOpen(false)}
+          onDeleted={() => resetSignedOut()}
         />
       ) : null}
       {pickerOpen ? (

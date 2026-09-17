@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-const UA = 'UNFlagQuiz/1.0 (https://geoguiz.online; language data build)'
+const UA = 'UNFlagQuiz/1.0 (https://www.geoguiz.online; language data build)'
 
 function primaryLang(code) {
   return String(code || '')

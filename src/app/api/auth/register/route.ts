@@ -35,10 +35,11 @@ export async function POST(request: Request) {
   }
   const name = parsed.name
   const avatarId = isAvatarId(record.avatarId) ? record.avatarId : undefined
+  const countryIso = typeof record.countryIso === 'string' ? record.countryIso : undefined
   try {
-    const result = await registerAccount(name, password, avatarId)
+    const result = await registerAccount(name, password, avatarId, countryIso)
     if (!result.ok) {
-      const status = result.error === 'taken' ? 409 : 503
+      const status = result.error === 'taken' ? 409 : result.error === 'invalid' ? 400 : 503
       return authResponse({ error: result.error }, undefined, status)
     }
     return authResponse({ user: result.user }, result.token)

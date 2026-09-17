@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 ROWS = ROOT / "src/data/footballPlayerRows.ts"
 CACHE = ROOT / "scripts/.free-portraits.json"
-UA = "PassportCountry/1.0 (https://un-flag-quiz.vercel.app; levumanskyy03@gmail.com)"
+UA = "PassportCountry/1.0 (https://www.geoguiz.online; levumanskyy03@gmail.com)"
 COMMONS = "https://commons.wikimedia.org/w/api.php"
 WIKI = "https://en.wikipedia.org/w/api.php"
 WD = "https://www.wikidata.org/w/api.php"

@@ -1,6 +1,6 @@
 import { flagUrl } from "../lib/quiz";
 
-type FlagSize = "hero" | "option" | "card" | "thumb";
+type FlagSize = "hero" | "option" | "card" | "thumb" | "icon";
 
 const COMPACT_FLAGS = new Set(["be", "ch", "mc"]);
 const TALL_FLAGS = new Set(["np"]);

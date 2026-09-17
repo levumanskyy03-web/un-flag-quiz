@@ -15,7 +15,7 @@ async function duelName(lang: QuizSettings["lang"]) {
   const account = await fetchAccount();
   if (account?.id) bindDuelPlayerId(account.id);
   if (account?.name) return account.name;
-  return lang === "ru" ? "Игрок" : "Player";
+  return STRINGS[lang].duelAnonName
 }
 
 function errorMessage(lang: QuizSettings["lang"], error: string) {

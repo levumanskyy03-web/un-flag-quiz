@@ -1,3 +1,7 @@
+import type { Lang } from '../i18n/lang'
+import STADIUM_I18N from './i18n/stadiums.json'
+import { named } from './i18n/named'
+
 export interface FootballStadium {
   id: string
   clubId: string
@@ -40,6 +44,6 @@ export function stadiumById(id: string): FootballStadium | undefined {
   return FOOTBALL_STADIUMS.find((item) => item.id === id)
 }
 
-export function stadiumName(item: FootballStadium, lang: string): string {
-  return lang === 'ru' ? item.ru : item.en
+export function stadiumName(item: FootballStadium, lang: Lang): string {
+  return named(STADIUM_I18N, item.id, lang, item.ru, item.en)
 }

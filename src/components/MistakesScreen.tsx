@@ -1,7 +1,7 @@
 import { findCountry } from '../data/extras'
-import { termById, yearsLabel } from '../data/leaders'
+import { leaderDisplayName, termById, yearsLabel } from '../data/leaders'
 import { portraitFileForTerm } from '../data/leaderPortraitFiles'
-import { playerById } from '../data/footballPlayers'
+import { playerById, playerDisplayName } from '../data/footballPlayers'
 import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS } from '../i18n/strings'
 import { codePromptLabel, countryName, isCodesMode, isFootballMode, isLeadersMode, isPlayerFootballMode, type QuizMode } from '../lib/quiz'
@@ -83,13 +83,9 @@ export function MistakesScreen({
                   const country = football && !player ? footballTeamCountry(item.iso) : findCountry(item.iso)
                   const term = leaders ? termById(item.iso) : undefined
                   const name = term
-                    ? settings.lang === 'ru'
-                      ? term.ru
-                      : term.en
+                    ? leaderDisplayName(term, settings.lang)
                     : player
-                      ? settings.lang === 'ru'
-                        ? player.ru
-                        : player.en
+                      ? playerDisplayName(player, settings.lang)
                     : country
                       ? countryName(country, settings.lang)
                       : item.iso

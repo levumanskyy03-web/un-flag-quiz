@@ -13,12 +13,12 @@ Priority to ship:
 2. Country of the day (`/today`) — **in the codebase**.
 3. Stamp album — up to 5 stamps per country from scored geo play. — **in the codebase**.
 4. Mistakes trainer — restudy only failed countries, no timer. — **in the codebase**.
-5. Third hub world: country codes (TLD / calling code / car). Olympics and languages/scripts still later. — **in the codebase**.
+5. Country codes (TLD / calling code / car) as geography modes — **in the codebase** (merged into geo; not a separate hub). Olympics and languages/scripts still later.
 6. Football parity with geo: duel, levels, learn, mistakes. UCL, Euro hosts/finalists/title years, WC scorers, Copa América, AFCON. — **in the codebase**.
 
 Also on the list:
 
-7. Extra geo modes: country silhouette, TLD/language/driving side.
+7. Extra geo modes: country silhouette, language/driving side.
 8. Fact roundups — editorial pages like «5 countries without an army».
 
 Do not build now: anthems (copyright), bulk coats of arms, news, chat, user-authored quizzes.

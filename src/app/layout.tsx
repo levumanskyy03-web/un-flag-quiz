@@ -1,5 +1,10 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { langDir, localeTag } from "../i18n/lang";
+import { requestLang } from "../i18n/requestLang";
+import { SiteAudio } from "../components/SiteAudio";
+import { homeMetadata } from "../lib/pageMeta";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -8,13 +13,9 @@ const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
 });
 
-export const metadata: Metadata = {
-  title: "Паспорт страны",
-  description: "193 страны. Без сокращений.",
-  icons: {
-    icon: "/favicon.svg",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return homeMetadata(await requestLang());
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -22,11 +23,14 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const lang = await requestLang();
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang={localeTag(lang)} dir={langDir(lang)} suppressHydrationWarning>
       <body className={`${plusJakarta.variable} ${plusJakarta.className}`}>
+        <SiteAudio />
         {children}
+        <Analytics />
       </body>
     </html>
   );

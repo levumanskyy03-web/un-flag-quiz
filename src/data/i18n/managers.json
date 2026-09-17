@@ -1,0 +1,211 @@
+{
+  "pozzo": {
+    "de": "Vittorio Pozzo",
+    "zh": "维托里奥·波佐",
+    "es": "Vittorio Pozzo",
+    "hi": "वित्तोरियो पोत्सो",
+    "ar": "فيتوريو بوتسو",
+    "bn": "ভিত্তোরিও পোজ্জো",
+    "pt": "Vittorio Pozzo",
+    "ja": "ヴィットーリオ・ポッツォ",
+    "he": "ויטוריו פוצו"
+  },
+  "herberger": {
+    "de": "Sepp Herberger",
+    "zh": "塞普·赫贝格尔",
+    "es": "Sepp Herberger",
+    "hi": "ज़ेप हर्बर्गर",
+    "ar": "سيب هيربرغر",
+    "bn": "জেপ হেরবার্গার",
+    "pt": "Sepp Herberger",
+    "ja": "ゼップ・ヘルベルガー",
+    "he": "זפ הרברגר"
+  },
+  "feola": {
+    "de": "Vicente Feola",
+    "zh": "维森特·费奥拉",
+    "es": "Vicente Feola",
+    "hi": "विसेंते फेओला",
+    "ar": "فيسنتي فيولا",
+    "bn": "ভিসেন্তে ফেওলা",
+    "pt": "Vicente Feola",
+    "ja": "ヴィセンテ・フェオラ",
+    "he": "ויסנטה פאולה"
+  },
+  "moreira": {
+    "de": "Aymoré Moreira",
+    "zh": "埃莫雷·莫雷拉",
+    "es": "Aymoré Moreira",
+    "hi": "आयमोरे मोरेरा",
+    "ar": "أيموري مورييرا",
+    "bn": "আয়মোরে মোরেইরা",
+    "pt": "Aymoré Moreira",
+    "ja": "アイモレ・モレイラ",
+    "he": "איימורה מוריירה"
+  },
+  "ramsey": {
+    "de": "Alf Ramsey",
+    "zh": "阿尔夫·拉姆齐",
+    "es": "Alf Ramsey",
+    "hi": "अल्फ रैमज़ी",
+    "ar": "ألف رامسي",
+    "bn": "অ্যালফ র‍্যামজি",
+    "pt": "Alf Ramsey",
+    "ja": "アルフ・ラムゼイ",
+    "he": "אלף רמזי"
+  },
+  "zagallo": {
+    "de": "Mário Zagallo",
+    "zh": "马里奥·扎加洛",
+    "es": "Mário Zagallo",
+    "hi": "मारियो ज़ागालो",
+    "ar": "ماريو زاغالو",
+    "bn": "মারিও জাগালো",
+    "pt": "Mário Zagallo",
+    "ja": "マリオ・ザガロ",
+    "he": "מריו זגאלו"
+  },
+  "schoen": {
+    "de": "Helmut Schön",
+    "zh": "赫尔穆特·舍恩",
+    "es": "Helmut Schön",
+    "hi": "हेल्मुट शॉन",
+    "ar": "هيلموت شون",
+    "bn": "হেলমুট শন",
+    "pt": "Helmut Schön",
+    "ja": "ヘルムート・シェーン",
+    "he": "הלמוט שן"
+  },
+  "menotti": {
+    "de": "César Luis Menotti",
+    "zh": "塞萨尔·路易斯·梅诺蒂",
+    "es": "César Luis Menotti",
+    "hi": "सेसर लुइस मेनोत्ति",
+    "ar": "سيزار لويس مينوتي",
+    "bn": "সেসার লুইস মেনোত্তি",
+    "pt": "César Luis Menotti",
+    "ja": "セサル・ルイス・メノッティ",
+    "he": "ססאר לואיס מנוטי"
+  },
+  "bearzot": {
+    "de": "Enzo Bearzot",
+    "zh": "恩佐·贝阿尔佐特",
+    "es": "Enzo Bearzot",
+    "hi": "एन्जो बेअर्ज़ोत",
+    "ar": "إنزو بيرزوت",
+    "bn": "এনজো বেয়ার্জোত",
+    "pt": "Enzo Bearzot",
+    "ja": "エンツォ・ベアルツォット",
+    "he": "אנצו ביארזוט"
+  },
+  "bilardo": {
+    "de": "Carlos Bilardo",
+    "zh": "卡洛斯·比拉尔多",
+    "es": "Carlos Bilardo",
+    "hi": "कार्लोस बिलार्दो",
+    "ar": "كارلوس بيلاردو",
+    "bn": "কার্লোস বিলার্দো",
+    "pt": "Carlos Bilardo",
+    "ja": "カルロス・ビラルド",
+    "he": "קרלוס בילארדו"
+  },
+  "beckenbauer-mgr": {
+    "de": "Franz Beckenbauer",
+    "zh": "弗朗茨·贝肯鲍尔",
+    "es": "Franz Beckenbauer",
+    "hi": "फ्रांत्स बेकनबाउअर",
+    "ar": "فرانز بكنباور",
+    "bn": "ফ্রান্ৎস বেকেনবাউয়ার",
+    "pt": "Franz Beckenbauer",
+    "ja": "フランツ・ベッケンバウアー",
+    "he": "פרנץ בקנבאואר"
+  },
+  "parreira": {
+    "de": "Carlos Alberto Parreira",
+    "zh": "卡洛斯·阿尔贝托·佩雷拉",
+    "es": "Carlos Alberto Parreira",
+    "hi": "कार्लोस अल्बर्टो पर्रेरा",
+    "ar": "كارلوس ألبرتو بيريرا",
+    "bn": "কার্লোস আলবার্তো পেরেইরা",
+    "pt": "Carlos Alberto Parreira",
+    "ja": "カルロス・アルベルト・パレイラ",
+    "he": "קרלוס אלברטו פריירה"
+  },
+  "jacquet": {
+    "de": "Aimé Jacquet",
+    "zh": "埃梅·雅凯",
+    "es": "Aimé Jacquet",
+    "hi": "एमे जाके",
+    "ar": "إيمي جاكيه",
+    "bn": "এমে জাকে",
+    "pt": "Aimé Jacquet",
+    "ja": "エメ・ジャケ",
+    "he": "אימה ז'אקה"
+  },
+  "scolari": {
+    "de": "Luiz Felipe Scolari",
+    "zh": "路易斯·费利佩·斯科拉里",
+    "es": "Luiz Felipe Scolari",
+    "hi": "लुइज़ फेलिपे स्कोलारी",
+    "ar": "لويس فيليبي سكولاري",
+    "bn": "লুইজ ফেলিপে স্কলারি",
+    "pt": "Luiz Felipe Scolari",
+    "ja": "ルイス・フェリペ・スコラーリ",
+    "he": "לואיס פליפה סקולארי"
+  },
+  "lippi": {
+    "de": "Marcello Lippi",
+    "zh": "马尔切洛·里皮",
+    "es": "Marcello Lippi",
+    "hi": "मार्सेलो लिप्पी",
+    "ar": "مارتشيللو ليبي",
+    "bn": "মার্সেলো লিপ্পি",
+    "pt": "Marcello Lippi",
+    "ja": "マルチェロ・リッピ",
+    "he": "מרצ'לו ליפי"
+  },
+  "delbosque": {
+    "de": "Vicente del Bosque",
+    "zh": "比森特·德尔博斯克",
+    "es": "Vicente del Bosque",
+    "hi": "विसेंते देल बोस्के",
+    "ar": "فيسنتي ديل بوسكي",
+    "bn": "ভিসেন্তে দেল বোস্কে",
+    "pt": "Vicente del Bosque",
+    "ja": "ビセンテ・デル・ボスケ",
+    "he": "ויסנטה דל בוסקה"
+  },
+  "loew": {
+    "de": "Joachim Löw",
+    "zh": "约阿希姆·勒夫",
+    "es": "Joachim Löw",
+    "hi": "योआखिम ल्यो",
+    "ar": "يواخيم لوف",
+    "bn": "ইয়োয়াখিম ল্যো",
+    "pt": "Joachim Löw",
+    "ja": "ヨアヒム・レーヴ",
+    "he": "יואכים לב"
+  },
+  "deschamps": {
+    "de": "Didier Deschamps",
+    "zh": "迪迪埃·德尚",
+    "es": "Didier Deschamps",
+    "hi": "दिदिये देशाँ",
+    "ar": "ديدييه ديشان",
+    "bn": "দিদিয়ে দেশঁ",
+    "pt": "Didier Deschamps",
+    "ja": "ディディエ・デシャン",
+    "he": "דידייה דשאן"
+  },
+  "scaloni": {
+    "de": "Lionel Scaloni",
+    "zh": "利昂内尔·斯卡洛尼",
+    "es": "Lionel Scaloni",
+    "hi": "लियोनेल स्कालोनी",
+    "ar": "ليونيل سكالوني",
+    "bn": "লিওনেল স্কালোনি",
+    "pt": "Lionel Scaloni",
+    "ja": "リオネル・スカローニ",
+    "he": "ליונל סקאלוני"
+  }
+}

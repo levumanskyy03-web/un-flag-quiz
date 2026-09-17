@@ -1,5 +1,7 @@
 import type { Lang } from '../i18n/lang'
 import { COUNTRIES, type Country } from './countries'
+import WATER_I18N from './i18n/water.json'
+import { named } from './i18n/named'
 import { CAMPAIGN_LEVELS, LEVEL_ISOS } from './levels'
 
 export type WaterKind = 'ocean' | 'sea' | 'river' | 'lake'
@@ -615,7 +617,7 @@ export function canAskWater(iso: string, mode: WaterMode | WaterDataMode): boole
 export function waterName(id: string, lang: Lang): string {
   const body = WATER_BODIES[id]
   if (!body) return id
-  return lang === 'ru' ? body.ru : body.en
+  return named(WATER_I18N, id, lang, body.ru, body.en)
 }
 
 export function isEasyWaterBody(id: string): boolean {

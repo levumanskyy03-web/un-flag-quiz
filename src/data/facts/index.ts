@@ -1,10 +1,29 @@
 import type { Lang } from '../../i18n/strings'
+import { pickText, type TextExtra } from '../../i18n/text11'
 import { getPassport, passportFact } from '../passports'
 import type { CountryFact } from './types'
 import allFacts from './all.json'
+import FACTS_0 from '../i18n/facts-0.json'
+import FACTS_1 from '../i18n/facts-1.json'
+import FACTS_2 from '../i18n/facts-2.json'
+import FACTS_3 from '../i18n/facts-3.json'
+import FACTS_4 from '../i18n/facts-4.json'
+import FACTS_5 from '../i18n/facts-5.json'
+import FACTS_6 from '../i18n/facts-6.json'
+import FACTS_7 from '../i18n/facts-7.json'
 
 type FactPair = [en: string, ru: string]
 const FACTS = allFacts as unknown as Record<string, FactPair[]>
+const EXTRA = {
+  ...FACTS_0,
+  ...FACTS_1,
+  ...FACTS_2,
+  ...FACTS_3,
+  ...FACTS_4,
+  ...FACTS_5,
+  ...FACTS_6,
+  ...FACTS_7,
+} as Record<string, Array<Partial<TextExtra>>>
 const LAST_FACTS_KEY = 'unfq-last-passport-facts'
 const lastFactIndex = new Map<string, number>()
 
@@ -57,17 +76,15 @@ export function factText(
   lang: Lang,
   fallback: CountryFact,
 ): string {
-  const passport = getPassport(iso)
-  if (lang !== 'ru' && lang !== 'en' && passport) {
-    return passportFact(passport, lang, iso)
-  }
   const rows = FACTS[iso] ?? []
   if (rows.length === 0) {
+    const passport = getPassport(iso)
     if (passport) return passportFact(passport, lang, iso)
-    return lang === 'ru' ? fallback.ru : fallback.en
+    return pickText(lang, fallback.ru, fallback.en)
   }
   const [en, ru] = rows[index % rows.length]
-  return lang === 'ru' ? ru : en
+  const extra = EXTRA[iso]?.[index % rows.length]
+  return pickText(lang, ru, en, extra)
 }
 
 export function constantFactTexts(
@@ -77,13 +94,14 @@ export function constantFactTexts(
   fallback: CountryFact,
   count = 4,
 ): string[] {
-  if (lang !== 'ru' && lang !== 'en') return []
   const rotating = factText(iso, rotatingIndex, lang, fallback)
   const rows = countryFacts(iso)
   const pool = rows.length > 0 ? rows : [fallback]
+  const extras = EXTRA[iso] ?? []
   const texts: string[] = []
-  for (const fact of pool) {
-    const text = lang === 'ru' ? fact.ru : fact.en
+  for (let i = 0; i < pool.length; i += 1) {
+    const fact = pool[i]
+    const text = pickText(lang, fact.ru, fact.en, extras[i])
     if (text === rotating) continue
     texts.push(text)
     if (texts.length >= count) break

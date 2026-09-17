@@ -1,0 +1,481 @@
+{
+  "status": {
+    "an autonomous region of Finland": {
+      "de": "eine autonome Region Finnlands",
+      "zh": "芬兰自治区",
+      "es": "una región autónoma de Finlandia",
+      "hi": "फ़िनलैंड का स्वायत्त क्षेत्र",
+      "ar": "منطقة فنلندا ذاتية الحكم",
+      "bn": "ফিনল্যান্ডের একটি স্বায়ত্তশাসিত অঞ্চল",
+      "pt": "uma região autónoma da Finlândia",
+      "ja": "フィンランドの自治領",
+      "he": "אזור אוטונומי של פינלנד"
+    },
+    "a British Overseas Territory": {
+      "de": "ein britisches Überseegebiet",
+      "zh": "英国海外领地",
+      "es": "un territorio británico de ultramar",
+      "hi": "एक ब्रिटिश ओवरसीज़ टेरिटरी",
+      "ar": "إقليم بريطاني وراء البحار",
+      "bn": "একটি ব্রিটিশ ওভারসিজ টেরিটরি",
+      "pt": "um território britânico ultramarino",
+      "ja": "イギリスの海外領土",
+      "he": "טריטוריה בריטית שמעבר לים"
+    },
+    "a constituent country of the Netherlands": {
+      "de": "ein Land innerhalb des Königreichs der Niederlande",
+      "zh": "荷兰王国组成国",
+      "es": "un país constituyente de los Países Bajos",
+      "hi": "नीदरलैंड का एक संघटक देश",
+      "ar": "بلد مكوِّن لمملكة هولندا",
+      "bn": "নেদারল্যান্ডসের একটি গঠনকারী দেশ",
+      "pt": "um país constituinte dos Países Baixos",
+      "ja": "オランダ王国の構成国",
+      "he": "מדינה מכוננת של הולנד"
+    },
+    "an unincorporated territory of the United States": {
+      "de": "ein nicht inkorporiertes Territorium der Vereinigten Staaten",
+      "zh": "美国未合并领地",
+      "es": "un territorio no incorporado de Estados Unidos",
+      "hi": "संयुक्त राज्य का एक असंगठित क्षेत्र",
+      "ar": "إقليم غير مدمج تابع للولايات المتحدة",
+      "bn": "মার্কিন যুক্তরাষ্ট্রের একটি অসংযুক্ত অঞ্চল",
+      "pt": "um território não incorporado dos Estados Unidos",
+      "ja": "アメリカ合衆国の非編入領土",
+      "he": "טריטוריה לא מאוגדת של ארצות הברית"
+    },
+    "special municipalities of the Netherlands": {
+      "de": "besondere Gemeinden der Niederlande",
+      "zh": "荷兰特别市",
+      "es": "municipios especiales de los Países Bajos",
+      "hi": "नीदरलैंड की विशेष नगरपालिकाएँ",
+      "ar": "بلديات خاصة في هولندا",
+      "bn": "নেদারল্যান্ডসের বিশেষ পৌরসভা",
+      "pt": "municípios especiais dos Países Baixos",
+      "ja": "オランダの特別自治体",
+      "he": "עיריות מיוחדות של הולנד"
+    },
+    "a dependent territory of Norway": {
+      "de": "ein abhängiges Gebiet Norwegens",
+      "zh": "挪威属地",
+      "es": "un territorio dependiente de Noruega",
+      "hi": "नॉर्वे का आश्रित क्षेत्र",
+      "ar": "إقليم تابع للنرويج",
+      "bn": "নরওয়ের একটি নির্ভরশীল অঞ্চল",
+      "pt": "um território dependente da Noruega",
+      "ja": "ノルウェーの属領",
+      "he": "טריטוריה תלויה של נורווגיה"
+    },
+    "administered by the United Kingdom": {
+      "de": "unter britischer Verwaltung",
+      "zh": "由英国管辖",
+      "es": "administrado por el Reino Unido",
+      "hi": "संयुक्त राजशाही के प्रशासन में",
+      "ar": "تحت إدارة المملكة المتحدة",
+      "bn": "যুক্তরাজ্যের প্রশাসনে",
+      "pt": "administrado pelo Reino Unido",
+      "ja": "イギリスの施政下",
+      "he": "בניהול הממלכה המאוחדת"
+    },
+    "an external territory of Australia": {
+      "de": "ein Außengebiet Australiens",
+      "zh": "澳大利亚海外领地",
+      "es": "un territorio exterior de Australia",
+      "hi": "ऑस्ट्रेलिया का बाहरी क्षेत्र",
+      "ar": "إقليم خارجي لأستراليا",
+      "bn": "অস্ট্রেলিয়ার একটি বহির্ভূমি",
+      "pt": "um território externo da Austrália",
+      "ja": "オーストラリアの外地",
+      "he": "טריטוריה חיצונית של אוסטרליה"
+    },
+    "a state in free association with New Zealand": {
+      "de": "ein Staat in freier Assoziation mit Neuseeland",
+      "zh": "与新西兰自由联合的国家",
+      "es": "un Estado en libre asociación con Nueva Zelanda",
+      "hi": "न्यूज़ीलैंड के साथ स्वतंत्र साझेदारी में एक राज्य",
+      "ar": "دولة في ارتباط حر مع نيوزيلندا",
+      "bn": "নিউজিল্যান্ডের সঙ্গে মুক্ত সংঘের একটি রাষ্ট্র",
+      "pt": "um Estado em livre associação com a Nova Zelândia",
+      "ja": "ニュージーランドと自由連合の国家",
+      "he": "מדינה באסוציאציה חופשית עם ניו זילנד"
+    },
+    "an autonomous territory of Denmark": {
+      "de": "ein autonomes Gebiet Dänemarks",
+      "zh": "丹麦自治领地",
+      "es": "un territorio autónomo de Dinamarca",
+      "hi": "डेनमार्क का स्वायत्त क्षेत्र",
+      "ar": "إقليم ذاتي الحكم تابع للدنمارك",
+      "bn": "ডেনমার্কের একটি স্বায়ত্তশাসিত অঞ্চল",
+      "pt": "um território autónomo da Dinamarca",
+      "ja": "デンマークの自治領",
+      "he": "טריטוריה אוטונומית של דנמרק"
+    },
+    "an overseas region of France": {
+      "de": "eine französische Überseeregion",
+      "zh": "法国海外大区",
+      "es": "una región de ultramar de Francia",
+      "hi": "फ़्रांस का एक ओवरसीज़ क्षेत्र",
+      "ar": "منطقة فرنسية وراء البحار",
+      "bn": "ফ্রান্সের একটি ওভারসিজ অঞ্চল",
+      "pt": "uma região ultramarina de França",
+      "ja": "フランスの海外州",
+      "he": "חבל מעבר לים של צרפת"
+    },
+    "an overseas collectivity of France": {
+      "de": "eine französische Überseegemeinschaft",
+      "zh": "法国海外集体",
+      "es": "una colectividad de ultramar de Francia",
+      "hi": "फ़्रांस की एक ओवरसीज़ सामूहिकता",
+      "ar": "جماعة فرنسية وراء البحار",
+      "bn": "ফ্রান্সের একটি ওভারসিজ সমষ্টি",
+      "pt": "uma coletividade ultramarina de França",
+      "ja": "フランスの海外共同体",
+      "he": "יחידה מעבר לים של צרפת"
+    },
+    "an overseas territory of France": {
+      "de": "ein französisches Überseegebiet",
+      "zh": "法国海外领地",
+      "es": "un territorio de ultramar de Francia",
+      "hi": "फ़्रांस का एक ओवरसीज़ क्षेत्र",
+      "ar": "إقليم فرنسي وراء البحار",
+      "bn": "ফ্রান্সের একটি ওভারসিজ অঞ্চল",
+      "pt": "um território ultramarino de França",
+      "ja": "フランスの海外領土",
+      "he": "טריטוריה מעבר לים של צרפת"
+    },
+    "a Crown Dependency of the United Kingdom": {
+      "de": "eine Kronabhängigkeit des Vereinigten Königreichs",
+      "zh": "英国皇家属地",
+      "es": "una dependencia de la Corona británica",
+      "hi": "ब्रिटिश क्राउन डिपेंडेंसी",
+      "ar": "تبعية للتاج البريطاني",
+      "bn": "যুক্তরাজ্যের একটি ক্রাউন ডিপেন্ডেন্সি",
+      "pt": "uma dependência da Coroa britânica",
+      "ja": "イギリスの王室属領",
+      "he": "תלות כתר של הממלכה המאוחדת"
+    },
+    "administered by France": {
+      "de": "unter französischer Verwaltung",
+      "zh": "由法国管辖",
+      "es": "administrado por Francia",
+      "hi": "फ़्रांस के प्रशासन में",
+      "ar": "تحت إدارة فرنسا",
+      "bn": "ফ্রান্সের প্রশাসনে",
+      "pt": "administrado por França",
+      "ja": "フランスの施政下",
+      "he": "בניהול צרפת"
+    },
+    "a special administrative region of China": {
+      "de": "eine Sonderverwaltungszone Chinas",
+      "zh": "中国特别行政区",
+      "es": "una región administrativa especial de China",
+      "hi": "चीन का विशेष प्रशासनिक क्षेत्र",
+      "ar": "منطقة إدارية خاصة تابعة للصين",
+      "bn": "চীনের একটি বিশেষ প্রশাসনিক অঞ্চল",
+      "pt": "uma região administrativa especial da China",
+      "ja": "中国の特別行政区",
+      "he": "אזור מנהלי מיוחד של סין"
+    },
+    "a special collectivity of France": {
+      "de": "eine besondere Gebietskörperschaft Frankreichs",
+      "zh": "法国特殊集体",
+      "es": "una colectividad especial de Francia",
+      "hi": "फ़्रांस की एक विशेष सामूहिकता",
+      "ar": "جماعة خاصة تابعة لفرنسا",
+      "bn": "ফ্রান্সের একটি বিশেষ সমষ্টি",
+      "pt": "uma coletividade especial de França",
+      "ja": "フランスの特別共同体",
+      "he": "יחידה מיוחדת של צרפת"
+    },
+    "a commonwealth of the United States": {
+      "de": "ein Commonwealth der Vereinigten Staaten",
+      "zh": "美国联邦邦",
+      "es": "un Estado libre asociado de Estados Unidos",
+      "hi": "संयुक्त राज्य का एक कॉमनवेल्थ",
+      "ar": "كومنولث تابع للولايات المتحدة",
+      "bn": "মার্কিন যুক্তরাষ্ট্রের একটি কমনওয়েলথ",
+      "pt": "um commonwealth dos Estados Unidos",
+      "ja": "アメリカ合衆国の自治連邦区",
+      "he": "חבר העמים של ארצות הברית"
+    },
+    "a territory of Norway": {
+      "de": "ein Territorium Norwegens",
+      "zh": "挪威领土",
+      "es": "un territorio de Noruega",
+      "hi": "नॉर्वे का क्षेत्र",
+      "ar": "إقليم تابع للنرويج",
+      "bn": "নরওয়ের একটি অঞ্চল",
+      "pt": "um território da Noruega",
+      "ja": "ノルウェーの領土",
+      "he": "טריטוריה של נורווגיה"
+    },
+    "a dependent territory of New Zealand": {
+      "de": "ein abhängiges Gebiet Neuseelands",
+      "zh": "新西兰属地",
+      "es": "un territorio dependiente de Nueva Zelanda",
+      "hi": "न्यूज़ीलैंड का आश्रित क्षेत्र",
+      "ar": "إقليم تابع لنيوزيلندا",
+      "bn": "নিউজিল্যান্ডের একটি নির্ভরশীল অঞ্চল",
+      "pt": "um território dependente da Nova Zelândia",
+      "ja": "ニュージーランドの属領",
+      "he": "טריטוריה תלויה של ניו זילנד"
+    },
+    "administered by the United States": {
+      "de": "unter US-amerikanischer Verwaltung",
+      "zh": "由美国管辖",
+      "es": "administrado por Estados Unidos",
+      "hi": "संयुक्त राज्य के प्रशासन में",
+      "ar": "تحت إدارة الولايات المتحدة",
+      "bn": "মার্কিন যুক্তরাষ্ট্রের প্রশাসনে",
+      "pt": "administrado pelos Estados Unidos",
+      "ja": "アメリカ合衆国の施政下",
+      "he": "בניהול ארצות הברית"
+    },
+    "mostly administered by Morocco": {
+      "de": "größtenteils von Marokko verwaltet",
+      "zh": "主要由摩洛哥管辖",
+      "es": "administrado en su mayor parte por Marruecos",
+      "hi": "अधिकांश भाग मोरक्को के प्रशासन में",
+      "ar": "تُدار معظمه من المغرب",
+      "bn": "বেশিরভাগ মরক্কোর প্রশাসনে",
+      "pt": "administrado na maior parte por Marrocos",
+      "ja": "主にモロッコの施政下",
+      "he": "מנוהל ברובו בידי מרוקו"
+    },
+    "administered by Russia": {
+      "de": "unter russischer Verwaltung",
+      "zh": "由俄罗斯管辖",
+      "es": "administrado por Rusia",
+      "hi": "रूस के प्रशासन में",
+      "ar": "تحت إدارة روسيا",
+      "bn": "রাশিয়ার প্রশাসনে",
+      "pt": "administrado pela Rússia",
+      "ja": "ロシアの施政下",
+      "he": "בניהול רוסיה"
+    },
+    "administered by Japan": {
+      "de": "unter japanischer Verwaltung",
+      "zh": "由日本管辖",
+      "es": "administrado por Japón",
+      "hi": "जापान के प्रशासन में",
+      "ar": "تحت إدارة اليابان",
+      "bn": "জাপানের প্রশাসনে",
+      "pt": "administrado pelo Japão",
+      "ja": "日本の施政下",
+      "he": "בניהול יפן"
+    },
+    "administered by South Korea": {
+      "de": "unter südkoreanischer Verwaltung",
+      "zh": "由韩国管辖",
+      "es": "administrado por Corea del Sur",
+      "hi": "दक्षिण कोरिया के प्रशासन में",
+      "ar": "تحت إدارة كوريا الجنوبية",
+      "bn": "দক্ষিণ কোরিয়ার প্রশাসনে",
+      "pt": "administrado pela Coreia do Sul",
+      "ja": "韓国の施政下",
+      "he": "בניהול דרום קוריאה"
+    }
+  },
+  "note": {
+    "Not in the quiz: not a UN member. De facto self-governed, not administered by a quiz country.": {
+      "de": "Nicht im Quiz: kein UN-Mitglied. De facto selbstverwaltet, nicht von einem Quiz-Land verwaltet.",
+      "zh": "不在测验中：非联合国会员。事实上自治，不由测验中的国家管辖。",
+      "es": "No está en el quiz: no es miembro de la ONU. Autogobernado de facto, no administrado por un país del quiz.",
+      "hi": "क्विज़ में नहीं: संयुक्त राष्ट्र सदस्य नहीं। व्यवहार में स्वशासित, क्विज़ देश के प्रशासन में नहीं।",
+      "ar": "ليس في الاختبار: ليس عضوًا في الأمم المتحدة. يحكم نفسه فعليًا، ولا تديره دولة من دول الاختبار.",
+      "bn": "কুইজে নেই: জাতিসংঘের সদস্য নয়। বাস্তবে স্বশাসিত, কুইজের কোনো দেশের প্রশাসনে নয়।",
+      "pt": "Não está no quiz: não é membro da ONU. Autogovernado de facto, não administrado por um país do quiz.",
+      "ja": "クイズ対象外：国連加盟国ではない。事実上は自治で、クイズの国の施政下ではない。",
+      "he": "לא בחידון: לא חבר באו\"ם. שלטון עצמי בפועל, לא בניהול מדינה מהחידון."
+    },
+    "Not in the quiz: UN observer, not a full member, and not one of the 193 countries.": {
+      "de": "Nicht im Quiz: UN-Beobachter, kein Vollmitglied und keines der 193 Länder.",
+      "zh": "不在测验中：联合国观察员，非正式会员，也不是 193 国之一。",
+      "es": "No está en el quiz: observador de la ONU, no miembro de pleno derecho, y no es uno de los 193 países.",
+      "hi": "क्विज़ में नहीं: संयुक्त राष्ट्र पर्यवेक्षक, पूर्ण सदस्य नहीं, और 193 देशों में नहीं।",
+      "ar": "ليس في الاختبار: مراقب في الأمم المتحدة، ليس عضوًا كاملًا، وليس من الدول الـ193.",
+      "bn": "কুইজে নেই: জাতিসংঘের পর্যবেক্ষক, পূর্ণ সদস্য নয়, এবং ১৯৩ দেশের একটিও নয়।",
+      "pt": "Não está no quiz: observador da ONU, não é membro pleno, e não é um dos 193 países.",
+      "ja": "クイズ対象外：国連オブザーバーであり、正式加盟国ではなく、193か国にも含まれない。",
+      "he": "לא בחידון: משקיף באו\"ם, לא חבר מלא, ולא אחת מ-193 המדינות."
+    }
+  },
+  "claim": {
+    "Mauritius claims the Chagos Archipelago.": {
+      "de": "Mauritius erhebt Anspruch auf den Tschagos-Archipel.",
+      "zh": "毛里求斯声称对查戈斯群岛拥有主权。",
+      "es": "Mauricio reclama el archipiélago de Chagos.",
+      "hi": "मॉरीशस चागोस द्वीपसमूह पर दावा करता है।",
+      "ar": "موريشيوس تطالب بأرخبيل تشاغوس.",
+      "bn": "মরিশাস চাগোস দ্বীপপুঞ্জ দাবি করে।",
+      "pt": "A Maurícia reivindica o arquipélago de Chagos.",
+      "ja": "モーリシャスはチャゴス諸島の領有を主張している。",
+      "he": "מאוריציוס טוענת לריבונות על ארכיפלג צ'אגוס."
+    },
+    "Argentina claims the islands and calls them the Malvinas.": {
+      "de": "Argentinien erhebt Anspruch auf die Inseln und nennt sie Malwinen.",
+      "zh": "阿根廷声称对这些岛屿拥有主权，并称之为马尔维纳斯群岛。",
+      "es": "Argentina reclama las islas y las llama Malvinas.",
+      "hi": "अर्जेंटीना द्वीपों पर दावा करता है और उन्हें माल्विनास कहता है।",
+      "ar": "الأرجنتين تطالب بالجزر وتسميها المالوين.",
+      "bn": "আর্জেন্টিনা দ্বীপগুলো দাবি করে এবং সেগুলোকে মালভিনাস বলে।",
+      "pt": "A Argentina reivindica as ilhas e chama-as Malvinas.",
+      "ja": "アルゼンチンは領有を主張し、マルビナスと呼ぶ。",
+      "he": "ארגנטינה טוענת לריבונות על האיים ומכנה אותם מלווינס."
+    },
+    "Spain claims Gibraltar.": {
+      "de": "Spanien erhebt Anspruch auf Gibraltar.",
+      "zh": "西班牙声称对直布罗陀拥有主权。",
+      "es": "España reclama Gibraltar.",
+      "hi": "स्पेन जिब्राल्टर पर दावा करता है।",
+      "ar": "إسبانيا تطالب بجبل طارق.",
+      "bn": "স্পেন জিব্রাল্টার দাবি করে।",
+      "pt": "A Espanha reivindica Gibraltar.",
+      "ja": "スペインはジブラルタルの領有を主張している。",
+      "he": "ספרד טוענת לריבונות על גיברלטר."
+    },
+    "Madagascar claims the islands.": {
+      "de": "Madagaskar erhebt Anspruch auf die Inseln.",
+      "zh": "马达加斯加声称对这些岛屿拥有主权。",
+      "es": "Madagascar reclama las islas.",
+      "hi": "मेडागास्कर द्वीपों पर दावा करता है।",
+      "ar": "مدغشقر تطالب بالجزر.",
+      "bn": "মাদাগাস্কার দ্বীপগুলো দাবি করে।",
+      "pt": "Madagáscar reivindica as ilhas.",
+      "ja": "マダガスカルは諸島の領有を主張している。",
+      "he": "מדגסקר טוענת לריבונות על האיים."
+    },
+    "Madagascar claims the island.": {
+      "de": "Madagaskar erhebt Anspruch auf die Insel.",
+      "zh": "马达加斯加声称对该岛拥有主权。",
+      "es": "Madagascar reclama la isla.",
+      "hi": "मेडागास्कर द्वीप पर दावा करता है।",
+      "ar": "مدغشقر تطالب بالجزيرة.",
+      "bn": "মাদাগাস্কার দ্বীপটি দাবি করে।",
+      "pt": "Madagáscar reivindica a ilha.",
+      "ja": "マダガスカルは島の領有を主張している。",
+      "he": "מדגסקר טוענת לריבונות על האי."
+    },
+    "Comoros claims Mayotte.": {
+      "de": "Die Komoren erheben Anspruch auf Mayotte.",
+      "zh": "科摩罗声称对马约特拥有主权。",
+      "es": "Comoras reclama Mayotte.",
+      "hi": "कोमोरोस मायोत पर दावा करता है।",
+      "ar": "جزر القمر تطالب بمايوت.",
+      "bn": "কোমোরোস মায়োত দাবি করে।",
+      "pt": "As Comores reivindicam Mayotte.",
+      "ja": "コモロはマヨットの領有を主張している。",
+      "he": "קומורו טוענת לריבונות על מיוט."
+    },
+    "Argentina claims the islands.": {
+      "de": "Argentinien erhebt Anspruch auf die Inseln.",
+      "zh": "阿根廷声称对这些岛屿拥有主权。",
+      "es": "Argentina reclama las islas.",
+      "hi": "अर्जेंटीना द्वीपों पर दावा करता है।",
+      "ar": "الأرجنتين تطالب بالجزر.",
+      "bn": "আর্জেন্টিনা দ্বীপগুলো দাবি করে।",
+      "pt": "A Argentina reivindica as ilhas.",
+      "ja": "アルゼンチンは諸島の領有を主張している。",
+      "he": "ארגנטינה טוענת לריבונות על האיים."
+    },
+    "The Marshall Islands claim Wake Island.": {
+      "de": "Die Marshallinseln erheben Anspruch auf Wake.",
+      "zh": "马绍尔群岛声称对威克岛拥有主权。",
+      "es": "Las Islas Marshall reclaman la isla Wake.",
+      "hi": "मार्शल द्वीप वेक द्वीप पर दावा करते हैं।",
+      "ar": "جزر مارشال تطالب بجزيرة ويك.",
+      "bn": "মার্শাল দ্বীপপুঞ্জ ওয়েক দ্বীপ দাবি করে।",
+      "pt": "As Ilhas Marshall reivindicam a ilha Wake.",
+      "ja": "マーシャル諸島はウェーク島の領有を主張している。",
+      "he": "איי מרשל טוענים לריבונות על האי וייק."
+    },
+    "The Sahrawi Arab Democratic Republic (Polisario Front) claims the territory.": {
+      "de": "Die Demokratische Arabische Republik Sahara (Polisario-Front) erhebt Anspruch auf das Gebiet.",
+      "zh": "阿拉伯撒哈拉民主共和国（波利萨里奥阵线）声称对该领土拥有主权。",
+      "es": "La República Árabe Saharaui Democrática (Frente Polisario) reclama el territorio.",
+      "hi": "सहरावी अरब लोकतांत्रिक गणराज्य (पोलिसारियो फ्रंट) क्षेत्र पर दावा करता है।",
+      "ar": "الجمهورية العربية الصحراوية الديمقراطية (جبهة البوليساريو) تطالب بالإقليم.",
+      "bn": "সাহরাভি আরব গণতান্ত্রিক প্রজাতন্ত্র (পলিসারিও ফ্রন্ট) অঞ্চলটি দাবি করে।",
+      "pt": "A República Árabe Saaraui Democrática (Frente Polisário) reivindica o território.",
+      "ja": "サハラ・アラブ民主共和国（ポリサリオ戦線）が領有を主張している。",
+      "he": "הרפובליקה הערבית הסהרה הדמוקרטית (חזית פוליסריו) טוענת לריבונות על השטח."
+    },
+    "Japan claims the islands as the Northern Territories.": {
+      "de": "Japan erhebt Anspruch auf die Inseln als Nördliche Territorien.",
+      "zh": "日本声称这些岛屿为其北方领土。",
+      "es": "Japón reclama las islas como Territorios del Norte.",
+      "hi": "जापान द्वीपों को अपने उत्तरी क्षेत्र बताकर दावा करता है।",
+      "ar": "اليابان تطالب بالجزر باعتبارها الأراضي الشمالية.",
+      "bn": "জাপান দ্বীপগুলোকে উত্তরাঞ্চলীয় অঞ্চল বলে দাবি করে।",
+      "pt": "O Japão reivindica as ilhas como Territórios do Norte.",
+      "ja": "日本はこれらを北方領土として領有を主張している。",
+      "he": "יפן טוענת לריבונות על האיים כטריטוריות הצפוניות."
+    },
+    "China and Taiwan claim the islands (Diaoyu / Diaoyutai).": {
+      "de": "China und Taiwan erheben Anspruch auf die Inseln (Diaoyu / Diaoyutai).",
+      "zh": "中国和台湾声称对这些岛屿拥有主权（钓鱼岛／钓鱼台）。",
+      "es": "China y Taiwán reclaman las islas (Diaoyu / Diaoyutai).",
+      "hi": "चीन और ताइवान द्वीपों पर दावा करते हैं (डियाओयू / डियाओयूताई)।",
+      "ar": "الصين وتايوان تطالبان بالجزر (دياويو / دياويوتاي).",
+      "bn": "চীন ও তাইওয়ান দ্বীপগুলো দাবি করে (দিয়াওইউ / দিয়াওইউতাই)।",
+      "pt": "A China e Taiwan reivindicam as ilhas (Diaoyu / Diaoyutai).",
+      "ja": "中国と台湾が領有を主張している（釣魚島／釣魚台）。",
+      "he": "סין וטייוואן טוענות לריבונות על האיים (דיאויו / דיאויוטאי)."
+    },
+    "Japan claims the islands (Takeshima).": {
+      "de": "Japan erhebt Anspruch auf die Inseln (Takeshima).",
+      "zh": "日本声称对这些岛屿拥有主权（竹岛）。",
+      "es": "Japón reclama las islas (Takeshima).",
+      "hi": "जापान द्वीपों पर दावा करता है (ताकेशिमा)।",
+      "ar": "اليابان تطالب بالجزر (تاكيشيما).",
+      "bn": "জাপান দ্বীপগুলো দাবি করে (তাকেশিমা)।",
+      "pt": "O Japão reivindica as ilhas (Takeshima).",
+      "ja": "日本は領有を主張している（竹島）。",
+      "he": "יפן טוענת לריבונות על האיים (טקשימה)."
+    },
+    "The People’s Republic of China claims Taiwan as a province.": {
+      "de": "Die Volksrepublik China betrachtet Taiwan als Provinz.",
+      "zh": "中华人民共和国声称台湾为其一省。",
+      "es": "La República Popular China reclama Taiwán como provincia.",
+      "hi": "जनवादी गणराज्य चीन ताइवान को अपना प्रांत बताता है।",
+      "ar": "جمهورية الصين الشعبية تطالب بتايوان باعتبارها مقاطعة.",
+      "bn": "গণপ্রজাতন্ত্রী চীন তাইওয়ানকে নিজ প্রদেশ বলে দাবি করে।",
+      "pt": "A República Popular da China reivindica Taiwan como província.",
+      "ja": "中華人民共和国は台湾を自国の省だと主張している。",
+      "he": "הרפובליקה העממית של סין טוענת שטייוואן היא מחוז שלה."
+    },
+    "Serbia claims Kosovo as its territory.": {
+      "de": "Serbien erhebt Anspruch auf Kosovo als eigenes Territorium.",
+      "zh": "塞尔维亚声称科索沃为其领土。",
+      "es": "Serbia reclama Kosovo como su territorio.",
+      "hi": "सर्बिया कोसोवो को अपना क्षेत्र बताता है।",
+      "ar": "صربيا تطالب بكوسوفو كأرض تابعة لها.",
+      "bn": "সার্বিয়া কসোভোকে নিজ ভূখণ্ড বলে দাবি করে।",
+      "pt": "A Sérvia reivindica o Kosovo como seu território.",
+      "ja": "セルビアはコソボを自国領だと主張している。",
+      "he": "סרביה טוענת שקוסובו הוא שטחה."
+    },
+    "Statehood and borders are disputed with Israel.": {
+      "de": "Staatlichkeit und Grenzen sind mit Israel umstritten.",
+      "zh": "国家地位和边界与以色列存在争议。",
+      "es": "La condición de Estado y las fronteras están en disputa con Israel.",
+      "hi": "राज्य का दर्जा और सीमाएँ इसराइल के साथ विवादित हैं।",
+      "ar": "الدولة والحدود محل نزاع مع إسرائيل.",
+      "bn": "রাষ্ট্রীয় মর্যাদা ও সীমানা ইসরায়েলের সঙ্গে বিরোধপূর্ণ।",
+      "pt": "A estatidade e as fronteiras estão em disputa com Israel.",
+      "ja": "国家としての地位と国境はイスラエルとの間で争われている。",
+      "he": "המדינתיות והגבולות שנויים במחלוקת עם ישראל."
+    }
+  },
+  "isPrefix": {
+    "de": "{name} ist {status}",
+    "zh": "{name}是{status}",
+    "es": "{name} es {status}",
+    "hi": "{name} {status} है",
+    "ar": "{name} {status}",
+    "bn": "{name} {status}",
+    "pt": "{name} é {status}",
+    "ja": "{name}は{status}",
+    "he": "{name} הוא {status}"
+  }
+}

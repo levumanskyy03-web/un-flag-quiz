@@ -1,6 +1,9 @@
 import { COUNTRIES, type Region } from './countries'
 import { EXTRA_ISOS } from './extras'
 import { localeTag, type Lang } from '../i18n/lang'
+import { pickRow } from '../i18n/text11'
+import HOLD_NAMES from './i18n/holdoutNames.json'
+import TERRITORY_PHRASES from './i18n/territoryPhrases.json'
 
 export interface MapTerritory {
   iso: string
@@ -178,6 +181,8 @@ const COUNTRY_BY_ISO = new Map(COUNTRIES.map((country) => [country.iso, country]
 export function territoryName(territory: MapTerritory, lang: Lang) {
   if (lang === 'ru') return territory.nameRu
   if (lang === 'en') return territory.nameEn
+  const hold = HOLD_NAMES[territory.iso as keyof typeof HOLD_NAMES]
+  if (hold) return pickRow(hold, lang, territory.nameEn)
   try {
     const iso = territory.iso.includes('-') ? territory.iso.slice(0, 2) : territory.iso
     const name = new Intl.DisplayNames([localeTag(lang)], { type: 'region' }).of(iso.toUpperCase())
@@ -189,14 +194,26 @@ export function territoryName(territory: MapTerritory, lang: Lang) {
 }
 
 export function territoryNote(territory: MapTerritory, lang: Lang) {
-  return lang === 'ru'
-    ? `${territoryName(territory, lang)} — ${territory.statusRu}`
-    : `${territoryName(territory, lang)} is ${territory.statusEn}`
+  const name = territoryName(territory, lang)
+  if (lang === 'ru') return `${name} — ${territory.statusRu}`
+  const status =
+    lang === 'en'
+      ? territory.statusEn
+      : pickRow(TERRITORY_PHRASES.status[territory.statusEn as keyof typeof TERRITORY_PHRASES.status], lang, territory.statusEn)
+  if (lang === 'en') return `${name} is ${status}`
+  const template = TERRITORY_PHRASES.isPrefix[lang] ?? '{name} — {status}'
+  return template.replace('{name}', name).replace('{status}', status)
 }
 
 export function disputeNote(territory: MapTerritory, lang: Lang) {
-  const claim = lang === 'ru' ? territory.claimRu : territory.claimEn
-  return claim || undefined
+  if (!territory.claimEn && !territory.claimRu) return undefined
+  if (lang === 'ru') return territory.claimRu
+  if (lang === 'en' || !territory.claimEn) return territory.claimEn
+  return pickRow(
+    TERRITORY_PHRASES.claim[territory.claimEn as keyof typeof TERRITORY_PHRASES.claim],
+    lang,
+    territory.claimEn,
+  )
 }
 
 function addRegionIsos(isos: Set<string>, region: Region, includeRussia: boolean) {
@@ -233,15 +250,30 @@ export function visibleIsosForRegions(regions: readonly Region[]) {
 }
 
 export function holdoutName(holdout: MapHoldout, lang: Lang) {
-  return lang === 'ru' ? holdout.nameRu : holdout.nameEn
+  if (lang === 'ru') return holdout.nameRu
+  if (lang === 'en') return holdout.nameEn
+  const extra = HOLD_NAMES[holdout.iso as keyof typeof HOLD_NAMES]
+  if (extra) return pickRow(extra, lang, holdout.nameEn)
+  try {
+    const name = new Intl.DisplayNames([localeTag(lang)], { type: 'region' }).of(holdout.iso.toUpperCase())
+    if (name && name.toUpperCase() !== holdout.iso.toUpperCase()) return name
+  } catch {
+    /* fall back */
+  }
+  return holdout.nameEn
 }
 
 export function holdoutNote(holdout: MapHoldout, lang: Lang) {
-  return lang === 'ru' ? holdout.noteRu : holdout.noteEn
+  if (lang === 'ru') return holdout.noteRu
+  if (lang === 'en') return holdout.noteEn
+  return pickRow(TERRITORY_PHRASES.note[holdout.noteEn as keyof typeof TERRITORY_PHRASES.note], lang, holdout.noteEn)
 }
 
 export function holdoutClaim(holdout: MapHoldout, lang: Lang) {
-  return lang === 'ru' ? holdout.claimRu : holdout.claimEn
+  if (!holdout.claimEn && !holdout.claimRu) return undefined
+  if (lang === 'ru') return holdout.claimRu
+  if (lang === 'en' || !holdout.claimEn) return holdout.claimEn
+  return pickRow(TERRITORY_PHRASES.claim[holdout.claimEn as keyof typeof TERRITORY_PHRASES.claim], lang, holdout.claimEn)
 }
 
 export function resolveMapLocation(id: string) {

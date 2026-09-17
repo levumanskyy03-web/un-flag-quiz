@@ -1,0 +1,15 @@
+# Generated and bulk datasets — do not load into agent context.
+src/data/facts/json/
+src/data/facts/all.json
+src/data/facts/seeds.json
+src/data/languageData.ts
+src/data/waterShapes.ts
+src/data/footballPlayerRows.ts
+src/data/passportI18n.json
+src/data/leaderBios.ts
+src/data/leaderBiosPopes.ts
+src/data/leaderBiosRus.ts
+src/data/leaderBiosUk.ts
+src/data/leaderBiosUs.ts
+scripts/.free-portraits.json
+scripts/ranking-values.json

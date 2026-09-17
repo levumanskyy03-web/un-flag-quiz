@@ -1,0 +1,10 @@
+---
+description: Keep agent prompts small; portraits use known Commons files
+alwaysApply: true
+---
+
+# Agent context
+
+- Grep i18n keys in `strings.ts` / `extra.ts` / `pages.ts`. Do not open those files whole.
+- Do not read `footballPlayerRows.ts`, `facts/all.json`, `languageData.ts`, or `passportI18n.json`.
+- Player/leader photos: if `wikiFile` (or `WIKI_PORTRAIT_FILES`) is set, show the Commons thumb URL immediately. Metadata/credits can load in the background. Do not add runtime Commons search in components.

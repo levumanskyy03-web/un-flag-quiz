@@ -58,6 +58,8 @@ type FootballCopy = Pick<
   | 'playerCardNation'
   | 'playerCardBornIn'
   | 'playerCardClubs'
+  | 'playerClubBadgeNow'
+  | 'playerClubBadgeLast'
   | 'playerCardClubCountries'
   | 'playerCardTrophies'
   | 'playerCardHonours'
@@ -147,6 +149,8 @@ function copy(labels: FootballLabelStrings & FootballHelpers): FootballCopy {
     playerCardNation: labels.playerCardNation,
     playerCardBornIn: labels.playerCardBornIn,
     playerCardClubs: labels.playerCardClubs,
+    playerClubBadgeNow: labels.playerClubBadgeNow,
+    playerClubBadgeLast: labels.playerClubBadgeLast,
     playerCardClubCountries: labels.playerCardClubCountries,
     playerCardTrophies: labels.playerCardTrophies,
     playerCardHonours: labels.playerCardHonours,
@@ -205,6 +209,8 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     playerCardNation: '国家队',
     playerCardBornIn: '出生国',
     playerCardClubs: '俱乐部',
+    playerClubBadgeNow: '现效力',
+    playerClubBadgeLast: '最后',
     playerCardClubCountries: '俱乐部国家',
     playerCardTrophies: '奖杯',
     playerCardHonours: '个人荣誉',
@@ -269,6 +275,8 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     playerCardNation: 'Selección',
     playerCardBornIn: 'Nació en',
     playerCardClubs: 'Clubes',
+    playerClubBadgeNow: 'Actual',
+    playerClubBadgeLast: 'Último',
     playerCardClubCountries: 'Países de clubes',
     playerCardTrophies: 'Títulos',
     playerCardHonours: 'Premios',
@@ -333,6 +341,8 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     playerCardNation: 'Nationalteam',
     playerCardBornIn: 'Geburtsland',
     playerCardClubs: 'Vereine',
+    playerClubBadgeNow: 'Aktuell',
+    playerClubBadgeLast: 'Letzter',
     playerCardClubCountries: 'Vereinsländer',
     playerCardTrophies: 'Titel',
     playerCardHonours: 'Auszeichnungen',
@@ -397,6 +407,8 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     playerCardNation: 'Seleção',
     playerCardBornIn: 'Nasceu em',
     playerCardClubs: 'Clubes',
+    playerClubBadgeNow: 'Atual',
+    playerClubBadgeLast: 'Último',
     playerCardClubCountries: 'Países dos clubes',
     playerCardTrophies: 'Títulos',
     playerCardHonours: 'Prémios',
@@ -461,6 +473,8 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     playerCardNation: '代表',
     playerCardBornIn: '出生国',
     playerCardClubs: 'クラブ',
+    playerClubBadgeNow: '現所属',
+    playerClubBadgeLast: '最後',
     playerCardClubCountries: 'クラブの国',
     playerCardTrophies: 'タイトル',
     playerCardHonours: '個人賞',
@@ -525,6 +539,8 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     playerCardNation: 'נבחרת',
     playerCardBornIn: 'נולד ב',
     playerCardClubs: 'מועדונים',
+    playerClubBadgeNow: 'נוכחי',
+    playerClubBadgeLast: 'אחרון',
     playerCardClubCountries: 'מדינות המועדונים',
     playerCardTrophies: 'תארים',
     playerCardHonours: 'פרסים',
@@ -589,6 +605,8 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     playerCardNation: 'المنتخب',
     playerCardBornIn: 'بلد الميلاد',
     playerCardClubs: 'الأندية',
+    playerClubBadgeNow: 'الحالي',
+    playerClubBadgeLast: 'الأخير',
     playerCardClubCountries: 'بلدان الأندية',
     playerCardTrophies: 'الألقاب',
     playerCardHonours: 'الجوائز',
@@ -653,6 +671,8 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     playerCardNation: 'टीम',
     playerCardBornIn: 'जन्म देश',
     playerCardClubs: 'क्लब',
+    playerClubBadgeNow: 'वर्तमान',
+    playerClubBadgeLast: 'अंतिम',
     playerCardClubCountries: 'क्लब देश',
     playerCardTrophies: 'खिताब',
     playerCardHonours: 'सम्मान',
@@ -717,6 +737,8 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     playerCardNation: 'জাতীয় দল',
     playerCardBornIn: 'জন্মদেশ',
     playerCardClubs: 'ক্লাব',
+    playerClubBadgeNow: 'বর্তমান',
+    playerClubBadgeLast: 'শেষ',
     playerCardClubCountries: 'ক্লাবের দেশ',
     playerCardTrophies: 'ট্রফি',
     playerCardHonours: 'সম্মান',

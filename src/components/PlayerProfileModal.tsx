@@ -10,6 +10,7 @@ import {
 import { formatXp } from '../lib/xp'
 import { AchievementGallery } from './AchievementGallery'
 import { AvatarMark } from './AvatarMark'
+import { CountryMark } from './CountryPicker'
 
 interface PlayerProfileModalProps {
   lang: Lang
@@ -102,6 +103,7 @@ export function PlayerProfileModal({
                 {createdAt ? (
                   <p className="account-registered">{t.accountRegistered(formatRegisteredAt(createdAt, lang))}</p>
                 ) : null}
+                <CountryMark iso={player?.countryIso} lang={lang} />
                 <p className="account-level">{t.accountLevel(level || 1)}</p>
                 <p className="profile-xp">{t.xpTotal(formatXp(xp, lang))}</p>
               </div>

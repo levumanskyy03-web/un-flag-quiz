@@ -1,6 +1,8 @@
 export type SfxName = 'correct' | 'wrong' | 'success' | 'fail' | 'record'
 
 const MUTE_KEY = 'un-flag-quiz-sfx-mute'
+const MUSIC_MUTE_KEY = 'un-flag-quiz-music-mute'
+const AUDIO_EVENT = 'un-flag-quiz-audio'
 
 const FILES: Record<SfxName, string> = {
   correct: '/sounds/correct.wav',
@@ -18,28 +20,62 @@ const VOLUME: Record<SfxName, number> = {
   record: 0.55,
 }
 
-export function isSfxMuted(): boolean {
+function flag(key: string): boolean {
   if (typeof window === 'undefined') return false
-  return window.localStorage.getItem(MUTE_KEY) === '1'
+  return window.localStorage.getItem(key) === '1'
 }
 
-const MUTE_EVENT = 'un-flag-quiz-sfx-mute'
+function writeFlag(key: string, muted: boolean) {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(key, muted ? '1' : '0')
+}
+
+function emitAudio() {
+  if (typeof window === 'undefined') return
+  window.dispatchEvent(new Event(AUDIO_EVENT))
+}
+
+export function isSfxMuted(): boolean {
+  return flag(MUTE_KEY)
+}
+
+export function isMusicMuted(): boolean {
+  return flag(MUSIC_MUTE_KEY)
+}
+
+export function isAllAudioMuted(): boolean {
+  return isSfxMuted() && isMusicMuted()
+}
 
 export function setSfxMuted(muted: boolean) {
-  if (typeof window === 'undefined') return
-  window.localStorage.setItem(MUTE_KEY, muted ? '1' : '0')
-  window.dispatchEvent(new Event(MUTE_EVENT))
+  writeFlag(MUTE_KEY, muted)
+  emitAudio()
+}
+
+export function setMusicMuted(muted: boolean) {
+  writeFlag(MUSIC_MUTE_KEY, muted)
+  emitAudio()
+}
+
+export function setAllAudioMuted(muted: boolean) {
+  writeFlag(MUTE_KEY, muted)
+  writeFlag(MUSIC_MUTE_KEY, muted)
+  emitAudio()
+}
+
+export function subscribeAudio(onChange: () => void) {
+  if (typeof window === 'undefined') return () => {}
+  const handler = () => onChange()
+  window.addEventListener(AUDIO_EVENT, handler)
+  window.addEventListener('storage', handler)
+  return () => {
+    window.removeEventListener(AUDIO_EVENT, handler)
+    window.removeEventListener('storage', handler)
+  }
 }
 
 export function subscribeSfxMute(onChange: (muted: boolean) => void) {
-  if (typeof window === 'undefined') return () => {}
-  const handler = () => onChange(isSfxMuted())
-  window.addEventListener(MUTE_EVENT, handler)
-  window.addEventListener('storage', handler)
-  return () => {
-    window.removeEventListener(MUTE_EVENT, handler)
-    window.removeEventListener('storage', handler)
-  }
+  return subscribeAudio(() => onChange(isSfxMuted()))
 }
 
 export function playSfx(name: SfxName) {

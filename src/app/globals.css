@@ -650,8 +650,17 @@ img {
 }
 
 .country-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   width: 100%;
   margin: 8px 0 0;
+}
+
+button.country-share {
+  min-height: 48px;
+  padding: 12px 14px;
+  flex: 1 1 8rem;
 }
 
 .legal-article a.country-play,
@@ -784,8 +793,6 @@ a.passport-neighbor:hover {
 }
 
 .app > .app-chrome {
-  position: sticky;
-  top: 0;
   z-index: 8;
   margin: -8px -8px 6px;
   padding: 8px 8px 10px;
@@ -969,6 +976,131 @@ html[dir="rtl"] .coc-level {
 
 .sfx-chip.is-muted {
   color: var(--muted);
+}
+
+.sfx-chip.is-partial {
+  color: color-mix(in srgb, var(--text) 55%, var(--muted));
+}
+
+.sfx-menu-wrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.sfx-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  min-width: 196px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  box-shadow: 0 12px 28px rgba(20, 12, 6, 0.18);
+}
+
+.sfx-menu button {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-align: start;
+  cursor: pointer;
+}
+
+.sfx-menu button.is-active {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.country-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.country-picker-label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.country-picker-current,
+.account-country {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.country-picker-search {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.country-picker-list {
+  max-height: 220px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+}
+
+.country-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 650;
+  text-align: start;
+  cursor: pointer;
+}
+
+.country-picker-item:last-child {
+  border-bottom: 0;
+}
+
+.country-picker-item.is-active,
+.country-picker-item:hover {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.flag-icon {
+  width: 22px;
+  flex: 0 0 22px;
+}
+
+.flag-icon .flag-img {
+  border-radius: 3px;
 }
 
 .geo-icon {
@@ -3721,6 +3853,44 @@ button.leader-card-open {
   font-weight: 600;
 }
 
+.player-card-clubs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.player-card-clubs-past {
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.player-card-club-now {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-card-clubs-past + .player-card-club-now {
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.player-card-club-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 .player-card-facts {
   margin-top: 16px;
   text-align: left;
@@ -5478,7 +5648,7 @@ html[dir="rtl"] .map-pan {
     inset 0 0 0 9px #8a6230;
 }
 
-.flag:not(.flag-thumb):not(.flag-option)::after {
+.flag:not(.flag-thumb):not(.flag-option):not(.flag-icon)::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -5495,7 +5665,7 @@ html[dir="rtl"] .map-pan {
   mix-blend-mode: soft-light;
 }
 
-.flag:not(.flag-thumb):not(.flag-option) .flag-img {
+.flag:not(.flag-thumb):not(.flag-option):not(.flag-icon) .flag-img {
   box-shadow: 0 14px 22px rgba(20, 12, 6, 0.22);
   border-color: color-mix(in srgb, #4a3a28 20%, #cfd8e3);
 }

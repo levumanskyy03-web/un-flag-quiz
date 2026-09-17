@@ -23,8 +23,10 @@ import {
   type RoundEnd,
 } from '../lib/quiz'
 import { formatXp, accountProgress } from '../lib/xp'
+import { SITE_ORIGIN } from '../lib/site'
 import { optionLabel } from '../lib/quizAnswers'
 import { TeamFlag } from './Flag'
+import { ShareButton } from './ShareButton'
 import { WorldsBack } from './WorldsBack'
 
 interface ResultsScreenProps {
@@ -195,6 +197,12 @@ export function ResultsScreen({
         <button type="button" className={success && onNextLevel ? 'btn-secondary' : 'btn-primary'} onClick={onAgain}>
           {t.playAgain}
         </button>
+        <ShareButton
+          lang={lang}
+          className="btn-secondary"
+          url={SITE_ORIGIN}
+          text={t.shareResult(t.score(correctCount, total), SITE_ORIGIN)}
+        />
         <button type="button" className="btn-secondary" onClick={onWorlds ?? onMenu}>
           {onWorlds ? t.worldsBack : (menuLabel ?? t.backToMenu)}
         </button>

@@ -116,6 +116,8 @@ export type Strings = {
   playerCardNation: string
   playerCardBornIn: string
   playerCardClubs: string
+  playerClubBadgeNow: string
+  playerClubBadgeLast: string
   playerCardClubCountries: string
   playerCardTrophies: string
   playerCardHonours: string
@@ -430,6 +432,13 @@ export type Strings = {
   signIn: string
   signUp: string
   signOut: string
+  deleteAccount: string
+  deleteAccountHint: string
+  deleteAccountConfirm: string
+  exportData: string
+  exportDataDone: string
+  signOutAll: string
+  signOutAllHint: string
   password: string
   passwordRepeat: string
   passwordHint: string
@@ -456,15 +465,25 @@ export type Strings = {
   legalAbout: string
   legalPrivacy: string
   legalContacts: string
+  legalTerms: string
   legalCountries: string
   legalToday: string
   legalLanguages: string
+  share: string
+  shareCopied: string
+  shareResult: (score: string, url: string) => string
+  shareToday: (name: string, url: string) => string
   settings: string
   settingsAccount: string
   settingsAbout: string
   sounds: string
   soundsOn: string
   soundsOff: string
+  music: string
+  audioAll: string
+  audioAllOff: string
+  accountCountry: string
+  countrySearch: string
   settingsReport: string
   settingsAchievements: string
   settingsXp: string
@@ -489,6 +508,7 @@ export type Strings = {
   profileName: string
   profileLanguage: string
   guestName: string
+  duelAnonName: string
   guestHint: string
   saveProfile: string
   profileSaved: string
@@ -777,6 +797,8 @@ export const STRINGS: Record<Lang, Strings> = {
     playerCardNation: 'Сборная',
     playerCardBornIn: 'Страна рождения',
     playerCardClubs: 'Клубы',
+    playerClubBadgeNow: 'Сейчас',
+    playerClubBadgeLast: 'Последний',
     playerCardClubCountries: 'Страны клубов',
     playerCardTrophies: 'Кубки',
     playerCardHonours: 'Личные награды',
@@ -1101,6 +1123,14 @@ export const STRINGS: Record<Lang, Strings> = {
     signIn: 'Войти',
     signUp: 'Регистрация',
     signOut: 'Выйти',
+    deleteAccount: 'Удалить аккаунт',
+    deleteAccountHint:
+      'Аккаунт, рейтинг и дуэльный эло на сервере будут удалены. Прогресс на этом устройстве останется в браузере.',
+    deleteAccountConfirm: 'Введите пароль, чтобы подтвердить.',
+    exportData: 'Скачать мои данные',
+    exportDataDone: 'Файл сохранён',
+    signOutAll: 'Выйти везде',
+    signOutAllHint: 'Снимет вход на этом и других устройствах.',
     password: 'Пароль',
     passwordRepeat: 'Повторите пароль',
     passwordHint: 'Пароль — минимум 8 символов',
@@ -1130,6 +1160,11 @@ export const STRINGS: Record<Lang, Strings> = {
     sounds: 'Звуки',
     soundsOn: 'Вкл',
     soundsOff: 'Выкл',
+    music: 'Мелодия',
+    audioAll: 'Всё включено',
+    audioAllOff: 'Выключить всё',
+    accountCountry: 'Страна',
+    countrySearch: 'Найти страну',
     settingsReport: 'Сообщить о проблеме',
     settingsAchievements: 'Ачивки',
     settingsXp: 'Опыт',
@@ -1157,6 +1192,7 @@ export const STRINGS: Record<Lang, Strings> = {
     profileName: 'Имя',
     profileLanguage: 'Язык',
     guestName: 'Гость',
+    duelAnonName: 'Игрок',
     guestHint: 'Чтобы попасть в рейтинг, войдите по имени и паролю.',
     saveProfile: 'Сохранить',
     profileSaved: 'Сохранено',
@@ -1230,9 +1266,14 @@ export const STRINGS: Record<Lang, Strings> = {
     legalAbout: 'О проекте',
     legalPrivacy: 'Политика',
     legalContacts: 'Контакты',
+    legalTerms: 'Условия',
     legalCountries: 'Страны',
     legalToday: 'Страна дня',
     legalLanguages: 'Языки',
+    share: 'Поделиться',
+    shareCopied: 'Ссылка скопирована',
+    shareResult: (score, url) => `Я сыграл в «Паспорт страны»: ${score}. ${url}`,
+    shareToday: (name, url) => `Страна дня — ${name}. ${url}`,
     duel: 'Дуэль',
     duelHint: 'Один на один с другом: создайте комнату или введите код.',
     duelPlay: 'Играть',
@@ -1437,6 +1478,8 @@ export const STRINGS: Record<Lang, Strings> = {
     playerCardNation: 'National team',
     playerCardBornIn: 'Born in',
     playerCardClubs: 'Clubs',
+    playerClubBadgeNow: 'Current',
+    playerClubBadgeLast: 'Last',
     playerCardClubCountries: 'Club countries',
     playerCardTrophies: 'Trophies',
     playerCardHonours: 'Individual honours',
@@ -1761,6 +1804,14 @@ export const STRINGS: Record<Lang, Strings> = {
     signIn: 'Sign in',
     signUp: 'Register',
     signOut: 'Sign out',
+    deleteAccount: 'Delete account',
+    deleteAccountHint:
+      'Your server account, leaderboards and duel rating will be removed. Progress on this device stays in the browser.',
+    deleteAccountConfirm: 'Enter your password to confirm.',
+    exportData: 'Download my data',
+    exportDataDone: 'File saved',
+    signOutAll: 'Sign out everywhere',
+    signOutAllHint: 'Ends the session on this device and any others.',
     password: 'Password',
     passwordRepeat: 'Repeat password',
     passwordHint: 'Password — at least 8 characters',
@@ -1790,6 +1841,11 @@ export const STRINGS: Record<Lang, Strings> = {
     sounds: 'Sounds',
     soundsOn: 'On',
     soundsOff: 'Off',
+    music: 'Music',
+    audioAll: 'All on',
+    audioAllOff: 'Mute all',
+    accountCountry: 'Country',
+    countrySearch: 'Find a country',
     settingsReport: 'Report a problem',
     settingsAchievements: 'Achievements',
     settingsXp: 'XP',
@@ -1817,6 +1873,7 @@ export const STRINGS: Record<Lang, Strings> = {
     profileName: 'Name',
     profileLanguage: 'Language',
     guestName: 'Guest',
+    duelAnonName: 'Player',
     guestHint: 'Sign in with your name and password to appear on the leaderboard.',
     saveProfile: 'Save',
     profileSaved: 'Saved',
@@ -1884,9 +1941,14 @@ export const STRINGS: Record<Lang, Strings> = {
     legalAbout: 'About',
     legalPrivacy: 'Privacy',
     legalContacts: 'Contact',
+    legalTerms: 'Terms',
     legalCountries: 'Countries',
     legalToday: 'Country of the day',
     legalLanguages: 'Languages',
+    share: 'Share',
+    shareCopied: 'Link copied',
+    shareResult: (score, url) => `I played Country Passport: ${score}. ${url}`,
+    shareToday: (name, url) => `Country of the day: ${name}. ${url}`,
     duel: 'Duel',
     duelHint: 'One on one with a friend: create a room or enter a code.',
     duelPlay: 'Play',

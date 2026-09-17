@@ -1,6 +1,12 @@
+import type { Metadata } from 'next'
 import { buildFactsReview } from '../../lib/factsReview'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Facts dump',
+  robots: { index: false, follow: false },
+}
 
 export default function FactsDumpPage() {
   const review = buildFactsReview()

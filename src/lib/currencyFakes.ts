@@ -1,6 +1,7 @@
 import { type Country, type Region } from '../data/countries'
 import { PASSPORTS, passportCurrency } from '../data/passports'
-import type { Lang } from '../i18n/strings'
+import { localeTag, type Lang } from '../i18n/lang'
+import { pickText, type TextExtra } from '../i18n/text11'
 
 type Gender = 'm' | 'f' | 'n'
 
@@ -8,6 +9,7 @@ interface Unit {
   en: string
   ru: string
   gender: Gender
+  extra: TextExtra
 }
 
 interface Adj {
@@ -15,27 +17,31 @@ interface Adj {
   ru: string
 }
 
+function u(en: string, ru: string, gender: Gender, extra: TextExtra): Unit {
+  return { en, ru, gender, extra }
+}
+
 const UNITS: Unit[] = [
-  { en: 'peso', ru: 'песо', gender: 'n' },
-  { en: 'dollar', ru: 'доллар', gender: 'm' },
-  { en: 'franc', ru: 'франк', gender: 'm' },
-  { en: 'dinar', ru: 'динар', gender: 'm' },
-  { en: 'pound', ru: 'фунт', gender: 'm' },
-  { en: 'rupee', ru: 'рупия', gender: 'f' },
-  { en: 'lira', ru: 'лира', gender: 'f' },
-  { en: 'krona', ru: 'крона', gender: 'f' },
-  { en: 'euro', ru: 'евро', gender: 'n' },
-  { en: 'yen', ru: 'иена', gender: 'f' },
-  { en: 'yuan', ru: 'юань', gender: 'm' },
-  { en: 'won', ru: 'вона', gender: 'f' },
-  { en: 'ruble', ru: 'рубль', gender: 'm' },
-  { en: 'real', ru: 'реал', gender: 'm' },
-  { en: 'escudo', ru: 'эскудо', gender: 'n' },
-  { en: 'mark', ru: 'марка', gender: 'f' },
-  { en: 'shilling', ru: 'шиллинг', gender: 'm' },
-  { en: 'dirham', ru: 'дирхам', gender: 'm' },
-  { en: 'rial', ru: 'риал', gender: 'm' },
-  { en: 'sucre', ru: 'сукре', gender: 'm' },
+  u('peso', 'песо', 'n', { de: 'Peso', zh: '比索', es: 'peso', hi: 'पेसो', ar: 'بيزو', bn: 'পেসো', pt: 'peso', ja: 'ペソ', he: 'פסו' }),
+  u('dollar', 'доллар', 'm', { de: 'Dollar', zh: '元', es: 'dólar', hi: 'डॉलर', ar: 'دولار', bn: 'ডলার', pt: 'dólar', ja: 'ドル', he: 'דולר' }),
+  u('franc', 'франк', 'm', { de: 'Franc', zh: '法郎', es: 'franco', hi: 'फ़्रैंक', ar: 'فرنك', bn: 'ফ্রাঙ্ক', pt: 'franco', ja: 'フラン', he: 'פרנק' }),
+  u('dinar', 'динар', 'm', { de: 'Dinar', zh: '第纳尔', es: 'dinar', hi: 'दीनार', ar: 'دينار', bn: 'দিনার', pt: 'dinar', ja: 'ディナール', he: 'דינר' }),
+  u('pound', 'фунт', 'm', { de: 'Pfund', zh: '镑', es: 'libra', hi: 'पाउंड', ar: 'جنيه', bn: 'পাউন্ড', pt: 'libra', ja: 'ポンド', he: 'לירה' }),
+  u('rupee', 'рупия', 'f', { de: 'Rupie', zh: '卢比', es: 'rupia', hi: 'रुपया', ar: 'روبية', bn: 'রুপি', pt: 'rupia', ja: 'ルピー', he: 'רופי' }),
+  u('lira', 'лира', 'f', { de: 'Lira', zh: '里拉', es: 'lira', hi: 'लीरा', ar: 'ليرة', bn: 'লিরা', pt: 'lira', ja: 'リラ', he: 'לירה' }),
+  u('krona', 'крона', 'f', { de: 'Krone', zh: '克朗', es: 'corona', hi: 'क्रोना', ar: 'كرونة', bn: 'ক্রোনা', pt: 'coroa', ja: 'クローナ', he: 'כתר' }),
+  u('euro', 'евро', 'n', { de: 'Euro', zh: '欧元', es: 'euro', hi: 'यूरो', ar: 'يورو', bn: 'ইউরো', pt: 'euro', ja: 'ユーロ', he: 'יורו' }),
+  u('yen', 'иена', 'f', { de: 'Yen', zh: '日元', es: 'yen', hi: 'येन', ar: 'ين', bn: 'ইয়েন', pt: 'iene', ja: '円', he: 'ין' }),
+  u('yuan', 'юань', 'm', { de: 'Yuan', zh: '元', es: 'yuan', hi: 'युआन', ar: 'يوان', bn: 'ইউয়ান', pt: 'yuan', ja: '元', he: 'יואן' }),
+  u('won', 'вона', 'f', { de: 'Won', zh: '韩元', es: 'won', hi: 'वॉन', ar: 'وون', bn: 'ওন', pt: 'won', ja: 'ウォン', he: 'וון' }),
+  u('ruble', 'рубль', 'm', { de: 'Rubel', zh: '卢布', es: 'rublo', hi: 'रूबल', ar: 'روبل', bn: 'রুবেল', pt: 'rublo', ja: 'ルーブル', he: 'רובל' }),
+  u('real', 'реал', 'm', { de: 'Real', zh: '雷亚尔', es: 'real', hi: 'रियल', ar: 'ريال', bn: 'রেয়াল', pt: 'real', ja: 'レアル', he: 'ריאל' }),
+  u('escudo', 'эскудо', 'n', { de: 'Escudo', zh: '埃斯库多', es: 'escudo', hi: 'एस्कुदो', ar: 'إسكودو', bn: 'এস্কুডো', pt: 'escudo', ja: 'エスクード', he: 'אסקודו' }),
+  u('mark', 'марка', 'f', { de: 'Mark', zh: '马克', es: 'marco', hi: 'मार्क', ar: 'مارك', bn: 'মার্ক', pt: 'marco', ja: 'マルク', he: 'מארק' }),
+  u('shilling', 'шиллинг', 'm', { de: 'Schilling', zh: '先令', es: 'chelín', hi: 'शिलिंग', ar: 'شلن', bn: 'শিলিং', pt: 'xelim', ja: 'シリング', he: 'שילינג' }),
+  u('dirham', 'дирхам', 'm', { de: 'Dirham', zh: '迪拉姆', es: 'dírham', hi: 'दिर्हम', ar: 'درهم', bn: 'দিরহাম', pt: 'dirham', ja: 'ディルハム', he: 'דירהם' }),
+  u('rial', 'риал', 'm', { de: 'Rial', zh: '里亚尔', es: 'rial', hi: 'रियाल', ar: 'ريال', bn: 'রিয়াল', pt: 'rial', ja: 'リアル', he: 'ריאל' }),
+  u('sucre', 'сукре', 'm', { de: 'Sucre', zh: '苏克雷', es: 'sucre', hi: 'सुक्रे', ar: 'سوكري', bn: 'সুক্রে', pt: 'sucre', ja: 'スクレ', he: 'סוקרה' }),
 ]
 
 const REGION_UNITS: Record<Region, string[]> = {
@@ -92,7 +98,50 @@ export function currencyChoiceLabel(
     const source = PASSPORTS[option.iso]
     return source ? passportCurrency(source, lang, option.iso) : ''
   }
-  return lang === 'ru' ? label.ru : label.en
+  return pickText(lang, label.ru, label.en, extraFake(label, lang, prompt))
+}
+
+function extraFake(label: { en: string; ru: string }, lang: Lang, prompt: Country): Partial<TextExtra> | undefined {
+  if (lang === 'ru' || lang === 'en') return undefined
+  const unnamed = unnamedCurrencies().find((item) => item.en === label.en)
+  if (unnamed) return unnamed.extra
+  const unit = UNITS.find((item) => label.en.endsWith(` ${item.en}`) || label.en === item.en)
+  if (!unit) return undefined
+  const place = placeName(prompt, lang)
+  const u = pickText(lang, unit.ru, unit.en, unit.extra)
+  return { [lang]: fakePhrase(lang, place, u) } as Partial<TextExtra>
+}
+
+function placeName(country: Country, lang: Lang): string {
+  if (lang === 'ru') return country.nameRu
+  if (lang === 'en') return country.nameEn
+  try {
+    const name = new Intl.DisplayNames([localeTag(lang)], { type: 'region' }).of(country.iso.toUpperCase())
+    if (name) return name
+  } catch {
+    /* fall back */
+  }
+  return country.nameEn
+}
+
+function fakePhrase(lang: Lang, place: string, unit: string): string {
+  switch (lang) {
+    case 'zh':
+      return `${place}${unit}`
+    case 'ja':
+      return `${place}の${unit}`
+    case 'de':
+      return `${place}-${unit}`
+    case 'es':
+    case 'pt':
+      return `${unit} de ${place}`
+    case 'ar':
+      return `${unit} ${place}`
+    case 'he':
+      return `${unit} של ${place}`
+    default:
+      return `${place} ${unit}`
+  }
 }
 
 function distractorLabels(
@@ -171,12 +220,58 @@ function fakeLabels(
   return labels
 }
 
-function unnamedCurrencies(): Array<{ en: string; ru: string }> {
+function unnamedCurrencies(): Array<{ en: string; ru: string; extra: TextExtra }> {
   return [
-    { en: 'Euro', ru: 'евро' },
-    { en: 'CFA franc', ru: 'франк КФА' },
-    { en: 'East Caribbean dollar', ru: 'восточнокарибский доллар' },
-    { en: 'Pound sterling', ru: 'фунт стерлингов' },
+    {
+      en: 'Euro',
+      ru: 'евро',
+      extra: { de: 'Euro', zh: '欧元', es: 'euro', hi: 'यूरो', ar: 'يورو', bn: 'ইউরো', pt: 'euro', ja: 'ユーロ', he: 'יורו' },
+    },
+    {
+      en: 'CFA franc',
+      ru: 'франк КФА',
+      extra: {
+        de: 'CFA-Franc',
+        zh: '非洲金融共同体法郎',
+        es: 'franco CFA',
+        hi: 'सीएफए फ़्रैंक',
+        ar: 'فرنك غرب/وسط أفريقيا',
+        bn: 'সিএফএ ফ্রাঙ্ক',
+        pt: 'franco CFA',
+        ja: 'CFAフラン',
+        he: 'פרנק CFA',
+      },
+    },
+    {
+      en: 'East Caribbean dollar',
+      ru: 'восточнокарибский доллар',
+      extra: {
+        de: 'Ostkaribischer Dollar',
+        zh: '东加勒比元',
+        es: 'dólar del Caribe Oriental',
+        hi: 'पूर्वी कैरिबियाई डॉलर',
+        ar: 'دولار شرق الكاريبي',
+        bn: 'পূর্ব ক্যারিবীয় ডলার',
+        pt: 'dólar do Caribe Oriental',
+        ja: '東カリブドル',
+        he: 'דולר מזרח־קריבי',
+      },
+    },
+    {
+      en: 'Pound sterling',
+      ru: 'фунт стерлингов',
+      extra: {
+        de: 'Pfund Sterling',
+        zh: '英镑',
+        es: 'libra esterlina',
+        hi: 'पाउंड स्टर्लिंग',
+        ar: 'جنيه إسترليني',
+        bn: 'পাউন্ড স্টার্লিং',
+        pt: 'libra esterlina',
+        ja: 'スターリング・ポンド',
+        he: 'לירה שטרלינג',
+      },
+    },
   ]
 }
 

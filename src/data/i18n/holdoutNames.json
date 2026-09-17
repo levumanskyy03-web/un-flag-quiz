@@ -1,0 +1,101 @@
+{
+  "xx-kurils": {
+    "de": "Südliche Kurilen (Nördliche Territorien)",
+    "zh": "南千岛群岛（北方四岛）",
+    "es": "Islas Kuriles meridionales (Territorios del Norte)",
+    "hi": "दक्षिणी कुरिल द्वीप (उत्तरी क्षेत्र)",
+    "ar": "جزر الكوريل الجنوبية (الأراضي الشمالية)",
+    "bn": "দক্ষিণ কুরিল দ্বীপপুঞ্জ (উত্তরাঞ্চলীয় অঞ্চল)",
+    "pt": "Curilas meridionais (Territórios do Norte)",
+    "ja": "南千島列島（北方領土）",
+    "he": "איי קוריל הדרומיים (הטריטוריות הצפוניות)"
+  },
+  "xx-senkaku": {
+    "de": "Senkaku-Inseln (Diaoyu)",
+    "zh": "钓鱼岛（尖阁诸岛）",
+    "es": "Islas Senkaku (Diaoyu)",
+    "hi": "सेंकाकू द्वीपसमूह (डियाओयू)",
+    "ar": "جزر سنكاكو (دياويو)",
+    "bn": "সেনকাকু দ্বীপপুঞ্জ (দিয়াওইউ)",
+    "pt": "Ilhas Senkaku (Diaoyu)",
+    "ja": "尖閣諸島（釣魚島）",
+    "he": "איי סנקאקו (דיאויו)"
+  },
+  "xx-dokdo": {
+    "de": "Dokdo (Takeshima)",
+    "zh": "独岛（竹岛）",
+    "es": "Dokdo (Takeshima)",
+    "hi": "दोक्दो (ताकेशिमा)",
+    "ar": "دوكدو (تاكيشيما)",
+    "bn": "দোকদো (তাকেশিমা)",
+    "pt": "Dokdo (Takeshima)",
+    "ja": "独島（竹島）",
+    "he": "דוקדו (טקשימה)"
+  },
+  "um-dq": {
+    "de": "Jarvisinsel",
+    "zh": "贾维斯岛",
+    "es": "Isla Jarvis",
+    "hi": "जार्विस द्वीप",
+    "ar": "جزيرة جارفيس",
+    "bn": "জারভিস দ্বীপ",
+    "pt": "Ilha Jarvis",
+    "ja": "ジャービス島",
+    "he": "האי ג'רביס"
+  },
+  "um-fq": {
+    "de": "Bakerinsel",
+    "zh": "贝克岛",
+    "es": "Isla Baker",
+    "hi": "बेकर द्वीप",
+    "ar": "جزيرة بيكر",
+    "bn": "বেকার দ্বীপ",
+    "pt": "Ilha Baker",
+    "ja": "ベーカー島",
+    "he": "האי בייקר"
+  },
+  "um-hq": {
+    "de": "Howlandinsel",
+    "zh": "豪兰岛",
+    "es": "Isla Howland",
+    "hi": "हाउलैंड द्वीप",
+    "ar": "جزيرة هاولاند",
+    "bn": "হাউল্যান্ড দ্বীপ",
+    "pt": "Ilha Howland",
+    "ja": "ハウランド島",
+    "he": "האי האוולנד"
+  },
+  "um-jq": {
+    "de": "Johnston-Atoll",
+    "zh": "约翰斯顿环礁",
+    "es": "Atolón Johnston",
+    "hi": "जॉनस्टन एटॉल",
+    "ar": "جزيرة جونستون المرجانية",
+    "bn": "জনস্টন অ্যাটল",
+    "pt": "Atol Johnston",
+    "ja": "ジョンストン環礁",
+    "he": "אטול ג'ונסטון"
+  },
+  "um-mq": {
+    "de": "Midwayinseln",
+    "zh": "中途岛",
+    "es": "Islas Midway",
+    "hi": "मिडवे द्वीप",
+    "ar": "جزر ميدواي",
+    "bn": "মিডওয়ে দ্বীপপুঞ্জ",
+    "pt": "Ilhas Midway",
+    "ja": "ミッドウェー諸島",
+    "he": "איי מידוויי"
+  },
+  "um-wq": {
+    "de": "Wake-Insel",
+    "zh": "威克岛",
+    "es": "Isla Wake",
+    "hi": "वेक द्वीप",
+    "ar": "جزيرة ويك",
+    "bn": "ওয়েক দ্বীপ",
+    "pt": "Ilha Wake",
+    "ja": "ウェーク島",
+    "he": "האי וייק"
+  }
+}

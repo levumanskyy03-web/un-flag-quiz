@@ -1,0 +1,1034 @@
+{
+  "william1": {
+    "bio": {
+      "de": "Herzog der Normandie, der 1066 bei Hastings siegte und die englische Krone nahm, die angelsächsische Linie verdrängend. Er ließ das Domesday-Buch über Ländereien, Leute und Abgaben des Königreichs für Steuer und Kontrolle anlegen. Die normannische Eroberung ersetzte die Elite, die Hofsprache und Englands Bindung an den Kontinent; Burgen und eine Lehnsleiter wurden die Norm. Harte Ordnung nach dem Verheeren des Nordens.",
+      "zh": "诺曼底公爵，1066年在黑斯廷斯取胜并夺取英格兰王冠，取代盎格鲁–撒克逊王统。他下令编制《末日审判书》，登记王国土地、人口与贡赋，以便征税与控制。诺曼征服更换了精英、宫廷语言以及英格兰与大陆的纽带；城堡与封建阶梯成为常态。北方浩劫之后是严厉的秩序。",
+      "es": "Duque de Normandía que venció en Hastings en 1066 y tomó la corona inglesa, desplazando la línea anglosajona. Ordenó el inventario Domesday de tierras, gentes y rentas del reino para impuesto y control. La Conquista normanda sustituyó la élite, la lengua de la corte y el vínculo de Inglaterra con el continente; castillos y una escala feudal se volvieron la norma. Orden dura tras el saqueo del Norte.",
+      "hi": "नॉर्मंडी के ड्यूक जिन्होंने 1066 में हेस्टिंग्स जीता और अंग्रेज़ी मुकुट लिया, एंग्लो-सैक्सन वंश हटाकर। कर और नियंत्रण के लिए राज्य की भूमि, लोगों और देयों की डूम्सडे सूची बनवाई। नॉर्मन विजय ने अभिजात, दरबारी भाषा और महाद्वीप से इंग्लैंड का नाता बदला; किले और सामंती सीढ़ी नियम बने। उत्तर की तबाही के बाद कठोर व्यवस्था।",
+      "ar": "دوق نورماندي الذي انتصر في هاستينغز عام 1066 وأخذ تاج إنكلترا مزيجاً الخط الأنغلوسكسوني. أمر بجرد الدومسداي لأراضي المملكة وأهلها ومستحقاتها للضريبة والضبط. أبدل الفتح النورماني النخبة ولغة البلاط ورباط إنكلترا بالقارة؛ صارت القلاع والسلم الإقطاعي القاعدة. نظام قاسٍ بعد تخريب الشمال.",
+      "bn": "নরম্যান্ডির ডিউক যিনি ১০৬৬-এ হেস্টিংসে জিতে ইংরেজ মুকুট নেন, অ্যাংলো-স্যাক্সন বংশ সরিয়ে। কর ও নিয়ন্ত্রণে রাজ্যের জমি, মানুষ ও পাওনার ডুমসডে তালিকা করান। নরমান বিজয় অভিজাত, দরবারের ভাষা ও মহাদেশে ইংল্যান্ডের বন্ধন বদলায়; দুর্গ ও সামন্ত সিঁড়ি নিয়ম হয়। উত্তরের ধ্বংসের পর কঠোর শৃঙ্খলা।",
+      "pt": "Duque da Normandia que venceu em Hastings em 1066 e tomou a coroa inglesa, deslocando a linha anglo-saxónica. Mandou fazer o inquérito Domesday de terras, gentes e rendas do reino para imposto e controlo. A Conquista normanda substituiu a elite, a língua da corte e o laço de Inglaterra com o continente; castelos e uma escada feudal tornaram-se a norma. Ordem dura após o saque do Norte.",
+      "ja": "ノルマンディー公。1066年ヘイスティングズに勝ちイングランド王冠を取り、アングロサクソン王家を退けた。税と支配のため土地・人・貢納のドゥームズデイ調査を命じた。ノルマン征服はエリート、宮廷語、大陸との結びつきを替え、城と封建の階梯が常となった。北部荒廃のあとの厳しい秩序。",
+      "he": "דוכס נורמנדי שניצח בהייסטינגס ב־1066 ולקח את כתר אנגליה, דוחק את הקו האנגלו-סקסי. ציווה על סקר הדומסדיי של אדמות הממלכה, אנשיה וחובותיה למס ולשליטה. הכיבוש הנורמני החליף את האליטה, שפת החצר וקשר אנגליה ליבשת; טירות וסולם פיאודלי נעשו לנורמה. סדר קשה אחרי הרס הצפון."
+    },
+    "feat": {
+      "de": "Die Eroberung von 1066 und das Domesday-Buch.",
+      "zh": "1066年征服与《末日审判书》。",
+      "es": "La Conquista de 1066 y el Libro Domesday.",
+      "hi": "1066 की विजय और डूम्सडे बुक।",
+      "ar": "فتح 1066 وكتاب الدومسداي.",
+      "bn": "১০৬৬-এর বিজয় ও ডুমসডে বই।",
+      "pt": "A Conquista de 1066 e o Livro Domesday.",
+      "ja": "1066年の征服とドゥームズデイ・ブック。",
+      "he": "כיבוש 1066 וספר הדומסדיי."
+    }
+  },
+  "william2": {
+    "bio": {
+      "de": "Sohn des Eroberers, genannt Rufus, König von England, während der ältere Bruder Robert die Normandie hielt. Er kämpfte in der Normandie und gegen die Schotten und geriet mit Anselm und der Kirche über Investitur und Bistumseinkünfte in Streit. 1100 starb er auf der Jagd im New Forest — Mord oder Unfall wird noch diskutiert. Die Kasse war voll; die Liebe der Barone nicht.",
+      "zh": "征服者之子，绰号“红发”，英格兰国王，而长兄罗伯特据有诺曼底。他在诺曼底作战、对抗苏格兰人，并因叙任与教区收入与安瑟伦及教会冲突。1100年在新森林狩猎中身亡——谋杀还是意外至今争论。国库充盈；男爵的爱却没有。",
+      "es": "Hijo del Conquistador, apodado Rufus, rey de Inglaterra mientras el hermano mayor Roberto tenía Normandía. Combatió en Normandía y contra los escoceses y chocó con Anselmo y la Iglesia por la investidura y las rentas de las sedes. Murió cazando en New Forest en 1100: asesinato o accidente aún se discute. El tesoro estaba lleno; el amor de los barones no.",
+      "hi": "विजेता का पुत्र, रूफस कहलाए, इंग्लैंड के राजा जबकि बड़े भाई रॉबर्ट नॉर्मंडी रखते थे। नॉर्मंडी और स्कॉटों से लड़े, निवेश और धर्मपीठ आय पर एंसेल्म और गिरजा से टकराए। 1100 में न्यू फ़ॉरेस्ट शिकार में मरे — हत्या या दुर्घटना अब भी विवाद। खजाना भरा था; बारोनों का प्रेम नहीं।",
+      "ar": "ابن الفاتح الملقب روفوس، ملك إنكلترا بينما احتفظ الأخ الأكبر روبرت بنورماندي. حارب في نورماندي وضد الإسكتلنديين واصطدم بأنسلم والكنيسة حول التعيين ودخل الكراسي. مات في الصيد بغابة نيو فورست عام 1100 — قتل أم حادث ما زال جدلاً. كانت الخزانة ممتلئة؛ حب البارونات لا.",
+      "bn": "বিজেতার পুত্র, রুফাস ডাকনাম, ইংল্যান্ডের রাজা যখন বড় ভাই রবার্ট নরম্যান্ডি রাখেন। নরম্যান্ডি ও স্কটদের সঙ্গে লড়েন, নিয়োগ ও ধর্মপীঠ আয়ে আনসেলম ও গির্জার সঙ্গে সংঘাত। ১১০০-এ নিউ ফরেস্ট শিকারে মারা যান — খুন না দুর্ঘটনা এখনও তর্ক। কোষাগার ভরা ছিল; ব্যারনদের ভালোবাসা নয়।",
+      "pt": "Filho do Conquistador, alcunha Rufus, rei de Inglaterra enquanto o irmão mais velho Roberto tinha a Normandia. Lutou na Normandia e contra os escoceses e chocou com Anselmo e a Igreja sobre investidura e rendas das sés. Morreu a caçar em New Forest em 1100 — assassinato ou acidente ainda se discute. O tesouro estava cheio; o amor dos barões não.",
+      "ja": "征服王の子、渾名ルフス。長兄ロバートがノルマンディーを持つ間のイングランド王。ノルマンディーとスコットランド人と戦い、叙任と司教座収入でアンセルムスと教会と衝突。1100年ニューフォレストの狩りで死ぬ——謀殺か事故かは今も議論。国庫は満杯、男爵の愛はなかった。",
+      "he": "בנו של הכובש, מכונה רופוס, מלך אנגליה בעוד האח הבכור רוברט החזיק בנורמנדי. נלחם בנורמנדי ונגד הסקוטים והתנגש באנסלם ובכנסייה על מינוי והכנסות כסאות. מת בציד בניו פורסט ב־1100 — רצח או תאונה עדיין נתונים בוויכוח. האוצר היה מלא; אהבת הברונים לא."
+    },
+    "feat": {
+      "de": "Er hielt die englische Krone getrennt von der Normandie und füllte die Kasse; ein großes Gesetz in eigenem Namen hinterließ er nicht.",
+      "zh": "他使英格兰王冠与诺曼底分离并充盈国库；未留下以自己命名的大法。",
+      "es": "Sostuvo la corona inglesa aparte de Normandía y llenó el tesoro; no dejó un gran estatuto a su nombre.",
+      "hi": "अंग्रेज़ी मुकुट नॉर्मंडी से अलग रखा और खजाना भरा; अपने नाम का बड़ा क़ानून नहीं छोड़ा।",
+      "ar": "أمسك تاج إنكلترا بمعزل عن نورماندي وملأ الخزانة؛ لم يترك قانوناً كبيراً باسمه.",
+      "bn": "ইংরেজ মুকুট নরম্যান্ডি থেকে আলাদা রাখেন ও কোষাগার ভরেন; নিজ নামে বড় আইন রাখেননি।",
+      "pt": "Segurou a coroa inglesa à parte da Normandia e encheu o tesouro; não deixou um grande estatuto em seu nome.",
+      "ja": "イングランド王冠をノルマンディーと分けて保ち国庫を満たした。自名の大法は残さなかった。",
+      "he": "החזיק את כתר אנגליה בנפרד מנורמנדי ומילא את האוצר; לא הותיר חוק גדול בשמו."
+    }
+  },
+  "henry1": {
+    "bio": {
+      "de": "Jüngster Sohn des Eroberers, ergriff er die Krone beim Tod des Rufus und nahm später bei Tinchebray die Normandie dem Bruder Robert. Er erließ eine Freiheitscharta — ein Versprechen guter Sitte nach dem Willen des Bruders, ein Vorbote späterer Chartas. Der Tod des Erben auf dem White Ship ließ die Nachfolge offen und führte zur Anarchie. Ein Verwalter: Schatzamt und reisende Richter wuchsen unter ihm.",
+      "zh": "征服者幼子，红发死后夺取王冠，后又在坦什布雷从兄长罗伯特手中夺回诺曼底。他颁布《自由宪章》——兄长专断之后对良俗的承诺，是后来诸宪章的先声。白船溺亡继承人使继位未定，通向无政府时期。他是行政者：国库与巡回法官在其治下壮大。",
+      "es": "El hijo menor del Conquistador, se apoderó de la corona a la muerte de Rufus y más tarde tomó Normandía a su hermano Roberto en Tinchebray. Emitió una Carta de Libertades: promesa de buena costumbre tras la voluntad del hermano, anticipo de cartas posteriores. El ahogamiento del heredero en el Barco Blanco dejó la sucesión abierta y llevó hacia la Anarquía. Un administrador: el Tesoro y los jueces itinerantes crecieron bajo él.",
+      "hi": "विजेता का सबसे छोटा पुत्र, रूफस की मृत्यु पर मुकुट छीना और बाद में टेंशब्रे पर भाई रॉबर्ट से नॉर्मंडी ली। स्वतंत्रता चार्टर जारी — भाई की मनमानी के बाद अच्छे रिवाज का वादा, बाद के चार्टरों का पूर्वाभास। व्हाइट शिप पर वारिस की डूब ने उत्तराधिकार खुला छोड़ा और अराजकता की ओर ले गया। प्रशासक: खजाना और भ्रमणकारी न्यायाधीश उनके अधीन बढ़े।",
+      "ar": "أصغر أبناء الفاتح، اغتصب التاج عند موت روفوس ثم أخذ نورماندي من أخيه روبرت في تينشبراي. أصدر ميثاق حريات — وعد بعُرف صالح بعد هوى أخيه، نذير مواثيق لاحقة. غرق الوريث في السفينة البيضاء ترك الخلافة مفتوحة وقاد نحو الفوضى. إداري: نمت الخزانة والقضاة الجوّالون في عهده.",
+      "bn": "বিজেতার কনিষ্ঠ পুত্র, রুফাসের মৃত্যুতে মুকুট কেড়ে নেন এবং পরে টিংশব্রেতে ভাই রবার্টের কাছ থেকে নরম্যান্ডি নেন। স্বাধীনতার সনদ জারি — ভাইয়ের খামখেয়ালির পর ভালো রীতির প্রতিশ্রুতি, পরের সনদের পূর্বাভাস। হোয়াইট শিপে উত্তরাধিকারীর ডুব উত্তরাধিকার খোলা রাখে ও নৈরাজ্যের দিকে নিয়ে যায়। প্রশাসক: কোষাগার ও ভ্রাম্যমাণ বিচারক তাঁর অধীনে বাড়ে।",
+      "pt": "O filho mais novo do Conquistador, apoderou-se da coroa à morte de Rufus e mais tarde tomou a Normandia ao irmão Roberto em Tinchebray. Emitiu uma Carta de Liberdades — promessa de bom costume após o arbítrio do irmão, prenúncio de cartas posteriores. O afogamento do herdeiro no Navio Branco deixou a sucessão aberta e levou rumo à Anarquia. Um administrador: o Tesouro e os juízes itinerantes cresceram sob ele.",
+      "ja": "征服王の末子。ルフスの死で王冠を奪い、のちタンシュブレーで兄ロバートからノルマンディーを取った。自由憲章を発し——兄の専横の後の良習の約束で、後の特許状の先触れ。白船で世継ぎが溺れ、継承が開き無政府へ向かった。行政家：国庫と巡回判事が彼の下で育った。",
+      "he": "הבן הצעיר של הכובש, תפס את הכתר במות רופוס ואחר כך לקח את נורמנדי מאחיו רוברט בטינשבריי. הוציא מגילת חירויות — הבטחה למנהג טוב אחרי שרירות האח, מבשר מגילות מאוחרות. טביעת היורש בספינה הלבנה השאירה את הירושה פתוחה והובילה לאנרכיה. מנהלן: האוצר ושופטים נודדים גדלו תחתיו."
+    },
+    "feat": {
+      "de": "Die Freiheitscharta und die Wiedervereinigung Englands mit der Normandie.",
+      "zh": "《自由宪章》以及英格兰与诺曼底的再统一。",
+      "es": "La Carta de Libertades y la reunificación de Inglaterra con Normandía.",
+      "hi": "स्वतंत्रता चार्टर और इंग्लैंड का नॉर्मंडी से फिर जुड़ना।",
+      "ar": "ميثاق الحريات وإعادة توحيد إنكلترا مع نورماندي.",
+      "bn": "স্বাধীনতার সনদ এবং ইংল্যান্ডের নরম্যান্ডির সঙ্গে পুনর্মিলন।",
+      "pt": "A Carta de Liberdades e a reunificação de Inglaterra com a Normandia.",
+      "ja": "自由憲章とイングランド・ノルマンディーの再統一。",
+      "he": "מגילת החירויות ואיחוד אנגליה מחדש עם נורמנדי."
+    }
+  },
+  "stephen": {
+    "bio": {
+      "de": "Neffe Heinrichs I., gekrönt statt Mathilde, den Baroneneid brechend. Bürgerkrieg — die Anarchie — verwüstete das Land: unerlaubte Burgen, Seitenwechsel. Ein Vergleich in Wallingford ließ die Krone nach ihm Mathildes Sohn Heinrich II. Plantagenet. Eine Amtszeit ohne Sieg einer Linie — nur die Müdigkeit des Friedens.",
+      "zh": "亨利一世之侄，违背男爵誓言，代玛蒂尔达加冕。内战——无政府时期——毁坏国家：私建城堡、阵营变换。沃灵福德协议把其后王冠交给玛蒂尔达之子亨利二世金雀花。没有一线获胜的任期——只有和平的疲倦。",
+      "es": "Sobrino de Enrique I, coronado en lugar de Matilda, rompiendo el juramento de los barones. La guerra civil — la Anarquía — arruinó el país: castillos sin licencia, cambios de bando. Un arreglo en Wallingford dejó la corona tras él al hijo de Matilda, Enrique II Plantagenet. Un mandato sin victoria de una línea: solo el cansancio de la paz.",
+      "hi": "हेनरी I के भतीजे, मैटिल्डा की जगह ताज पहना, बारोनों की शपथ तोड़कर। गृहयुद्ध — अराजकता — देश उजाड़: बिना इजाज़त किले, पक्ष बदलना। वॉलिंगफ़र्ड समझौते ने उनके बाद मुकुट मैटिल्डा के पुत्र हेनरी II प्लांटैजेनेट को दिया। एक वंश की जीत के बिना कार्यकाल — केवल शांति की थकान।",
+      "ar": "ابن أخي هنري الأول، تُوّج بدل ماتيلدا ناقضاً يمين البارونات. الحرب الأهلية — الفوضى — خرّبت البلاد: قلاع بلا ترخيص وتبدل أطراف. تسوية في وولنغفورد تركت التاج بعده لابن ماتيلدا هنري الثاني بلانتاجنت. ولاية بلا نصر لخط — فقط تعب السلام.",
+      "bn": "হেনরি I-এর ভাইপো, ম্যাটিল্ডার বদলে মুকুট, ব্যারনদের শপথ ভেঙে। গৃহযুদ্ধ — নৈরাজ্য — দেশ ধ্বংস: অনুমতিহীন দুর্গ, পক্ষ বদল। ওয়ালিংফোর্ড সমঝোতা তাঁর পর মুকুট ম্যাটিল্ডার পুত্র হেনরি II প্লান্টাজেনেটকে দেয়। এক বংশের জয় ছাড়া মেয়াদ — কেবল শান্তির ক্লান্তি।",
+      "pt": "Sobrinho de Henrique I, coroado em vez de Matilde, quebrando o juramento dos barões. A guerra civil — a Anarquia — arruinou o país: castelos sem licença, mudanças de lado. Um acordo em Wallingford deixou a coroa depois dele ao filho de Matilde, Henrique II Plantageneta. Um mandato sem vitória de uma linha — só o cansaço da paz.",
+      "ja": "ヘンリー1世の甥。男爵の誓いを破りマティルダの代わりに戴冠。内戦「無政府」が国を荒らし、無許可の城と鞍替えが横行。ウォリングフォードの妥結で死後の王冠はマティルダの子ヘンリー2世プランタジネットへ。一線の勝利なき任期——平和の疲れだけ。",
+      "he": "אחיינו של הנרי הראשון, הוכתר במקום מטילדה ושבר את שבועת הברונים. מלחמת אזרחים — האנרכיה — הרסה את הארץ: טירות בלי רישיון והחלפת צדדים. הסדר בוולינגפורד השאיר את הכתר אחריו לבן מטילדה, הנרי השני פלנטג׳נט. כהונה בלי ניצחון של קו — רק עייפות השלום."
+    },
+    "feat": {
+      "de": "Der Vergleich, der die Krone Heinrich Plantagenet ließ; eine eigene dauerhafte Ordnung setzte er nicht durch.",
+      "zh": "把王冠交给亨利·金雀花的协议；他未能确立自己的持久秩序。",
+      "es": "El arreglo que dejó la corona a Enrique Plantagenet; no estableció un orden duradero propio.",
+      "hi": "वह समझौता जिसने मुकुट हेनरी प्लांटैजेनेट को दिया; अपनी टिकाऊ व्यवस्था नहीं जमा सके।",
+      "ar": "التسوية التي تركت التاج لهنري بلانتاجنت؛ لم يُثبت نظاماً دائماً خاصاً به.",
+      "bn": "সমঝোতা যা মুকুট হেনরি প্লান্টাজেনেটকে দেয়; নিজস্ব স্থায়ী শৃঙ্খলা তিনি প্রতিষ্ঠা করেননি।",
+      "pt": "O acordo que deixou a coroa a Henrique Plantageneta; não estabeleceu uma ordem duradoura sua.",
+      "ja": "王冠をヘンリー・プランタジネットに残す妥結。自前の永続秩序は立てられなかった。",
+      "he": "ההסדר שהשאיר את הכתר להנרי פלנטג׳נט; לא כונן סדר בר-קיימא משלו."
+    }
+  },
+  "henry2": {
+    "bio": {
+      "de": "Der erste Plantagenet, er hielt ein angevinisches Reich von Schottland bis zu den Pyrenäen: England, Normandie, Anjou, Aquitanien. Der Streit mit Thomas Becket endete mit dem Mord am Erzbischof in Canterbury und der Buße des Königs. Die Söhne revoltierten mehrfach; Richard folgte ihm. Gemeines Recht und reisende Richter wurden unter ihm System, nicht einmalige Gnade.",
+      "zh": "首位金雀花王，安茹帝国从苏格兰延至比利牛斯：英格兰、诺曼底、安茹、阿基坦。与托马斯·贝克特的争执以坎特伯雷大主教被杀与国王忏悔告终。诸子多次反叛；理查继位。普通法与巡回法官在其治下成为制度，而非一次性恩典。",
+      "es": "El primer Plantagenet, sostuvo un imperio angevino de Escocia a los Pirineos: Inglaterra, Normandía, Anjou, Aquitania. La riña con Thomas Becket acabó en el asesinato del arzobispo en Canterbury y la penitencia del rey. Los hijos se rebelaron más de una vez; Ricardo le sucedió. El common law y los jueces itinerantes se hicieron sistema bajo él, no merced de una vez.",
+      "hi": "पहले प्लांटैजेनेट, स्कॉटलैंड से पिरेनीज़ तक एंजेविन साम्राज्य: इंग्लैंड, नॉर्मंडी, अंजू, एक्विटेन। थॉमस बेकेट से झगड़ा कैंटरबरी में आर्कबिशप की हत्या और राजा की तपस्या पर खत्म। पुत्र कई बार विद्रोही; रिचर्ड उत्तराधिकारी। सामान्य क़ानून और भ्रमणकारी न्यायाधीश उनके अधीन व्यवस्था बने, एक बार की कृपा नहीं।",
+      "ar": "أول بلانتاجنت، أمسك إمبراطورية أنجوية من إسكتلندا إلى البرانس: إنكلترا ونورماندي وأنجو وأكيتين. انتهى نزاعه مع توماس بيكيت بقتل رئيس الأساقفة في كانتربري وتوبة الملك. تمرد الأبناء أكثر من مرة؛ خلفه ريتشارد. صار القانون العام والقضاة الجوّالون نظاماً في عهده لا منّة عابرة.",
+      "bn": "প্রথম প্লান্টাজেনেট, স্কটল্যান্ড থেকে পিরেনিজ পর্যন্ত আঞ্জু সাম্রাজ্য: ইংল্যান্ড, নরম্যান্ডি, আঞ্জু, অ্যাকুইটেন। টমাস বেকেটের সঙ্গে ঝগড়া ক্যান্টারবরিতে আর্চবিশপ হত্যা ও রাজার প্রায়শ্চিত্তে শেষ। পুত্ররা বারবার বিদ্রোহ; রিচার্ড উত্তরসূরি। সাধারণ আইন ও ভ্রাম্যমাণ বিচারক তাঁর অধীনে ব্যবস্থা হয়, একবারের দয়া নয়।",
+      "pt": "O primeiro Plantageneta, segurou um império angevino da Escócia aos Pirenéus: Inglaterra, Normandia, Anjou, Aquitânia. A querela com Tomás Becket acabou no assassinato do arcebispo em Cantuária e na penitência do rei. Os filhos rebelaram-se mais de uma vez; Ricardo sucedeu-lhe. O common law e os juízes itinerantes tornaram-se sistema sob ele, não graça de uma vez.",
+      "ja": "初代プランタジネット。スコットランドからピレネーまでアンジュー帝国：イングランド、ノルマンディー、アンジュー、アキテーヌ。トマス・ベケットとの争いはカンタベリーでの大司教殺害と王の贖罪に終わった。息子たちは何度も反乱；リチャードが継いだ。コモン・ローと巡回判事は彼の下で制度となり、一度きりの恩寵ではなかった。",
+      "he": "הפלנטג׳נט הראשון, החזיק אימפריה אנז׳ווינית מסקוטלנד לפירנאים: אנגליה, נורמנדי, אנז׳ו, אקיטן. הריב עם תומס בקט הסתיים ברצח הארכיבישוף בקנטרברי ובכפרת המלך. הבנים מרדו יותר מפעם; ריצ׳רד ירש אותו. המשפט המקובל ושופטים נודדים נעשו מערכת תחתיו, לא חסד חד-פעמי."
+    },
+    "feat": {
+      "de": "Das angevinische Reich und die Verwurzelung des common law.",
+      "zh": "安茹帝国与普通法的扎根。",
+      "es": "El imperio angevino y el arraigo del common law.",
+      "hi": "एंजेविन साम्राज्य और सामान्य क़ानून की जड़।",
+      "ar": "الإمبراطورية الأنجوية وتجذّر القانون العام.",
+      "bn": "আঞ্জু সাম্রাজ্য ও সাধারণ আইনের শিকড়।",
+      "pt": "O império angevino e o enraizamento do common law.",
+      "ja": "アンジュー帝国とコモン・ローの定着。",
+      "he": "האימפריה האנז׳ווינית והשרשת המשפט המקובל."
+    }
+  },
+  "richard1": {
+    "bio": {
+      "de": "Löwenherz lebte kaum in England: der Dritte Kreuzzug, Gefangenschaft unter Heinrich VI. von Deutschland, ein riesiges Lösegeld, Kriege auf dem Kontinent um angevinische Lande. Krone und Steuern dienten dem Heer; Justiziare und Longchamp regierten die Insel. Er starb an einer Wunde bei der Belagerung von Châlus 1199. Der Rittermythos ist stärker als die englische Regierung.",
+      "zh": "狮心王几乎不住在英格兰：第三次十字军、被德意志亨利六世囚禁、巨额赎金、为安茹领地在大陆作战。王冠与税赋服务于军队；政法官与隆尚治理岛屿。1199年在围攻沙吕时伤重而死。骑士神话强过英格兰的治理。",
+      "es": "Corazón de León apenas vivió en Inglaterra: la Tercera Cruzada, cautiverio bajo Enrique VI de Alemania, un rescate enorme, guerras en el continente por tierras angevinas. La corona y sus impuestos servían al ejército; justicieros y Longchamp gobernaban la isla. Murió de una herida en el asedio de Châlus en 1199. El mito caballeresco es más fuerte que el gobierno inglés.",
+      "hi": "लायनहार्ट इंग्लैंड में लगभग नहीं रहे: तीसरा धर्मयुद्ध, जर्मनी के हेनरी VI के अधीन कैद, विशाल फिरौती, एंजेविन ज़मीनों के लिए महाद्वीप पर युद्ध। मुकुट और कर सेना के; जस्टिसियर और लॉन्गशैं द्वीप चलाते। 1199 में शालू घेरे में घाव से मरे। शूरवीर मिथक अंग्रेज़ी शासन से मजबूत।",
+      "ar": "قلب الأسد قلّما عاش في إنكلترا: الحملة الصليبية الثالثة، أسر تحت هنري السادس الألماني، فدية هائلة، حروب في القارة لأراضي أنجو. التاج وضرائبه خدما الجيش؛ الحكام ولونغشان أداروا الجزيرة. مات من جرح في حصار شالو عام 1199. أسطورة الفروسية أقوى من الحكم الإنكليزي.",
+      "bn": "লায়নহার্ট ইংল্যান্ডে প্রায় থাকেননি: তৃতীয় ক্রুসেড, জার্মানির হেনরি VI-এর অধীনে বন্দি, বিশাল মুক্তিপণ, আঞ্জু ভূমির জন্য মহাদেশে যুদ্ধ। মুকুট ও কর সেনার; জাস্টিসিয়ার ও লংশাম্প দ্বীপ চালান। ১১৯৯-এ শালু অবরোধে ক্ষতে মারা যান। নাইট কিংবদন্তি ইংরেজ শাসনের চেয়ে জোরালো।",
+      "pt": "Coração de Leão mal viveu em Inglaterra: a Terceira Cruzada, cativeiro sob Henrique VI da Alemanha, um resgate enorme, guerras no continente por terras angevinas. A coroa e os impostos serviam ao exército; justiciários e Longchamp governavam a ilha. Morreu de um ferimento no cerco de Châlus em 1199. O mito cavaleiresco é mais forte do que o governo inglês.",
+      "ja": "獅子心王はイングランドにほとんど住まなかった。第三次十字軍、ドイツのハインリヒ6世の虜、巨額の身代金、アンジュー領のための大陸戦争。王冠と税は軍に仕え、政務官とロンシャンが島を治めた。1199年シャリュ包囲の傷で死ぬ。騎士伝説はイングランド統治より強い。",
+      "he": "לב הארי כמעט לא חי באנגליה: מסע הצלב השלישי, שבי תחת היינריך השישי מגרמניה, כופר ענק, מלחמות ביבשת על אדמות אנז׳ו. הכתר ומסיו שירתו את הצבא; יוסטיציארים ולנגשאמפ ניהלו את האי. מת מפצע במצור על שאלו ב־1199. מיתוס האבירות חזק מהשלטון האנגלי."
+    },
+    "feat": {
+      "de": "Der Dritte Kreuzzug und die Verteidigung Jaffas — Ruhm eines Kreuzfahrers, nicht eines Ordners Englands.",
+      "zh": "第三次十字军与雅法防御——十字军的声名，而非英格兰的治理者。",
+      "es": "La Tercera Cruzada y la defensa de Jaffa: fama de cruzado, no de ordenador de Inglaterra.",
+      "hi": "तीसरा धर्मयुद्ध और जाफ़ा की रक्षा — धर्मयोद्धा की कीर्ति, इंग्लैंड के व्यवस्थापक की नहीं।",
+      "ar": "الحملة الصليبية الثالثة والدفاع عن يافا — شهرة صليبي لا منظّم لإنكلترا.",
+      "bn": "তৃতীয় ক্রুসেড ও ইয়াফার প্রতিরক্ষা — ক্রুসেডারের খ্যাতি, ইংল্যান্ডের ব্যবস্থাপকের নয়।",
+      "pt": "A Terceira Cruzada e a defesa de Jafa — fama de cruzado, não de ordenador de Inglaterra.",
+      "ja": "第三次十字軍とヤッファ防衛——十字軍の名声でありイングランドの統治者ではない。",
+      "he": "מסע הצלב השלישי והגנת יפו — תהילת צלבן, לא מסדיר אנגליה."
+    }
+  },
+  "john": {
+    "bio": {
+      "de": "Johann Ohneland verlor nach Bouvines die Normandie und den Großteil der angevinischen Lande. Der Konflikt mit Baronen und Papst (Interdikt) brachte 1215 die Magna Carta — keine Freiheitsverfassung, sondern ein Handel über Königsgrenzen, den spätere Jahrhunderte neu lasen. Er starb im Ersten Baronenkrieg. Ein schwacher Feldherr, ungewollter Vater der Charta.",
+      "zh": "无地王约翰在布汶之后失去诺曼底与大部分安茹领地。与男爵及教皇（禁罚）的冲突催生1215年大宪章——并非自由宪法，而是对王权限度的交易，后世一再重读。他死于第一次男爵战争期间。蹩脚的统帅，无意中成为宪章之父。",
+      "es": "Juan Sin Tierra perdió Normandía y la mayor parte de las tierras angevinas tras Bouvines. El conflicto con los barones y el papa (entredicho) produjo la Carta Magna de 1215: no una constitución de libertad, sino un trato sobre los límites del rey que siglos posteriores releyeron. Murió durante la Primera Guerra de los Barones. Mal general, padre involuntario de la Carta.",
+      "hi": "भूमिहीन जॉन ने बुविन के बाद नॉर्मंडी और ज़्यादातर एंजेविन ज़मीन खोई। बारोनों और पोप (इंटरडिक्ट) से संघर्ष ने 1215 की मैग्ना कार्टा दी — स्वतंत्रता का संविधान नहीं, राजा की सीमाओं का सौदा जिसे बाद की सदियाँ फिर पढ़ती रहीं। पहली बारोन युद्ध में मरे। कमज़ोर सेनापति, चार्टर के अनचाहे पिता।",
+      "ar": "يوحنا عديم الأرض فقد نورماندي ومعظم أراضي أنجو بعد بوفين. أنتج النزاع مع البارونات والبابا (الحظر) الماغنا كارتا عام 1215 — ليست دستوراً للحرية بل صفقة على حدود الملك أعادت القرون قراءتها. مات أثناء حرب البارونات الأولى. قائد ضعيف وأب غير قاصد للميثاق.",
+      "bn": "ভূমিহীন জন বুভিনের পর নরম্যান্ডি ও অধিকাংশ আঞ্জু ভূমি হারান। ব্যারন ও পোপের (ইন্টারডিক্ট) সঙ্গে সংঘাত ১২১৫-এর ম্যাগনা কার্টা দেয় — স্বাধীনতার সংবিধান নয়, রাজার সীমার চুক্তি যা পরের শতাব্দী পুনরায় পড়ে। প্রথম ব্যারন যুদ্ধে মারা যান। দুর্বল সেনাপতি, সনদের অনিচ্ছাকৃত পিতা।",
+      "pt": "João Sem Terra perdeu a Normandia e a maior parte das terras angevinas após Bouvines. O conflito com os barões e o papa (interdito) deu a Magna Carta de 1215 — não uma constituição de liberdade, mas um trato sobre os limites do rei que séculos posteriores releram. Morreu na Primeira Guerra dos Barões. Mau general, pai involuntário da Carta.",
+      "ja": "失地王ジョンはブーヴィーヌ後にノルマンディーと大半のアンジュー領を失った。男爵と教皇（禁罰）との衝突が1215年マグナ・カルタを生んだ——自由の憲法ではなく王の限界の取引で、後世が読み直した。第一次男爵戦争中に死去。拙い将軍であり、憲章の意図せざる父。",
+      "he": "ג׳ון חסר הארץ איבד את נורמנדי ואת רוב אדמות אנז׳ו אחרי בובין. הסכסוך עם הברונים והאפיפיור (חרם) הוליד את המגנה כרטה ב־1215 — לא חוקת חירות אלא עסקה על גבולות המלך שדורות מאוחרים קראו מחדש. מת במלחמת הברונים הראשונה. מצביא גרוע, אב שלא במתכוון של המגילה."
+    },
+    "feat": {
+      "de": "Die Magna Carta von 1215.",
+      "zh": "1215年大宪章。",
+      "es": "La Carta Magna de 1215.",
+      "hi": "1215 की मैग्ना कार्टा।",
+      "ar": "الماغنا كارتا عام 1215.",
+      "bn": "১২১৫-এর ম্যাগনা কার্টা।",
+      "pt": "A Magna Carta de 1215.",
+      "ja": "1215年のマグナ・カルタ。",
+      "he": "המגנה כרטה של 1215."
+    }
+  },
+  "henry3": {
+    "bio": {
+      "de": "Eine lange Herrschaft, die in der Kindheit unter Marschall und Legat begann. Er baute Westminster Abbey gotisch um, liebte einen reichen Hof und ausländische Günstlinge. Baronale Opposition unter Simon de Montfort brachte das Parlament von 1265 (Städte und Ritter) und einen Krieg, den sein Sohn Eduard bei Evesham gewann. Ein Bauherr-König, den eine Baronenrevolution einengte.",
+      "zh": "漫长统治始于童年，受元帅与教宗使节监护。他以哥特风格重建威斯敏斯特修道院，喜爱奢华宫廷与外国宠臣。西蒙·德·孟福尔的男爵反对催生1265年议会（城镇与骑士），以及其子爱德华在伊夫舍姆取胜的战争。一位被男爵革命束缚的建筑之王。",
+      "es": "Un reinado largo que empezó en la infancia bajo el mariscal y un legado. Reconstruyó la Abadía de Westminster en gótico, amaba una corte rica y favoritos extranjeros. La oposición baronial bajo Simón de Montfort trajo el parlamento de 1265 (villas y caballeros) y una guerra que ganó su hijo Eduardo en Evesham. Un rey constructor a quien una revolución baronial recortó.",
+      "hi": "लंबा शासन बचपन में मार्शल और लेगेट की देखरेख में शुरू। वेस्टमिंस्टर ऐबी गॉथिक में दोबारा बनाया, अमीर दरबार और विदेशी कृपापात्र प्रिय। सिमों द मोंफोर के बारोन विरोध ने 1265 संसद (शहर और शूरवीर) और युद्ध दिया जिसे पुत्र एडवर्ड ने इव्शम जीता। निर्माता-राजा जिन्हें बारोन क्रांति ने बाँधा।",
+      "ar": "حكم طويل بدأ في الطفولة تحت المارشال ومندوب بابوي. أعاد بناء دير وستمنستر بالقوطي وأحب بلاطاً فاخراً ومقرّبين أجانب. جاءت معارضة البارونات تحت سيمون دي مونفور ببرلمان 1265 (مدن وفرسان) وحرب ربحها ابنه إدوارد في إيفشام. ملك بنّاء حاصرته ثورة بارونية.",
+      "bn": "দীর্ঘ শাসন শৈশবে মার্শাল ও লেগেটের অধীনে শুরু। ওয়েস্টমিনস্টার অ্যাবি গথিকে পুনর্নির্মাণ, ধনী দরবার ও বিদেশি প্রিয়পাত্র প্রিয়। সিমোঁ দ্য মঁফোরের ব্যারন বিরোধিতা ১২৬৫ সংসদ (শহর ও নাইট) ও যুদ্ধ আনে যা পুত্র এডওয়ার্ড ইভশামে জিতেন। নির্মাতা-রাজা যাঁকে ব্যারন বিপ্লব বেঁধে রাখে।",
+      "pt": "Um reinado longo que começou na infância sob o marechal e um legado. Reconstruiu a Abadia de Westminster em gótico, amava uma corte rica e favoritos estrangeiros. A oposição baronial sob Simão de Montfort trouxe o parlamento de 1265 (vilas e cavaleiros) e uma guerra que o filho Eduardo venceu em Evesham. Um rei construtor que uma revolução baronial cingiu.",
+      "ja": "長い治世は幼少期に元帥と教皇使節の下で始まった。ウェストミンスター大寺院をゴシックで再建し、豪奢な宮廷と外国人寵臣を好んだ。シモン・ド・モンフォールの男爵反対が1265年議会（都市と騎士）と、息子エドワードがイヴシャムで勝った戦争を生んだ。男爵革命に囲まれた建築の王。",
+      "he": "שלטון ארוך שהחל בילדות תחת המרשל ולגאט. בנה מחדש את מנזר וסטמינסטר בגותיקה, אהב חצר עשירה ומועדפים זרים. אופוזיציה ברונית תחת סימון דה מונפור הביאה את פרלמנט 1265 (ערים ואבירים) ומלחמה שבנו אדוארד ניצח באבשם. מלך-בונה שמהפכה ברונית חסמה."
+    },
+    "feat": {
+      "de": "Der Umbau der Westminster Abbey; das Parlament von 1265 entstand aus dem Kampf gegen ihn.",
+      "zh": "重建威斯敏斯特修道院；1265年议会诞生于对他的斗争。",
+      "es": "La reconstrucción de la Abadía de Westminster; el parlamento de 1265 nació de la lucha contra él.",
+      "hi": "वेस्टमिंस्टर ऐबी का पुनर्निर्माण; 1265 संसद उनके विरुद्ध लड़ाई से जन्मी।",
+      "ar": "إعادة بناء دير وستمنستر؛ ولد برلمان 1265 من القتال ضده.",
+      "bn": "ওয়েস্টমিনস্টার অ্যাবির পুনর্নির্মাণ; ১২৬৫ সংসদ তাঁর বিরুদ্ধে লড়াই থেকে জন্মে।",
+      "pt": "A reconstrução da Abadia de Westminster; o parlamento de 1265 nasceu da luta contra ele.",
+      "ja": "ウェストミンスター大寺院の再建。1265年議会は彼への戦いから生まれた。",
+      "he": "בניית מנזר וסטמינסטר מחדש; פרלמנט 1265 נולד מהמאבק נגדו."
+    }
+  },
+  "edward1": {
+    "bio": {
+      "de": "„Hammer der Schotten“: er eroberte Wales, baute einen Burgengürtel und kämpfte in Schottland um die Ansprüche Balliols und Bruces. Er berief das Musterparlament von 1295 — Lords, Klerus, Commons als stehendes Rezept für Steuer. Er starb auf dem Weg zu einem weiteren Schottlandfeldzug. Ein Jurist auf dem Thron: Land- und Rechtsstatute saßen neben dem Schwert.",
+      "zh": "“苏格兰之锤”：他征服威尔士、修建城堡圈，并为巴利奥尔与布鲁斯的权利在苏格兰作战。他召集1295年模范议会——贵族、教士、平民作为征税的常设配方。他在又一次苏格兰战役途中去世。王座上的法学家：土地与法律法令与刀剑并列。",
+      "es": "«Martillo de los escoceses»: conquistó Gales, construyó un anillo de castillos y luchó en Escocia por las pretensiones de Balliol y Bruce. Convocó el Parlamento Modelo de 1295: lores, clero, comunes como receta fija de impuesto. Murió de camino a otra campaña escocesa. Un jurista en el trono: estatutos de tierra y derecho se sentaron junto a la espada.",
+      "hi": "«स्कॉटों का हथौड़ा»: वेल्स जीता, किलों का घेरा बनाया, बैलिओल और ब्रूस के दावों पर स्कॉटलैंड से लड़े। 1295 का आदर्श संसद बुलाया — लॉर्ड, पादरी, कॉमन्स कर का स्थायी नुस्खा। अगले स्कॉट अभियान के रास्ते मरे। सिंहासन पर वकील: भूमि और क़ानून के क़ानून तलवार के साथ बैठे।",
+      "ar": "«مطرقة الإسكتلنديين»: فتح ويلز وبنى حلقة قلاع وحارب إسكتلندا على دعاوى باليول وبروس. دعا البرلمان النموذجي 1295 — أسياد وإكليروس وعوام وصفة ضريبية دائمة. مات في الطريق إلى حملة إسكتلندية أخرى. فقيه على العرش: قوانين الأرض والحق جلست إلى جانب السيف.",
+      "bn": "«স্কটদের হাতুড়ি»: ওয়েলস জয় করেন, দুর্গের বলয় বানান, ব্যালিওল ও ব্রুসের দাবিতে স্কটল্যান্ডে লড়েন। ১২৯৫-এর আদর্শ সংসদ ডাকেন — লর্ড, যাজক, কমনস করের স্থায়ী রেসিপি। পরের স্কট অভিযানের পথে মারা যান। সিংহাসনে আইনজীবী: ভূমি ও আইনের বিধি তলোয়ারের পাশে বসে।",
+      "pt": "«Martelo dos escoceses»: conquistou o País de Gales, construiu um anel de castelos e lutou na Escócia pelas pretensões de Balliol e Bruce. Convocou o Parlamento Modelo de 1295 — senhores, clero, comuns como receita permanente de imposto. Morreu a caminho de outra campanha escocesa. Um jurista no trono: estatutos de terra e direito sentaram-se ao lado da espada.",
+      "ja": "「スコットランドの鎚」。ウェールズを征服し城の環を築き、バリオルとブルースの権利をめぐりスコットランドと戦った。1295年模範議会を召集——貴族・聖職・庶民が税の常設処方。次のスコットランド遠征の途上で死去。玉座の法律家：土地と法の制定が剣と並んだ。",
+      "he": "«פטיש הסקוטים»: כבש את ויילס, בנה טבעת טירות ונלחם בסקוטלנד על תביעות באליול וברוס. כינס את הפרלמנט המודל של 1295 — לורדים, כמורה, קהילה כמתכון קבוע למס. מת בדרך למסע סקוטי נוסף. משפטן על הכס: חוקי קרקע ומשפט ישבו לצד החרב."
+    },
+    "feat": {
+      "de": "Die Eroberung von Wales und das Musterparlament von 1295.",
+      "zh": "征服威尔士与1295年模范议会。",
+      "es": "La conquista de Gales y el Parlamento Modelo de 1295.",
+      "hi": "वेल्स की विजय और 1295 का आदर्श संसद।",
+      "ar": "فتح ويلز والبرلمان النموذجي 1295.",
+      "bn": "ওয়েলস বিজয় ও ১২৯৫-এর আদর্শ সংসদ।",
+      "pt": "A conquista do País de Gales e o Parlamento Modelo de 1295.",
+      "ja": "ウェールズ征服と1295年模範議会。",
+      "he": "כיבוש ויילס והפרלמנט המודל של 1295."
+    }
+  },
+  "edward2": {
+    "bio": {
+      "de": "Er verlor bei Bannockburn (1314) und hielt Schottland nicht; Bruces Unabhängigkeit wurde Tatsache. die Günstlinge Gaveston und die Despenser wandten den Adel gegen ihn; die Ordonnanzen von 1311 banden ihn. Seine Frau Isabella und Roger Mortimer setzten ihn ab; er starb in Haft in Berkeley. Eine Amtszeit ohne militärischen oder politischen Erfolg in eigenem Namen.",
+      "zh": "他在班诺克本（1314）战败，未能保住苏格兰；布鲁斯的独立成为事实。宠臣加韦斯顿与德斯潘塞父子使贵族反目；1311年条例束缚了他。王后伊莎贝拉与罗杰·莫蒂默废黜他；他死于伯克利囚禁中。没有以自己名义的军事或政治成功的任期。",
+      "es": "Perdió en Bannockburn (1314) y no retuvo Escocia; la independencia de Bruce se hizo hecho. Los favoritos Gaveston y los Despenser volvieron a los nobles contra él; las ordenanzas de 1311 lo ataron. Su mujer Isabel y Roger Mortimer lo depusieron; murió cautivo en Berkeley. Un mandato sin éxito militar o político a su nombre.",
+      "hi": "बैनकबर्न (1314) हारे और स्कॉटलैंड न थामा; ब्रूस की स्वतंत्रता तथ्य बनी। कृपापात्र गैवेस्टन और डेस्पेंसर कुलीनों को उनके विरुद्ध कर गए; 1311 के अध्यादेश बाँधे। पत्नी इसाबेला और रोजर मॉर्टिमर ने गिराया; बर्कले क़ैद में मरे। अपने नाम की सैन्य या राजनीतिक सफलता के बिना कार्यकाल।",
+      "ar": "خسر في بانوكبرن (1314) ولم يمسك إسكتلندا؛ صارت استقلال بروس حقيقة. قلب المقرّبان غافستون والدسبنسر النبلاء عليه؛ قيّدته أوامر 1311. عزلته زوجته إيزابيلا وروجر مورتيمر؛ مات أسيراً في بيركلي. ولاية بلا نجاح عسكري أو سياسي باسمه.",
+      "bn": "ব্যানকবার্ন (১৩১৪) হারেন ও স্কটল্যান্ড রাখেননি; ব্রুসের স্বাধীনতা সত্য হয়। প্রিয়পাত্র গ্যাভেস্টন ও ডেসপেনসার অভিজাতদের তাঁর বিরুদ্ধে করেন; ১৩১১-এর অধ্যাদেশ বাঁধে। স্ত্রী ইজাবেলা ও রজার মর্টিমার পদচ্যুত করেন; বার্কলে বন্দিতে মারা যান। নিজ নামে সামরিক বা রাজনৈতিক সাফল্য ছাড়া মেয়াদ।",
+      "pt": "Perdeu em Bannockburn (1314) e não reteve a Escócia; a independência de Bruce tornou-se facto. Os favoritos Gaveston e os Despenser viraram os nobres contra ele; as ordenanças de 1311 prenderam-no. A mulher Isabel e Roger Mortimer depuseram-no; morreu cativo em Berkeley. Um mandato sem êxito militar ou político em seu nome.",
+      "ja": "バノックバーン（1314）に敗れスコットランドを保てず、ブルースの独立が事実となった。寵臣ギャヴェストンとデスペンサーが貴族を敵に回し、1311年条例が彼を縛った。妃イザベラとロジャー・モーティマーが廃し、バークリー幽閉中に死んだ。自名の軍事・政治的成功のない任期。",
+      "he": "הפסיד בבנוקברן (1314) ולא החזיק בסקוטלנד; עצמאות ברוס הפכה לעובדה. המועדפים גאבסטון והדספנסרים הפכו את האצולה נגדו; תקנות 1311 כבלו אותו. אשתו איזבלה ורוג׳ר מורטימר הדיחו אותו; מת בשבי בברקלי. כהונה בלי הצלחה צבאית או פוליטית בשמו."
+    },
+    "feat": {
+      "de": "In seinen Machtjahren verankerte er weder Siege noch Gesetze, die ihn als eigenes Werk überdauert hätten.",
+      "zh": "掌权年间他既未锁定胜仗，也未留下可视为己作而长存的法律。",
+      "es": "En sus años de poder no fijó victorias ni leyes que le sobrevivieran como obra suya.",
+      "hi": "सत्ता के वर्षों में न विजय जमाई न क़ानून जो उनके काम के रूप में जीवित रहते।",
+      "ar": "في سنوات السلطة لم يثبّت انتصارات ولا قوانين تبقى بعده عملاً له.",
+      "bn": "ক্ষমতার বছরগুলোতে তিনি জয় বা আইন স্থির করেননি যা তাঁর কাজ হিসেবে বেঁচে থাকত।",
+      "pt": "Nos anos de poder não cravou vitórias nem leis que lhe sobrevivessem como obra sua.",
+      "ja": "権力の年に、自作として残る勝利も法も定着させなかった。",
+      "he": "בשנות השלטון לא נעל ניצחונות ולא חוקים שהיו שורדים אחריו כמעשהו."
+    }
+  },
+  "edward3": {
+    "bio": {
+      "de": "Er eröffnete den Hundertjährigen Krieg mit einem Anspruch auf die französische Krone: Crécy, Poitiers, die Gefangennahme Johanns II., der Hosenbandorden. Der Schwarze Tod traf das Königreich und formte den Arbeitsmarkt um. Eine lange Herrschaft endete mit verblassendem Hof, Günstlingen und Steuerunruhen im Guten Parlament. Englands ritterlicher Höhepunkt — und die Saat des Bauernaufstands unter dem Enkel.",
+      "zh": "他以对法国王冠的主张开启百年战争：克雷西、普瓦捷、俘获约翰二世、嘉德勋章。黑死病打击王国并重塑劳动力市场。漫长统治以宫廷凋敝、宠臣以及“好议会”的抗税告终。英格兰骑士时代的顶点——以及孙儿治下农民起义的种子。",
+      "es": "Abrió la Guerra de los Cien Años con una pretensión a la corona francesa: Crécy, Poitiers, la captura de Juan II, la Orden de la Jarretera. La Peste Negra golpeó el reino y rehízo el mercado de trabajo. Un reinado largo acabó con corte en declive, favoritos y disturbios fiscales en el Buen Parlamento. La cima caballeresca de Inglaterra — y las semillas de la revuelta campesina bajo su nieto.",
+      "hi": "फ़्रांसीसी मुकुट के दावे से सौ वर्षीय युद्ध खोला: क्रेसी, प्वातिए, जॉन II की क़ैद, गार्टर ऑर्डर। काली मौत राज्य काटती और श्रम बाज़ार बदलती। लंबा शासन दरबार की गिरावट, कृपापात्र और गुड पार्लियामेंट के कर असंतोष पर खत्म। इंग्लैंड का शूरवीर शिखर — और पौत्र के अधीन किसान विद्रोह के बीज।",
+      "ar": "فتح حرب المئة عام بدعوى تاج فرنسا: كريسي وبواتييه وأسر يوحنا الثاني ووسام الرباط. ضرب الموت الأسود المملكة وأعاد سوق العمل. انتهى حكم طويل ببلاط خافت ومقرّبين واضطراب ضريبي في البرلمان الصالح. ذروة فروسية إنكلترا — وبذور ثورة الفلاحين عند الحفيد.",
+      "bn": "ফরাসি মুকুটের দাবিতে শতবর্ষ যুদ্ধ খোলেন: ক্রেসি, পোয়াতিয়ে, জন II-এর বন্দি, গার্টার অর্ডার। কালো মৃত্যু রাজ্য কাটে ও শ্রমবাজার বদলায়। দীর্ঘ শাসন ম্লান দরবার, প্রিয়পাত্র ও গুড পার্লামেন্টের কর অসন্তোষে শেষ। ইংল্যান্ডের নাইট চূড়া — এবং নাতির অধীনে কৃষক বিদ্রোহের বীজ।",
+      "pt": "Abriu a Guerra dos Cem Anos com uma pretensão à coroa francesa: Crécy, Poitiers, a captura de João II, a Ordem da Jarreteira. A Peste Negra atingiu o reino e refez o mercado de trabalho. Um reinado longo acabou com corte em declínio, favoritos e agitação fiscal no Bom Parlamento. O auge cavaleiresco de Inglaterra — e as sementes da revolta camponesa sob o neto.",
+      "ja": "フランス王冠の主張で百年戦争を開いた。クレシー、ポワティエ、ジャン2世の捕囚、ガーター勲章。黒死病が王国を打ち労働市場を変えた。長い治世は宮廷の衰え、寵臣、「良議会」の抗税で終わった。イングランド騎士道の頂点——孫の下の農民反乱の種。",
+      "he": "פתח את מלחמת מאה השנים בתביעה לכתר צרפת: קרסי, פואטייה, שבי יוחנן השני, מסדר הבירית. המוות השחור פגע בממלכה ועיצב מחדש את שוק העבודה. שלטון ארוך הסתיים בחצר דועכת, מועדפים ומרידת מס בפרלמנט הטוב. שיא האבירות של אנגליה — וזרעי מרד האיכרים תחת הנכד."
+    },
+    "feat": {
+      "de": "Crécy, Poitiers und der Hosenbandorden — der Hundertjährige Krieg zu englischen Bedingungen.",
+      "zh": "克雷西、普瓦捷与嘉德勋章——以英格兰条件开启的百年战争。",
+      "es": "Crécy, Poitiers y la Orden de la Jarretera: la Guerra de los Cien Años en términos ingleses.",
+      "hi": "क्रेसी, प्वातिए और गार्टर ऑर्डर — अंग्रेज़ी शर्तों पर सौ वर्षीय युद्ध।",
+      "ar": "كريسي وبواتييه ووسام الرباط — حرب المئة عام بشروط إنكليزية.",
+      "bn": "ক্রেসি, পোয়াতিয়ে ও গার্টার অর্ডার — ইংরেজ শর্তে শতবর্ষ যুদ্ধ।",
+      "pt": "Crécy, Poitiers e a Ordem da Jarreteira — a Guerra dos Cem Anos em termos ingleses.",
+      "ja": "クレシー、ポワティエ、ガーター勲章——イングランド条件の百年戦争。",
+      "he": "קרסי, פואטייה ומסדר הבירית — מלחמת מאה השנים בתנאים אנגליים."
+    }
+  },
+  "richard2": {
+    "bio": {
+      "de": "Er kam als Kind auf den Thron und trat Wat Tyler im Bauernaufstand 1381 entgegen, entschärfte ihn mit Versprechen, die er dann zurücknahm. Später herrschte er hart, beschlagnahmte Lancaster-Lande und verbannte Gegner. Heinrich Bolingbroke setzte ihn ab; er starb als Gefangener in Pontefract. Theater königlichen Willens ohne baronale Basis.",
+      "zh": "幼年即位，在1381年农民起义中面对瓦特·泰勒，以承诺化解后又收回。日后统治严苛，没收兰开斯特领地并放逐对手。亨利·博林布鲁克废黜他；他作为囚徒死于庞蒂弗拉克特。没有男爵根基的王权剧场。",
+      "es": "Llegó al trono niño y enfrentó a Wat Tyler en la Revuelta de los Campesinos de 1381, desactivándola con promesas que luego retiró. Más tarde gobernó con dureza, confiscó tierras de Lancaster y exilió oponentes. Enrique Bolingbroke lo depuso; murió prisionero en Pontefract. Teatro de voluntad real sin base baronial.",
+      "hi": "बालक राजा बने; 1381 किसान विद्रोह में वॉट टाइलर के सामने आए, वादों से शांत किया फिर पीछे हटे। बाद में कठोर शासन, लैंकेस्टर ज़मीन ज़ब्त, विरोधियों को निर्वासन। हेनरी बोलिंगब्रोक ने गिराया; पोंटेफ़्रैक्ट क़ैदी मरे। बारोन आधार के बिना शाही इच्छा का रंगमंच।",
+      "ar": "أتى العرش طفلاً وواجه وات تايلر في ثورة الفلاحين 1381، فنزع فتيلها بوعود تراجع عنها. لاحقاً حكم بقسوة وصادر أراضي لانكستر ونفى الخصوم. خلعه هنري بولينغبروك؛ مات أسيراً في بونتيفراكت. مسرح إرادة ملكية بلا قاعدة بارونية.",
+      "bn": "শিশু হয়ে সিংহাসনে আসেন; ১৩৮১ কৃষক বিদ্রোহে ওয়াট টাইলারের সামনে যান, প্রতিশ্রুতিতে শান্ত করেন তারপর ফেরেন। পরে কঠোর শাসন, ল্যাঙ্কাস্টার ভূমি বাজেয়াপ্ত, বিরোধী নির্বাসন। হেনরি বোলিংব্রোক পদচ্যুত করেন; পন্টিফ্র্যাক্টে বন্দি মারা যান। ব্যারন ভিত্তি ছাড়া রাজকীয় ইচ্ছার নাট্যমঞ্চ।",
+      "pt": "Chegou ao trono criança e enfrentou Wat Tyler na Revolta dos Camponeses de 1381, desativando-a com promessas que depois retirou. Mais tarde governou com dureza, confiscou terras de Lencastre e exilou opositores. Henrique Bolingbroke depôs-no; morreu prisioneiro em Pontefract. Teatro de vontade real sem base baronial.",
+      "ja": "幼くして即位。1381年農民反乱でワット・タイラーに臨み、約束で沈静化してから撤回した。後年は過酷に統治しランカスター領を没収、敵対者を追放。ヘンリー・ボリングブルックが廃し、ポンテフラクトの虜で死んだ。男爵基盤なき王意の劇場。",
+      "he": "עלה לכס כילד ועמד מול ווט טיילר במרד האיכרים 1381, פירק אותו בהבטחות שאחר כך חזר בו. מאוחר יותר שלט בקשיחות, החרימ אדמות לנקסטר והגלה יריבים. הנרי בולינגברוק הדיח אותו; מת אסיר בפונטפרקט. תיאטרון רצון מלכותי בלי בסיס ברוני."
+    },
+    "feat": {
+      "de": "Sein persönliches Erscheinen 1381 stoppte den Bauernaufstand in London — sein späterer Kurs hielt nicht.",
+      "zh": "1381年他亲自现身制止了伦敦农民起义——日后的路线未能站住。",
+      "es": "Su aparición personal en 1381 detuvo la revuelta campesina en Londres; su curso posterior no se sostuvo.",
+      "hi": "1381 में व्यक्तिगत उपस्थिति ने लंदन में किसान विद्रोह रोका — बाद का रास्ता नहीं टिका।",
+      "ar": "ظهوره الشخصي عام 1381 أوقف ثورة الفلاحين في لندن — مساره اللاحق لم يصمد.",
+      "bn": "১৩৮১-এ ব্যক্তিগত উপস্থিতি লন্ডনে কৃষক বিদ্রোহ থামায় — পরের পথ টেকেনি।",
+      "pt": "A aparição pessoal em 1381 parou a revolta camponesa em Londres — o rumo posterior não se aguentou.",
+      "ja": "1381年の自ら現れてロンドンの農民反乱を止めた。後年の路線は持たなかった。",
+      "he": "הופעתו האישית ב־1381 עצרה את מרד האיכרים בלונדון — המסלול המאוחר לא עמד."
+    }
+  },
+  "henry4": {
+    "bio": {
+      "de": "Der erste Lancaster, nahm er Richard II. die Krone mit zweifelhaftem Recht, das die ganze Amtszeit vergiftete. Die Herrschaft war eine Folge von Aufständen, darunter Owain Glyndŵr in Wales und die Percys im Norden. Krankheit prägte die späten Jahre; der Thron ging an den Soldatensohn. Er hielt eine Dynastie, ohne eine neue Verfassung zu schaffen.",
+      "zh": "首位兰开斯特王，以可疑权利从理查二世夺冠，毒害整个任期。统治充满叛乱，包括威尔士的欧文·格林杜尔与北部珀西家族。晚年疾病缠身；王位传给军人儿子。他保住王朝，却未创立新宪制。",
+      "es": "El primer Lancaster, tomó la corona a Ricardo II con un derecho dudoso que envenenó todo el mandato. El reinado fue una ristra de revueltas, entre ellas Owain Glyndŵr en Gales y los Percy en el norte. La enfermedad marcó los últimos años; el trono pasó al hijo soldado. Sostuvo una dinastía sin hacer una constitución nueva.",
+      "hi": "पहले लैंकेस्टर, रिचर्ड II से संदिग्ध अधिकार से मुकुट लिया जिसने पूरा कार्यकाल ज़हरीला किया। शासन विद्रोहों की कड़ी — वेल्स में ओवेन ग्लिंडूर और उत्तर में पर्सी। बीमारी अंतिम वर्ष; सिंहासन सैनिक पुत्र को। राजवंश थामा, नया संविधान नहीं बनाया।",
+      "ar": "أول لانكستر، أخذ التاج من ريتشارد الثاني بحق مشكوك سمّم الولاية كلها. كان الحكم سلسلة ثورات منها أوين غليندور في ويلز والبيرسي في الشمال. وسم المرض السنوات الأخيرة؛ انتقل العرش للابن الجندي. أمسك سلالة دون دستور جديد.",
+      "bn": "প্রথম ল্যাঙ্কাস্টার, রিচার্ড II-এর কাছ থেকে সন্দেহজনক অধিকারে মুকুট নেন যা পুরো মেয়াদ বিষাক্ত করে। শাসন বিদ্রোহের ধারা — ওয়েলসে ওয়াইন গ্লিন্দুর ও উত্তরে পার্সি। রোগ শেষ বছর চিহ্নিত করে; সিংহাসন সেনা পুত্রে যায়। রাজবংশ ধরেন, নতুন সংবিধান তৈরি করেননি।",
+      "pt": "O primeiro Lencastre, tomou a coroa a Ricardo II com um direito duvidoso que envenenou todo o mandato. O reinado foi uma sequência de revoltas, incluindo Owain Glyndŵr no País de Gales e os Percy no norte. A doença marcou os últimos anos; o trono passou ao filho soldado. Segurou uma dinastia sem fazer uma constituição nova.",
+      "ja": "初代ランカスター。疑わしい権利でリチャード2世から王冠を取り、任期全体を毒した。統治は反乱の連続——ウェールズのオワイン・グリンドゥール、北部パーシー家。晩年は病；位は軍人の息子へ。王朝は保ったが新憲法は作らなかった。",
+      "he": "הלנקסטר הראשון, לקח את הכתר מריצ׳רד השני בזכות מפוקפקת שהרעילה את כל הכהונה. השלטון היה שרשרת מרידות, בהן אווין גלינדור בוויילס והפרסי בצפון. מחלה סימנה את השנים האחרונות; הכס עבר לבן החייל. החזיק שושלת בלי ליצור חוקה חדשה."
+    },
+    "feat": {
+      "de": "Er hielt die lancasterische Krone nach dem Staatsstreich von 1399.",
+      "zh": "他在1399年政变后保住了兰开斯特王冠。",
+      "es": "Sostuvo la corona lancasteriana tras el golpe de 1399.",
+      "hi": "1399 के तख्तापलट के बाद लैंकेस्टर मुकुट थामे रखा।",
+      "ar": "أمسك تاج لانكستر بعد انقلاب 1399.",
+      "bn": "১৩৯৯-এর অভ্যুত্থানের পর ল্যাঙ্কাস্টার মুকুট ধরে রাখেন।",
+      "pt": "Segurou a coroa lencastriana após o golpe de 1399.",
+      "ja": "1399年クーデター後にランカスター王冠を保った。",
+      "he": "החזיק את כתר לנקסטר אחרי הפיכת 1399."
+    }
+  },
+  "henry5": {
+    "bio": {
+      "de": "Sieger von Azincourt (1415) gegen die Übermacht — der Mythos des englischen Langbogens. Der Vertrag von Troyes machte ihn zum Erben der französischen Krone und Schwiegersohn Karls VI.; die Normandie war wieder englisch. Er starb jung bei der Belagerung von Meaux und hinterließ den Säugling Heinrich VI. und ein unmögliches Doppelkönigreich. Der kurze Gipfel des Hundertjährigen Krieges.",
+      "zh": "1415年阿金库尔以少胜多——英格兰长弓的神话。特鲁瓦条约使他成为法国王位继承人与查理六世的女婿；诺曼底再属英格兰。他年轻时死于莫城围城，留下婴儿亨利六世与无法实现的双重王国。百年战争的短暂顶点。",
+      "es": "Vencedor de Azincourt (1415) contra la superioridad numérica: el mito del arco largo inglés. El Tratado de Troyes lo hizo heredero de la corona francesa y yerno de Carlos VI; Normandía volvió a ser inglesa. Murió joven en el asedio de Meaux, dejando al infante Enrique VI y un doble reino imposible. La cima breve de la Guerra de los Cien Años.",
+      "hi": "अज़िनकोर (1415) के विजेता संख्या में कम — अंग्रेज़ी लंबे धनुष का मिथक। त्रॉय संधि ने उन्हें फ़्रांसीसी मुकुट का वारिस और चार्ल्स VI का दामाद बनाया; नॉर्मंडी फिर अंग्रेज़ी। मो के घेरे में जवान मरे, शिशु हेनरी VI और असंभव दोहरा राज्य छोड़। सौ वर्षीय युद्ध का छोटा शिखर।",
+      "ar": "منتصر أجينكور (1415) رغم التفوق العددي — أسطورة القوس الطويل الإنكليزي. جعلته معاهدة تروا وريث تاج فرنسا وصهر شارل السادس؛ عادت نورماندي إنكليزية. مات شاباً في حصار مو تاركاً الرضيع هنري السادس ومملكة مزدوجة مستحيلة. الذروة القصيرة لحرب المئة عام.",
+      "bn": "আজিনকুর (১৪১৫)-এর বিজয়ী সংখ্যায় কম — ইংরেজ দীর্ঘ ধনুকের কিংবদন্তি। ত্রোয়া চুক্তি তাঁকে ফরাসি মুকুটের উত্তরাধিকারী ও শার্ল VI-এর জামাতা করে; নরম্যান্ডি আবার ইংরেজ। মো অবরোধে তরুণ মারা যান, শিশু হেনরি VI ও অসম্ভব দ্বৈত রাজ্য রেখে। শতবর্ষ যুদ্ধের সংক্ষিপ্ত চূড়া।",
+      "pt": "Vencedor de Azincourt (1415) contra a superioridade numérica — o mito do arco longo inglês. O Tratado de Troyes fê-lo herdeiro da coroa francesa e genro de Carlos VI; a Normandia voltou a ser inglesa. Morreu jovem no cerco de Meaux, deixando o infante Henrique VI e um reino duplo impossível. O auge breve da Guerra dos Cem Anos.",
+      "ja": "1415年アジャンクールで寡兵の勝者——イングランド長弓の神話。トロワ条約でフランス王位の世継ぎ、シャルル6世の娘婿となりノルマンディーは再び英領。モー包囲で若く死に、幼児ヘンリー6世と不可能な二重王国を残した。百年戦争の短い頂点。",
+      "he": "מנצח אז׳נקור (1415) נגד יתרון מספרי — מיתוס הקשת הארוכה האנגלית. חוזה טרואה עשה אותו ליורש כתר צרפת ולחתן שארל השישי; נורמנדי שוב אנגלית. מת צעיר במצור על מו, והשאיר את התינוק הנרי השישי וממלכה כפולה בלתי אפשרית. השיא הקצר של מלחמת מאה השנים."
+    },
+    "feat": {
+      "de": "Azincourt und der Vertrag von Troyes — England an der Schwelle der französischen Krone.",
+      "zh": "阿金库尔与特鲁瓦条约——英格兰站在法国王冠门槛上。",
+      "es": "Azincourt y el Tratado de Troyes: Inglaterra en el umbral de la corona francesa.",
+      "hi": "अज़िनकोर और त्रॉय संधि — फ़्रांसीसी मुकुट की दहलीज़ पर इंग्लैंड।",
+      "ar": "أجينكور ومعاهدة تروا — إنكلترا على عتبة تاج فرنسا.",
+      "bn": "আজিনকুর ও ত্রোয়া চুক্তি — ফরাসি মুকুটের দোরগোড়ায় ইংল্যান্ড।",
+      "pt": "Azincourt e o Tratado de Troyes — Inglaterra no limiar da coroa francesa.",
+      "ja": "アジャンクールとトロワ条約——フランス王冠の敷居に立つイングランド。",
+      "he": "אז׳נקור וחוזה טרואה — אנגליה על סף כתר צרפת."
+    }
+  },
+  "henry6": {
+    "bio": {
+      "de": "Als Säugling König zweier Kronen, die er nicht halten konnte. England verlor die französischen Lande (Jeanne d’Arc, Formigny), er litt Anfälle von Wahnsinn; die Rosenkriege begannen. Er verlor und gewann die Krone zweimal und wurde nach Tewkesbury im Tower getötet. Er gründete Eton und King’s College, Cambridge — eine seltene helle Tat einer schwachen Herrschaft.",
+      "zh": "婴儿时即为两顶王冠之王，却守不住。英格兰失去法国领地（圣女贞德、福尔米尼），他间歇疯癫；玫瑰战争开始。他两度失而复得王冠，图克斯伯里之后在伦敦塔被杀。他创办伊顿公学与剑桥国王学院——软弱统治中罕见的亮点。",
+      "es": "Rey infante de dos coronas que no pudo sostener. Inglaterra perdió las tierras francesas (Juana de Arco, Formigny) y sufrió ataques de locura; empezaron las Guerras de las Rosas. Perdió y recobró la corona dos veces y lo mataron en la Torre tras Tewkesbury. Fundó Eton y King’s College, Cambridge: un hecho brillante raro en un reinado débil.",
+      "hi": "शिशु राजा दो मुकुटों के जो न थाम सके। इंग्लैंड ने फ़्रांसीसी ज़मीन खोई (जोआन ऑफ आर्क, फ़ॉर्मिनी) और वे पागलपन के दौरे झेले; गुलाब युद्ध शुरू। मुकुट दो बार खोया-पाया, ट्यूक्सबरी के बाद टावर में मारे गए। ईटन और किंग्स कॉलेज कैंब्रिज स्थापित — कमज़ोर शासन का दुर्लभ उजला काम।",
+      "ar": "صار ملكاً رضيعاً لتاجين لم يستطع إمساكهما. خسرت إنكلترا أراضي فرنسا (جان دارك وفورميني) وأصابه نوبات جنون؛ بدأت حروب الوردتين. فقد التاج واسترده مرتين وقُتل في البرج بعد توكسبري. أسس إيتون وكينغز كوليدج كامبردج — عملاً مضيئاً نادراً في حكم ضعيف.",
+      "bn": "শিশু রাজা দুই মুকুটের যা ধরে রাখতে পারেননি। ইংল্যান্ড ফরাসি ভূমি হারায় (জোয়ান অব আর্ক, ফর্মিয়ি) এবং তিনি উন্মাদনার আক্রমণ সহ্য করেন; গোলাপ যুদ্ধ শুরু। মুকুট দুবার হারান-ফিরান, টিউক্সবারির পর টাওয়ারে নিহত। ইটন ও কিংস কলেজ কেমব্রিজ প্রতিষ্ঠা — দুর্বল শাসনের দুর্লভ উজ্জ্বল কাজ।",
+      "pt": "Rei infante de duas coroas que não conseguiu segurar. Inglaterra perdeu as terras francesas (Joana d’Arc, Formigny) e sofreu ataques de loucura; começaram as Guerras das Rosas. Perdeu e recuperou a coroa duas vezes e foi morto na Torre após Tewkesbury. Fundou Eton e o King’s College, Cambridge — um feito brilhante raro num reinado fraco.",
+      "ja": "乳児で二つの王冠の王となり守れなかった。英はフランス領を失い（ジャンヌ・ダルク、フォルミニ）、彼は狂気の発作を患い、バラ戦争が始まった。王冠を二度失い取り戻し、テュークスベリー後に塔で殺された。イートンとケンブリッジのキングスカレッジを創設——弱い治世の稀な明るい業。",
+      "he": "מלך תינוק של שני כתרים שלא יכול להחזיק. אנגליה איבדה את אדמות צרפת (ז׳אן ד׳ארק, פורמיני) והוא סבל התקפי טירוף; מלחמות השושנים החלו. איבד והשיב את הכתר פעמיים ונהרג במצודה אחרי טוקסברי. ייסד את איטון ואת קינגס קולג׳ קיימברידג׳ — מעשה בהיר נדיר בשלטון חלש."
+    },
+    "feat": {
+      "de": "Eton und King’s College — gelehrte Stiftungen; Krone und Frankreich hielt er nicht.",
+      "zh": "伊顿与国王学院——学术奠基；王冠与法国他都未能保住。",
+      "es": "Eton y King’s College: fundaciones doctas; no sostuvo la corona ni Francia.",
+      "hi": "ईटन और किंग्स कॉलेज — विद्या की नींव; मुकुट और फ़्रांस न थामे।",
+      "ar": "إيتون وكينغز كوليدج — مؤسسات علم؛ لم يمسك التاج ولا فرنسا.",
+      "bn": "ইটন ও কিংস কলেজ — বিদ্যার ভিত্তি; মুকুট ও ফ্রান্স তিনি রাখেননি।",
+      "pt": "Eton e King’s College — fundações doutas; não segurou a coroa nem a França.",
+      "ja": "イートンとキングスカレッジ——学問の創設。王冠もフランスも保てなかった。",
+      "he": "איטון וקינגס קולג׳ — יסודות למדניים; לא החזיק בכתר ולא בצרפת."
+    }
+  },
+  "edward4": {
+    "bio": {
+      "de": "Ein Yorkist, der Heinrich VI. den Thron nahm, ihn ein Jahr verlor (Rivers, Warwick der Königsmacher) und 1471 zurückgewann. Er siegte bei Barnet und Tewkesbury und tötete den lancasterischen Erben. Er festigte die Krone, handelte mit Burgund, füllte die Kasse, doch ein früher Tod ließ junge Söhne — Beute für Onkel Richard. Ein Soldat, der dem Königreich eine Atempause gab.",
+      "zh": "约克派，从亨利六世夺位，失位一年（里弗斯、造王者沃里克）后于1471年夺回。他在巴尼特与图克斯伯里取胜并处死兰开斯特继承人。他稳住王冠、与勃艮第通商、充实国库，但早逝留下幼子——成为叔父理查的猎物。给王国喘息的军人。",
+      "es": "Yorkista que tomó el trono a Enrique VI, lo perdió un año (Rivers, Warwick el Hacedor de Reyes) y lo recobró en 1471. Venció en Barnet y Tewkesbury y mató al heredero lancasteriano. Estabilizó la corona, comerciò con Borgoña, llenó el tesoro, pero una muerte temprana dejó hijos pequeños: presa del tío Ricardo. Un soldado que dio al reino un respiro.",
+      "hi": "यॉर्किस्ट जिन्होंने हेनरी VI से सिंहासन लिया, एक वर्ष खोया (रिवर्स, किंगमेकर वॉरिक) और 1471 में वापस लिया। बारनेट और ट्यूक्सबरी जीते, लैंकेस्टर वारिस मारा। मुकुट स्थिर, बरगंडी से व्यापार, खजाना भरा, पर जल्दी मौत ने छोटे पुत्र छोड़े — चाचा रिचर्ड का शिकार। सैनिक जिसने राज्य को साँस दी।",
+      "ar": "يوركي أخذ العرش من هنري السادس، فقده عاماً (ريفيرز ووارويك صانع الملوك) واسترده عام 1471. انتصر في بارنت وتوكسبري وقتل وريث لانكستر. ثبّت التاج وتاجر مع بورغونيا وملأ الخزانة، لكن موتاً مبكراً ترك أبناء صغاراً — فريسة العم ريتشارد. جندي منح المملكة فترة تنفس.",
+      "bn": "ইয়র্কিস্ট যিনি হেনরি VI-এর কাছ থেকে সিংহাসন নেন, এক বছর হারান (রিভার্স, কিংমেকার ওয়ারউইক) ও ১৪৭১-এ ফেরান। বার্নেট ও টিউক্সবারি জিতেন, ল্যাঙ্কাস্টার উত্তরাধিকারী মারেন। মুকুট স্থির, বারগান্ডির সঙ্গে বাণিজ্য, কোষাগার ভরেন, কিন্তু অকাল মৃত্যু ছোট পুত্র রাখে — চাচা রিচার্ডের শিকার। সেনা যিনি রাজ্যকে শ্বাস দেন।",
+      "pt": "Iorquista que tomou o trono a Henrique VI, perdeu-o um ano (Rivers, Warwick o Fazedor de Reis) e o recobrou em 1471. Venceu em Barnet e Tewkesbury e matou o herdeiro lencastriano. Estabilizou a coroa, comerciou com a Borgonha, encheu o tesouro, mas uma morte precoce deixou filhos pequenos — presa do tio Ricardo. Um soldado que deu ao reino um respiro.",
+      "ja": "ヨーク派。ヘンリー6世から位を取り、一年失い（リヴァーズ、キングメーカー・ウォリック）1471年に取り戻した。バーネットとテュークスベリーに勝ちランカスター世継ぎを殺した。王冠を安定させブルゴーニュと交易し国庫を満たしたが、早世で幼い息子を残し叔父リチャードの獲物となった。王国に息継ぎを与えた兵士。",
+      "he": "יורקיסט שלקח את הכס מהנרי השישי, איבד אותו לשנה (ריברס, וורוויק עושה המלכים) והשיבו ב־1471. ניצח בברנט ובטוקסברי והרג את יורש לנקסטר. ייצב את הכתר, סחר עם בורגונדי, מילא את האוצר, אך מוות מוקדם השאיר בנים צעירים — טרף לדוד ריצ׳רד. חייל שנתן לממלכה הפוגה."
+    },
+    "feat": {
+      "de": "Die Siege von 1471 und eine vorübergehende Festigung der yorkistischen Krone.",
+      "zh": "1471年的胜利与约克王冠的暂时稳定。",
+      "es": "Las victorias de 1471 y un asentamiento temporal de la corona yorkista.",
+      "hi": "1471 की जीतें और यॉर्किस्ट मुकुट का अस्थायी ठहराव।",
+      "ar": "انتصارات 1471 وتثبيت مؤقت لتاج يورك.",
+      "bn": "১৪৭১-এর জয় ও ইয়র্কিস্ট মুকুটের সাময়িক স্থিতি।",
+      "pt": "As vitórias de 1471 e um assentamento temporário da coroa iorquista.",
+      "ja": "1471年の勝利とヨーク王冠の一時安定。",
+      "he": "ניצחונות 1471 והתייצבות זמנית של כתר יורק."
+    }
+  },
+  "edward5": {
+    "bio": {
+      "de": "Einer der Prinzen im Tower, nach dem Vater zum König ausgerufen, nie gekrönt: Onkel Richard von Gloucester erklärte Eduards IV. Ehe ungültig und nahm die Krone. Der Junge verschwand mit dem Bruder im Tower — ein Mordgerücht lastet auf Richard III. Eine Regierung als Herrschaft gab es nicht.",
+      "zh": "塔中王子之一，父死后被宣布为王却未加冕：叔父格洛斯特的理查宣布爱德华四世婚姻无效并自立为王。男孩与弟弟在塔中失踪——谋杀传言落在理查三世身上。没有作为治理的在位。",
+      "es": "Uno de los Príncipes de la Torre, proclamado rey tras su padre pero nunca coronado: el tío Ricardo de Gloucester declaró inválido el matrimonio de Eduardo IV y tomó la corona. El niño desapareció en la Torre con su hermano: un rumor de asesinato recae en Ricardo III. No hubo reinado como gobierno.",
+      "hi": "टावर के राजकुमारों में से एक, पिता के बाद राजा घोषित पर ताज नहीं: चाचा ग्लॉस्टर के रिचर्ड ने एडवर्ड IV का विवाह अमान्य ठहराया और मुकुट लिया। लड़का भाई के साथ टावर में गायब — हत्या की अफवाह रिचर्ड III पर। शासन के रूप में राज नहीं था।",
+      "ar": "أحد أمراء البرج، نودي ملكاً بعد أبيه ولم يُتوَّج: أعلن العم ريتشارد غلوستر زواج إدوارد الرابع باطلاً وأخذ التاج. اختفى الصبي في البرج مع أخيه — شائعة قتل تقع على ريتشارد الثالث. لم يكن هناك حكم كحكومة.",
+      "bn": "টাওয়ারের রাজকুমারদের একজন, পিতার পর রাজা ঘোষিত কিন্তু মুকুটহীন: চাচা গ্লসেস্টারের রিচার্ড এডওয়ার্ড IV-এর বিবাহ অবৈধ ঘোষণা করে মুকুট নেন। ছেলে ভাইয়ের সঙ্গে টাওয়ারে নিখোঁজ — খুনের গুজব রিচার্ড III-এর উপর। শাসন হিসেবে রাজত্ব ছিল না।",
+      "pt": "Um dos Príncipes na Torre, proclamado rei após o pai mas nunca coroado: o tio Ricardo de Gloucester declarou inválido o casamento de Eduardo IV e tomou a coroa. O rapaz desapareceu na Torre com o irmão — um rumor de assassinato recai sobre Ricardo III. Não houve reinado como governo.",
+      "ja": "塔の王子の一人。父の後に王と宣言され戴冠せず、叔父グロスターのリチャードがエドワード4世の婚姻を無効として王冠を取った。少年は弟とともに塔で消え、謀殺の噂はリチャード3世に掛かる。統治としての在位はなかった。",
+      "he": "אחד הנסיכים במצודה, הוכרז מלך אחרי אביו אך לא הוכתר: הדוד ריצ׳רד מגלוסטר הכריז על נישואי אדוארד הרביעי כבטלים ולקח את הכתר. הנער נעלם במצודה עם אחיו — שמועת רצח רובצת על ריצ׳רד השלישי. לא היה שלטון כממשל."
+    },
+    "feat": {
+      "de": "Er herrschte nie als König: in den Wochen eines „Regierungs“-Namens gab es weder Edikte noch Taten aus seiner Hand.",
+      "zh": "他从未作为国王统治：所谓“在位”的数周里，既无诏令也无亲手作为。",
+      "es": "Nunca gobernó como rey: en las semanas de un «reinado» no hubo edictos ni hechos de su mano.",
+      "hi": "राजा के रूप में न चले: «राज» के हफ़्तों में न फ़रमान न उनके हाथ का काम।",
+      "ar": "لم يحكم ملكاً: في أسابيع «ملك» لم تكن مراسيم ولا أعمال بيده.",
+      "bn": "রাজা হিসেবে শাসন করেননি: «রাজত্ব»-এর সপ্তাহে তাঁর হাতের ফরমান বা কাজ ছিল না।",
+      "pt": "Nunca governou como rei: nas semanas de um «reinado» não houve éditos nem feitos da sua mão.",
+      "ja": "王として統治しなかった。「在位」の数週間に勅も業も彼の手からはなかった。",
+      "he": "לא משל כמלך: בשבועות «שלטון» לא היו צווים ולא מעשים מידו."
+    }
+  },
+  "richard3": {
+    "bio": {
+      "de": "Der letzte Yorkist, in tudorischer Propaganda ein Usurpator. Eine kurze Herrschaft verdunkelt vom Verschwinden der Prinzen, Buckinghams Aufstand und Titulus Regius. Er fiel 1485 bei Bosworth — Ende der Rosenkriege und Aufstieg der Tudors. Er versuchte, sich auf den Norden und das Recht zu stützen, ohne Zeit, eine Dynastie zu verankern.",
+      "zh": "末代约克王，在都铎宣传中是篡位者。短暂统治因王子失踪、白金汉叛乱与《王权资格法》而阴暗。1485年死于博斯沃思——玫瑰战争结束、都铎崛起。他试图倚靠北方与法律，却来不及巩固王朝。",
+      "es": "El último yorkista, usurpador a ojos de la propaganda tudor. Un reinado corto ensombrecido por la desaparición de los príncipes, la revuelta de Buckingham y el Titulus Regius. Cayó en Bosworth en 1485: fin de las Guerras de las Rosas y auge de los Tudor. Intentó apoyarse en el norte y en la ley, sin tiempo para fijar una dinastía.",
+      "hi": "अंतिम यॉर्किस्ट, ट्यूडर प्रचार में हड़पने वाला। छोटा शासन राजकुमारों के गायब, बकिंघम विद्रोह और Titulus Regius से अँधेरा। 1485 में बॉस्वर्थ मरे — गुलाब युद्ध का अंत और ट्यूडर का उदय। उत्तर और क़ानून पर टिकने की कोशिश, राजवंश जमाने का समय नहीं।",
+      "ar": "آخر يوركي، مغتصب في عيون دعاية تيودور. حكم قصير أظلمه اختفاء الأمراء وثورة بكنغهام وTitulus Regius. سقط في بوسورث عام 1485 — نهاية حروب الوردتين وصعود تيودور. حاول الاتكاء على الشمال والقانون دون وقت لتثبيت سلالة.",
+      "bn": "শেষ ইয়র্কিস্ট, টিউডর প্রচারে দখলকারী। সংক্ষিপ্ত শাসন রাজকুমারদের নিখোঁজ, বাকিংহাম বিদ্রোহ ও Titulus Regius-এ অন্ধকার। ১৪৮৫-এ বসওয়ার্থে পড়ে — গোলাপ যুদ্ধের সমাপ্তি ও টিউডর উত্থান। উত্তর ও আইনে হেলান দেন, রাজবংশ বাঁধার সময় নেই।",
+      "pt": "O último iorquista, usurpador aos olhos da propaganda tudor. Um reinado curto ensombrado pelo desaparecimento dos príncipes, a revolta de Buckingham e o Titulus Regius. Caiu em Bosworth em 1485 — fim das Guerras das Rosas e auge dos Tudor. Tentou apoiar-se no norte e na lei, sem tempo para fixar uma dinastia.",
+      "ja": "最後のヨーク王。テューダー宣伝では簒奪者。王子失踪、バッキンガムの反乱、Titulus Regiusに暗い短い治世。1485年ボスワースで倒れ、バラ戦争終結とテューダー台頭。北と法に拠ろうとしたが王朝を固める時間はなかった。",
+      "he": "היורקיסט האחרון, עושק בעיני תעמולת טיודור. שלטון קצר שהוחשך בהיעלמות הנסיכים, מרד בקינגהאם ו־Titulus Regius. נפל בבוסוורת ב־1485 — סוף מלחמות השושנים ועליית הטיודורים. ניסה להישען על הצפון ועל החוק, בלי זמן לנעול שושלת."
+    },
+    "feat": {
+      "de": "Bosworth schnitt die Amtszeit ab: eine eigene dauerhafte Dynastie und Ordnung kamen nicht zustande.",
+      "zh": "博斯沃思截断任期：他来不及确立自己的稳固王朝与秩序。",
+      "es": "Bosworth cortó el mandato: no tuvo tiempo de fijar una dinastía u orden duraderos propios.",
+      "hi": "बॉस्वर्थ ने कार्यकाल काटा: अपनी टिकाऊ राजवंश और व्यवस्था जमाने का समय न मिला।",
+      "ar": "بوسورث قطع الولاية: لم يتح له تثبيت سلالة ونظام دائمين خاصين به.",
+      "bn": "বসওয়ার্থ মেয়াদ কেটে দেয়: নিজস্ব স্থায়ী রাজবংশ ও শৃঙ্খলা বাঁধার সময় পাননি।",
+      "pt": "Bosworth cortou o mandato: não teve tempo de fixar uma dinastia ou ordem duradouras suas.",
+      "ja": "ボスワースが任期を断った。自前の永続王朝と秩序を固める暇はなかった。",
+      "he": "בוסוורת קיצר את הכהונה: לא הספיק לקבע שושלת וסדר בני-קיימא משלו."
+    }
+  },
+  "henry7": {
+    "bio": {
+      "de": "Gründer der Tudor-Linie nach Bosworth, mit dünnem Blutsrecht. Er heiratete Elisabeth von York, füllte die Kasse mit Recognizances und zähmte den Adel durch Star Chamber und ein Verbot privater Heere. Er hinterließ dem Sohn eine stärkere, relativ friedliche Krone und eine spanische Heirat (Katharina von Aragon für Arthur, dann Heinrich). Ein geiziger Architekt einer neuen Monarchie.",
+      "zh": "博斯沃思之后都铎王朝的奠基人，血统权利薄弱。他娶约克的伊丽莎白，以具结充实国库，并以星室法庭与禁止私军约束贵族。他留给儿子较稳、相对和平的王冠以及西班牙联姻（阿拉贡的凯瑟琳先嫁亚瑟再嫁亨利）。新君主制的吝啬建筑师。",
+      "es": "Fundador de la línea Tudor tras Bosworth, con un derecho de sangre delgado. Se casó con Isabel de York, llenó el tesoro con recognizances y frenó a los nobles con la Cámara Estrellada y la prohibición de ejércitos privados. Dejó a su hijo una corona más fuerte, relativamente pacífica, y un matrimonio español (Catalina de Aragón para Arturo, luego Enrique). Arquitecto avaro de una monarquía nueva.",
+      "hi": "बॉस्वर्थ के बाद ट्यूडर वंश के संस्थापक, पतले रक्त-अधिकार से। यॉर्क की एलिज़ाबेथ से विवाह, रिकग्निज़ेंस से खजाना भरा, स्टार चैंबर और निजी सेना प्रतिबंध से कुलीन काटे। पुत्र को मज़बूत, अपेक्षाकृत शांत मुकुट और स्पेनी विवाह (आर्थर फिर हेनरी के लिए कैथरीन ऑफ़ अरागॉन) छोड़ा। नई राजशाही का कंजूस वास्तुकार।",
+      "ar": "مؤسس خط تيودور بعد بوسورث، بحق دم رقيق. تزوج إليزابيث يورك وملأ الخزانة بالتعهدات وكبح النبلاء بغرفة النجم وحظر الجيوش الخاصة. ترك لابنه تاجاً أقوى نسبياً هادئاً وزواجاً إسبانياً (كاترينا أراغون لآرثر ثم هنري). مهندس بخيل لملكية جديدة.",
+      "bn": "বসওয়ার্থের পর টিউডর বংশের প্রতিষ্ঠাতা, পাতলা রক্ত-অধিকারে। ইয়র্কের এলিজাবেথকে বিয়ে, রিকগনিজেন্সে কোষাগার ভরেন, স্টার চেম্বার ও ব্যক্তিগত সেনা নিষেধে অভিজাত ভাঙেন। পুত্রকে শক্তিশালী, তুলনামূলক শান্ত মুকুট ও স্পেনীয় বিবাহ (আর্থার তারপর হেনরির জন্য ক্যাথরিন অব অ্যারাগন) ছাড়েন। নতুন রাজতন্ত্রের কৃপণ স্থপতি।",
+      "pt": "Fundador da linha Tudor após Bosworth, com um direito de sangue ténue. Casou com Isabel de Iorque, encheu o tesouro com recognizances e travou os nobres com a Câmara Estrelada e a proibição de exércitos privados. Deixou ao filho uma coroa mais forte, relativamente pacífica, e um casamento espanhol (Catarina de Aragão para Artur, depois Henrique). Arquiteto avarento de uma monarquia nova.",
+      "ja": "ボスワース後のテューダー朝創始者。血統の権利は薄い。ヨークのエリザベスと結婚し、認諾金で国庫を満たし、星室庁と私兵禁止で貴族を抑えた。息子に比較的平和な強い王冠とスペイン婚（アラゴンのキャサリンはアーサー、のちヘンリーへ）を残した。新君主制の吝嗇な建築家。",
+      "he": "מייסד קו טיודור אחרי בוסוורת, בזכות דם דקה. נשא את אליזבת מיורק, מילא את האוצר בהכרות, ובולם אצולה בלשכת הכוכב ובאיסור צבאות פרטיים. השאיר לבנו כתר חזק יחסית שקט ונישואין ספרדיים (קתרין מאראגון לארתור ואחר כך להנרי). אדריכל קמצן של מונרכיה חדשה."
+    },
+    "feat": {
+      "de": "Die Gründung der Tudor-Dynastie und die Zähmung des Adels nach den Rosenkriegen.",
+      "zh": "创立都铎王朝，并在玫瑰战争后驯服贵族。",
+      "es": "Fundar la dinastía Tudor y domeñar a los nobles tras las Guerras de las Rosas.",
+      "hi": "ट्यूडर राजवंश की स्थापना और गुलाब युद्ध के बाद कुलीनों को वश में करना।",
+      "ar": "تأسيس سلالة تيودور وترويض النبلاء بعد حروب الوردتين.",
+      "bn": "টিউডর রাজবংশ প্রতিষ্ঠা ও গোলাপ যুদ্ধের পর অভিজাতদের বশে আনা।",
+      "pt": "Fundar a dinastia Tudor e amansar os nobres após as Guerras das Rosas.",
+      "ja": "テューダー朝の創始とバラ戦争後の貴族馴致。",
+      "he": "יסוד שושלת טיודור וריסון האצולה אחרי מלחמות השושנים."
+    }
+  },
+  "henry8": {
+    "bio": {
+      "de": "Sechs Frauen und der Bruch mit Rom: er wurde Haupt der Kirche von England, löste die Klöster auf und nahm ihre Lande. Er baute Marine, Hof und ein Thronfolgegesetz aus. Das Erbe ist sowohl eine Staatskirche als auch hingerichtete Gegner, More und Cromwell darunter. Ein persönliches „will einen Sohn“ schrieb die Religion des Königreichs um.",
+      "zh": "六位妻子与罗马决裂：他成为英格兰教会元首，解散修道院并没收其地产。他壮大海军、宫廷与继承法令。遗产既是国家教会，也有被处决的对手，包括莫尔与克伦威尔。一句私人的“要儿子”改写了王国的宗教。",
+      "es": "Seis esposas y la ruptura con Roma: se hizo cabeza de la Iglesia de Inglaterra, disolvió los monasterios y tomó sus tierras. Reforzó la marina, la corte y un estatuto de sucesión. El legado es a la vez una iglesia nacional y oponentes ejecutados, More y Cromwell entre ellos. Un «quiero un hijo» personal reescribió la religión del reino.",
+      "hi": "छह पत्नियाँ और रोम से तोड़: इंग्लैंड की कलीसिया के प्रधान बने, मठ तोड़े, उनकी ज़मीन ली। नौसेना, दरबार और उत्तराधिकार क़ानून बढ़ाया। विरासत राष्ट्रीय गिरजा भी है और मारे गए विरोधी भी, मोर और क्रॉमवेल समेत। निजी «पुत्र चाहिए» ने राज्य का धर्म लिख दिया।",
+      "ar": "ست زوجات وقطع مع رومة: صار رأس كنيسة إنكلترا وحلّ الأديرة وأخذ أراضيها. عزز البحرية والبلاط ونظام الخلافة. الإرث كنيسة قومية ومعارضون أُعدموا منهم مور وكرومويل. «أريد ابناً» شخصي أعاد كتابة دين المملكة.",
+      "bn": "ছয় স্ত্রী ও রোমের সঙ্গে ভাঙন: ইংল্যান্ডের চার্চের প্রধান হন, মঠ ভাঙেন, তাদের জমি নেন। নৌবাহিনী, দরবার ও উত্তরাধিকার বিধি বাড়ান। উত্তরাধিকার জাতীয় গির্জাও, নিহত বিরোধীও — মোর ও ক্রমওয়েলসহ। ব্যক্তিগত «পুত্র চাই» রাজ্যের ধর্ম লিখে দেয়।",
+      "pt": "Seis mulheres e a rutura com Roma: tornou-se cabeça da Igreja de Inglaterra, dissolveu os mosteiros e tomou as terras. Reforçou a marinha, a corte e um estatuto de sucessão. O legado é ao mesmo tempo uma igreja nacional e opositores executados, More e Cromwell entre eles. Um «quero um filho» pessoal reescreveu a religião do reino.",
+      "ja": "六人の妃とローマ決裂：イングランド国教会の首長となり修道院を解散し土地を取った。海軍・宮廷・継承法を強めた。遺産は国家教会であると同時にモアやクロムウェルら処刑された反対者でもある。私的な「息子が欲しい」が王国の宗教を書き換えた。",
+      "he": "שש נשים וניתוק מרומא: נעשה ראש כנסיית אנגליה, פיזר מנזרים ולקח אדמותיהם. חיזק צי, חצר וחוק ירושה. המורשת היא גם כנסייה לאומית וגם יריבים שהוצאו להורג, מור וקרומוול ביניהם. «רוצה בן» אישי כתב מחדש את דת הממלכה."
+    },
+    "feat": {
+      "de": "Der Bruch mit Rom und der König als Haupt der Kirche von England.",
+      "zh": "与罗马决裂，国王成为英格兰教会元首。",
+      "es": "La ruptura con Roma y el rey como cabeza de la Iglesia de Inglaterra.",
+      "hi": "रोम से तोड़ और राजा इंग्लैंड की कलीसिया के प्रधान।",
+      "ar": "القطع مع رومة والملك رأس كنيسة إنكلترا.",
+      "bn": "রোমের সঙ্গে ভাঙন এবং রাজা ইংল্যান্ডের চার্চের প্রধান।",
+      "pt": "A rutura com Roma e o rei como cabeça da Igreja de Inglaterra.",
+      "ja": "ローマ決裂とイングランド国教会の首長としての王。",
+      "he": "הניתוק מרומא והמלך כראש כנסיית אנגליה."
+    }
+  },
+  "edward6": {
+    "bio": {
+      "de": "Sohn Heinrichs VIII., König als Kind unter Somerset, dann Northumberland. Unter seinen Protektoren wurde England klar protestantisch: die Gebetbücher von 1549 und 1552, Bildersturm. Er starb mit 15 an Krankheit; der Versuch, die Krone an Jane Grey zu geben, scheiterte in Tagen. Reformation vom Hof, nicht von einem erwachsenen König.",
+      "zh": "亨利八世之子，幼年即位，先由萨默塞特、后由诺森伯兰摄政。摄政下英格兰明显转向新教：1549与1552年祈祷书、圣像破坏。他15岁病逝；把王冠传给简·格雷的企图数日内失败。来自宫廷而非成年国王的宗教改革。",
+      "es": "Hijo de Enrique VIII, rey niño bajo Somerset y luego Northumberland. Bajo sus protectores Inglaterra se volvió claramente protestante: los Libros de Oración de 1549 y 1552, iconoclasia. Murió a los 15 de enfermedad; el intento de pasar la corona a Jane Grey fracasó en días. Reforma desde la corte, no desde un rey adulto.",
+      "hi": "हेनरी VIII के पुत्र, बचपन में सोमरसेट फिर नॉर्थम्बरलैंड के अधीन राजा। संरक्षकों के नीचे इंग्लैंड स्पष्ट प्रोटेस्टेंट: 1549 और 1552 की प्रार्थना पुस्तकें, मूर्तिभंजन। 15 पर बीमारी से मरे; जेन ग्रे को मुकुट देने की कोशिश दिनों में विफल। दरबार से सुधार, वयस्क राजा से नहीं।",
+      "ar": "ابن هنري الثامن، ملك طفل تحت سومرست ثم نورثمبرلاند. تحت حمايته صار إنكلترا بروتستانتياً واضحاً: كتب الصلاة 1549 و1552 وتحطيم الأيقونات. مات في 15 من مرض؛ فشلت محاولة تمرير التاج لجين غراي في أيام. إصلاح من البلاط لا من ملك بالغ.",
+      "bn": "হেনরি VIII-এর পুত্র, শিশু রাজা সামারসেট তারপর নর্থাম্বারল্যান্ডের অধীনে। অভিভাবকদের অধীনে ইংল্যান্ড স্পষ্ট প্রোটেস্ট্যান্ট: ১৫৪৯ ও ১৫৫২-এর প্রার্থনা বই, প্রতিমাভঙ্গ। ১৫-এ রোগে মারা যান; জেন গ্রেকে মুকুট দেওয়ার চেষ্টা দিনে ব্যর্থ। দরবার থেকে সংস্কার, প্রাপ্তবয়স্ক রাজা থেকে নয়।",
+      "pt": "Filho de Henrique VIII, rei criança sob Somerset e depois Northumberland. Sob os protetores Inglaterra tornou-se claramente protestante: os Livros de Oração de 1549 e 1552, iconoclastia. Morreu aos 15 de doença; a tentativa de passar a coroa a Jane Grey falhou em dias. Reforma da corte, não de um rei adulto.",
+      "ja": "ヘンリー8世の子。幼くサマセット、のちノーサンバランドの下で王。摂政下でイングランドは明らかにプロテスタント化：1549・1552年祈祷書、聖像破壊。15歳で病死；ジェーン・グレイへ王冠を渡す試みは数日で失敗。成人の王からではなく宮廷からの宗教改革。",
+      "he": "בנו של הנרי השמיני, מלך ילד תחת סומרסט ואחר כך נורת׳מברלנד. תחת המגינים הפכה אנגליה לפרוטסטנטית ברורה: ספרי התפילה 1549 ו־1552, ניפוץ איקונין. מת ב־15 ממחלה; ניסיון להעביר את הכתר לג׳יין גריי נכשל בימים. רפורמציה מהחצר, לא ממלך בוגר."
+    },
+    "feat": {
+      "de": "Die protestantischen Gebetbücher von 1549 und 1552 — Englands Abkehr von der katholischen Messe.",
+      "zh": "1549与1552年新教祈祷书——英格兰离开天主教弥撒。",
+      "es": "Los Libros de Oración protestantes de 1549 y 1552: el giro de Inglaterra lejos de la misa católica.",
+      "hi": "1549 और 1552 की प्रोटेस्टेंट प्रार्थना पुस्तकें — कैथोलिक मास से इंग्लैंड का रुख।",
+      "ar": "كتب الصلاة البروتستانتية 1549 و1552 — تحول إنكلترا عن القداس الكاثوليكي.",
+      "bn": "১৫৪৯ ও ১৫৫২-এর প্রোটেস্ট্যান্ট প্রার্থনা বই — ক্যাথলিক মিসা থেকে ইংল্যান্ডের সরে আসা।",
+      "pt": "Os Livros de Oração protestantes de 1549 e 1552 — o afastamento de Inglaterra da missa católica.",
+      "ja": "1549・1552年のプロテスタント祈祷書——カトリックミサからのイングランドの転換。",
+      "he": "ספרי התפילה הפרוטסטנטיים 1549 ו־1552 — מפנה אנגליה מהמיסה הקתולית."
+    }
+  },
+  "jane": {
+    "bio": {
+      "de": "Die „Neun-Tage-Königin“: protestantische Adlige Northumberlands riefen sie nach Eduard VI. gegen die rechtmäßige Maria aus. Maria Tudor nahm London in Tagen; Jane wurde 1554 nach Wyatts Aufstand hingerichtet. Ein gelehrtes Mädchen, zur Spielfigur in einem Spiel um Religion und Thron gemacht. Eine Regierung von ihr gab es nicht.",
+      "zh": "“九日女王”：诺森伯兰的新教贵族在爱德华六世死后拥立她对抗合法的玛丽。玛丽·都铎数日内占领伦敦；简在1554年怀亚特叛乱后被处死。一位被当作宗教与王位棋子的博学少女。没有她的治理。",
+      "es": "La «reina de nueve días»: nobles protestantes de Northumberland la proclamaron tras Eduardo VI contra la legal María. María Tudor tomó Londres en días; Jane fue ejecutada en 1554 tras la rebelión de Wyatt. Una joven culta hecha peón en un juego de religión y trono. No hubo gobierno suyo.",
+      "hi": "«नौ दिन की रानी»: नॉर्थम्बरलैंड के प्रोटेस्टेंट कुलीन एडवर्ड VI के बाद वैध मैरी के विरुद्ध उन्हें घोषित। मैरी ट्यूडर दिनों में लंदन ली; 1554 में व्याट विद्रोह के बाद जेन फाँसी। धर्म और सिंहासन के खेल की मोहरी बनी विदुषी लड़की। उनका शासन नहीं था।",
+      "ar": "«ملكة الأيام التسعة»: نبلاء نورثمبرلاند البروتستانت نادوا بها بعد إدوارد السادس ضد ماري الشرعية. أخذت ماري تيودور لندن في أيام؛ أُعدمت جين عام 1554 بعد تمرد وايت. فتاة عالمة صارت بيدقاً في لعبة دين وعرش. لم يكن لها حكم.",
+      "bn": "«নয় দিনের রানি»: নর্থাম্বারল্যান্ডের প্রোটেস্ট্যান্ট অভিজাত এডওয়ার্ড VI-এর পর বৈধ মেরির বিরুদ্ধে তাঁকে ঘোষণা করেন। মেরি টিউডর দিনে লন্ডন নেন; ১৫৫৪-এ ওয়ায়েট বিদ্রোহের পর জেন মৃত্যুদণ্ড। ধর্ম ও সিংহাসনের খেলার প্যাঁদা হওয়া বিদুষী মেয়ে। তাঁর শাসন ছিল না।",
+      "pt": "A «rainha de nove dias»: nobres protestantes de Northumberland proclamaram-na após Eduardo VI contra a legal Maria. Maria Tudor tomou Londres em dias; Jane foi executada em 1554 após a rebelião de Wyatt. Uma rapariga culta feita peão num jogo de religião e trono. Não houve governo dela.",
+      "ja": "「九日女王」。ノーサンバランドのプロテスタント貴族がエドワード6世の後、正統のメアリーに対抗して擁立。メアリー・テューダーは数日でロンドンを取り、ジェーンは1554年ワイアットの乱後に処刑。宗教と王位の駒にされた学識ある娘。彼女の統治はなかった。",
+      "he": "«מלכת תשעת הימים»: אצילי נורת׳מברלנד הפרוטסטנטים הכריזו עליה אחרי אדוארד השישי נגד מרי החוקית. מרי טיודור לקחה את לונדון בימים; ג׳יין הוצאה להורג ב־1554 אחרי מרד וויאט. נערה משכילה שנעשתה כלי במשחק דת וכס. לא היה ממשל שלה."
+    },
+    "feat": {
+      "de": "In neun Tagen wurde sie weder wirklich gekrönt noch konnte sie eigene Veränderungen durchsetzen.",
+      "zh": "九日之内她既未真正加冕，也未能推行自己的变革。",
+      "es": "En nueve días ni fue verdaderamente coronada ni pudo llevar a cabo cambios propios.",
+      "hi": "नौ दिनों में न सचमुच ताज पहना न अपनी तब्दीलियाँ चला सकीं।",
+      "ar": "في تسعة أيام لم تُتوَّج حقاً ولم تستطع إنفاذ تغييرات خاصة بها.",
+      "bn": "নয় দিনে তিনি সত্যি মুকুট পাননি, নিজস্ব পরিবর্তনও চালাতে পারেননি।",
+      "pt": "Em nove dias não foi verdadeiramente coroada nem pôde levar a cabo mudanças suas.",
+      "ja": "九日では真の戴冠も自前の変革もできなかった。",
+      "he": "בתשעה ימים לא הוכתרה באמת ולא יכלה להעביר שינויים משלה."
+    }
+  },
+  "mary1": {
+    "bio": {
+      "de": "Die erste Königin Englands aus eigenem Recht, Tochter Katharinas von Aragon. Sie stellte den Katholizismus wieder her und heiratete Philipp II. von Spanien; Foxes Berichte über protestantische Verbrennungen gaben den Namen Bloody Mary. Sie verlor Calais, Englands letzten Fetzen Frankreichs. Die Restauration Roms überlebte sie nicht: Elisabeth drehte die Kirche erneut.",
+      "zh": "英格兰第一位凭自身权利的女王，阿拉贡的凯瑟琳之女。她恢复天主教并嫁给西班牙腓力二世；福克斯记载的新教徒火刑使她得名“血腥玛丽”。她失去加来——英格兰在法国的最后一块。罗马的复辟未能活过她：伊丽莎白再次扭转教会。",
+      "es": "La primera reina de Inglaterra por derecho propio, hija de Catalina de Aragón. Restauró el catolicismo y se casó con Felipe II de España; las quemas de protestantes según Foxe le valieron el nombre de Bloody Mary. Perdió Calais, el último pedazo de Francia de Inglaterra. La restauración de Roma no la sobrevivió: Isabel giró la iglesia otra vez.",
+      "hi": "अपने अधिकार से इंग्लैंड की पहली रानी, अरागॉन की कैथरीन की पुत्री। कैथोलिक धर्म लौटाया, स्पेन के फिलिप II से विवाह; फ़ॉक्स के प्रोटेस्टेंट दहन ने ब्लडी मैरी नाम दिया। कैले खोया — फ़्रांस का आखिरी टुकड़ा। रोम की बहाली उनकी मृत्यु न जीती: एलिज़ाबेथ ने गिरजा फिर घुमाया।",
+      "ar": "أولى ملكات إنكلترا بحقها الخاص، ابنة كاترينا أراغون. أعادت الكاثوليكية وتزوجت فيليب الثاني الإسباني؛ حرق البروتستانت عند فوكس أعطاها اسم ماري الدموية. خسرت كاليه آخر قطعة فرنسا لإنكلترا. لم تعش إعادة رومة بعدها: إليزابيث قلبت الكنيسة مجدداً.",
+      "bn": "নিজ অধিকারে ইংল্যান্ডের প্রথম রানি, অ্যারাগনের ক্যাথরিনের কন্যা। ক্যাথলিকতা ফেরান, স্পেনের ফিলিপ II-কে বিয়ে; ফক্সের প্রোটেস্ট্যান্ট দহন ব্লাডি মেরি নাম দেয়। কালে হারান — ফ্রান্সের শেষ টুকরো। রোমের পুনরুদ্ধার তাঁর মৃত্যু টেকেনি: এলিজাবেথ গির্জা আবার ঘোরান।",
+      "pt": "A primeira rainha de Inglaterra por direito próprio, filha de Catarina de Aragão. Restaurou o catolicismo e casou com Filipe II de Espanha; as queimas de protestantes segundo Foxe deram o nome Bloody Mary. Perdeu Calais, o último pedaço de França de Inglaterra. A restauração de Roma não a sobreviveu: Isabel virou a igreja outra vez.",
+      "ja": "イングランド初の自権女王、アラゴンのキャサリンの娘。カトリックを復しスペインのフェリペ2世と結婚。フォクスの記録するプロテスタント火刑が「血まみれメアリー」の名を生んだ。カレー——フランス最後の一片——を失った。ローマ復辟は彼女より長くは続かず、エリザベスが教会を再び転じた。",
+      "he": "מלכת אנגליה הראשונה בזכות עצמה, בת קתרין מאראגון. השיבה את הקתוליות ונשאה את פיליפ השני מספרד; שריפות פרוטסטנטים אצל פוקס נתנו את השם מרי העקובה מדם. איבדה את קאלה, פיסת צרפת האחרונה של אנגליה. שיבת רומא לא שרדה אותה: אליזבת הפכה את הכנסייה שוב."
+    },
+    "feat": {
+      "de": "Die Wiederherstellung des Katholizismus und eine spanische Heirat; den Kurs über sich hinaus zu halten gelang ihr nicht.",
+      "zh": "恢复天主教与西班牙联姻；她未能让这条路线活过自己。",
+      "es": "Restaurar el catolicismo y un matrimonio español; no pudo hacer que el rumbo le sobreviviera.",
+      "hi": "कैथोलिक धर्म की बहाली और स्पेनी विवाह; रास्ता अपने बाद नहीं चला सकीं।",
+      "ar": "إعادة الكاثوليكية وزواج إسباني؛ لم تستطع إبقاء المسار بعدها.",
+      "bn": "ক্যাথলিকতা ফেরানো ও স্পেনীয় বিবাহ; পথ নিজের পরে রাখতে পারেননি।",
+      "pt": "Restaurar o catolicismo e um casamento espanhol; não conseguiu fazer o rumo sobreviver-lhe.",
+      "ja": "カトリック復辟とスペイン婚。路線を自分より長く保つことはできなかった。",
+      "he": "השבת הקתוליות ונישואין ספרדיים; לא הצליחה להחזיק את המסלול אחריה."
+    }
+  },
+  "elizabeth1": {
+    "bio": {
+      "de": "Ein „goldenes Zeitalter“: die Armada von 1588, Shakespeare und Marlowe, der anglikanische Ausgleich (Neununddreißig Artikel), eine arme aber lebendige Marine. Sie ließ Maria Stuart nach Verschwörungen hinrichten. Sie heiratete nie — die Jungfrau-Königin; mit ihr endete die Tudor-Linie. Dreißig Jahre ohne großen Landkrieg auf der Insel und ein Kult der Person.",
+      "zh": "“黄金时代”：1588年无敌舰队、莎士比亚与马洛、安立甘妥协（三十九信条）、贫穷却顽强的海军。密谋之后她处死苏格兰玛丽。她从未结婚——童贞女王；都铎一线随她结束。岛上三十年无大战，以及个人崇拜。",
+      "es": "Una «edad de oro»: la Armada de 1588, Shakespeare y Marlowe, el asentamiento anglicano (Treinta y Nueve Artículos), una marina pobre pero viva. Hizo ejecutar a María de Escocia tras conjuras. Nunca se casó — la Reina Virgen; con ella acabó la línea Tudor. Treinta años sin una gran guerra terrestre en la isla, y un culto a la persona.",
+      "hi": "«स्वर्ण युग»: 1588 की आर्मेडा, शेक्सपियर और मार्लो, एंग्लिकन समझौता (उनतालीस अनुच्छेद), गरीब पर जीवित नौसेना। षड्यंत्रों के बाद मैरी स्टुअर्ट फाँसी। विवाह न किया — कुँवारी रानी; इन्हीं से ट्यूडर वंश खत्म। द्वीप पर तीस वर्ष बिना बड़ी थल युद्ध, और व्यक्ति का पंथ।",
+      "ar": "«عصر ذهبي»: أرمادا 1588 وشكسبير ومارلو والتسوية الأنغليكانية (تسعة وثلاثون بنداً) وبحرية فقيرة لكنها حية. أعدمت ماري ملكة الإسكتلنديين بعد مؤامرات. لم تتزوج — الملكة العذراء؛ بها انتهى خط تيودور. ثلاثون عاماً بلا حرب برية كبيرة على الجزيرة وعبادة الشخص.",
+      "bn": "«স্বর্ণযুগ»: ১৫৮৮-এর আর্মাডা, শেক্সপিয়র ও মার্লো, অ্যাংলিকান সমঝোতা (ঊনচল্লিশ অনুচ্ছেদ), গরিব কিন্তু জীবন্ত নৌবাহিনী। ষড়যন্ত্রের পর মেরি স্টুয়ার্ট মৃত্যুদণ্ড। বিয়ে করেননি — কুমারী রানি; তাঁতে টিউডর বংশ শেষ। দ্বীপে ত্রিশ বছর বড় স্থলযুদ্ধ ছাড়া, এবং ব্যক্তির পূজা।",
+      "pt": "Uma «idade de ouro»: a Armada de 1588, Shakespeare e Marlowe, o acordo anglicano (Trinta e Nove Artigos), uma marinha pobre mas viva. Mandou executar Maria da Escócia após conspirações. Nunca casou — a Rainha Virgem; com ela acabou a linha Tudor. Trinta anos sem uma grande guerra terrestre na ilha, e um culto da pessoa.",
+      "ja": "「黄金時代」：1588年アルマダ、シェイクスピアとマーロウ、国教会妥結（三十九箇条）、貧しくも生きる海軍。陰謀の後スコットランドのメアリーを処刑。未婚——処女女王；テューダー線は彼女で終わった。島に三十年の大陸上戦争なしと、人格の崇拝。",
+      "he": "«תור זהב»: הארמדה של 1588, שייקספיר ומרלו, ההסדר האנגליקני (שלושים ותשע סעיפים), צי עני אך חי. הוציאה להורג את מרי מלכת הסקוטים אחרי קשרים. לא נישאה — המלכה הבתולה; איתה נגמר קו טיודור. שלושים שנה בלי מלחמת יבשה גדולה באי, ופולחן האישיות."
+    },
+    "feat": {
+      "de": "Die Niederlage der Armada 1588 und der anglikanische Kirchenausgleich.",
+      "zh": "1588年击败无敌舰队与安立甘教会妥协。",
+      "es": "La derrota de la Armada en 1588 y el asentamiento de la iglesia anglicana.",
+      "hi": "1588 में आर्मेडा की हार और एंग्लिकन गिरजा समझौता।",
+      "ar": "هزيمة الأرمادا عام 1588 والتسوية الكنسية الأنغليكانية.",
+      "bn": "১৫৮৮-এ আর্মাডার পরাজয় ও অ্যাংলিকান গির্জা সমঝোতা।",
+      "pt": "A derrota da Armada em 1588 e o acordo da igreja anglicana.",
+      "ja": "1588年アルマダ撃破と国教会妥結。",
+      "he": "תבוסת הארמדה ב־1588 וההסדר הכנסייתי האנגליקני."
+    }
+  },
+  "james1": {
+    "bio": {
+      "de": "Schon Jakob VI. von Schottland, vereinigte er 1603 die Kronen in einer Personalunion ohne Parlamentsfusion. Er gab die King-James-Bibel in Auftrag — eine Übersetzung, die seine Politik überlebte. Die Pulververschwörung war 1605. Streit mit dem Parlament um Geld, Monopole und Königsrecht kündigte den Sturm unter dem Sohn an. „Der weiseste Narr der Christenheit“, nach einem bösen Witz.",
+      "zh": "已是苏格兰的詹姆斯六世，1603年以共主联邦联合王冠而不合并议会。他委托钦定版圣经——一部比其政治更长寿的译本。1605年火药阴谋。与议会在金钱、专利与王权上的争执预示儿子治下的风暴。恶谑称之为“基督教世界最聪明的傻瓜”。",
+      "es": "Ya Jacobo VI de Escocia, unió las coronas en unión personal en 1603 sin fusionar parlamentos. Encargó la Biblia del Rey Jacobo, una traducción que sobrevivió a su política. La Conspiración de la Pólvora fue 1605. Las peleas con el Parlamento por dinero, monopolios y derecho real anticiparon la tormenta bajo su hijo. «El más sabio tonto de la cristiandad», según un chiste cruel.",
+      "hi": "पहले से स्कॉटलैंड के जेम्स VI, 1603 में व्यक्तिगत संघ से मुकुट जोड़े बिना संसद मिलाए। किंग जेम्स बाइबिल मँगवाई — अनुवाद जो उनकी राजनीति से जीवित रहा। 1605 बारूद षड्यंत्र। धन, एकाधिकार और शाही अधिकार पर संसद से झगड़े पुत्र के तूफ़ान की चेतावनी। «ईसाईजगत का सबसे बुद्धिमान मूर्ख», क्रूर मज़ाक में।",
+      "ar": "كان أصلاً جيمس السادس ملك إسكتلندا، وجمع التيجان باتحاد شخصي عام 1603 دون دمج البرلمانات. أمر بإنجيل الملك جيمس — ترجمة عاشت بعد سياسته. مؤامرة البارود 1605. نزاعات البرلمان على المال والاحتكارات وحق الملك أنذرت بعاصفة الابن. «أحكم أحمق في العالم المسيحي» بنكتة قاسية.",
+      "bn": "আগেই স্কটল্যান্ডের জেমস VI, ১৬০৩-এ ব্যক্তিগত ইউনিয়নে মুকুট জোড়েন সংসদ না মিলিয়ে। কিং জেমস বাইবেল করান — অনুবাদ যা তাঁর রাজনীতি টিকে। ১৬০৫ বারুদ ষড়যন্ত্র। অর্থ, একচেটিয়া ও রাজ অধিকারে সংসদের সঙ্গে ঝগড়া পুত্রের ঝড়ের ইঙ্গিত। «খ্রিষ্টজগতের সবচেয়ে জ্ঞানী বোকা», নিষ্ঠুর রসিকতায়।",
+      "pt": "Já Jaime VI da Escócia, uniu as coroas em união pessoal em 1603 sem fundir parlamentos. Encomendou a Bíblia do Rei Jaime — uma tradução que sobreviveu à sua política. A Conspiração da Pólvora foi 1605. Brigas com o Parlamento por dinheiro, monopolios e direito real prenunciaram a tempestade sob o filho. «O mais sábio tolo da cristandade», segundo uma piada cruel.",
+      "ja": "すでにスコットランドのジェームズ6世。1603年に議会を統合せず人的同君連合で王冠を結んだ。欽定訳聖書を委嘱——政治より長く残った翻訳。1605年火薬陰謀。金・独占・王権をめぐる議会との争いが息子の嵐を予告。「キリスト教世界で最も賢い愚か者」という酷い洒落。",
+      "he": "כבר ג׳יימס השישי מסקוטלנד, איחד את הכתרים באיחוד אישי ב־1603 בלי למזג פרלמנטים. הזמין את תנ״ך המלך ג׳יימס — תרגום ששרד את מדיניותו. קשר אבק השרפה היה 1605. ריבים עם הפרלמנט על כסף, מונופולים וזכות מלך בישרו את הסערה תחת בנו. «הטיפש החכם ביותר בנצרות», בבדיחה אכזרית."
+    },
+    "feat": {
+      "de": "Die Personalunion der Kronen 1603 und die King-James-Bibel.",
+      "zh": "1603年王冠共主联合与钦定版圣经。",
+      "es": "La unión personal de las coronas en 1603 y la Biblia del Rey Jacobo.",
+      "hi": "1603 का मुकुटों का व्यक्तिगत संघ और किंग जेम्स बाइबिल।",
+      "ar": "الاتحاد الشخصي للتيجان عام 1603 وإنجيل الملك جيمس.",
+      "bn": "১৬০৩-এ মুকুটের ব্যক্তিগত ইউনিয়ন ও কিং জেমস বাইবেল।",
+      "pt": "A união pessoal das coroas em 1603 e a Bíblia do Rei Jaime.",
+      "ja": "1603年の王冠人的同君連合と欽定訳聖書。",
+      "he": "האיחוד האישי של הכתרים ב־1603 ותנ״ך המלך ג׳יימס."
+    }
+  },
+  "charles1": {
+    "bio": {
+      "de": "Er glaubte an das Gottesgnadentum und herrschte ohne Parlament in den Elf Jahren der Tyrannei, erhob Schiffsgeld. Der Bürgerkrieg endete mit Prozess und Hinrichtung 1649 — England wurde Republik, ein Präzedenz, den Europa nicht erwartet hatte. Eine katholische Frau und Bischöfe erzürnten die Puritaner. Märtyrer für die einen, Tyrann für die anderen.",
+      "zh": "他信奉君权神授，在十一年暴政中无议会而治，征收船税。内战以1649年审判与处决告终——英格兰成为共和国，欧洲未曾料到的先例。天主教王后与主教激怒清教徒。对一些人是殉道者，对另一些人是暴君。",
+      "es": "Creía en el derecho divino de los reyes y gobernó sin Parlamento en los Once Años de Tiranía, cobrando ship money. La guerra civil acabó en su juicio y ejecución en 1649: Inglaterra se volvió república, un precedente que Europa no esperaba. Una esposa católica y los obispos airaron a los puritanos. Mártir para unos, tirano para otros.",
+      "hi": "राजाओं के दैवी अधिकार में विश्वास, ग्यारह वर्ष अत्याचार में संसद के बिना चले, शिप मनी वसूली। गृहयुद्ध 1649 के मुकदमे और फाँसी पर खत्म — इंग्लैंड गणतंत्र, यूरोप को न अपेक्षित मिसाल। कैथोलिक पत्नी और बिशप ने प्यूरिटनों को भड़काया। कुछ के लिए शहीद, कुछ के लिए तानाशाह।",
+      "ar": "آمن بالحق الإلهي للملوك وحكم بلا برلمان في أحد عشر عاماً من الطغيان جابياً مال السفن. انتهت الحرب الأهلية بمحاكمته وإعدامه عام 1649 — صارت إنكلترا جمهورية، سابقة لم تتوقعها أوروبا. زوجة كاثوليكية وأساقفة أغضبوا البيوريتانيين. شهيد للبعض وطاغية لآخرين.",
+      "bn": "রাজার দৈব অধিকারে বিশ্বাস, এগারো বছর অত্যাচারে সংসদ ছাড়া শাসন, শিপ মানি আদায়। গৃহযুদ্ধ ১৬৪৯-এর বিচার ও মৃত্যুদণ্ডে শেষ — ইংল্যান্ড প্রজাতন্ত্র, ইউরোপের অপ্রত্যাশিত নজির। ক্যাথলিক স্ত্রী ও বিশপ পিউরিটানদের রেগান। কারও কাছে শহিদ, কারও কাছে অত্যাচারী।",
+      "pt": "Acreditava no direito divino dos reis e governou sem Parlamento nos Onze Anos de Tirania, cobrando ship money. A guerra civil acabou no julgamento e execução em 1649 — Inglaterra tornou-se república, um precedente que a Europa não esperava. Uma mulher católica e bispos irritaram os puritanos. Mártir para uns, tirano para outros.",
+      "ja": "王権神授を信じ、十一年の専制で議会なしに統治し船税を課した。内戦は1649年の裁判と処刑で終わり、イングランドは共和国——欧州の予期せぬ先例。カトリック妃と主教が清教徒を怒らせた。ある者には殉教者、ある者には暴君。",
+      "he": "האמין בזכות האלוהית של מלכים ושלט בלי פרלמנט באחד-עשר שנות העריצות, גובה כסף ספינות. מלחמת האזרחים הסתיימה במשפטו ובהוצאתו להורג ב־1649 — אנגליה הפכה לרפובליקה, תקדים שאירופה לא ציפתה. אישה קתולית ובישופים הכעיסו את הפוריטנים. קדוש מעונה לאלה, עריץ לאחרים."
+    },
+    "feat": {
+      "de": "Die Hinrichtung des Königs 1649 — nicht sein Plan, aber das Ende seines Kurses: eine Republik statt der Krone.",
+      "zh": "1649年处决国王——并非他的设计，却是其路线的结局：共和国取代王冠。",
+      "es": "La ejecución del rey en 1649: no su designio, pero el fin de su rumbo: una república en lugar de la corona.",
+      "hi": "1649 में राजा की फाँसी — उनकी योजना नहीं, पर रास्ते का अंत: मुकुट की जगह गणतंत्र।",
+      "ar": "إعدام الملك عام 1649 — ليس تصميمه لكن نهاية مساره: جمهورية بدل التاج.",
+      "bn": "১৬৪৯-এ রাজার মৃত্যুদণ্ড — তাঁর পরিকল্পনা নয়, কিন্তু পথের শেষ: মুকুটের বদলে প্রজাতন্ত্র।",
+      "pt": "A execução do rei em 1649 — não o seu desígnio, mas o fim do rumo: uma república no lugar da coroa.",
+      "ja": "1649年の王の処刑——彼の設計ではないが路線の結末：王冠に代わる共和国。",
+      "he": "הוצאת המלך להורג ב־1649 — לא תכנונו, אך סוף מסלולו: רפובליקה במקום הכתר."
+    }
+  },
+  "charles2": {
+    "bio": {
+      "de": "Die Restauration von 1660: Theater, Wissenschaft (Royal Society), Pest und Großer Brand in London, ein fröhlicher Hof nach den Puritanern. Der geheime Vertrag von Dover mit Frankreich und Streit mit dem Parlament um Geld und Religion. Test Act und der Ausschluss der Katholiken vom Thron schärften sich unter ihm. Ein „fröhlicher Monarch“, der die Lehre des Vaters nicht vergessen hatte und das Heer nicht bis zum Ende trieb.",
+      "zh": "1660年王政复辟：戏剧、科学（皇家学会）、伦敦瘟疫与大火、清教徒之后欢乐的宫廷。与法国的秘密多佛条约，以及与议会在金钱与宗教上的争执。宣誓法与天主教徒不得继位在其治下尖锐化。“欢乐君主”未忘父亲的教训，也不把军队推到尽头。",
+      "es": "La Restauración de 1660: teatro, ciencia (Royal Society), peste y Gran Incendio en Londres, una corte alegre tras los puritanos. El tratado secreto de Dover con Francia y peleas con el Parlamento por dinero y religión. El Test Act y la exclusión de católicos del trono se agudizaron en su mandato. Un «monarca alegre» que no olvidó la lección del padre y no empujó al ejército hasta el final.",
+      "hi": "1660 की पुनर्स्थापना: रंगमंच, विज्ञान (रॉयल सोसाइटी), लंदन में प्लेग और महाअग्नि, प्यूरिटनों के बाद हँसमुख दरबार। फ्रांस से गुप्त डोवर संधि और धन-धर्म पर संसद से झगड़ा। टेस्ट ऐक्ट और कैथोलिकों का सिंहासन से बहिष्कार उनके समय तीखा। «प्रसन्न नरेश» जिन्होंने पिता का पाठ न भुलाया और सेना को अंत तक न धकेला।",
+      "ar": "استعادة 1660: مسرح وعلم (الجمعية الملكية) وطاعون وحريق لندن العظيم وبلاط مرح بعد البيوريتانيين. معاهدة دوفر السرية مع فرنسا ونزاعات البرلمان على المال والدين. قانون الاختبار وإقصاء الكاثوليك عن العرش تحددا في عهده. «ملك مرح» لم ينسَ درس أبيه ولم يدفع الجيش حتى النهاية.",
+      "bn": "১৬৬০-এর পুনরুদ্ধার: নাট্য, বিজ্ঞান (রয়্যাল সোসাইটি), লন্ডনে প্লেগ ও মহা অগ্নি, পিউরিটানদের পর হাসিখুশি দরবার। ফ্রান্সের সঙ্গে গোপন ডোভার চুক্তি ও অর্থ-ধর্মে সংসদের সঙ্গে ঝগড়া। টেস্ট অ্যাক্ট ও ক্যাথলিকদের সিংহাসন থেকে বাদ তাঁর আমলে তীব্র। «প্রফুল্ল রাজা» যিনি পিতার শিক্ষা ভোলেননি এবং সেনাকে শেষ পর্যন্ত ঠেলেননি।",
+      "pt": "A Restauração de 1660: teatro, ciência (Royal Society), peste e Grande Incêndio em Londres, uma corte alegre após os puritanos. O tratado secreto de Dover com a França e brigas com o Parlamento por dinheiro e religião. O Test Act e a exclusão dos católicos do trono agudizaram-se no seu tempo. Um «monarca alegre» que não esqueceu a lição do pai e não empurrou o exército até ao fim.",
+      "ja": "1660年王政復古。演劇、科学（王立協会）、ロンドンのペストと大火、清教徒の後の陽気な宮廷。対仏秘密ドーヴァー条約と金・宗教をめぐる議会争い。審査法とカトリックの王位排除が彼の下で鋭くなった。「陽気な君主」は父の教訓を忘れず、軍を最後まで押し切らなかった。",
+      "he": "הרסטורציה של 1660: תיאטרון, מדע (החברה המלכותית), מגפה והשריפה הגדולה בלונדון, חצר עליזה אחרי הפוריטנים. חוזה דובר הסודי עם צרפת וריבים עם הפרלמנט על כסף ודת. חוק המבחן והדרת קתולים מהכס החריפו במשמרתו. «מלך עליז» שלא שכח את לקח אביו ולא דחף את הצבא עד הסוף."
+    },
+    "feat": {
+      "de": "Die Restauration von 1660 und die Royal Society — Krone, Theater und Wissenschaft nach der Republik.",
+      "zh": "1660年王政复辟与皇家学会——共和国之后的王冠、戏剧与科学。",
+      "es": "La Restauración de 1660 y la Royal Society: corona, teatro y ciencia tras la república.",
+      "hi": "1660 की पुनर्स्थापना और रॉयल सोसाइटी — गणतंत्र के बाद मुकुट, रंगमंच और विज्ञान।",
+      "ar": "استعادة 1660 والجمعية الملكية — تاج ومسرح وعلم بعد الجمهورية.",
+      "bn": "১৬৬০-এর পুনরুদ্ধার ও রয়্যাল সোসাইটি — প্রজাতন্ত্রের পর মুকুট, নাট্য ও বিজ্ঞান।",
+      "pt": "A Restauração de 1660 e a Royal Society — coroa, teatro e ciência após a república.",
+      "ja": "1660年王政復古と王立協会——共和国の後の王冠、演劇、科学。",
+      "he": "הרסטורציה של 1660 והחברה המלכותית — כתר, תיאטרון ומדע אחרי הרפובליקה."
+    }
+  },
+  "james2": {
+    "bio": {
+      "de": "Ein Katholik auf protestantischem Thron, Bruder Karls II. Indulgenzdeklarationen (für Katholiken und Dissidenten) und ein katholischer Erbe brachten die Glorreiche Revolution von 1688. Er floh nach Frankreich; die Krone ging an Tochter Maria und Wilhelm von Oranien. Der Versuch, den Katholizismus von oben wiederherzustellen, brach die Stuarts in England.",
+      "zh": "新教宝座上的天主教徒，查理二世之弟。宽容宣言（面向天主教徒与异见者）与天主教继承人催生1688年光荣革命。他逃往法国；王冠归于女儿玛丽与奥兰治的威廉。自上而下恢复天主教的企图折断了英格兰的斯图亚特。",
+      "es": "Católico en un trono protestante, hermano de Carlos II. Las declaraciones de indulgencia (para católicos y disidentes) y un heredero católico trajeron la Revolución Gloriosa de 1688. Huyó a Francia; la corona pasó a su hija María y a Guillermo de Orange. El intento de restaurar el catolicismo desde arriba quebró a los Estuardo en Inglaterra.",
+      "hi": "प्रोटेस्टेंट सिंहासन पर कैथोलिक, चार्ल्स II के भाई। अनुग्रह घोषणाएँ (कैथोलिक और असंतोषी) और कैथोलिक वारिस ने 1688 की गौरवशाली क्रांति लाई। फ्रांस भागे; मुकुट पुत्री मैरी और ऑरेंज के विलियम को। ऊपर से कैथोलिक धर्म लौटाने की कोशिश ने इंग्लैंड में स्टुअर्ट तोड़े।",
+      "ar": "كاثوليكي على عرش بروتستانتي، أخو تشارلز الثاني. إعلانات التسامح (للكاثوليك والمنشقين) ووارث كاثوليكي جلبا الثورة المجيدة 1688. فرّ إلى فرنسا؛ انتقل التاج لابنته ماري وويليام الأورنجي. محاولة إعادة الكاثوليكية من فوق كسرت آل ستيوارت في إنكلترا.",
+      "bn": "প্রোটেস্ট্যান্ট সিংহাসনে ক্যাথলিক, চার্লস II-এর ভাই। অনুগ্রহ ঘোষণা (ক্যাথলিক ও ভিন্নমতাবলম্বী) ও ক্যাথলিক উত্তরাধিকারী ১৬৮৮-এর গৌরবময় বিপ্লব আনে। ফ্রান্সে পালান; মুকুট কন্যা মেরি ও অরেঞ্জের উইলিয়ামে যায়। উপর থেকে ক্যাথলিকতা ফেরানোর চেষ্টা ইংল্যান্ডে স্টুয়ার্ট ভাঙে।",
+      "pt": "Católico num trono protestante, irmão de Carlos II. As declarações de indulgência (para católicos e dissidentes) e um herdeiro católico trouxeram a Revolução Gloriosa de 1688. Fugiu para França; a coroa passou à filha Maria e a Guilherme de Orange. A tentativa de restaurar o catolicismo de cima quebrou os Stuart em Inglaterra.",
+      "ja": "プロテスタントの玉座のカトリック、チャールズ2世の弟。寛容宣言（カトリックと非国教徒）とカトリック世継ぎが1688年名誉革命を招いた。フランスへ逃れ、王冠は娘メアリーとオラニエ公ウィレムへ。上からカトリックを復す試みがイングランドのスチュアートを折った。",
+      "he": "קתולי על כס פרוטסטנטי, אחי צ׳ארלס השני. הצהרות סובלנות (לקתולים ולפורשים) ויורש קתולי הביאו את המהפכה המהוללת 1688. ברח לצרפת; הכתר עבר לבתו מרי ולוויליאם מאורנז׳. ניסיון להשיב קתוליות מלמעלה שבר את הסטיוארטים באנגליה."
+    },
+    "feat": {
+      "de": "Die Glorreiche Revolution antwortete auf seinen Kurs: er verlor die Krone und verankerte keine eigenen Gesetze.",
+      "zh": "光荣革命回应了他的路线：他失去王冠，也未锁定自己的法律。",
+      "es": "La Revolución Gloriosa respondió a su rumbo: perdió la corona y no fijó leyes propias.",
+      "hi": "गौरवशाली क्रांति उनके रास्ते का जवाब: मुकुट खोया, अपने क़ानून न जमाए।",
+      "ar": "أجابت الثورة المجيدة على مساره: فقد التاج ولم يثبّت قوانين خاصة به.",
+      "bn": "গৌরবময় বিপ্লব তাঁর পথের জবাব: মুকুট হারান, নিজস্ব আইন বাঁধেননি।",
+      "pt": "A Revolução Gloriosa respondeu ao seu rumo: perdeu a coroa e não cravou leis suas.",
+      "ja": "名誉革命が彼の路線に答えた。王冠を失い、自前の法は定着させなかった。",
+      "he": "המהפכה המהוללת ענתה למסלולו: איבד את הכתר ולא נעל חוקים משלו."
+    }
+  },
+  "mary2": {
+    "bio": {
+      "de": "Tochter Jakobs II., herrschte sie nach 1688 gemeinsam mit Wilhelm III. — eine seltene Doppelkrone. Sie unterzeichnete die Bill of Rights von 1689: Parlament, regelmäßige Wahlen, ein Text gegen grausame Strafen. Pocken töteten sie 1694; Wilhelm blieb allein König. Eine Anglikanerin, die zum Gesicht einer Revolution gegen den Vater wurde.",
+      "zh": "詹姆斯二世之女，1688年后与威廉三世共治——罕见的双王冠。她签署1689年权利法案：议会、定期选举、禁止酷刑的条文。天花于1694年夺去她的生命；威廉独自为王。一位成为反对父亲之革命面孔的安立甘教徒。",
+      "es": "Hija de Jacobo II, reinó junto con Guillermo III después de 1688: una doble corona rara. Firmó la Declaración de Derechos de 1689: Parlamento, elecciones regulares, un texto contra el castigo cruel. La viruela la mató en 1694; Guillermo reinó solo. Anglicana que se volvió el rostro de una revolución contra su padre.",
+      "hi": "जेम्स II की पुत्री, 1688 के बाद विलियम III के साथ संयुक्त राज — दुर्लभ दोहरा मुकुट। 1689 का अधिकार विधेयक हस्ताक्षरित: संसद, नियमित चुनाव, क्रूर दंड के विरुद्ध पाठ। चेचक ने 1694 में मारा; विलियम अकेले राजा रहे। एंग्लिकन जो पिता के विरुद्ध क्रांति का चेहरा बनीं।",
+      "ar": "ابنة جيمس الثاني، حكمت بالاشتراك مع ويليام الثالث بعد 1688 — تاج مزدوج نادر. وقّعت وثيقة الحقوق 1689: برلمان وانتخابات منتظمة ونص ضد العقوبة القاسية. قتلها الجدري عام 1694؛ بقي ويليام ملكاً وحده. أنغليكانية صارت وجه ثورة ضد أبيها.",
+      "bn": "জেমস II-এর কন্যা, ১৬৮৮-এর পর উইলিয়াম III-এর সঙ্গে যৌথ শাসন — দুর্লভ দ্বৈত মুকুট। ১৬৮৯-এর অধিকার বিল স্বাক্ষর: সংসদ, নিয়মিত নির্বাচন, নিষ্ঠুর শাস্তির বিরুদ্ধে পাঠ। বসন্ত ১৬৯৪-এ মারে; উইলিয়াম একা রাজা থাকেন। অ্যাংলিকান যিনি পিতার বিরুদ্ধে বিপ্লবের মুখ হন।",
+      "pt": "Filha de Jaime II, reinou em conjunto com Guilherme III após 1688 — uma coroa dupla rara. Assinou a Declaração de Direitos de 1689: Parlamento, eleições regulares, um texto contra o castigo cruel. A varíola matou-a em 1694; Guilherme reinou sozinho. Anglicana que se tornou o rosto de uma revolução contra o pai.",
+      "ja": "ジェームズ2世の娘。1688年以降ウィリアム3世と共治——稀な二重王冠。1689年権利章典に署名：議会、定期選挙、残酷な刑罰への条文。1694年天然痘で死去；ウィリアムが単独で王。父に対する革命の顔となった国教会信徒。",
+      "he": "בת ג׳יימס השני, מלכה במשותף עם ויליאם השלישי אחרי 1688 — כתר כפול נדיר. חתמה על מגילת הזכויות 1689: פרלמנט, בחירות סדירות, טקסט נגד עונש אכזרי. אבעבועות שחורות הרגו אותה ב־1694; ויליאם נשאר מלך לבדו. אנגליקנית שהפכה לפני מהפכה נגד אביה."
+    },
+    "feat": {
+      "de": "Die Bill of Rights von 1689 — gemeinsam mit Wilhelm.",
+      "zh": "1689年权利法案——与威廉共同签署。",
+      "es": "La Declaración de Derechos de 1689, junto con Guillermo.",
+      "hi": "1689 का अधिकार विधेयक — विलियम के साथ।",
+      "ar": "وثيقة الحقوق 1689 — مع ويليام.",
+      "bn": "১৬৮৯-এর অধিকার বিল — উইলিয়ামের সঙ্গে।",
+      "pt": "A Declaração de Direitos de 1689 — em conjunto com Guilherme.",
+      "ja": "1689年権利章典——ウィリアムと共に。",
+      "he": "מגילת הזכויות 1689 — יחד עם ויליאם."
+    }
+  },
+  "william3": {
+    "bio": {
+      "de": "Statthalter der niederländischen Republik, 1688 als Schild gegen Ludwig XIV. und den Jakobitismus auf den englischen Thron gerufen. Er kämpfte gegen Frankreich und die Jakobiten (Boyne, 1690). Konstitutionelle Monarchie, ein stärkeres Parlament, die Bank of England (1694) und eine regelmäßige Staatsschuld setzten sich in seiner Herrschaft fest. Ein Soldatenkönig des protestantischen Europa auf dem englischen Thron.",
+      "zh": "荷兰共和国执政，1688年作为对抗路易十四与詹姆斯党的盾牌被邀上英格兰王位。他与法国及詹姆斯党作战（1690年博因河）。立宪君主制、更强的议会、英格兰银行（1694）与常设国债在其治下确立。新教欧洲的军人国王坐上英格兰王位。",
+      "es": "Estatúder de la República neerlandesa, invitado al trono inglés en 1688 como escudo contra Luis XIV y el jacobitismo. Combatió a Francia y a los jacobitas (el Boyne, 1690). La monarquía constitucional, un Parlamento más fuerte, el Banco de Inglaterra (1694) y una deuda nacional regular se asentaron en su reinado. Un rey soldado de la Europa protestante en el trono inglés.",
+      "hi": "डच गणतंत्र के स्टैथोल्डर, 1688 में लुई XIV और जैकोबिटिज़्म के विरुद्ध ढाल बन अंग्रेज़ी सिंहासन पर आमंत्रित। फ्रांस और जैकोबिटों से लड़े (बॉयन, 1690)। संवैधानिक राजशाही, मज़बूत संसद, बैंक ऑफ़ इंग्लैंड (1694) और नियमित राष्ट्रीय ऋण उनके राज में जमे। प्रोटेस्टेंट यूरोप के सैनिक-राजा अंग्रेज़ी सिंहासन पर।",
+      "ar": "ستاتهاودر الجمهورية الهولندية، دُعي إلى العرش الإنكليزي عام 1688 درعاً ضد لويس الرابع عشر واليعقوبية. حارب فرنسا واليعاقبة (بوين، 1690). ترسخت في حكمه ملكية دستورية وبرلمان أقوى وبنك إنكلترا (1694) ودين وطني منتظم. ملك جندي لأوروبا البروتستانتية على العرش الإنكليزي.",
+      "bn": "ডাচ প্রজাতন্ত্রের স্ট্যাডথোল্ডার, ১৬৮৮-এ লুই XIV ও জ্যাকোবিটিজমের বিরুদ্ধে ঢাল হয়ে ইংরেজ সিংহাসনে আমন্ত্রিত। ফ্রান্স ও জ্যাকোবাইটদের সঙ্গে লড়েন (বয়েন, ১৬৯০)। সাংবিধানিক রাজতন্ত্র, শক্তিশালী সংসদ, ব্যাংক অব ইংল্যান্ড (১৬৯৪) ও নিয়মিত জাতীয় ঋণ তাঁর শাসনে বসে। প্রোটেস্ট্যান্ট ইউরোপের সেনা-রাজা ইংরেজ সিংহাসনে।",
+      "pt": "Estatuder da República neerlandesa, convidado ao trono inglês em 1688 como escudo contra Luís XIV e o jacobitismo. Lutou contra França e os jacobitas (o Boyne, 1690). A monarquia constitucional, um Parlamento mais forte, o Banco de Inglaterra (1694) e uma dívida nacional regular assentaram no seu reinado. Um rei soldado da Europa protestante no trono inglês.",
+      "ja": "オランダ共和国総督。1688年ルイ14世とジャコバイトへの盾としてイングランド王位に招かれた。対仏・ジャコバイト戦争（1690年ボイン）。立憲君主制、強い議会、イングランド銀行（1694）、常設国債が治世に定着。プロテスタント欧州の軍人王がイングランドの玉座に。",
+      "he": "שטאטהאודר של הרפובליקה ההולנדית, הוזמן לכס האנגלי ב־1688 כמגן מול לואי הארבעה-עשר והיעקוביטיזם. נלחם בצרפת וביעקוביטים (הבוין, 1690). מונרכיה חוקתית, פרלמנט חזק יותר, בנק אנגליה (1694) וחוב לאומי סדיר התייצבו בשלטונו. מלך-חייל של אירופה הפרוטסטנטית על כס אנגלי."
+    },
+    "feat": {
+      "de": "Die konstitutionelle Monarchie nach 1688 und die Bank of England.",
+      "zh": "1688年后的立宪君主制与英格兰银行。",
+      "es": "La monarquía constitucional después de 1688 y el Banco de Inglaterra.",
+      "hi": "1688 के बाद संवैधानिक राजशाही और बैंक ऑफ़ इंग्लैंड।",
+      "ar": "الملكية الدستورية بعد 1688 وبنك إنكلترا.",
+      "bn": "১৬৮৮-এর পর সাংবিধানিক রাজতন্ত্র ও ব্যাংক অব ইংল্যান্ড।",
+      "pt": "A monarquia constitucional após 1688 e o Banco de Inglaterra.",
+      "ja": "1688年以後の立憲君主制とイングランド銀行。",
+      "he": "המונרכיה החוקתית אחרי 1688 ובנק אנגליה."
+    }
+  },
+  "anne": {
+    "bio": {
+      "de": "Die letzte Stuart, Schwester Marias, herrschte im Zeitalter Marlboroughs. 1707 wurden England und Schottland durch den Unionsakt Großbritannien. Der Spanische Erbfolgekrieg (Blenheim, Ramillies) hob das Land unter die Großmächte. Sie starb ohne überlebende Kinder; die Krone ging nach dem Act of Settlement an Hannover. Eine stille Königin eines enormen Statuts.",
+      "zh": "末代斯图亚特、玛丽之妹，马尔伯勒时代的女王。1707年英格兰与苏格兰以联合法案成为大不列颠。西班牙王位继承战争（布莱尼姆、拉米伊）把国家抬入列强。她无存活子女而终；王冠依继承法转给汉诺威。一位安静的女王，身后是巨大的法令。",
+      "es": "La última Estuardo, hermana de María, reinó en la era de Marlborough. En 1707 Inglaterra y Escocia se volvieron Gran Bretaña por el Acta de Unión. La Guerra de Sucesión Española (Blenheim, Ramillies) elevó al país entre las grandes potencias. Murió sin hijos supervivientes; la corona pasó a Hannover bajo el Acta de Establecimiento. Una reina callada de un estatuto enorme.",
+      "hi": "अंतिम स्टुअर्ट, मैरी की बहन, मार्लबरो के युग में राज। 1707 में यूनियन अधिनियम से इंग्लैंड और स्कॉटलैंड ग्रेट ब्रिटेन बने। स्पेनी उत्तराधिकार युद्ध (ब्लेनहेम, रैमिली) ने देश को महाशक्तियों में उठाया। जीवित संतान बिना मरीं; उत्तराधिकार अधिनियम से मुकुट हैनोवर को। विशाल क़ानून की शांत रानी।",
+      "ar": "آخر ستيوارت، أخت ماري، حكمت في عصر مارلبورو. عام 1707 صارت إنكلترا وإسكتلندا بريطانيا العظمى بقانون الاتحاد. رفعت حرب الخلافة الإسبانية (بلنهايم ورامييز) البلاد بين القوى الكبرى. ماتت بلا أبناء أحياء؛ انتقل التاج إلى هانوفر بقانون التولية. ملكة هادئة لقانون ضخم.",
+      "bn": "শেষ স্টুয়ার্ট, মেরির বোন, মার্লবরোর যুগে শাসন। ১৭০৭-এ ইউনিয়ন আইনে ইংল্যান্ড ও স্কটল্যান্ড গ্রেট ব্রিটেন হয়। স্পেনীয় উত্তরাধিকার যুদ্ধ (ব্লেনহেইম, রামিলি) দেশকে মহাশক্তিতে তোলে। জীবিত সন্তান ছাড়া মারা যান; উত্তরাধিকার আইনে মুকুট হ্যানোভারে যায়। বিশাল বিধির নীরব রানি।",
+      "pt": "A última Stuart, irmã de Maria, reinou na era de Marlborough. Em 1707 Inglaterra e Escócia tornaram-se a Grã-Bretanha pelo Ato de União. A Guerra da Sucessão Espanhola (Blenheim, Ramillies) elevou o país entre as grandes potências. Morreu sem filhos sobreviventes; a coroa passou a Hanôver pelo Ato de Estabelecimento. Uma rainha quieta de um estatuto enorme.",
+      "ja": "最後のスチュアート、メアリーの妹。マールバラの時代に治めた。1707年合同法でイングランドとスコットランドがグレートブリテンに。スペイン継承戦争（ブレンハイム、ラミリー）が国を列強に上げた。生き残る子なく死去；王位継承法で王冠はハノーヴァーへ。巨大な法令の静かな女王。",
+      "he": "הסטיוארט האחרונה, אחות מרי, מלכה בעידן מרלבורו. ב־1707 הפכו אנגליה וסקוטלנד לבריטניה הגדולה בחוק האיחוד. מלחמת הירושה הספרדית (בלנהיים, רמייי) הרימה את הארץ בין המעצמות. מתה בלי ילדים ששרדו; הכתר עבר להנובר לפי חוק ההסדר. מלכה שקטה של חוק עצום."
+    },
+    "feat": {
+      "de": "Die Union von 1707 — die Geburt Großbritanniens.",
+      "zh": "1707年联合——大不列颠的诞生。",
+      "es": "La Unión de 1707: el nacimiento de Gran Bretaña.",
+      "hi": "1707 की यूनियन — ग्रेट ब्रिटेन का जन्म।",
+      "ar": "اتحاد 1707 — مولد بريطانيا العظمى.",
+      "bn": "১৭০৭-এর ইউনিয়ন — গ্রেট ব্রিটেনের জন্ম।",
+      "pt": "A União de 1707 — o nascimento da Grã-Bretanha.",
+      "ja": "1707年合同法——グレートブリテンの誕生。",
+      "he": "איחוד 1707 — לידת בריטניה הגדולה."
+    }
+  },
+  "george1": {
+    "bio": {
+      "de": "Kurfürst von Hannover, sprach wenig Englisch und teilte die Zeit zwischen London und Deutschland. Die reale Macht wanderte zu den Ministern — der Beginn der Kabinettsregierung unter Walpole, Erster Lord des Schatzes als Proto-Premier. Der jakobitische Aufstand von 1715 wurde niedergeschlagen. Ein fremder König, unter dem die Engländer lernten, den Alltag ohne den König zu regieren.",
+      "zh": "汉诺威选帝侯，英语很少，时间在伦敦与德国之间分割。实权转向大臣——沃波尔治下内阁政府的开端，财政第一大臣成为首相雏形。1715年詹姆斯党起义被镇压。一位外国国王，英格兰人在其治下学会日常不靠国王治国。",
+      "es": "Elector de Hannover, hablaba poco inglés y partía el tiempo entre Londres y Alemania. El poder real pasó a los ministros: el inicio del gobierno de gabinete bajo Walpole, primer lord del Tesoro como proto-premier. La sublevación jacobita de 1715 fue aplastada. Un rey extranjero bajo el cual los ingleses aprendieron a gobernar el día a día sin el rey.",
+      "hi": "हैनोवर के इलेक्टर, कम अंग्रेज़ी बोलते, समय लंदन और जर्मनी में बाँटा। वास्तविक शक्ति मंत्रियों को — वॉल्पोल के अधीन कैबिनेट सरकार की शुरुआत, खजाने के प्रथम लॉर्ड प्रोटो-प्रीमियर। 1715 का जैकोबाइट विद्रोह कुचला गया। विदेशी राजा जिनके अधीन अंग्रेज़ राजा के बिना रोज़ शासन सीखे।",
+      "ar": "ناخب هانوفر، قلّما تكلم الإنكليزية وقسّم الوقت بين لندن وألمانيا. انتقلت السلطة الفعلية إلى الوزراء — بداية حكومة مجلس تحت والبول، أول لورد للخزانة كشبه رئيس وزراء. قُمع تمرد اليعاقبة 1715. ملك أجنبي تعلم الإنكليز في عهده الحكم اليومي بلا ملك.",
+      "bn": "হ্যানোভারের ইলেক্টর, কম ইংরেজি বলতেন, সময় লন্ডন ও জার্মানিতে ভাগ। প্রকৃত ক্ষমতা মন্ত্রীদের — ওয়ালপোলের অধীনে মন্ত্রিসভা সরকারের শুরু, কোষাগারের প্রথম লর্ড প্রোটো-প্রিমিয়ার। ১৭১৫-এর জ্যাকোবাইট বিদ্রোহ দমন। বিদেশি রাজা যাঁর অধীনে ইংরেজ রাজা ছাড়া দৈনন্দিন শাসন শেখে।",
+      "pt": "Eleitor de Hanôver, falava pouco inglês e partilhava o tempo entre Londres e a Alemanha. O poder real passou aos ministros — o início do governo de gabinete sob Walpole, primeiro lorde do Tesouro como proto-primeiro-ministro. A revolta jacobita de 1715 foi esmagada. Um rei estrangeiro sob o qual os ingleses aprenderam a governar o dia a dia sem o rei.",
+      "ja": "ハノーヴァー選帝侯。英語はほとんど話さず、時間をロンドンとドイツに分けた。実権は大臣へ——ウォルポール下の内閣政治の始まり、大蔵第一卿が首相の原型。1715年ジャコバイト蜂起は鎮圧。外国人王の下でイングランド人は王なしに日常統治を学んだ。",
+      "he": "בוחר הנובר, דיבר מעט אנגלית וחילק זמן בין לונדון לגרמניה. הכוח האמיתי עבר לשרים — ראשית ממשלת קבינט תחת וולפול, לורד ראשון של האוצר כמעין ראש ממשלה. מרד היעקוביטים 1715 דוכא. מלך זר שתחתיו למדו האנגלים לשלוט ביום-יום בלי המלך."
+    },
+    "feat": {
+      "de": "Die Machtverschiebung zum Kabinett Walpoles — die Anfänge eines Premierministers.",
+      "zh": "权力转向沃波尔内阁——首相制的萌芽。",
+      "es": "El corrimiento del poder al gabinete de Walpole: los inicios de un premierato.",
+      "hi": "वॉल्पोल कैबिनेट की ओर शक्ति का सरकना — प्रधानमंत्री पद की शुरुआत।",
+      "ar": "انتقال السلطة إلى مجلس والبول — بدايات رئاسة وزراء.",
+      "bn": "ওয়ালপোল মন্ত্রিসভায় ক্ষমতার সরে যাওয়া — প্রধানমন্ত্রিত্বের সূচনা।",
+      "pt": "A deslocação do poder para o gabinete de Walpole — os começos de um premierato.",
+      "ja": "ウォルポール内閣への権力移動——首相職の萌芽。",
+      "he": "הסטת הכוח לקבינט וולפול — ראשית ראשות ממשלה."
+    }
+  },
+  "george2": {
+    "bio": {
+      "de": "Der letzte britische König, der Truppen persönlich führte (Dettingen, 1743). Seine Herrschaft sah den Österreichischen Erbfolgekrieg, den Siebenjährigen Krieg, den jakobitischen Aufstand von 1745 und den Aufstieg Pitts und des Imperiums in Kanada und Indien. Er starb 1760. Ein kriegerischer hannoverscher Hof vor bereits parlamentarischer Politik.",
+      "zh": "最后一位亲自领兵的英国国王（1743年代廷根）。任内有奥地利王位继承战争、七年战争、1745年詹姆斯党起义，以及皮特崛起与加拿大、印度帝国。1760年去世。在已然议会政治的背景下，尚武的汉诺威宫廷。",
+      "es": "El último rey británico que dirigió tropas en persona (Dettingen, 1743). Su reinado vio la Guerra de Sucesión Austriaca, la Guerra de los Siete Años, la sublevación jacobita de 1745 y el auge de Pitt y el imperio en Canadá e India. Murió en 1760. Una corte hanoveriana marcial frente a una política ya parlamentaria.",
+      "hi": "अंतिम ब्रिटिश राजा जिन्होंने व्यक्तिगत सेना चलाई (डेटिंगेन, 1743)। शासन में ऑस्ट्रियाई उत्तराधिकार युद्ध, सात वर्षीय युद्ध, 1745 जैकोबाइट विद्रोह, पिट और कनाडा-भारत साम्राज्य का उदय। 1760 में मरे। पहले से संसदीय राजनीति के सामने योद्धा हैनोवर दरबार।",
+      "ar": "آخر ملك بريطاني قاد القوات بنفسه (دتينغن، 1743). شهد حكمه حرب الخلافة النمساوية وحرب السنوات السبع وتمرد اليعاقبة 1745 وصعود بيت والإمبراطورية في كندا والهند. مات عام 1760. بلاط هانوفري حربي أمام سياسة برلمانية أصلاً.",
+      "bn": "শেষ ব্রিটিশ রাজা যিনি ব্যক্তিগতভাবে সেনা চালান (ডেটিংেন, ১৭৪৩)। শাসনে অস্ট্রীয় উত্তরাধিকার যুদ্ধ, সপ্তবর্ষ যুদ্ধ, ১৭৪৫ জ্যাকোবাইট বিদ্রোহ, পিট ও কানাডা-ভারত সাম্রাজ্যের উত্থান। ১৭৬০-এ মারা যান। ইতিমধ্যে সংসদীয় রাজনীতির সামনে যোদ্ধা হ্যানোভার দরবার।",
+      "pt": "O último rei britânico a comandar tropas em pessoa (Dettingen, 1743). O reinado viu a Guerra da Sucessão Austríaca, a Guerra dos Sete Anos, a revolta jacobita de 1745 e a ascensão de Pitt e do império no Canadá e na Índia. Morreu em 1760. Uma corte hanoveriana marcial perante uma política já parlamentar.",
+      "ja": "自ら軍を率いた最後の英国王（1743年デッティンゲン）。治世にオーストリア継承戦争、七年戦争、1745年ジャコバイト蜂起、ピットとカナダ・インド帝国の台頭。1760年死去。すでに議会政治の前の好戦的ハノーヴァー宮廷。",
+      "he": "המלך הבריטי האחרון שהוביל חיילים בעצמו (דטינגן, 1743). שלטונו ראה את מלחמת הירושה האוסטרית, מלחמת שבע השנים, מרד היעקוביטים 1745 ועליית פיט והאימפריה בקנדה ובהודו. מת ב־1760. חצר הנוברית לוחמנית מול פוליטיקה כבר פרלמנטרית."
+    },
+    "feat": {
+      "de": "Der Siebenjährige Krieg unter Pitt — Kanada und Indien als imperialer Preis.",
+      "zh": "皮特治下的七年战争——加拿大与印度成为帝国战利品。",
+      "es": "La Guerra de los Siete Años bajo Pitt: Canadá e India como premio imperial.",
+      "hi": "पिट के अधीन सात वर्षीय युद्ध — कनाडा और भारत साम्राज्य का इनाम।",
+      "ar": "حرب السنوات السبع تحت بيت — كندا والهند جائزة إمبراطورية.",
+      "bn": "পিটের অধীনে সপ্তবর্ষ যুদ্ধ — কানাডা ও ভারত সাম্রাজ্যের পুরস্কার।",
+      "pt": "A Guerra dos Sete Anos sob Pitt — Canadá e Índia como prémio imperial.",
+      "ja": "ピット下の七年戦争——カナダとインドという帝国の戦利。",
+      "he": "מלחמת שבע השנים תחת פיט — קנדה והודו כפרס אימפריאלי."
+    }
+  },
+  "george3": {
+    "bio": {
+      "de": "Die längste Herrschaft bis Victoria, anfangs „Farmer George“. Er verlor die amerikanischen Kolonien und führte Kriege gegen das revolutionäre und napoleonische Frankreich bis Waterloo (schon unter der Regentschaft). In späteren Jahren überholte ihn geistige Krankheit; der Sohn regierte als Prinzregent. Ein sturer Gläubiger an königlichen Einfluss in einem Zeitalter, das zum Kabinett driftete.",
+      "zh": "维多利亚之前最长的统治，起初人称“农夫乔治”。他失去美洲殖民地，并对革命与拿破仑法国作战直至滑铁卢（已在摄政之下）。晚年精神疾病缠身；儿子以摄政王统治。在走向内阁的时代里，一位顽固相信王室影响力的人。",
+      "es": "El reinado más largo hasta Victoria, «Farmer George» al principio. Perdió las colonias americanas y combatió a la Francia revolucionaria y napoleónica hasta Waterloo (ya bajo la regencia). En años posteriores lo venció la enfermedad mental; el hijo gobernó como regente. Un creyente terco en la influencia real en una era que se iba hacia el gabinete.",
+      "hi": "विक्टोरिया तक सबसे लंबा राज, शुरू में «फ़ार्मर जॉर्ज»। अमेरिकी उपनिवेश खोए, क्रांतिकारी और नेपोलियन फ़्रांस से वॉटरलू तक युद्ध (पहले से रीजेंसी में)। बाद के वर्षों में मानसिक बीमारी; पुत्र रीजेंट चलाए। कैबिनेट की ओर जाते युग में शाही प्रभाव के हठी विश्वासी।",
+      "ar": "أطول حكم حتى فيكتوريا، «المزارع جورج» في البداية. فقد المستعمرات الأميركية وحارب فرنسا الثورية والنابليونية حتى واترلو (أصلاً تحت الوصاية). في السنوات اللاحقة غلبه المرض العقلي؛ حكم الابن وصياً. مؤمن عنيد بنفوذ الملك في عصر يميل إلى المجلس.",
+      "bn": "ভিক্টোরিয়া পর্যন্ত দীর্ঘতম শাসন, শুরুতে «ফার্মার জর্জ»। আমেরিকান উপনিবেশ হারান, বিপ্লবী ও নেপোলিয়নীয় ফ্রান্সের সঙ্গে ওয়াটারলু পর্যন্ত যুদ্ধ (ইতিমধ্যে রিজেন্সিতে)। পরের বছর মানসিক রোগ; পুত্র রিজেন্ট শাসন করেন। মন্ত্রিসভার দিকে যাওয়া যুগে রাজ প্রভাবে একগুঁয়ে বিশ্বাসী।",
+      "pt": "O reinado mais longo até Vitória, «Farmer George» no início. Perdeu as colónias americanas e lutou contra a França revolucionária e napoleónica até Waterloo (já sob a regência). Em anos posteriores a doença mental venceu-o; o filho governou como regente. Um crente teimoso na influência real numa era que ia para o gabinete.",
+      "ja": "ヴィクトリア以前最長の治世。当初は「農夫ジョージ」。アメリカ植民地を失い、革命・ナポレオンのフランスとワーテルローまで戦った（すでに摂政下）。晩年は精神疾患；息子が摂政として治めた。内閣へ向かう時代に王の影響力を頑固に信じる人。",
+      "he": "השלטון הארוך ביותר עד ויקטוריה, «ג׳ורג׳ האיכר» בהתחלה. איבד את המושבות האמריקאיות ונלחם בצרפת המהפכנית והנפוליאונית עד ווטרלו (כבר תחת עוצרות). בשנים מאוחרות המחלה הנפשית גברה; הבן שלט כעוצר. מאמין עקשן בהשפעה מלכותית בעידן שנע לקבינט."
+    },
+    "feat": {
+      "de": "Den Krieg mit Napoleon bis zum Ende halten — zuvor um den Preis des Verlusts Amerikas.",
+      "zh": "把对拿破仑的战争坚持到底——此前代价是失去美洲。",
+      "es": "Sostener la guerra con Napoleón hasta el final, al costo anterior de perder América.",
+      "hi": "नेपोलियन से युद्ध अंत तक थामना — पहले अमेरिका खोने की कीमत पर।",
+      "ar": "إمساك الحرب مع نابليون حتى النهاية — بثمن فقدان أميركا سابقاً.",
+      "bn": "নেপোলিয়নের সঙ্গে যুদ্ধ শেষ পর্যন্ত ধরে রাখা — আগে আমেরিকা হারানোর দামে।",
+      "pt": "Segurar a guerra com Napoleão até ao fim — ao custo anterior de perder a América.",
+      "ja": "ナポレオン戦争を最後まで維持——その前にアメリカを失う代償を払って。",
+      "he": "החזקת המלחמה בנפוליאון עד הסוף — במחיר מוקדם של אובדן אמריקה."
+    }
+  },
+  "george4": {
+    "bio": {
+      "de": "Zuerst Prinzregent (1811–1820), dann König. Die Regency: Mode, Nashs Architektur, Waterloo noch zu Lebzeiten des Vaters. Eine unbeliebte Ehe mit Caroline von Braunschweig, ein Prozess gegen sie, Schulden und Pavillons in Brighton. Er starb ohne legitimen Erben. Geschmack und Skandal sind stärker als Statute aus seiner Hand.",
+      "zh": "先为摄政王（1811–1820），再为国王。摄政时代：时尚、纳什建筑、滑铁卢尚在其父在世时。与不伦瑞克的卡罗琳的不受欢迎婚姻、对她的审讯、债务与布莱顿亭阁。无合法继承人而终。品味与丑闻强过他亲手的法令。",
+      "es": "Primero príncipe regente (1811–1820), luego rey. La Regencia: moda, arquitectura de Nash, Waterloo aún en vida de su padre. Un matrimonio impopular con Carolina de Brunswick, un proceso contra ella, deudas y pabellones en Brighton. Murió sin heredero legítimo. El gusto y el escándalo son más fuertes que estatutos de su mano.",
+      "hi": "पहले प्रिंस रीजेंट (1811–1820), फिर राजा। रीजेंसी: फ़ैशन, नैश की वास्तुकला, पिता के जीवन में वॉटरलू। ब्रंसविक की कैरोलिन से अलोकप्रिय विवाह, उनके विरुद्ध मुकदमा, ऋण और ब्राइटन मंडप। वैध वारिस बिना मरे। स्वाद और घोटाला उनके हाथ के क़ानून से मजबूत।",
+      "ar": "أولاً أميراً وصياً (1811–1820) ثم ملكاً. عصر الوصاية: موضة وعمارة ناش وواترلو ما زال في حياة أبيه. زواج غير شعبي من كارولين برونزويك ومحاكمة ضدها وديون وأجنحة في برايتون. مات بلا وريث شرعي. الذوق والفضيحة أقوى من قوانين بيده.",
+      "bn": "প্রথমে প্রিন্স রিজেন্ট (১৮১১–১৮২০), তারপর রাজা। রিজেন্সি: ফ্যাশন, ন্যাশের স্থাপত্য, পিতার জীবদ্দশায় ওয়াটারলু। ব্রান্সউইকের ক্যারোলিনের সঙ্গে অজনপ্রিয় বিবাহ, তাঁর বিরুদ্ধে মামলা, ঋণ ও ব্রাইটন প্যাভিলিয়ন। বৈধ উত্তরাধিকারী ছাড়া মারা যান। রুচি ও কেলেঙ্কারি তাঁর হাতের বিধির চেয়ে জোরালো।",
+      "pt": "Primeiro príncipe regente (1811–1820), depois rei. A Regência: moda, arquitetura de Nash, Waterloo ainda em vida do pai. Um casamento impopular com Carolina de Brunswick, um processo contra ela, dívidas e pavilhões em Brighton. Morreu sem herdeiro legítimo. O gosto e o escândalo são mais fortes do que estatutos da sua mão.",
+      "ja": "まず摂政王（1811–1820）、のち国王。摂政時代：流行、ナッシュ建築、父の存命中のワーテルロー。ブラウンシュヴァイクのカロラインとの不人気な結婚、対彼女の裁判、借金とブライトンのパヴィリオン。嫡出の世継ぎなく死去。趣味とスキャンダルは彼の手の法令より強い。",
+      "he": "תחילה נסיך עוצר (1811–1820), אחר כך מלך. עידן העוצרות: אופנה, ארכיטקטורת נאש, ווטרלו עוד בחיי אביו. נישואין לא פופולריים לקארוליין מבראונשווייג, משפט נגדה, חובות וביתנים בברייטון. מת בלי יורש חוקי. הטעם והשערורייה חזקים מחוקים מידו."
+    },
+    "feat": {
+      "de": "Regency-Stil und Brighton; als König hinterließ er kein großes Gesetz in eigenem Namen.",
+      "zh": "摄政风格与布莱顿；作为国王，他未留下以自己命名的大法。",
+      "es": "El estilo Regency y Brighton; como rey no dejó un gran estatuto a su nombre.",
+      "hi": "रीजेंसी शैली और ब्राइटन; राजा के रूप में अपने नाम का बड़ा क़ानून न छोड़ा।",
+      "ar": "أسلوب الوصاية وبرايتون؛ ملكاً لم يترك قانوناً كبيراً باسمه.",
+      "bn": "রিজেন্সি শৈলী ও ব্রাইটন; রাজা হিসেবে নিজ নামে বড় আইন রাখেননি।",
+      "pt": "O estilo da Regência e Brighton; como rei não deixou um grande estatuto em seu nome.",
+      "ja": "摂政様式とブライトン。王としては自名の大法を残さなかった。",
+      "he": "סגנון הרג׳נסי וברייטון; כמלך לא הותיר חוק גדול בשמו."
+    }
+  },
+  "william4": {
+    "bio": {
+      "de": "Der „Seemannskönig“, Bruder Georgs IV., der in der Jugend in der Marine diente. Der Große Reform Act von 1832, der das Wahlrecht der Mittelklassen erweiterte und „faule Flecken“ beschnitt, fiel in seine Herrschaft; die Abschaffung der Sklaverei im Empire (1833) ging durch dasselbe Parlament. Eine kurze Herrschaft, die Brücke zu Victoria. Eine Krone, die sich der Reform nicht in den Weg stellte.",
+      "zh": "“水手国王”，乔治四世之弟，青年时在海军服役。1832年大改革法案扩大中产投票权并削减“衰败选区”，发生在其治下；帝国废除奴隶制（1833）经同一议会通过。通往维多利亚的短暂统治。一顶不挡改革的王冠。",
+      "es": "El «rey marinero», hermano de Jorge IV, que sirvió en la marina de joven. El Gran Acta de Reforma de 1832, que amplió el voto de clase media y recortó los «burgos podridos», pasó en su reinado; la abolición de la esclavitud en el imperio (1833) pasó por el mismo parlamento. Un reinado corto, puente hacia Victoria. Una corona que no se puso atravesada a la reforma.",
+      "hi": "«नाविक राजा», जॉर्ज IV के भाई, युवा में नौसेना में सेवा। 1832 का महान सुधार अधिनियम, मध्यम वर्ग मत बढ़ा और «सड़े बरो» काटे, उनके राज में; साम्राज्य में गुलामी उन्मूलन (1833) उसी संसद से। छोटा राज, विक्टोरिया का पुल। मुकुट जो सुधार के पार न खड़ा।",
+      "ar": "«الملك البحّار»، أخو جورج الرابع، خدم في البحرية شاباً. مرّ قانون الإصلاح العظيم 1832 الذي وسّع تصويت الطبقة الوسطى وقصّ «الأحياء الفاسدة» في حكمه؛ إلغاء العبودية في الإمبراطورية (1833) مرّ بالبرلمان نفسه. حكم قصير جسر إلى فيكتوريا. تاج لم يعترض الإصلاح.",
+      "bn": "«নাবিক রাজা», জর্জ IV-এর ভাই, যৌবনে নৌবাহিনীতে সেবা। ১৮৩২-এর মহান সংস্কার আইন, মধ্যবিত্ত ভোট বাড়ায় ও «পচা বরো» কাটে, তাঁর শাসনে; সাম্রাজ্যে দাসত্ব বিলোপ (১৮৩৩) সেই সংসদ দিয়ে। সংক্ষিপ্ত শাসন, ভিক্টোরিয়ার সেতু। মুকুট যা সংস্কারের আড়াআড়ি দাঁড়ায়নি।",
+      "pt": "O «rei marinheiro», irmão de Jorge IV, que serviu na marinha na juventude. O Grande Ato de Reforma de 1832, que alargou o voto da classe média e cortou os «burgos podres», passou no seu reinado; a abolição da escravatura no império (1833) passou pelo mesmo parlamento. Um reinado curto, ponte para Vitória. Uma coroa que não se atravessou à reforma.",
+      "ja": "「水夫王」、ジョージ4世の弟、若年に海軍勤務。1832年大改革法が中産の投票を広げ「腐敗選挙区」を削り、帝国奴隷制廃止（1833）も同じ議会を通った。ヴィクトリアへの橋となる短い治世。改革の前に立ちはだからない王冠。",
+      "he": "«מלך המלח», אחי ג׳ורג׳ הרביעי, ששירת בצי בנעוריו. חוק הרפורמה הגדול 1832, שהרחיב את הצבעת המעמד הבינוני וקיצץ «רובעים רקובים», עבר בשלטונו; ביטול העבדות באימפריה (1833) עבר באותו פרלמנט. שלטון קצר, גשר לוויקטוריה. כתר שלא עמד לרוחב הרפורמה."
+    },
+    "feat": {
+      "de": "Der Große Reform Act von 1832 — in seiner Zeit, durch das Kabinett Grey.",
+      "zh": "1832年大改革法案——在他的时代，由格雷内阁完成。",
+      "es": "El Gran Acta de Reforma de 1832: en su tiempo, por el gabinete Grey.",
+      "hi": "1832 का महान सुधार अधिनियम — उनके समय, ग्रे कैबिनेट के हाथ।",
+      "ar": "قانون الإصلاح العظيم 1832 — في زمنه، بيد مجلس غراي.",
+      "bn": "১৮৩২-এর মহান সংস্কার আইন — তাঁর সময়ে, গ্রে মন্ত্রিসভার হাতে।",
+      "pt": "O Grande Ato de Reforma de 1832 — no seu tempo, pelas mãos do gabinete Grey.",
+      "ja": "1832年大改革法——彼の時代、グレイ内閣の手で。",
+      "he": "חוק הרפורמה הגדול 1832 — בזמנו, בידי קבינט גריי."
+    }
+  },
+  "victoria": {
+    "bio": {
+      "de": "Das Gesicht eines Jahrhunderts: Imperium, Industrie, Eisenbahnen, ein strenger Hof nach den Skandalen der Onkel. Nach Alberts Tod trug sie jahrzehntelang Trauer und zog sich zeitweise aus der sichtbaren Rolle zurück. Kaiserin von Indien ab 1876. Ihr Name wurde zu einem Zeitalter; Premiers von Peel bis Salisbury wechselten unter einer festen Krone. Eine konstitutionelle Monarchin im vollen Sinn.",
+      "zh": "一个世纪的面孔：帝国、工业、铁路，以及叔父们丑闻之后严厉的宫廷。阿尔伯特死后她数十年服丧，一度退出可见角色。1876年起为印度女皇。她的名字成为时代之名；从皮尔到索尔兹伯里的首相在不变的王冠下更迭。完整意义上的立宪君主。",
+      "es": "El rostro de un siglo: imperio, industria, ferrocarriles, una corte estricta tras los escándalos de los tíos. Tras la muerte de Alberto llevó luto décadas y se retiró un tiempo del papel visible. Emperatriz de la India desde 1876. Su nombre se volvió una era; los premiers de Peel a Salisbury cambiaron bajo una corona fija. Una monarca constitucional en el sentido pleno.",
+      "hi": "एक शताब्दी का चेहरा: साम्राज्य, उद्योग, रेल, चाचाओं के घोटालों के बाद कठोर दरबार। अल्बर्ट की मृत्यु के बाद दशकों शोक, दृश्य भूमिका से कुछ समय हट। 1876 से भारत की सम्राज्ञी। नाम एक युग बना; पील से सैलिसबरी तक प्रधानमंत्री स्थिर मुकुट के नीचे बदले। पूर्ण अर्थ में संवैधानिक नरेश।",
+      "ar": "وجه قرن: إمبراطورية وصناعة وسكك وبلاط صارم بعد فضائح الأعمام. بعد موت ألبرت لبست الحداد عقوداً وانسحبت حيناً من الدور الظاهر. إمبراطورة الهند من 1876. صار اسمها عصراً؛ تبدل الرؤساء من بيل إلى سالزبري تحت تاج ثابت. ملكة دستورية بالمعنى الكامل.",
+      "bn": "এক শতাব্দীর মুখ: সাম্রাজ্য, শিল্প, রেল, চাচাদের কেলেঙ্কারির পর কঠোর দরবার। অ্যালবার্টের মৃত্যুর পর দশক শোক, দৃশ্যমান ভূমিকা থেকে কিছুকাল সরে। ১৮৭৬ থেকে ভারতের সম্রাজ্ঞী। নাম এক যুগ হয়; পিল থেকে সালিসবারি পর্যন্ত প্রধানমন্ত্রী স্থির মুকুটের নিচে বদলান। পূর্ণ অর্থে সাংবিধানিক রাজা।",
+      "pt": "O rosto de um século: império, indústria, caminhos de ferro, uma corte estrita após os escândalos dos tios. Após a morte de Alberto usou luto décadas e retirou-se um tempo do papel visível. Imperatriz da Índia desde 1876. O nome tornou-se uma era; os primeiros de Peel a Salisbury mudaram sob uma coroa fixa. Uma monarca constitucional no sentido pleno.",
+      "ja": "一世紀の顔。帝国、産業、鉄道、叔父たちのスキャンダル後の厳しい宮廷。アルバート死後数十年喪に服し、可視の役割から一時退いた。1876年からインド女帝。名が時代となり、ピールからソールズベリーまで首相は動かぬ王冠の下で変わった。完全な意味での立憲君主。",
+      "he": "פני מאה: אימפריה, תעשייה, מסילות, חצר קפדנית אחרי שערוריות הדודים. אחרי מות אלברט לבשה אבל עשורים ונסוגה זמן מה מתפקיד נראה. קיסרית הודו מ־1876. שמה הפך לעידן; ראשי ממשלה מפיל עד סולסברי התחלפו תחת כתר קבוע. מונרכית חוקתית במובן המלא."
+    },
+    "feat": {
+      "de": "Das viktorianische Zeitalter und der Titel Kaiserin von Indien — die Krone als Symbol des Imperiums.",
+      "zh": "维多利亚时代与印度女皇头衔——王冠作为帝国的象征。",
+      "es": "La era victoriana y el título de emperatriz de la India: la corona como símbolo del imperio.",
+      "hi": "विक्टोरियन युग और भारत की सम्राज्ञी का पद — साम्राज्य के प्रतीक के रूप में मुकुट।",
+      "ar": "العصر الفيكتوري ولقب إمبراطورة الهند — التاج رمزاً للإمبراطورية.",
+      "bn": "ভিক্টোরীয় যুগ ও ভারতের সম্রাজ্ঞীর উপাধি — সাম্রাজ্যের প্রতীক হিসেবে মুকুট।",
+      "pt": "A era vitoriana e o título de imperatriz da Índia — a coroa como símbolo do império.",
+      "ja": "ヴィクトリア朝とインド女帝の称号——帝国の象徴としての王冠。",
+      "he": "העידן הוויקטוריאני ותואר קיסרית הודו — הכתר כסמל האימפריה."
+    }
+  },
+  "edward7": {
+    "bio": {
+      "de": "Er wartete unter der Mutter jahrzehntelang auf die Krone, berühmt als weltlicher Prinz. Die edwardianischen Jahre: die Entente mit Frankreich (1904), Besuche, die nach dem Burenkrieg die Isolation milderten, ein friedlicher Hof und das Dreadnought-Rennen schon am Horizont. Eine kurze Herrschaft zwischen Victoria und den Kriegen des 20. Jahrhunderts. Ein Diplomatenkönig, „Onkel Europas“.",
+      "zh": "在母亲治下等待王冠数十年，以社交王子闻名。爱德华时代：与法国协约（1904）、缓解布尔战争后孤立的访问、和平宫廷，以及已在地平线上的无畏舰竞赛。维多利亚与二十世纪战争之间的短暂统治。外交国王，“欧洲的叔叔”。",
+      "es": "Esperó décadas la corona bajo su madre, famoso como príncipe mundano. Los años eduardianos: la Entente con Francia (1904), visitas que suavizaron el aislamiento tras la Guerra de los Bóers, una corte pacífica y la carrera de dreadnoughts ya en el horizonte. Un reinado corto entre Victoria y las guerras del siglo XX. Un rey diplomático, «tío de Europa».",
+      "hi": "माता के अधीन दशकों मुकुट की प्रतीक्षा, संसारी राजकुमार के रूप में प्रसिद्ध। एडवर्डी युग: फ़्रांस से एंटेंट (1904), बूर युद्ध के बाद अलगाव नरम करने वाले दौरे, शांत दरबार, क्षितिज पर ड्रेडनॉट दौड़। विक्टोरिया और बीसवीं सदी के युद्धों के बीच छोटा राज। राजनयिक-राजा, «यूरोप के चाचा»।",
+      "ar": "انتظر التاج عقوداً تحت أمه، مشهوراً أميراً دنيوياً. السنوات الإدواردية: الوفاق مع فرنسا (1904) وزيارات خففت العزلة بعد حرب البوير وبلاط مسالم وسباق المدرعات أصلاً في الأفق. حكم قصير بين فيكتوريا وحروب القرن العشرين. ملك دبلوماسي «عم أوروبا».",
+      "bn": "মায়ের অধীনে দশক মুকুট অপেক্ষা, সাংসারিক রাজকুমার হিসেবে খ্যাত। এডওয়ার্ডীয় বছর: ফ্রান্সের সঙ্গে এন্টেন্ট (১৯০৪), বুর যুদ্ধের পর বিচ্ছিন্নতা নরম করা সফর, শান্ত দরবার, দিগন্তে ড্রেডনট দৌড়। ভিক্টোরিয়া ও বিংশ শতকের যুদ্ধের মাঝে সংক্ষিপ্ত শাসন। কূটনীতিক-রাজা, «ইউরোপের চাচা»।",
+      "pt": "Esperou décadas a coroa sob a mãe, famoso como príncipe mundano. Os anos eduardianos: a Entente com a França (1904), visitas que suavizaram o isolamento após a Guerra dos Bóeres, uma corte pacífica e a corrida de couraçados já no horizonte. Um reinado curto entre Vitória e as guerras do século XX. Um rei diplomata, «tio da Europa».",
+      "ja": "母の下で数十年王冠を待ち、社交の王子として知られた。エドワード朝：対仏協商（1904）、ボーア戦争後の孤立を和らげる訪問、平和な宮廷、地平のドレッドノート競争。ヴィクトリアと二十世紀の戦争の間の短い治世。外交の王、「欧州の叔父」。",
+      "he": "חיכה עשורים לכתר תחת אמו, נודע כנסיך חילוני. השנים האדוארדיות: האנטנט עם צרפת (1904), ביקורים שריככו את הבידוד אחרי מלחמת הבורים, חצר שקטה ומרוץ הדרדנוטים כבר באופק. שלטון קצר בין ויקטוריה למלחמות המאה העשרים. מלך דיפלומט, «דוד אירופה»."
+    },
+    "feat": {
+      "de": "Die Entente mit Frankreich 1904 — die Abkehr von der „splendid isolation“.",
+      "zh": "1904年与法国协约——告别“光荣孤立”。",
+      "es": "La Entente con Francia de 1904: un giro desde el «espléndido aislamiento».",
+      "hi": "1904 में फ़्रांस से एंटेंट — «शानदार अलगाव» से मोड़।",
+      "ar": "الوفاق مع فرنسا 1904 — انعطاف عن «العزلة المجيدة».",
+      "bn": "১৯০৪-এ ফ্রান্সের সঙ্গে এন্টেন্ট — «জমকালো বিচ্ছিন্নতা» থেকে মোড়।",
+      "pt": "A Entente com a França de 1904 — uma viragem do «esplêndido isolamento».",
+      "ja": "1904年対仏協商——「光栄ある孤立」からの転換。",
+      "he": "האנטנט עם צרפת 1904 — מפנה מ«הבידוד המפואר»."
+    }
+  },
+  "george5": {
+    "bio": {
+      "de": "Er benannte die Dynastie 1917 in Windsor um und schnitt das deutsche „Sachsen-Coburg“ ab. Der Erste Weltkrieg, ein erweitertes Wahlrecht (Frauen stufenweise), der Irische Freistaat. Er starb 1936 und hinterließ die Krone Eduard VIII. Eine Krone, die Schützengräben und die erste Massendemokratie überstand.",
+      "zh": "1917年他把王朝改名温莎，切断德意志的“萨克森–科堡”。第一次世界大战、扩大的选举权（女性分阶段）、爱尔兰自由邦。1936年去世，把王冠留给爱德华八世。挺过战壕与第一次大众民主的王冠。",
+      "es": "Renombró la dinastía Windsor en 1917, cortando el «Saxe-Coburgo» alemán. La Primera Guerra Mundial, un sufragio más amplio (mujeres por etapas), el Estado Libre Irlandés. Murió en 1936, dejando la corona a Eduardo VIII. Una corona que sobrevivió a las trincheras y a la primera democracia de masas.",
+      "hi": "1917 में राजवंश का नाम विंडसर रखा, जर्मन «सैक्स-कोबर्ग» काटा। प्रथम विश्व युद्ध, व्यापक मताधिकार (महिलाएँ चरणों में), आयरिश मुक्त राज्य। 1936 में मरे, मुकुट एडवर्ड VIII को। खाई और पहली जन लोकतंत्र झेलने वाला मुकुट।",
+      "ar": "غيّر اسم السلالة إلى وندسور عام 1917 قاطعاً «ساكس-كوبورغ» الألماني. الحرب العالمية الأولى واقتراع أوسع (نساء على مراحل) والدولة الأيرلندية الحرة. مات عام 1936 تاركاً التاج لإدوارد الثامن. تاج عاش الخنادق وأول ديمقراطية جماهيرية.",
+      "bn": "১৯১৭-এ রাজবংশের নাম উইন্ডসর রাখেন, জার্মান «স্যাক্স-কোবার্গ» কাটেন। প্রথম বিশ্বযুদ্ধ, বিস্তৃত ভোটাধিকার (নারী ধাপে), আইরিশ মুক্ত রাষ্ট্র। ১৯৩৬-এ মারা যান, মুকুট এডওয়ার্ড VIII-কে। পরিখা ও প্রথম গণতন্ত্র সহ্য করা মুকুট।",
+      "pt": "Renomeou a dinastia Windsor em 1917, cortando o «Saxe-Coburgo» alemão. A Primeira Guerra Mundial, um sufrágio mais amplo (mulheres por etapas), o Estado Livre Irlandês. Morreu em 1936, deixando a coroa a Eduardo VIII. Uma coroa que sobreviveu às trincheiras e à primeira democracia de massas.",
+      "ja": "1917年王朝をウィンザーと改名し、ドイツの「ザクセン＝コーブルク」を切った。第一次大戦、拡大選挙権（女性は段階的）、アイルランド自由国。1936年死去、王冠はエドワード8世へ。塹壕と最初の大衆民主を生き抜いた王冠。",
+      "he": "שינה את שם השושלת לווינדזור ב־1917 וחתך את «סקסה-קובורג» הגרמני. מלחמת העולם הראשונה, זכות בחירה רחבה יותר (נשים בשלבים), המדינה החופשית האירית. מת ב־1936 והשאיר את הכתר לאדוארד השמיני. כתר ששרד חפירות ואת הדמוקרטיה ההמונית הראשונה."
+    },
+    "feat": {
+      "de": "Der Name Windsor 1917 — eine Dynastie, die in einem Weltkrieg britisch blieb.",
+      "zh": "1917年温莎之名——世界大战中仍保持英国身份的王朝。",
+      "es": "El nombre Windsor en 1917: una dinastía que siguió británica en una guerra mundial.",
+      "hi": "1917 का विंडसर नाम — विश्व युद्ध में ब्रिटिश रही राजवंश।",
+      "ar": "اسم وندسور عام 1917 — سلالة بقيت بريطانية في حرب عالمية.",
+      "bn": "১৯১৭-এ উইন্ডসর নাম — বিশ্বযুদ্ধে ব্রিটিশ থাকা রাজবংশ।",
+      "pt": "O nome Windsor em 1917 — uma dinastia que permaneceu britânica numa guerra mundial.",
+      "ja": "1917年ウィンザーの名——世界大戦で英国であり続けた王朝。",
+      "he": "שם וינדזור ב־1917 — שושלת שנשארה בריטית במלחמת עולם."
+    }
+  },
+  "edward8": {
+    "bio": {
+      "de": "Er dankte im Dezember 1936 ab, um die geschiedene Amerikanerin Wallis Simpson zu heiraten, ohne Zustimmung von Kirche und Kabinett für eine Königin. Die Herrschaft dauerte weniger als ein Jahr, ohne Krönung. Danach war er Herzog von Windsor, Gouverneur der Bahamas, Schatten von Skandal und Streit um Sympathien für das Reich. Die Krone als persönliche Absage, nicht als Programm.",
+      "zh": "1936年12月退位，以娶离婚的美国人沃利斯·辛普森，教会与内阁不同意她为王后。在位不到一年，未加冕。此后为温莎公爵、巴哈马总督，丑闻阴影与对帝国同情的争论。王冠是个人拒绝，而非纲领。",
+      "es": "Abdicó en diciembre de 1936 para casarse con la estadounidense divorciada Wallis Simpson, sin consentimiento de iglesia y gabinete para una reina. El reinado duró menos de un año, sin coronación. Después fue duque de Windsor, gobernador de las Bahamas, sombra de escándalo y peleas sobre simpatías por el Reich. La corona como rechazo personal, no un programa.",
+      "hi": "दिसंबर 1936 में तलाकशुदा अमेरिकी वॉलिस सिम्पसन से विवाह के लिए त्याग, गिरजा और कैबिनेट की रानी सहमति बिना। राज एक वर्ष से कम, बिना राज्याभिषेक। फिर विंडसर ड्यूक, बहामा गवर्नर, घोटाले की छाया और राइख सहानुभूति के झगड़े। मुकुट व्यक्तिगत इनकार, कार्यक्रम नहीं।",
+      "ar": "تنازل في ديسمبر 1936 ليتزوج الأمريكية المطلقة واليس سيمبسون دون موافقة الكنيسة والمجلس على ملكة. دام الحكم أقل من عام بلا تتويج. بعدها دوق وندسور وحاكم البهاما وظل فضيحة وجدل تعاطف مع الرايخ. التاج رفض شخصي لا برنامج.",
+      "bn": "ডিসেম্বর ১৯৩৬-এ তালাকপ্রাপ্ত আমেরিকান ওয়ালিস সিম্পসনকে বিয়ে করতে ত্যাগ, গির্জা ও মন্ত্রিসভার রানি সম্মতি ছাড়া। শাসন এক বছরের কম, মুকুটহীন। পরে উইন্ডসর ডিউক, বাহামা গভর্নর, কেলেঙ্কারির ছায়া ও রাইখ সহানুভূতির ঝগড়া। মুকুট ব্যক্তিগত অস্বীকার, কর্মসূচি নয়।",
+      "pt": "Abdicou em dezembro de 1936 para casar com a americana divorciada Wallis Simpson, sem consentimento da igreja e do gabinete para uma rainha. O reinado durou menos de um ano, sem coroação. Depois foi duque de Windsor, governador das Baamas, sombra de escândalo e brigas sobre simpatias pelo Reich. A coroa como recusa pessoal, não um programa.",
+      "ja": "1936年12月、離婚したアメリカ人ウォリス・シンプソンと結婚するため退位。教会と内閣は女王を認めず。在位は一年未満、戴冠なし。その後ウィンザー公、バハマ総督、スキャンダルの影と帝国への共感をめぐる論争。王冠は個人の拒否であり綱領ではない。",
+      "he": "ויתר בדצמבר 1936 כדי לשאת את האמריקאית הגרושה ווליס סימפסון, בלי הסכמת כנסייה וקבינט למלכה. השלטון נמשך פחות משנה, בלי הכתרה. אחר כך דוכס וינדזור, מושל הבהאמס, צל שערורייה ומאבקים על אהדה לרייך. הכתר כסירוב אישי, לא תוכנית."
+    },
+    "feat": {
+      "de": "Die Abdankung von 1936: in Monaten an der Macht setzte er keine Veränderungen durch, die seine Herrschaft überdauert hätten.",
+      "zh": "1936年退位：掌权数月，未能推行可活过其在位的变革。",
+      "es": "La abdicación de 1936: en meses de poder no llevó a cabo cambios que sobrevivieran a su reinado.",
+      "hi": "1936 का त्याग: सत्ता के महीनों में ऐसी तब्दीलियाँ न चलाईं जो राज से जीवित रहतीं।",
+      "ar": "تنازل 1936: في أشهر السلطة لم يُنفذ تغييرات تبقى بعد حكمه.",
+      "bn": "১৯৩৬-এর ত্যাগ: ক্ষমতার মাসে এমন পরিবর্তন চালাননি যা তাঁর রাজত্ব টিকত।",
+      "pt": "A abdicação de 1936: em meses no poder não levou a cabo mudanças que sobrevivessem ao reinado.",
+      "ja": "1936年の退位。権力の数か月で、治世より長く残る変革は遂げなかった。",
+      "he": "הוויתור של 1936: בחודשי שלטון לא העביר שינויים שהיו שורדים את מלכותו."
+    }
+  },
+  "george6": {
+    "bio": {
+      "de": "Er hatte die Krone nicht erwartet: nach der Abdankung des Bruders König, mit Stottern und Zweifeln. Er führte das Land durch den Zweiten Weltkrieg, blieb im Blitz in London und ging durch die Ruinen des East End. Die Wende des Imperiums zur Unabhängigkeit (Indien) und das Commonwealth begannen unter ihm. Ein stiller König der „Majestäten“ im Kriegsfunk.",
+      "zh": "他未曾料到王冠：兄长退位后成为国王，带着口吃与疑虑。他带领国家度过二战，闪电战期间留在伦敦，并走访东区废墟。帝国转向独立（印度）与英联邦始于其治下。战时广播中“两位陛下”的安静国王。",
+      "es": "No esperaba la corona: se hizo rey tras la abdicación del hermano, con tartamudez y dudas. Condujo al país por la Segunda Guerra Mundial, se quedó en Londres durante el Blitz y recorrió las ruinas del East End. El giro del imperio hacia la independencia (India) y la Commonwealth empezó en su mandato. Un rey callado de «sus majestades» en la radio de guerra.",
+      "hi": "मुकुट न सोचा था: भाई के त्याग के बाद राजा, हकलाने और संदेह के साथ। द्वितीय विश्व युद्ध में देश चलाया, ब्लिट्ज़ में लंदन रहे, ईस्ट एंड खंडहर घूमे। साम्राज्य की स्वतंत्रता (भारत) और राष्ट्रमंडल उनके समय शुरू। युद्ध रेडियो पर «उनकी महिमा» के शांत राजा।",
+      "ar": "لم يتوقع التاج: صار ملكاً بعد تنازل أخيه، بتلعثم وشكوك. قاد البلاد في الحرب العالمية الثانية وبقي في لندن خلال البليتز ومشى أنقاض إيست إند. بدأ تحول الإمبراطورية نحو الاستقلال (الهند) والكومنولث في عهده. ملك هادئ لـ«جلالتيهما» في إذاعة الحرب.",
+      "bn": "মুকুট আশা করেননি: ভাইয়ের ত্যাগের পর রাজা, তোতলানি ও সন্দেহ নিয়ে। দ্বিতীয় বিশ্বযুদ্ধে দেশ চালান, ব্লিটজে লন্ডনে থাকেন, ইস্ট এন্ড ধ্বংসাবশেষে যান। সাম্রাজ্যের স্বাধীনতা (ভারত) ও কমনওয়েলথ তাঁর আমলে শুরু। যুদ্ধ রেডিওতে «তাঁদের মহিমা»-র নীরব রাজা।",
+      "pt": "Não esperava a coroa: tornou-se rei após a abdicação do irmão, com gaguez e dúvidas. Conduziu o país na Segunda Guerra Mundial, ficou em Londres no Blitz e percorreu as ruínas do East End. A viragem do império rumo à independência (Índia) e à Commonwealth começou no seu mandato. Um rei quieto de «suas majestades» no rádio de guerra.",
+      "ja": "王冠は予期していなかった。兄の退位後に王となり、吃音と疑念を抱えた。第二次大戦を率い、電撃戦中もロンドンに残り、イーストエンドの廃墟を歩いた。帝国の独立（インド）と英連邦への転回が治世に始まった。戦時放送の「両陛下」の静かな王。",
+      "he": "לא ציפה לכתר: נעשה מלך אחרי ויתור האח, עם גמגום וספקות. הוביל את הארץ במלחמת העולם השנייה, נשאר בלונדון בבליץ והלך בהריסות האיסט אנד. מפנה האימפריה לעצמאות (הודו) ולחבר העמים החל במשמרתו. מלך שקט של «הוד מלכותם» בשידור המלחמה."
+    },
+    "feat": {
+      "de": "Ein Symbol der Standhaftigkeit im Blitz — eine Krone, die London nicht verließ.",
+      "zh": "闪电战中坚忍的象征——一顶没有离开伦敦的王冠。",
+      "es": "Un símbolo de aguante en el Blitz: una corona que no salió de Londres.",
+      "hi": "ब्लिट्ज़ में सहन का प्रतीक — मुकुट जो लंदन न छोड़ा।",
+      "ar": "رمز صمود في البليتز — تاج لم يغادر لندن.",
+      "bn": "ব্লিটজে স্থৈর্যের প্রতীক — মুকুট যা লন্ডন ছাড়েনি।",
+      "pt": "Um símbolo de resistência no Blitz — uma coroa que não saiu de Londres.",
+      "ja": "電撃戦の忍耐の象徴——ロンドンを去らない王冠。",
+      "he": "סמל עמידה בבליץ — כתר שלא עזב את לונדון."
+    }
+  },
+  "elizabeth2": {
+    "bio": {
+      "de": "Die längste Herrschaft der britischen Geschichte (1952–2022). Entkolonialisierung fast des ganzen Imperiums, Fernsehen, Krisen (Sues schon in den frühen Jahren, später Diana, Brexit) und Jubiläen. Ein Symbol der Kontinuität durch wechselnde Premiers von Churchill bis Truss und ein sich wandelndes Commonwealth. Eine konstitutionelle Monarchin, deren Kraft Dauer war, nicht Edikt.",
+      "zh": "英国史上最长统治（1952–2022）。几乎整个帝国的非殖民化、电视、危机（早期即有苏伊士，后来戴安娜、脱欧）与周年庆典。从丘吉尔到特拉斯的首相更迭与变化中的英联邦里，她是连续性的象征。力量在于持久而非诏令的立宪君主。",
+      "es": "El reinado más largo de la historia británica (1952–2022). Descolonización de casi todo el imperio, televisión, crisis (Suez ya en sus primeros años, luego Diana, el Brexit) y jubileos. Símbolo de continuidad a través de primeros ministros de Churchill a Truss y un Commonwealth cambiante. Una monarca constitucional cuya fuerza era la duración, no el edicto.",
+      "hi": "ब्रिटिश इतिहास का सबसे लंबा राज (1952–2022)। लगभग पूरे साम्राज्य का विऔपनिवेशीकरण, टेलीविज़न, संकट (शुरुआत में स्वेज़, बाद में डायना, ब्रेक्ज़िट) और जयंती। चर्चिल से ट्रस तक प्रधानमंत्रियों और बदलते राष्ट्रमंडल में निरंतरता का प्रतीक। संवैधानिक नरेश जिनकी शक्ति अवधि थी, फ़रमान नहीं।",
+      "ar": "أطول حكم في التاريخ البريطاني (1952–2022). إنهاء استعمار شبه الإمبراطورية كلها والتلفزيون وأزمات (السويس أصلاً في سنواتها الأولى ثم ديانا وبريكست) ويوبيلات. رمز استمرارية عبر رؤساء من تشرشل إلى تراس وكومنولث متغير. ملكة دستورية كانت قوتها المدة لا المرسوم.",
+      "bn": "ব্রিটিশ ইতিহাসের দীর্ঘতম শাসন (১৯৫২–২০২২)। প্রায় পুরো সাম্রাজ্যের উপনিবেশমুক্তি, টেলিভিশন, সংকট (শুরুতে সুয়েজ, পরে ডায়ানা, ব্রেক্সিট) ও জুবিলি। চার্চিল থেকে ট্রাস পর্যন্ত প্রধানমন্ত্রী ও বদলাতে কমনওয়েলথে ধারাবাহিকতার প্রতীক। সাংবিধানিক রাজা যাঁর শক্তি স্থায়িত্ব, ফরমান নয়।",
+      "pt": "O reinado mais longo da história britânica (1952–2022). Descolonização de quase todo o império, televisão, crises (Suez já nos primeiros anos, depois Diana, o Brexit) e jubileus. Símbolo de continuidade através de primeiros-ministros de Churchill a Truss e um Commonwealth em mudança. Uma monarca constitucional cuja força era a duração, não o édito.",
+      "ja": "英国史上最長の治世（1952–2022）。ほぼ全帝国の脱植民地化、テレビ、危機（初期のスエズ、のちダイアナ、ブレグジット）と記念祭。チャーチルからトラスまでの首相交代と変化する英連邦における連続性の象徴。力は勅ではなく持続にあった立憲君主。",
+      "he": "השלטון הארוך ביותר בהיסטוריה הבריטית (1952–2022). דה-קולוניזציה של כמעט כל האימפריה, טלוויזיה, משברים (סואץ כבר בשנים המוקדמות, אחר כך דיאנה, ברקזיט) ויובלות. סמל רציפות דרך ראשי ממשלה מצ׳רצ׳יל לטראס וחבר עמים משתנה. מונרכית חוקתית שכוחה היה משך, לא צו."
+    },
+    "feat": {
+      "de": "Siebzig Jahre Kontinuität der Krone durch das Ende des Imperiums und wechselnde Epochen.",
+      "zh": "七十年王冠的连续性，贯穿帝国终结与时代更迭。",
+      "es": "Setenta años de continuidad de la corona a través del fin del imperio y edades cambiantes.",
+      "hi": "साम्राज्य के अंत और बदलते युगों में मुकुट की सत्तर वर्ष निरंतरता।",
+      "ar": "سبعون عاماً من استمرارية التاج عبر نهاية الإمبراطورية وتبدل العصور.",
+      "bn": "সাম্রাজ্যের সমাপ্তি ও বদলাতে যুগে মুকুটের সত্তর বছর ধারাবাহিকতা।",
+      "pt": "Setenta anos de continuidade da coroa através do fim do império e épocas em mudança.",
+      "ja": "帝国の終焉と時代の変化を貫く七十年の王冠の連続。",
+      "he": "שבעים שנות רציפות הכתר דרך סוף האימפריה ותקופות משתנות."
+    }
+  },
+  "charles3": {
+    "bio": {
+      "de": "Er wurde 2022 nach Elisabeths II. Tod König, der am längsten wartende Erbe. Eine lange Lehre: Wohltätigkeit, Umwelt, Architektur, Streit um das „Einmischen“ eines Prinzen. 2023 gekrönt; die Herrschaft ist noch jung, ohne großes eigenes Statut. Der Ton ist Dienst und Klima, nicht der imperiale Glanz der Mutter.",
+      "zh": "2022年伊丽莎白二世去世后即位，等待最久的继承人。漫长学徒期：慈善、环境、建筑，以及王子“干预”的争议。2023年加冕；统治尚短，尚无自己的大法。基调是服务与气候，而非母亲的帝国光辉。",
+      "es": "Se hizo rey en 2022 a la muerte de Isabel II, el heredero que más esperó. Un largo aprendizaje: caridad, medio ambiente, arquitectura, peleas por la «injerencia» de un príncipe. Coronado en 2023; el reinado es aún joven, sin un gran estatuto propio. El tono es servicio y clima, no el brillo imperial de su madre.",
+      "hi": "2022 में एलिज़ाबेथ II की मृत्यु पर राजा, सबसे लंबा प्रतीक्षित वारिस। लंबी शिष्यता: दान, पर्यावरण, वास्तुकला, राजकुमार के «हस्तक्षेप» के झगड़े। 2023 में राज्याभिषेक; राज अभी युवा, अपने बड़े क़ानून के बिना। स्वर सेवा और जलवायु, माता की साम्राज्य चमक नहीं।",
+      "ar": "صار ملكاً عام 2022 بعد موت إليزابيث الثانية، أطول وريث انتظاراً. تلمذة طويلة: إحسان وبيئة وعمارة ونزاعات «تدخل» الأمير. تُوّج عام 2023؛ الحكم ما زال فتياً بلا قانون كبير خاص به. النبرة خدمة ومناخ لا بريق أمّه الإمبراطوري.",
+      "bn": "২০২২-এ এলিজাবেথ II-এর মৃত্যুতে রাজা, সবচেয়ে দীর্ঘ অপেক্ষমাণ উত্তরাধিকারী। দীর্ঘ শিক্ষানবিশ: দান, পরিবেশ, স্থাপত্য, রাজকুমারের «হস্তক্ষেপ»-এর ঝগড়া। ২০২৩-এ মুকুট; শাসন এখনও তরুণ, নিজস্ব বড় বিধি ছাড়া। সুর সেবা ও জলবায়ু, মায়ের সাম্রাজ্যিক ঝলমল নয়।",
+      "pt": "Tornou-se rei em 2022 com a morte de Isabel II, o herdeiro que mais esperou. Um longo noviciado: caridade, ambiente, arquitetura, brigas sobre a «intromissão» de um príncipe. Coroado em 2023; o reinado ainda é jovem, sem um grande estatuto seu. O tom é serviço e clima, não o brilho imperial da mãe.",
+      "ja": "2022年エリザベス2世の死後に王となり、最も長く待った世継ぎ。長い修業：慈善、環境、建築、王子の「介入」をめぐる争い。2023年戴冠。治世はまだ若く、自前の大法はない。調子は奉仕と気候であり、母の帝国の輝きではない。",
+      "he": "נעשה מלך ב־2022 במות אליזבת השנייה, היורש שהמתין הכי הרבה. חניכה ארוכה: צדקה, סביבה, ארכיטקטורה, מאבקים על «התערבות» של נסיך. הוכתר ב־2023; השלטון עדיין צעיר, בלי חוק גדול משלו. הטון שירות ואקלים, לא הברק האימפריאלי של אמו."
+    },
+    "feat": {
+      "de": "Die Herrschaft ist noch kurz: eine große Veränderung aus eigener Hand hat er noch nicht verankert.",
+      "zh": "统治尚短：他尚未锁定亲手推动的重大变革。",
+      "es": "El reinado aún es corto: todavía no ha fijado un cambio mayor de su propia mano.",
+      "hi": "राज अभी छोटा: अपने हाथ का बड़ा परिवर्तन अभी जमा नहीं किया।",
+      "ar": "الحكم ما زال قصيراً: لم يثبّت بعد تغييراً كبيراً بيده.",
+      "bn": "শাসন এখনও সংক্ষিপ্ত: নিজ হাতের বড় পরিবর্তন তিনি এখনও বাঁধেননি।",
+      "pt": "O reinado ainda é curto: ainda não cravou uma mudança maior da sua mão.",
+      "ja": "治世はまだ短い。自らの手の大きな変革はまだ定着していない。",
+      "he": "השלטון עדיין קצר: טרם נעל שינוי גדול מידו."
+    }
+  }
+}

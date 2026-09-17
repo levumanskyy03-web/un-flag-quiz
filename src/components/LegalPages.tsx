@@ -82,3 +82,24 @@ export function ContactsPageView() {
     </LegalShell>
   );
 }
+
+export function TermsView() {
+  const { lang } = useSiteLang();
+  const copy = PAGE_COPY[lang];
+  return (
+    <>
+      <h1>{copy.termsTitle}</h1>
+      {copy.terms.map((paragraph) => (
+        <p key={paragraph.slice(0, 24)}>{paragraph}</p>
+      ))}
+    </>
+  );
+}
+
+export function TermsPageView() {
+  return (
+    <LegalShell>
+      <TermsView />
+    </LegalShell>
+  );
+}

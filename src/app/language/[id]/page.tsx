@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LanguagePageView } from "../../../components/LanguageDetail";
 import { languageById, languageName, languagesIndex } from "../../../data/languages";
+import { PAGE_COPY } from "../../../i18n/pages";
+import { requestLang } from "../../../i18n/requestLang";
+import { publicMetadata } from "../../../lib/pageMeta";
 
 export function generateStaticParams() {
   return languagesIndex().map((item) => ({ id: item.id }));
@@ -14,14 +17,23 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
+  const lang = await requestLang();
+  const copy = PAGE_COPY[lang];
   const { id } = await params;
   const info = languageById(id);
-  if (!info) return { title: "Язык — Паспорт страны" };
-  const name = languageName(id, "ru");
-  return {
-    title: `${name} — Паспорт страны`,
-    description: `Где говорят на языке «${name}»: карта ареала и страны, где доля говорящих не меньше 1 %.`,
-  };
+  if (!info) {
+    return publicMetadata(lang, {
+      title: copy.languagesTitle,
+      description: copy.languagesLead,
+      path: "/languages",
+    });
+  }
+  const name = languageName(id, lang);
+  return publicMetadata(lang, {
+    title: name,
+    description: `${copy.languageRange(name)}. ${copy.languageCountries}`,
+    path: `/language/${id}`,
+  });
 }
 
 export default async function LanguagePage({ params }: { params: Promise<{ id: string }> }) {

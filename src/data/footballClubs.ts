@@ -1,3 +1,7 @@
+import type { Lang } from '../i18n/lang'
+import CLUB_I18N from './i18n/clubs.json'
+import { named } from './i18n/named'
+
 export interface FootballClub {
   id: string
   nation: string
@@ -164,4 +168,10 @@ export function clubWiki(id: string): string {
 
 export function allFootballClubs(): FootballClub[] {
   return Object.values(FOOTBALL_CLUBS)
+}
+
+export function footballClubName(id: string, lang: Lang): string {
+  const club = FOOTBALL_CLUBS[id]
+  if (!club) return id
+  return named(CLUB_I18N, id, lang, club.nameRu, club.nameEn)
 }

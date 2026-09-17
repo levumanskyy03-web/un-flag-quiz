@@ -1,3 +1,7 @@
+import type { Lang } from '../i18n/lang'
+import MANAGER_I18N from './i18n/managers.json'
+import { named } from './i18n/named'
+
 export interface FootballManager {
   id: string
   en: string
@@ -28,3 +32,13 @@ export const FOOTBALL_MANAGERS: FootballManager[] = [
   { id: 'deschamps', en: 'Didier Deschamps', ru: 'Дидье Дешам', wiki: 'Didier Deschamps', nation: 'fr', wcWins: [2018] },
   { id: 'scaloni', en: 'Lionel Scaloni', ru: 'Лионель Скалони', wiki: 'Lionel Scaloni', nation: 'ar', wcWins: [2022] },
 ]
+
+const BY_ID = new Map(FOOTBALL_MANAGERS.map((item) => [item.id, item]))
+
+export function managerById(id: string): FootballManager | undefined {
+  return BY_ID.get(id)
+}
+
+export function managerDisplayName(manager: FootballManager, lang: Lang): string {
+  return named(MANAGER_I18N, manager.id, lang, manager.ru, manager.en)
+}

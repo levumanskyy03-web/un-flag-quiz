@@ -186,7 +186,6 @@ function nationName(iso: string, lang: Lang): string {
 
 export function playerFactLabel(clue: PlayerFactClue, lang: Lang): string {
   const t = STRINGS[lang]
-  const clubLang = lang === 'ru' ? 'ru' : 'en'
   switch (clue.kind) {
     case 'playerNation':
       return t.playerFactNation(nationName(clue.nation ?? '', lang))
@@ -201,7 +200,7 @@ export function playerFactLabel(clue: PlayerFactClue, lang: Lang): string {
               : t.playerPositionFw,
       )
     case 'playerClub':
-      return t.playerFactClub(playerClubName(clue.clubId ?? '', clubLang))
+      return t.playerFactClub(playerClubName(clue.clubId ?? '', lang))
     case 'playerWcWinner':
       return t.playerFactWcWinner
     case 'playerEuroWinner':

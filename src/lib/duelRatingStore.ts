@@ -93,6 +93,16 @@ export async function applyDuelMatch(input: {
   })
 }
 
+export async function purgeDuelRatings(playerId: string): Promise<void> {
+  if (!isPlayerId(playerId)) return
+  await enqueue(async () => {
+    const store = await loadStore()
+    if (!store || !store.players[playerId]) return
+    delete store.players[playerId]
+    await saveStore(store)
+  })
+}
+
 export async function readDuelRatings(
   world: DuelRatingWorld,
   me?: string,

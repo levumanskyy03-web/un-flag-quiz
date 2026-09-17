@@ -1,5 +1,8 @@
 import type { Country } from './countries'
-import { footballClub } from './footballClubs'
+import type { Lang } from '../i18n/lang'
+import { footballClub, footballClubName } from './footballClubs'
+import PLAYER_I18N from './i18n/players.json'
+import { named } from './i18n/named'
 import { FOOTBALL_PLAYER_ROWS, type FootballPlayerRow, type PlayerEra, type PlayerPos, type PlayerTier } from './footballPlayerRows'
 
 export type PlayerPosition = PlayerPos
@@ -87,6 +90,10 @@ export function isFootballPlayerId(id: string): boolean {
   return BY_ID.has(id)
 }
 
+export function playerDisplayName(player: FootballPlayer, lang: Lang): string {
+  return named(PLAYER_I18N, player.id, lang, player.ru, player.en)
+}
+
 export function playerCountry(player: FootballPlayer): Country {
   return {
     iso: player.id,
@@ -97,9 +104,9 @@ export function playerCountry(player: FootballPlayer): Country {
   }
 }
 
-export function playerClubName(id: string, lang: 'en' | 'ru'): string {
+export function playerClubName(id: string, lang: Lang): string {
   const fromCatalog = footballClub(id)
-  if (fromCatalog) return lang === 'ru' ? fromCatalog.nameRu : fromCatalog.nameEn
+  if (fromCatalog) return footballClubName(id, lang)
   return id
 }
 

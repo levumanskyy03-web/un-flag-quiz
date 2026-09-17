@@ -7,9 +7,11 @@ import { DuelResults } from "@/components/DuelResults";
 import { FactsScreen } from "@/components/FactsScreen";
 import { QuizScreen } from "@/components/QuizScreen";
 import { WorldsBack } from "@/components/WorldsBack";
+import { portraitFileForTerm } from "@/data/leaderPortraitFiles";
 import { playerById } from "@/data/footballPlayers";
 import { termById } from "@/data/leaders";
 import { STRINGS, isLang, langDir, localeTag, type Lang } from "@/i18n/strings";
+import { SITE_LANG_KEY } from "@/i18n/lang";
 import { fetchAccount } from "@/lib/account";
 import {
   advanceDuelFact,
@@ -25,9 +27,9 @@ import type { DuelView } from "@/lib/duelTypes";
 import { isCorrect, isFactsToName, isLeaderPhotoMode, isPlayerPhotoMode, type QuizMode } from "@/lib/quiz";
 import { playSfx } from "@/lib/sfx";
 import { prefetchWikiPortraits } from "@/lib/wikiThumb";
+import { trackFunnel } from "@/lib/funnel";
 import { duelIsFootball, duelWorldHref, normalizeDuelCode } from "./paths";
 
-const LANG_KEY = "un-flag-quiz-lang";
 const POLL_MS = 700;
 
 type ResultTone = "success" | "fail";
@@ -38,7 +40,7 @@ function subscribeLang(onChange: () => void) {
 }
 
 function getStoredLang(): Lang {
-  const stored = localStorage.getItem(LANG_KEY);
+  const stored = localStorage.getItem(SITE_LANG_KEY);
   return isLang(stored) ? stored : "ru";
 }
 
@@ -53,7 +55,7 @@ async function duelName(lang: Lang) {
   const account = await fetchAccount();
   if (account?.id) bindDuelPlayerId(account.id);
   if (account?.name) return account.name;
-  return lang === "ru" ? "Игрок" : "Player";
+  return STRINGS[lang].duelAnonName
 }
 
 export function DuelApp({ code: rawCode }: { code: string }) {
@@ -111,8 +113,14 @@ export function DuelApp({ code: rawCode }: { code: string }) {
     if (!question) return;
     const mode = question.mode ?? currentMode;
     if (!isLeaderPhotoMode(mode) && !isPlayerPhotoMode(mode)) return;
-    const wiki = termById(question.country.iso)?.wiki ?? playerById(question.country.iso)?.wiki;
-    if (wiki) prefetchWikiPortraits([wiki]);
+    const player = playerById(question.country.iso);
+    const term = termById(question.country.iso);
+    const wiki = term?.wiki ?? player?.wiki;
+    if (wiki) {
+      prefetchWikiPortraits([
+        { title: wiki, file: player?.wikiFile ?? (term ? portraitFileForTerm(term.id) : undefined) },
+      ]);
+    }
   }, [question, currentMode]);
 
   useEffect(() => {
@@ -208,10 +216,16 @@ export function DuelApp({ code: rawCode }: { code: string }) {
       setResultTone(null);
       return;
     }
+    if ((prevPhase === "waiting" || prevPhase === null) && next.phase !== "done") {
+      trackFunnel("duel_start", { world: duelIsFootball(next) ? "football" : "geo" });
+    }
     if (next.phase === "done") {
       setRoundMs(next.roundMs);
       setResultTone(next.youWon === false ? "fail" : "success");
-      if (prevPhase !== "done") playSfx(next.youWon === false ? "fail" : "success");
+      if (prevPhase !== "done") {
+        playSfx(next.youWon === false ? "fail" : "success");
+        trackFunnel("duel_end", { world: duelIsFootball(next) ? "football" : "geo" });
+      }
       return;
     }
     setRemainingMs(next.remainingMs);
@@ -395,6 +409,7 @@ export function DuelApp({ code: rawCode }: { code: string }) {
         <nav className="legal-links">
           <a href="/about">{t.legalAbout}</a>
           <a href="/privacy">{t.legalPrivacy}</a>
+          <a href="/terms">{t.legalTerms}</a>
           <a href="/contacts">{t.legalContacts}</a>
         </nav>
         <p className="credit">{t.credit}</p>

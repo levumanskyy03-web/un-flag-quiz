@@ -1,6 +1,7 @@
 import { isAchievementId, type AchievementId } from '../data/achievements'
 import { isAvatarId, type AvatarId } from '../data/avatars'
 import { localeTag, type Lang } from '../i18n/lang'
+import { countryByIso } from './countryCatalog'
 import { NAME_MAX, isPlayerId, type Player, savePlayer } from './leaderboard'
 import { loadProfile, saveProfile } from './profile'
 
@@ -8,6 +9,7 @@ export interface Account {
   id: string
   name: string
   avatarId?: AvatarId
+  countryIso?: string
   nameChangedAt?: number
   createdAt?: number
 }
@@ -18,6 +20,7 @@ export interface PublicPlayerProfile {
   id: string
   name: string
   avatarId?: AvatarId
+  countryIso?: string
   createdAt: number
   xp: number
   level: number
@@ -61,10 +64,12 @@ export async function fetchPlayerProfile(id: string): Promise<PublicPlayerProfil
   }
 }
 
-export async function registerAccount(name: string, password: string): Promise<
-  { ok: true; user: Account } | { ok: false; error: AuthError }
-> {
-  return sendAuth('/api/auth/register', name, password)
+export async function registerAccount(
+  name: string,
+  password: string,
+  countryIso: string,
+): Promise<{ ok: true; user: Account } | { ok: false; error: AuthError }> {
+  return sendAuth('/api/auth/register', name, password, countryIso)
 }
 
 export async function loginAccount(name: string, password: string): Promise<
@@ -76,6 +81,7 @@ export async function loginAccount(name: string, password: string): Promise<
 export async function updateAccountProfile(patch: {
   name?: string
   avatarId?: AvatarId
+  countryIso?: string
   currentPassword?: string
   newPassword?: string
 }): Promise<{ ok: true; user: Account } | { ok: false; error: AuthError }> {
@@ -112,13 +118,33 @@ export async function checkNameAvailable(name: string): Promise<
   }
 }
 
-export async function logoutAccount(): Promise<void> {
+export async function logoutAccount(everywhere = false): Promise<void> {
   try {
-    await authFetch('/api/auth/logout', { method: 'POST' })
+    await authFetch('/api/auth/logout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ all: everywhere }),
+    })
   } catch {
     /* still drop the local session copy */
   }
   forgetLocalSession()
+}
+
+export async function deleteAccount(password: string): Promise<{ ok: true } | { ok: false; error: AuthError }> {
+  try {
+    const response = await authFetch('/api/auth/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    })
+    const body: unknown = await response.json().catch(() => null)
+    if (!response.ok) return { ok: false, error: parseError(body, response.status) }
+    forgetLocalSession()
+    return { ok: true }
+  } catch {
+    return { ok: false, error: 'offline' }
+  }
 }
 
 function forgetLocalSession() {
@@ -136,13 +162,13 @@ function rememberAccount(user: Account) {
   })
 }
 
-async function sendAuth(url: string, name: string, password: string) {
+async function sendAuth(url: string, name: string, password: string, countryIso?: string) {
   try {
     const profile = loadProfile()
     const response = await authFetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, password, avatarId: profile.avatarId }),
+      body: JSON.stringify({ name, password, avatarId: profile.avatarId, countryIso }),
     })
     const body: unknown = await response.json().catch(() => null)
     if (!response.ok) {
@@ -167,6 +193,7 @@ function parseAccount(body: unknown): Account | null {
     id: record.id,
     name: record.name,
     avatarId: isAvatarId(record.avatarId) ? record.avatarId : undefined,
+    countryIso: countryByIso(typeof record.countryIso === 'string' ? record.countryIso : '')?.iso,
     nameChangedAt: typeof record.nameChangedAt === 'number' ? record.nameChangedAt : undefined,
     createdAt: typeof record.createdAt === 'number' ? record.createdAt : undefined,
   }
@@ -188,6 +215,7 @@ function parsePublicProfile(body: unknown): PublicPlayerProfile | null {
     id: record.id,
     name: record.name,
     avatarId: isAvatarId(record.avatarId) ? record.avatarId : undefined,
+    countryIso: countryByIso(typeof record.countryIso === 'string' ? record.countryIso : '')?.iso,
     createdAt: record.createdAt,
     xp,
     level,

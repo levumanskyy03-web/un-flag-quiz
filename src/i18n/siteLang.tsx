@@ -1,19 +1,13 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { isLang, langDir, localeTag, type Lang } from "./lang";
+import { langDir, localeTag, type Lang } from "./lang";
+import { persistLang, readStoredLang } from "./persistLang";
 
-export const SITE_LANG_KEY = "un-flag-quiz-lang";
+export { SITE_LANG_KEY } from "./lang";
 
 export function getStoredLang(): Lang {
-  if (typeof localStorage === "undefined") return "ru";
-  const stored = localStorage.getItem(SITE_LANG_KEY);
-  return isLang(stored) ? stored : "ru";
-}
-
-function setStoredLang(lang: Lang) {
-  localStorage.setItem(SITE_LANG_KEY, lang);
-  window.dispatchEvent(new Event("storage"));
+  return readStoredLang() ?? "ru";
 }
 
 const SiteLangContext = createContext<{ lang: Lang; setLang: (lang: Lang) => void }>({
@@ -25,14 +19,16 @@ export function SiteLangProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("ru");
 
   useEffect(() => {
-    setLangState(getStoredLang());
+    const stored = getStoredLang();
+    setLangState(stored);
+    persistLang(stored);
     const onChange = () => setLangState(getStoredLang());
     window.addEventListener("storage", onChange);
     return () => window.removeEventListener("storage", onChange);
   }, []);
 
   const setLang = useCallback((next: Lang) => {
-    setStoredLang(next);
+    persistLang(next);
     setLangState(next);
   }, []);
 

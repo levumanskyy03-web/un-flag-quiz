@@ -7,6 +7,7 @@ import {
   RATING_XP_MAX,
   isBetterCampaign,
   isBetterXp,
+  isPlayerId,
   ratingPeriodStamp,
   type RatingBoard,
   type RatingWorld,
@@ -121,6 +122,25 @@ export async function upsertLevelBest(
     store[key] = [incoming]
     await saveStore(store)
     return { configured: true, accepted: true, previous: holder }
+  })
+}
+
+export async function purgePlayerRatings(playerId: string): Promise<void> {
+  if (!isPlayerId(playerId)) return
+  await enqueue(async () => {
+    const store = await loadStore()
+    if (store === null) return
+    let dirty = false
+    for (const key of Object.keys(store)) {
+      const rows = store[key]
+      if (!Array.isArray(rows)) continue
+      const next = rows.filter((item) => item.id !== playerId)
+      if (next.length === rows.length) continue
+      dirty = true
+      if (next.length === 0) delete store[key]
+      else store[key] = next
+    }
+    if (dirty) await saveStore(store)
   })
 }
 

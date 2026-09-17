@@ -1,0 +1,720 @@
+{
+  "rankGdp": {
+    "asOf": {
+      "de": "April 2026",
+      "zh": "2026年4月",
+      "es": "abril de 2026",
+      "hi": "अप्रैल 2026",
+      "ar": "أبريل 2026",
+      "bn": "এপ্রিল 2026",
+      "pt": "abril de 2026",
+      "ja": "2026年4月",
+      "he": "אפריל 2026"
+    },
+    "source": {
+      "de": "IWF, World Economic Outlook (April 2026), Tabelle von Visual Capitalist",
+      "zh": "国际货币基金组织（IMF）《世界经济展望》（2026年4月），Visual Capitalist 表格",
+      "es": "FMI, World Economic Outlook (abril de 2026), tabla de Visual Capitalist",
+      "hi": "आईएमएफ, World Economic Outlook (अप्रैल 2026), Visual Capitalist तालिका",
+      "ar": "صندوق النقد الدولي (IMF)، آفاق الاقتصاد العالمي (أبريل 2026)، جدول Visual Capitalist",
+      "bn": "আইএমএফ, World Economic Outlook (এপ্রিল 2026), Visual Capitalist সারণি",
+      "pt": "FMI, World Economic Outlook (abril de 2026), tabela da Visual Capitalist",
+      "ja": "IMF『世界経済見通し』（2026年4月）、Visual Capitalist の表",
+      "he": "קרן המטבע הבינלאומית (IMF), World Economic Outlook (אפריל 2026), טבלת Visual Capitalist"
+    },
+    "about": {
+      "de": "Das nominale BIP ist der Wert aller Güter und Dienstleistungen, die in einem Jahr erzeugt werden, in laufenden US-Dollar. Platz 1 ist die größte Volkswirtschaft.",
+      "zh": "名义国内生产总值是一国一年内生产的全部商品和服务按当前美元计的价值。第一名是规模最大的经济体。",
+      "es": "El PIB nominal es el valor de todos los bienes y servicios producidos en un año, en dólares estadounidenses actuales. El puesto 1 es la economía más grande.",
+      "hi": "नाममात्र जीडीपी एक वर्ष में उत्पादित सभी वस्तुओं और सेवाओं का वर्तमान अमेरिकी डॉलर में मूल्य है। पहला स्थान सबसे बड़ी अर्थव्यवस्था है।",
+      "ar": "الناتج المحلي الإجمالي الاسمي هو قيمة كل السلع والخدمات المنتجة في سنة، بالدولار الأمريكي الجاري. المرتبة 1 هي أكبر اقتصاد.",
+      "bn": "নামমাত্র জিডিপি হল এক বছরে উৎপাদিত সব পণ্য ও সেবার মূল্য, চলতি মার্কিন ডলারে। ১ম স্থান বৃহত্তম অর্থনীতি।",
+      "pt": "O PIB nominal é o valor de todos os bens e serviços produzidos num ano, em dólares americanos correntes. O 1.º lugar é a maior economia.",
+      "ja": "名目GDPは、1年間に生産された財・サービスの価値を、その時点の米ドルで表したものです。1位は最大の経済です。",
+      "he": "התמ\"ג הנומינלי הוא ערך כל הסחורות והשירותים שיוצרו בשנה, בדולרים אמריקאיים שוטפים. מקום 1 הוא הכלכלה הגדולה ביותר."
+    }
+  },
+  "rankGdpPc": {
+    "asOf": {
+      "de": "IWF-Prognose 2026",
+      "zh": "2026年IMF预测",
+      "es": "previsión del FMI para 2026",
+      "hi": "2026 आईएमएफ पूर्वानुमान",
+      "ar": "توقعات صندوق النقد الدولي لعام 2026",
+      "bn": "2026 আইএমএফ পূর্বাভাস",
+      "pt": "previsão do FMI para 2026",
+      "ja": "2026年IMF予測",
+      "he": "תחזית קרן המטבע ל-2026"
+    },
+    "source": {
+      "de": "IWF, nominales BIP pro Kopf in laufenden US-Dollar; Wikipedia-Tabelle",
+      "zh": "国际货币基金组织（IMF）名义人均国内生产总值（当前美元）；维基百科表格",
+      "es": "FMI, PIB nominal per cápita en USD actuales; tabla de Wikipedia",
+      "hi": "आईएमएफ, नाममात्र प्रति व्यक्ति जीडीपी, वर्तमान अमेरिकी डॉलर; विकिपीडिया तालिका",
+      "ar": "صندوق النقد الدولي، الناتج المحلي الإجمالي الاسمي للفرد بالدولار الجاري؛ جدول ويكيبيديا",
+      "bn": "আইএমএফ, মাথাপিছু নামমাত্র জিডিপি, চলতি মার্কিন ডলার; উইকিপিডিয়া সারণি",
+      "pt": "FMI, PIB nominal per capita em dólares correntes; tabela da Wikipédia",
+      "ja": "IMF、名目一人当たりGDP（米ドル建て）；Wikipediaの表",
+      "he": "קרן המטבע, תמ\"ג נומינלי לנפש בדולרים שוטפים; טבלת ויקיפדיה"
+    },
+    "about": {
+      "de": "Das BIP pro Kopf ist das nominale BIP geteilt durch die Bevölkerung: Produktion je Einwohner, nicht die Größe der gesamten Wirtschaft.",
+      "zh": "人均国内生产总值是名义国内生产总值除以人口：看的是每位居民的产出，而不是整个经济体的规模。",
+      "es": "El PIB per cápita es el PIB nominal dividido por la población: producción por habitante, no el tamaño de toda la economía.",
+      "hi": "प्रति व्यक्ति जीडीपी नाममात्र जीडीपी को जनसंख्या से भाग देने पर मिलता है: प्रति निवासी उत्पादन, पूरी अर्थव्यवस्था का आकार नहीं।",
+      "ar": "الناتج للفرد هو الناتج المحلي الإجمالي الاسمي مقسومًا على السكان: إنتاج لكل ساكن، لا حجم الاقتصاد كله.",
+      "bn": "মাথাপিছু জিডিপি হল নামমাত্র জিডিপিকে জনসংখ্যা দিয়ে ভাগ: বাসিন্দাপ্রতি উৎপাদন, পুরো অর্থনীতির আকার নয়।",
+      "pt": "O PIB per capita é o PIB nominal dividido pela população: produção por residente, não o tamanho da economia inteira.",
+      "ja": "一人当たりGDPは名目GDPを人口で割った値で、経済全体の規模ではなく住民一人あたりの生産を示します。",
+      "he": "תמ\"ג לנפש הוא התמ\"ג הנומינלי חלקי האוכלוסייה: תוצר לתושב, לא גודל המשק כולו."
+    }
+  },
+  "rankArea": {
+    "asOf": {
+      "de": "2026",
+      "zh": "2026年",
+      "es": "2026",
+      "hi": "2026",
+      "ar": "2026",
+      "bn": "2026",
+      "pt": "2026",
+      "ja": "2026年",
+      "he": "2026"
+    },
+    "source": {
+      "de": "UN / nationale Statistik, Gesamtfläche; Wikipedia, Liste der Länder nach Fläche",
+      "zh": "联合国/各国统计的总面积；维基百科各国面积列表",
+      "es": "ONU / estadísticas nacionales, superficie total; lista de Wikipedia de países por área",
+      "hi": "संयुक्त राष्ट्र / राष्ट्रीय आँकड़े, कुल क्षेत्रफल; विकिपीडिया क्षेत्रफल सूची",
+      "ar": "الأمم المتحدة / إحصاءات وطنية، المساحة الإجمالية؛ قائمة ويكيبيديا للدول حسب المساحة",
+      "bn": "জাতিসংঘ / জাতীয় পরিসংখ্যান, মোট আয়তন; উইকিপিডিয়ার আয়তন তালিকা",
+      "pt": "ONU / estatísticas nacionais, área total; lista da Wikipédia de países por área",
+      "ja": "国連／各国統計の総面積；Wikipediaの面積順リスト",
+      "he": "או\"ם / סטטיסטיקה לאומית, שטח כולל; רשימת ויקיפדיה של מדינות לפי שטח"
+    },
+    "about": {
+      "de": "Gesamtfläche des Landes: Land und Binnengewässer. Platz 1 ist das größte Territorium.",
+      "zh": "国家总面积：陆地和内陆水域。第一名是面积最大的领土。",
+      "es": "Superficie total del país, tierra y aguas interiores. El puesto 1 es el territorio más grande.",
+      "hi": "देश का कुल क्षेत्रफल: भूमि और अंतर्देशीय जल। पहला स्थान सबसे बड़ा क्षेत्र है।",
+      "ar": "المساحة الإجمالية للبلد: اليابسة والمياه الداخلية. المرتبة 1 هي أكبر إقليم.",
+      "bn": "দেশের মোট আয়তন: স্থল ও অভ্যন্তরীণ জল। ১ম স্থান বৃহত্তম অঞ্চল।",
+      "pt": "Área total do país: terra e águas interiores. O 1.º lugar é o maior território.",
+      "ja": "国土の総面積（陸地と内水域）。1位は最も広い領土です。",
+      "he": "השטח הכולל של המדינה: יבשה ומים פנימיים. מקום 1 הוא השטח הגדול ביותר."
+    }
+  },
+  "rankGdpPpp": {
+    "asOf": {
+      "de": "IWF-Prognose 2026",
+      "zh": "2026年IMF预测",
+      "es": "previsión del FMI para 2026",
+      "hi": "2026 आईएमएफ पूर्वानुमान",
+      "ar": "توقعات صندوق النقد الدولي لعام 2026",
+      "bn": "2026 আইএমএফ পূর্বাভাস",
+      "pt": "previsão do FMI para 2026",
+      "ja": "2026年IMF予測",
+      "he": "תחזית קרן המטבע ל-2026"
+    },
+    "source": {
+      "de": "IWF, BIP nach Kaufkraftparität (internationale Dollar); Wikipedia",
+      "zh": "国际货币基金组织（IMF）按购买力平价计算的国内生产总值（国际元）；维基百科",
+      "es": "FMI, PIB a PPA (dólares internacionales); Wikipedia",
+      "hi": "आईएमएफ, पीपीपी पर जीडीपी (अंतरराष्ट्रीय डॉलर); विकिपीडिया",
+      "ar": "صندوق النقد الدولي، الناتج المحلي الإجمالي بتعادل القوة الشرائية (دولار دولي)؛ ويكيبيديا",
+      "bn": "আইএমএফ, ক্রয়ক্ষমতা সমতার জিডিপি (আন্তর্জাতিক ডলার); উইকিপিডিয়া",
+      "pt": "FMI, PIB em paridade de poder de compra (dólares internacionais); Wikipédia",
+      "ja": "IMF、購買力平価GDP（国際ドル）；Wikipedia",
+      "he": "קרן המטבע, תמ\"ג בשווי כוח קנייה (דולר בינלאומי); ויקיפדיה"
+    },
+    "about": {
+      "de": "Das BIP nach Kaufkraftparität (KKP) passt die Wirtschaftsgröße an lokale Preise an, sodass reale Produktion und nicht Wechselkurse verglichen werden.",
+      "zh": "按购买力平价计算的国内生产总值会按当地物价调整经济规模，比较的是实际产出，而不是汇率。",
+      "es": "El PIB a paridad de poder adquisitivo ajusta el tamaño de la economía a los precios locales, para comparar la producción real y no el tipo de cambio.",
+      "hi": "क्रय शक्ति समता पर जीडीपी स्थानीय कीमतों के अनुसार अर्थव्यवस्था के आकार को समायोजित करता है, ताकि वास्तविक उत्पादन की तुलना हो, न कि विनिमय दर की।",
+      "ar": "الناتج بتعادل القوة الشرائية يعدّل حجم الاقتصاد حسب الأسعار المحلية، فتُقارن الإنتاج الحقيقي لا أسعار الصرف.",
+      "bn": "ক্রয়ক্ষমতা সমতার জিডিপি স্থানীয় দাম অনুযায়ী অর্থনীতির আকার সমন্বয় করে, যাতে প্রকৃত উৎপাদন তুলনা হয়, বিনিময় হার নয়।",
+      "pt": "O PIB em paridade de poder de compra ajusta o tamanho da economia aos preços locais, para comparar a produção real e não as taxas de câmbio.",
+      "ja": "購買力平価GDPは現地の物価で経済規模を調整し、為替ではなく実質的な生産を比べます。",
+      "he": "תמ\"ג בשווי כוח קנייה מתאים את גודל הכלכלה למחירים המקומיים, כדי להשוות תוצר ממשי ולא שערי חליפין."
+    }
+  },
+  "rankGini": {
+    "asOf": {
+      "de": "letztes verfügbares Jahr je Land, Tabelle Stand 2026",
+      "zh": "各国最近年份，表格截至2026年",
+      "es": "último año por país, tabla a 2026",
+      "hi": "प्रत्येक देश का नवीनतम वर्ष, तालिका 2026 तक",
+      "ar": "آخر سنة لكل بلد، الجدول حتى 2026",
+      "bn": "প্রতি দেশের সর্বশেষ বছর, 2026 সালের সারণি",
+      "pt": "último ano por país, tabela em 2026",
+      "ja": "国ごとの最新年、表は2026年時点",
+      "he": "השנה האחרונה לכל מדינה, טבלה נכון ל-2026"
+    },
+    "source": {
+      "de": "Weltbank, Gini-Koeffizient (sonst UNU-WIDER); Wikipedia, Liste der Länder nach Einkommensungleichheit",
+      "zh": "世界银行基尼系数（若缺则用 UNU-WIDER）；维基百科收入不平等国家列表",
+      "es": "Banco Mundial, Gini (UNU-WIDER si falta el BM); lista de Wikipedia de desigualdad de ingresos",
+      "hi": "विश्व बैंक गिनी (यदि नहीं तो UNU-WIDER); विकिपीडिया आय असमानता सूची",
+      "ar": "البنك الدولي، معامل جيني (أو UNU-WIDER إن نقص); قائمة ويكيبيديا لعدم المساواة في الدخل",
+      "bn": "বিশ্বব্যাংক জিনি (না থাকলে UNU-WIDER); উইকিপিডিয়ার আয় বৈষম্য তালিকা",
+      "pt": "Banco Mundial, Gini (UNU-WIDER se faltar o BM); lista da Wikipédia de desigualdade de renda",
+      "ja": "世界銀行のジニ係数（欠ける場合はUNU-WIDER）；Wikipediaの所得格差リスト",
+      "he": "הבנק העולמי, ג'יני (או UNU-WIDER אם חסר); רשימת ויקיפדיה לאי-שוויון בהכנסה"
+    },
+    "note": {
+      "de": "Platz 1 ist das gleichmäßigste Land (niedrigster Gini). Einige Zahlen der Weltbank beruhen auf Konsum, nicht auf Einkommen.",
+      "zh": "第一名是最平等的国家（基尼系数最低）。世界银行的部分数据按消费而非收入计算。",
+      "es": "El puesto 1 es el país más igualitario (Gini más bajo). Algunas cifras del Banco Mundial se basan en el consumo, no en la renta.",
+      "hi": "पहला स्थान सबसे समान देश है (सबसे कम गिनी)। विश्व बैंक के कुछ आँकड़े आय नहीं, उपभोग पर आधारित हैं।",
+      "ar": "المرتبة 1 هي البلد الأكثر مساواة (أدنى جيني). بعض أرقام البنك الدولي مبنية على الاستهلاك لا الدخل.",
+      "bn": "১ম স্থান সবচেয়ে সমান দেশ (সর্বনিম্ন জিনি)। বিশ্বব্যাংকের কিছু সংখ্যা আয় নয়, ভোগের উপর।",
+      "pt": "O 1.º lugar é o país mais igualitário (Gini mais baixo). Alguns números do Banco Mundial são de consumo, não de renda.",
+      "ja": "1位は最も平等な国（ジニが最小）。世界銀行の一部は所得ではなく消費に基づきます。",
+      "he": "מקום 1 הוא המדינה השוויונית ביותר (ג'יני הנמוך ביותר). חלק מנתוני הבנק העולמי מבוססים על צריכה, לא על הכנסה."
+    },
+    "about": {
+      "de": "Der Gini-Koeffizient misst Ungleichheit bei Einkommen (manchmal Konsum): 0 bedeutet völlige Gleichheit, 100 dass eine Person alles hat. Platz 1 ist das gleichmäßigste Land.",
+      "zh": "基尼系数衡量收入（有时是消费）不平等：0 表示完全平等，100 表示一人占有全部。本榜第一名是最平等的国家。",
+      "es": "El coeficiente de Gini mide la desigualdad de ingresos (a veces de consumo): 0 es igualdad perfecta, 100 es que una persona lo tiene todo. El puesto 1 es el país más igualitario.",
+      "hi": "गिनी गुणांक आय (कभी उपभोग) की असमानता मापता है: 0 पूर्ण समानता, 100 एक व्यक्ति के पास सब कुछ। पहला स्थान सबसे समान देश है।",
+      "ar": "معامل جيني يقيس عدم المساواة في الدخل (وأحيانًا الاستهلاك): 0 مساواة تامة، 100 شخص واحد يملك كل شيء. المرتبة 1 هي الأكثر مساواة.",
+      "bn": "জিনি সহগ আয় (কখনও ভোগ) বৈষম্য মাপে: 0 সম্পূর্ণ সমতা, 100 একজনের কাছে সব। ১ম স্থান সবচেয়ে সমান দেশ।",
+      "pt": "O coeficiente de Gini mede a desigualdade de renda (às vezes de consumo): 0 é igualdade perfeita, 100 é uma pessoa com tudo. O 1.º lugar é o país mais igualitário.",
+      "ja": "ジニ係数は所得（時に消費）の格差を測ります。0は完全な平等、100は一人がすべてを持つ状態。1位は最も平等な国です。",
+      "he": "מקדם ג'יני מודד אי-שוויון בהכנסה (לעיתים בצריכה): 0 שוויון מלא, 100 אדם אחד מחזיק הכול. מקום 1 הוא המדינה השוויונית ביותר."
+    }
+  },
+  "rankMillionaires": {
+    "asOf": {
+      "de": "2024–2025",
+      "zh": "2024–2025年",
+      "es": "2024–2025",
+      "hi": "2024–2025",
+      "ar": "2024–2025",
+      "bn": "2024–2025",
+      "pt": "2024–2025",
+      "ja": "2024–2025年",
+      "he": "2024–2025"
+    },
+    "source": {
+      "de": "UBS Global Wealth Report, Erwachsene mit Nettovermögen ab 1 Mio. USD; Wikipedia",
+      "zh": "UBS《全球财富报告》，净资产达 100 万美元及以上的成年人；维基百科",
+      "es": "UBS Global Wealth Report, adultos con patrimonio neto de 1 millón de USD o más; Wikipedia",
+      "hi": "UBS Global Wealth Report, 10 लाख अमेरिकी डॉलर+ की शुद्ध संपत्ति वाले वयस्क; विकिपीडिया",
+      "ar": "تقرير الثروة العالمية من UBS، بالغون بصافي ثروة مليون دولار فأكثر؛ ويكيبيديا",
+      "bn": "UBS Global Wealth Report, ১০ লাখ মার্কিন ডলার+ নিট সম্পদসম্পন্ন প্রাপ্তবয়স্ক; উইকিপিডিয়া",
+      "pt": "UBS Global Wealth Report, adultos com património líquido de 1 milhão de USD ou mais; Wikipédia",
+      "ja": "UBS Global Wealth Report、純資産100万ドル以上の成人；Wikipedia",
+      "he": "דוח העושר העולמי של UBS, מבוגרים עם שווי נקי של מיליון דולר ומעלה; ויקיפדיה"
+    },
+    "about": {
+      "de": "Zahl der Erwachsenen mit einem Nettovermögen von mindestens 1 Million US-Dollar. Das ist eine Kopfzahl, kein Bevölkerungsanteil.",
+      "zh": "净资产至少 100 万美元的成年人数。这是人数，不是占总人口的比例。",
+      "es": "Número de adultos con un patrimonio neto de al menos 1 millón de dólares. Es un recuento de personas, no una proporción de la población.",
+      "hi": "कम से कम 10 लाख अमेरिकी डॉलर की शुद्ध संपत्ति वाले वयस्कों की संख्या। यह गिनती है, जनसंख्या का हिस्सा नहीं।",
+      "ar": "عدد البالغين بصافي ثروة لا يقل عن مليون دولار أمريكي. هذا عدّ للأشخاص لا حصة من السكان.",
+      "bn": "কমপক্ষে ১০ লাখ মার্কিন ডলার নিট সম্পদসম্পন্ন প্রাপ্তবয়স্কের সংখ্যা। এটি গণনা, জনসংখ্যার অংশ নয়।",
+      "pt": "Número de adultos com património líquido de pelo menos 1 milhão de dólares. É uma contagem, não uma fatia da população.",
+      "ja": "純資産が100万米ドル以上の成人の人数です。人口比ではなく人数です。",
+      "he": "מספר המבוגרים עם שווי נקי של לפחות מיליון דולר. זו ספירת אנשים, לא חלק מהאוכלוסייה."
+    }
+  },
+  "rankBillionaires": {
+    "asOf": {
+      "de": "2026",
+      "zh": "2026年",
+      "es": "2026",
+      "hi": "2026",
+      "ar": "2026",
+      "bn": "2026",
+      "pt": "2026",
+      "ja": "2026年",
+      "he": "2026"
+    },
+    "source": {
+      "de": "Forbes, World’s Billionaires 2026; Wikipedia, Liste der Länder nach Zahl der Milliardäre",
+      "zh": "福布斯（Forbes）《全球亿万富豪》2026；维基百科各国亿万富豪人数列表",
+      "es": "Forbes, World’s Billionaires 2026; lista de Wikipedia de países por número de milmillonarios",
+      "hi": "फोर्ब्स, World’s Billionaires 2026; विकिपीडिया अरबपतियों की संख्या सूची",
+      "ar": "فوربس، أغنى مليارديرات العالم 2026؛ قائمة ويكيبيديا للدول حسب عدد المليارديرات",
+      "bn": "ফোর্বস, World’s Billionaires 2026; উইকিপিডিয়ার কোটিপতি সংখ্যার তালিকা",
+      "pt": "Forbes, World’s Billionaires 2026; lista da Wikipédia de países por número de bilionários",
+      "ja": "Forbes『World’s Billionaires 2026』；Wikipediaの億万長者数リスト",
+      "he": "פורבס, World’s Billionaires 2026; רשימת ויקיפדיה של מדינות לפי מספר מיליארדרים"
+    },
+    "about": {
+      "de": "Zahl der Milliardäre auf der Forbes-Liste. Gezählt werden Personen, nicht die Summe ihres Vermögens.",
+      "zh": "福布斯榜上的亿万富豪人数。统计的是人数，不是他们财富的总和。",
+      "es": "Número de milmillonarios en la lista de Forbes. Se cuentan personas, no la suma de su riqueza.",
+      "hi": "फोर्ब्स सूची पर अरबपतियों की संख्या। गिने जाते हैं लोग, उनकी संपत्ति का योग नहीं।",
+      "ar": "عدد المليارديرات في قائمة فوربس. يُعدّ الأشخاص لا مجموع ثرواتهم.",
+      "bn": "ফোর্বস তালিকায় কোটিপতির সংখ্যা। গণনা হয় মানুষ, তাদের সম্পদের যোগফল নয়।",
+      "pt": "Número de bilionários na lista da Forbes. Contam-se pessoas, não a soma da riqueza.",
+      "ja": "Forbesリスト上の億万長者の人数です。資産合計ではなく人数です。",
+      "he": "מספר המיליארדרים ברשימת פורבס. סופרים אנשים, לא את סכום עושרם."
+    }
+  },
+  "rankHappiness": {
+    "asOf": {
+      "de": "World Happiness Report 2026",
+      "zh": "《世界幸福报告》2026",
+      "es": "World Happiness Report 2026",
+      "hi": "World Happiness Report 2026",
+      "ar": "تقرير السعادة العالمي 2026",
+      "bn": "World Happiness Report 2026",
+      "pt": "World Happiness Report 2026",
+      "ja": "世界幸福度報告 2026",
+      "he": "דוח האושר העולמי 2026"
+    },
+    "source": {
+      "de": "World Happiness Report, Lebensbewertung; Wikipedia",
+      "zh": "《世界幸福报告》生活评价；维基百科",
+      "es": "World Happiness Report, evaluación de la vida; Wikipedia",
+      "hi": "World Happiness Report, जीवन मूल्यांकन; विकिपीडिया",
+      "ar": "تقرير السعادة العالمي، تقييم الحياة؛ ويكيبيديا",
+      "bn": "World Happiness Report, জীবন মূল্যায়ন; উইকিপিডিয়া",
+      "pt": "World Happiness Report, avaliação da vida; Wikipédia",
+      "ja": "世界幸福度報告の生活評価；Wikipedia",
+      "he": "דוח האושר העולמי, הערכת החיים; ויקיפדיה"
+    },
+    "note": {
+      "de": "Platz 1 ist die höchste Lebensbewertung.",
+      "zh": "第一名是生活评价最高的国家。",
+      "es": "El puesto 1 es la puntuación de evaluación de la vida más alta.",
+      "hi": "पहला स्थान सबसे ऊँचा जीवन-मूल्यांकन स्कोर है।",
+      "ar": "المرتبة 1 هي أعلى درجة لتقييم الحياة.",
+      "bn": "১ম স্থান সর্বোচ্চ জীবন-মূল্যায়ন স্কোর।",
+      "pt": "O 1.º lugar é a pontuação mais alta de avaliação da vida.",
+      "ja": "1位は生活評価スコアが最も高い国です。",
+      "he": "מקום 1 הוא ציון הערכת החיים הגבוה ביותר."
+    },
+    "about": {
+      "de": "Der World Happiness Report: Durchschnitt, wie Einwohner ihr eigenes Leben bewerten (0 bis 10). Platz 1 ist die höchste Bewertung.",
+      "zh": "《世界幸福报告》：居民对自己生活的平均评分（0 到 10）。第一名是评分最高的国家。",
+      "es": "El World Happiness Report: cómo valoran los residentes su propia vida, de 0 a 10. El puesto 1 es la puntuación más alta.",
+      "hi": "World Happiness Report: निवासी अपने जीवन को 0 से 10 तक कैसे आंकते हैं। पहला स्थान सबसे ऊँचा स्कोर है।",
+      "ar": "تقرير السعادة العالمي: كيف يقيّم السكان حياتهم من 0 إلى 10. المرتبة 1 هي الأعلى.",
+      "bn": "World Happiness Report: বাসিন্দারা নিজেদের জীবন 0 থেকে 10 পর্যন্ত কীভাবে মূল্যায়ন করেন। ১ম স্থান সর্বোচ্চ স্কোর।",
+      "pt": "O World Happiness Report: como os residentes avaliam a própria vida, de 0 a 10. O 1.º lugar é a pontuação mais alta.",
+      "ja": "世界幸福度報告は、住民が自分の生活を0〜10でどう評価するかの平均です。1位は最高点です。",
+      "he": "דוח האושר העולמי: איך תושבים מדרגים את חייהם מ-0 עד 10. מקום 1 הוא הציון הגבוה ביותר."
+    }
+  },
+  "rankPopulation": {
+    "asOf": {
+      "de": "Zahlen aus dem Länderpass der App",
+      "zh": "应用内国家护照所用数据",
+      "es": "cifras usadas en el pasaporte del país",
+      "hi": "ऐप के देश पासपोर्ट में प्रयुक्त आँकड़े",
+      "ar": "الأرقام المستخدمة في جواز بلد التطبيق",
+      "bn": "অ্যাপের দেশের পাসপোর্টে ব্যবহৃত সংখ্যা",
+      "pt": "números usados no passaporte do país",
+      "ja": "アプリの国パスポートで使う推計",
+      "he": "המספרים שבדרכון המדינה באפליקציה"
+    },
+    "source": {
+      "de": "Bevölkerungszahlen der App (Schätzungen im Länderpass)",
+      "zh": "应用内人口数据（国家护照中的估计）",
+      "es": "Estimaciones de población del pasaporte en la app",
+      "hi": "ऐप के पासपोर्ट में जनसंख्या अनुमान",
+      "ar": "تقديرات السكان في جواز البلد داخل التطبيق",
+      "bn": "অ্যাপ পাসপোর্টের জনসংখ্যা অনুমান",
+      "pt": "Estimativas de população do passaporte na app",
+      "ja": "アプリ内パスポートの人口推計",
+      "he": "הערכות אוכלוסייה בדרכון שבאפליקציה"
+    },
+    "about": {
+      "de": "Bevölkerung ist, wie viele Menschen im Land leben. Es sind dieselben Schätzungen wie im Länderpass.",
+      "zh": "人口是居住在该国的人数。这里使用与国家护照相同的估计。",
+      "es": "La población es cuánta gente vive en el país. Son las mismas estimaciones que en el pasaporte del país.",
+      "hi": "जनसंख्या बताती है देश में कितने लोग रहते हैं। ये वही अनुमान हैं जो देश पासपोर्ट में हैं।",
+      "ar": "السكان هم عدد من يعيش في البلد. هذه نفس تقديرات جواز البلد.",
+      "bn": "জনসংখ্যা হল দেশে কত মানুষ বাস করে। এগুলো দেশের পাসপোর্টের একই অনুমান।",
+      "pt": "População é quantas pessoas vivem no país. São as mesmas estimativas do passaporte do país.",
+      "ja": "人口はその国に住む人数です。国パスポートと同じ推計です。",
+      "he": "אוכלוסייה היא כמה אנשים חיים במדינה. אלה אותן הערכות שבדרכון המדינה."
+    }
+  },
+  "rankHdi": {
+    "asOf": {
+      "de": "Bericht über die menschliche Entwicklung, Tabelle Stand 2026",
+      "zh": "《人类发展报告》，表格截至2026年",
+      "es": "Informe sobre Desarrollo Humano, tabla a 2026",
+      "hi": "मानव विकास रिपोर्ट, तालिका 2026 तक",
+      "ar": "تقرير التنمية البشرية، الجدول حتى 2026",
+      "bn": "মানব উন্নয়ন প্রতিবেদন, 2026 সালের সারণি",
+      "pt": "Relatório de Desenvolvimento Humano, tabela em 2026",
+      "ja": "人間開発報告、表は2026年時点",
+      "he": "דוח הפיתוח האנושי, טבלה נכון ל-2026"
+    },
+    "source": {
+      "de": "UNDP, Index der menschlichen Entwicklung; Wikipedia",
+      "zh": "联合国开发计划署（UNDP）人类发展指数；维基百科",
+      "es": "PNUD, Índice de Desarrollo Humano; Wikipedia",
+      "hi": "यूएनडीपी, मानव विकास सूचकांक; विकिपीडिया",
+      "ar": "برنامج الأمم المتحدة الإنمائي، دليل التنمية البشرية؛ ويكيبيديا",
+      "bn": "ইউএনডিপি, মানব উন্নয়ন সূচক; উইকিপিডিয়া",
+      "pt": "PNUD, Índice de Desenvolvimento Humano; Wikipédia",
+      "ja": "UNDP人間開発指数；Wikipedia",
+      "he": "תוכנית הפיתוח של האו\"ם, מדד הפיתוח האנושי; ויקיפדיה"
+    },
+    "note": {
+      "de": "Platz 1 ist der höchste HDI.",
+      "zh": "第一名是人类发展指数最高的国家。",
+      "es": "El puesto 1 es el IDH más alto.",
+      "hi": "पहला स्थान सबसे ऊँचा एचडीआई है।",
+      "ar": "المرتبة 1 هي أعلى دليل تنمية بشرية.",
+      "bn": "১ম স্থান সর্বোচ্চ এইচডিআই।",
+      "pt": "O 1.º lugar é o IDH mais alto.",
+      "ja": "1位はHDIが最も高い国です。",
+      "he": "מקום 1 הוא מדד הפיתוח האנושי הגבוה ביותר."
+    },
+    "about": {
+      "de": "Der Index der menschlichen Entwicklung der UNDP fasst Gesundheit (Lebenserwartung), Bildung und Einkommen pro Person in einer Zahl zusammen. Höher bedeutet ein höheres durchschnittliches Entwicklungsniveau.",
+      "zh": "联合国开发计划署的人类发展指数把健康（预期寿命）、教育和人均收入合成一个分数。越高表示平均发展水平越高。",
+      "es": "El Índice de Desarrollo Humano del PNUD combina salud (esperanza de vida), educación e ingreso por persona. Más alto significa un mayor nivel medio de desarrollo.",
+      "hi": "यूएनडीपी का मानव विकास सूचकांक स्वास्थ्य (आयु), शिक्षा और प्रति व्यक्ति आय को एक अंक में जोड़ता है। ऊँचा मतलब औसत विकास स्तर ऊँचा।",
+      "ar": "دليل التنمية البشرية يجمع الصحة (العمر المتوقع) والتعليم والدخل للفرد في رقم واحد. الأعلى يعني مستوى تنمية أعلى في المتوسط.",
+      "bn": "ইউএনডিপির মানব উন্নয়ন সূচক স্বাস্থ্য (আয়ু), শিক্ষা ও মাথাপিছু আয় এক সংখ্যায় মিলিয়ে দেয়। বেশি মানে গড় উন্নয়ন বেশি।",
+      "pt": "O IDH do PNUD junta saúde (esperança de vida), educação e rendimento por pessoa num só índice. Mais alto significa um nível médio de desenvolvimento maior.",
+      "ja": "UNDPの人間開発指数は、健康（寿命）、教育、一人当たり所得を一つの点数にまとめます。高いほど平均的な発展水準が高いです。",
+      "he": "מדד הפיתוח האנושי של האו\"ם מאחד בריאות (תוחלת חיים), השכלה והכנסה לנפש לציון אחד. גבוה יותר פירושו רמת פיתוח ממוצעת גבוהה יותר."
+    }
+  },
+  "rankLife": {
+    "asOf": {
+      "de": "UN, 2023",
+      "zh": "联合国，2023年",
+      "es": "ONU, 2023",
+      "hi": "संयुक्त राष्ट्र, 2023",
+      "ar": "الأمم المتحدة، 2023",
+      "bn": "জাতিসংঘ, 2023",
+      "pt": "ONU, 2023",
+      "ja": "国連、2023年",
+      "he": "או\"ם, 2023"
+    },
+    "source": {
+      "de": "UN, Lebenserwartung bei der Geburt; Wikipedia",
+      "zh": "联合国出生时预期寿命；维基百科",
+      "es": "ONU, esperanza de vida al nacer; Wikipedia",
+      "hi": "संयुक्त राष्ट्र, जन्म के समय जीवन प्रत्याशा; विकिपीडिया",
+      "ar": "الأمم المتحدة، متوسط العمر المتوقع عند الولادة؛ ويكيبيديا",
+      "bn": "জাতিসংঘ, জন্মকালীন আয়ু; উইকিপিডিয়া",
+      "pt": "ONU, esperança de vida à nascença; Wikipédia",
+      "ja": "国連、出生時平均余命；Wikipedia",
+      "he": "או\"ם, תוחלת חיים בלידה; ויקיפדיה"
+    },
+    "about": {
+      "de": "Lebenserwartung bei der Geburt: wie viele Jahre ein Neugeborenes im Schnitt leben würde, wenn die heutige Sterblichkeit gleich bleibt.",
+      "zh": "出生时预期寿命：若当前死亡率保持不变，新生儿平均能活多少年。",
+      "es": "Esperanza de vida al nacer: cuántos años se espera que viva un recién nacido si las tasas de mortalidad actuales no cambian.",
+      "hi": "जन्म के समय जीवन प्रत्याशा: यदि आज की मृत्यु दर वैसी ही रहे तो नवजात औसतन कितने वर्ष जिएगा।",
+      "ar": "متوسط العمر المتوقع عند الولادة: كم سنة يُتوقع أن يعيش المولود إذا بقيت معدلات الوفاة كما هي اليوم.",
+      "bn": "জন্মকালীন আয়ু: আজকের মৃত্যুহার অপরিবর্তিত থাকলে নবজাতক গড়ে কত বছর বাঁচবে।",
+      "pt": "Esperança de vida à nascença: quantos anos se espera que um recém-nascido viva se as taxas de mortalidade de hoje se mantiverem.",
+      "ja": "出生時平均余命は、今の死亡率が続くなら新生児が平均で何年生きるかを示します。",
+      "he": "תוחלת חיים בלידה: כמה שנים צפוי יילוד לחיות אם שיעורי התמותה של היום יישארו כפי שהם."
+    }
+  },
+  "rankPress": {
+    "asOf": {
+      "de": "2026",
+      "zh": "2026年",
+      "es": "2026",
+      "hi": "2026",
+      "ar": "2026",
+      "bn": "2026",
+      "pt": "2026",
+      "ja": "2026年",
+      "he": "2026"
+    },
+    "source": {
+      "de": "Reporter ohne Grenzen, World Press Freedom Index 2026; Wikipedia",
+      "zh": "无国界记者组织（Reporters Without Borders）《世界新闻自由指数》2026；维基百科",
+      "es": "Reporteros Sin Fronteras, World Press Freedom Index 2026; Wikipedia",
+      "hi": "रिपोर्टर्स विदाउट बॉर्डर्स, World Press Freedom Index 2026; विकिपीडिया",
+      "ar": "مراسلون بلا حدود، مؤشر حرية الصحافة العالمي 2026؛ ويكيبيديا",
+      "bn": "রিপোর্টার্স উইদাউট বর্ডার্স, World Press Freedom Index 2026; উইকিপিডিয়া",
+      "pt": "Repórteres Sem Fronteiras, World Press Freedom Index 2026; Wikipédia",
+      "ja": "国境なき記者団、世界報道自由度ランキング 2026；Wikipedia",
+      "he": "כתבים ללא גבולות, מדד חופש העיתונות העולמי 2026; ויקיפדיה"
+    },
+    "note": {
+      "de": "Platz 1 ist die größte Pressefreiheit.",
+      "zh": "第一名是新闻自由度最高的国家。",
+      "es": "El puesto 1 es la mayor libertad de prensa.",
+      "hi": "पहला स्थान सबसे अधिक प्रेस स्वतंत्रता है।",
+      "ar": "المرتبة 1 هي أعلى حرية صحافة.",
+      "bn": "১ম স্থান সর্বোচ্চ সংবাদমাধ্যমের স্বাধীনতা।",
+      "pt": "O 1.º lugar é a maior liberdade de imprensa.",
+      "ja": "1位は報道の自由が最も高い国です。",
+      "he": "מקום 1 הוא חופש העיתונות הגבוה ביותר."
+    },
+    "about": {
+      "de": "Der World Press Freedom Index (Reporter ohne Grenzen) bewertet, wie frei Journalisten ohne Zensur, Gewalt oder staatlichen Druck arbeiten können. Platz 1 ist am freiesten.",
+      "zh": "无国界记者组织的世界新闻自由指数衡量记者能否在没有审查、暴力或政府压力的情况下工作。第一名是最自由的。",
+      "es": "El índice de libertad de prensa (Reporteros Sin Fronteras) puntúa con qué libertad pueden trabajar los periodistas sin censura, violencia ni presión estatal. El puesto 1 es el más libre.",
+      "hi": "प्रेस स्वतंत्रता सूचकांक बताता है कि पत्रकार सेंसरशिप, हिंसा या सरकारी दबाव के बिना कितनी स्वतंत्रता से काम कर सकते हैं। पहला स्थान सबसे स्वतंत्र है।",
+      "ar": "مؤشر حرية الصحافة يقيس مدى قدرة الصحفيين على العمل دون رقابة أو عنف أو ضغط الدولة. المرتبة 1 هي الأكثر حرية.",
+      "bn": "সংবাদমাধ্যমের স্বাধীনতা সূচক মাপে সাংবাদিকরা সেন্সরশিপ, সহিংসতা বা রাষ্ট্রীয় চাপ ছাড়া কতটা স্বাধীনভাবে কাজ করতে পারেন। ১ম স্থান সবচেয়ে মুক্ত।",
+      "pt": "O índice de liberdade de imprensa (Repórteres Sem Fronteiras) mede com que liberdade os jornalistas podem trabalhar sem censura, violência ou pressão do Estado. O 1.º lugar é o mais livre.",
+      "ja": "世界報道自由度ランキング（国境なき記者団）は、検閲・暴力・国家の圧力なしに記者が働ける度合いです。1位が最も自由です。",
+      "he": "מדד חופש העיתונות מדרג עד כמה עיתונאים יכולים לעבוד בלי צנזורה, אלימות או לחץ מדינה. מקום 1 הוא החופשי ביותר."
+    }
+  },
+  "rankCpi": {
+    "asOf": {
+      "de": "Index 2025, Tabelle Stand 2026",
+      "zh": "2025年指数，表格截至2026年",
+      "es": "índice 2025, tabla a 2026",
+      "hi": "2025 सूचकांक, तालिका 2026 तक",
+      "ar": "مؤشر 2025، الجدول حتى 2026",
+      "bn": "2025 সূচক, 2026 সালের সারণি",
+      "pt": "índice 2025, tabela em 2026",
+      "ja": "2025年指数、表は2026年時点",
+      "he": "מדד 2025, טבלה נכון ל-2026"
+    },
+    "source": {
+      "de": "Transparency International, Corruption Perceptions Index; Wikipedia",
+      "zh": "透明国际（Transparency International）清廉指数；维基百科",
+      "es": "Transparency International, Corruption Perceptions Index; Wikipedia",
+      "hi": "ट्रांस्पेरेंसी इंटरनेशनल, Corruption Perceptions Index; विकिपीडिया",
+      "ar": "منظمة الشفافية الدولية، مؤشر مدركات الفساد؛ ويكيبيديا",
+      "bn": "ট্রান্সপারেন্সি ইন্টারন্যাশনাল, Corruption Perceptions Index; উইকিপিডিয়া",
+      "pt": "Transparency International, Corruption Perceptions Index; Wikipédia",
+      "ja": "Transparency International 腐敗認識指数；Wikipedia",
+      "he": "Transparency International, מדד תפיסת השחיתות; ויקיפדיה"
+    },
+    "note": {
+      "de": "Platz 1 ist die geringste wahrgenommene Korruption.",
+      "zh": "第一名是感知腐败最低的国家。",
+      "es": "El puesto 1 es la menor corrupción percibida.",
+      "hi": "पहला स्थान सबसे कम मानी गई भ्रष्टाचार है।",
+      "ar": "المرتبة 1 هي أدنى فساد مُدرَك.",
+      "bn": "১ম স্থান সর্বনিম্ন অনুভূত দুর্নীতি।",
+      "pt": "O 1.º lugar é a menor corrupção percebida.",
+      "ja": "1位は認識される腐敗が最も低い国です。",
+      "he": "מקום 1 הוא השחיתות הנתפסת הנמוכה ביותר."
+    },
+    "about": {
+      "de": "Der Corruption Perceptions Index von Transparency International: Experten und Wirtschaft bewerten Bestechung im öffentlichen Sektor. Platz 1 ist die geringste wahrgenommene Korruption.",
+      "zh": "透明国际的清廉指数：专家和企业如何评价公共部门的贿赂。本榜第一名是感知腐败最低的国家。",
+      "es": "El índice de percepción de la corrupción de Transparency International: expertos y empresas valoran el soborno en el sector público. El puesto 1 es la menor corrupción percibida.",
+      "hi": "ट्रांस्पेरेंसी इंटरनेशनल का भ्रष्टाचार धारणा सूचकांक: विशेषज्ञ और व्यापार सार्वजनिक क्षेत्र की घूसखोरी आंकते हैं। पहला स्थान सबसे कम मानी गई भ्रष्टाचार है।",
+      "ar": "مؤشر مدركات الفساد لمنظمة الشفافية الدولية: خبراء وأعمال يقيّمون الرشوة في القطاع العام. المرتبة 1 هي الأدنى.",
+      "bn": "ট্রান্সপারেন্সি ইন্টারন্যাশনালের দুর্নীতি ধারণা সূচক: বিশেষজ্ঞ ও ব্যবসা সরকারি ঘুষ কেমন দেখেন। ১ম স্থান সর্বনিম্ন অনুভূত দুর্নীতি।",
+      "pt": "O índice de perceção da corrupção da Transparency International: especialistas e empresas avaliam o suborno no setor público. O 1.º lugar é a menor corrupção percebida.",
+      "ja": "Transparency Internationalの腐敗認識指数は、専門家と企業が公的部門の贈収賄をどう見るかです。1位は認識される腐敗が最も低い国です。",
+      "he": "מדד תפיסת השחיתות של Transparency International: מומחים ועסקים מדרגים שוחד במגזר הציבורי. מקום 1 הוא הנמוך ביותר."
+    }
+  },
+  "rankPassport": {
+    "asOf": {
+      "de": "2026",
+      "zh": "2026年",
+      "es": "2026",
+      "hi": "2026",
+      "ar": "2026",
+      "bn": "2026",
+      "pt": "2026",
+      "ja": "2026年",
+      "he": "2026"
+    },
+    "source": {
+      "de": "Henley Passport Index, visumfreier Zugang; Wikipedia",
+      "zh": "亨利护照指数（Henley Passport Index），免签通行；维基百科",
+      "es": "Henley Passport Index, acceso sin visado; Wikipedia",
+      "hi": "हेनली पासपोर्ट इंडेक्स, वीज़ा-मुक्त पहुँच; विकिपीडिया",
+      "ar": "مؤشر هينلي للجوازات، الدخول دون تأشيرة؛ ويكيبيديا",
+      "bn": "হেনলি পাসপোর্ট সূচক, ভিসাবিহীন প্রবেশ; উইকিপিডিয়া",
+      "pt": "Henley Passport Index, acesso sem visto; Wikipédia",
+      "ja": "ヘンリー・パスポート指数、ビザなし渡航；Wikipedia",
+      "he": "מדד הדרכונים של הנלי, כניסה ללא ויזה; ויקיפדיה"
+    },
+    "note": {
+      "de": "Platz 1 ist der stärkste Pass (die meisten visumfreien Ziele).",
+      "zh": "第一名是“最强”护照（免签目的地最多）。",
+      "es": "El puesto 1 es el pasaporte más fuerte (más destinos sin visado).",
+      "hi": "पहला स्थान सबसे मज़बूत पासपोर्ट है (सबसे अधिक वीज़ा-मुक्त गंतव्य)।",
+      "ar": "المرتبة 1 هي أقوى جواز (أكثر الوجهات بلا تأشيرة).",
+      "bn": "১ম স্থান সবচেয়ে শক্তিশালী পাসপোর্ট (সবচেয়ে বেশি ভিসাবিহীন গন্তব্য)।",
+      "pt": "O 1.º lugar é o passaporte mais forte (mais destinos sem visto).",
+      "ja": "1位は最も「強い」パスポート（ビザなし渡航先が最多）です。",
+      "he": "מקום 1 הוא הדרכון החזק ביותר (הכי הרבה יעדים ללא ויזה)."
+    },
+    "about": {
+      "de": "Der Henley Passport Index zählt Ziele, die man ohne Visum oder mit Visum bei Ankunft betreten kann. Platz 1 ist der stärkste Pass.",
+      "zh": "亨利护照指数统计凭该护照可免签或落地签进入的目的地数量。第一名是“最强”护照。",
+      "es": "El Henley Passport Index cuenta destinos a los que se entra sin visado o con visado a la llegada. El puesto 1 es el pasaporte más fuerte.",
+      "hi": "हेनली पासपोर्ट इंडेक्स गिनता है कि कितने गंतव्यों में बिना वीज़ा या आगमन पर वीज़ा से प्रवेश हो सकता है। पहला स्थान सबसे मज़बूत पासपोर्ट है।",
+      "ar": "مؤشر هينلي للجوازات يعدّ الوجهات التي يمكن دخولها دون تأشيرة أو بتأشيرة عند الوصول. المرتبة 1 هي الأقوى.",
+      "bn": "হেনলি পাসপোর্ট সূচক গণনা করে কত গন্তব্যে ভিসা ছাড়া বা আগমনে ভিসায় ঢোকা যায়। ১ম স্থান সবচেয়ে শক্তিশালী পাসপোর্ট।",
+      "pt": "O Henley Passport Index conta destinos que se entram sem visto ou com visto na chegada. O 1.º lugar é o passaporte mais forte.",
+      "ja": "ヘンリー・パスポート指数は、ビザなしまたは到着時ビザで入れる行き先の数です。1位が最も強いパスポートです。",
+      "he": "מדד הנלי סופר יעדים שאפשר להיכנס אליהם בלי ויזה או עם ויזה בהגעה. מקום 1 הוא הדרכון החזק ביותר."
+    }
+  },
+  "rankPeace": {
+    "asOf": {
+      "de": "Global Peace Index, Tabelle Stand 2026",
+      "zh": "全球和平指数，表格截至2026年",
+      "es": "Global Peace Index, tabla a 2026",
+      "hi": "ग्लोबल पीस इंडेक्स, तालिका 2026 तक",
+      "ar": "مؤشر السلام العالمي، الجدول حتى 2026",
+      "bn": "গ্লোবাল পিস ইনডেক্স, 2026 সালের সারণি",
+      "pt": "Global Peace Index, tabela em 2026",
+      "ja": "グローバル平和指数、表は2026年時点",
+      "he": "מדד השלום העולמי, טבלה נכון ל-2026"
+    },
+    "source": {
+      "de": "Institute for Economics & Peace, Global Peace Index; Wikipedia",
+      "zh": "经济与和平研究所（Institute for Economics & Peace）全球和平指数；维基百科",
+      "es": "Institute for Economics & Peace, Global Peace Index; Wikipedia",
+      "hi": "इंस्टिट्यूट फॉर इकोनॉमिक्स एंड पीस, ग्लोबल पीस इंडेक्स; विकिपीडिया",
+      "ar": "معهد الاقتصاد والسلام، مؤشر السلام العالمي؛ ويكيبيديا",
+      "bn": "ইনস্টিটিউট ফর ইকোনমিক্স অ্যান্ড পিস, গ্লোবাল পিস ইনডেক্স; উইকিপিডিয়া",
+      "pt": "Institute for Economics & Peace, Global Peace Index; Wikipédia",
+      "ja": "Institute for Economics & Peace、グローバル平和指数；Wikipedia",
+      "he": "המכון לכלכלה ושלום, מדד השלום העולמי; ויקיפדיה"
+    },
+    "note": {
+      "de": "Platz 1 ist das friedlichste Land laut Index.",
+      "zh": "第一名是该指数上最和平的国家。",
+      "es": "El puesto 1 es el país más pacífico del índice.",
+      "hi": "पहला स्थान सूचकांक पर सबसे शांतिपूर्ण देश है।",
+      "ar": "المرتبة 1 هي البلد الأكثر سلامًا على المؤشر.",
+      "bn": "১ম স্থান সূচকে সবচেয়ে শান্তিপূর্ণ দেশ।",
+      "pt": "O 1.º lugar é o país mais pacífico do índice.",
+      "ja": "1位は指数上もっとも平和な国です。",
+      "he": "מקום 1 הוא המדינה השלווה ביותר במדד."
+    },
+    "about": {
+      "de": "Der Global Peace Index bewertet laufende Konflikte, innere Sicherheit und Militarisierung. Platz 1 ist das friedlichste Land laut Index.",
+      "zh": "全球和平指数衡量持续冲突、国内安全和军事化。第一名是该指数上最和平的国家。",
+      "es": "El Global Peace Index puntúa conflictos en curso, seguridad interna y militarización. El puesto 1 es el país más pacífico del índice.",
+      "hi": "ग्लोबल पीस इंडेक्स चल रहे संघर्ष, आंतरिक सुरक्षा और सैन्यीकरण को आंकता है। पहला स्थान सूचकांक पर सबसे शांतिपूर्ण देश है।",
+      "ar": "مؤشر السلام العالمي يقيس النزاعات الجارية والأمن الداخلي والعسكرة. المرتبة 1 هي الأكثر سلامًا على المؤشر.",
+      "bn": "গ্লোবাল পিস ইনডেক্স চলমান সংঘাত, অভ্যন্তরীণ নিরাপত্তা ও সামরিকীকরণ মাপে। ১ম স্থান সূচকে সবচেয়ে শান্তিপূর্ণ দেশ।",
+      "pt": "O Global Peace Index pontua conflitos em curso, segurança interna e militarização. O 1.º lugar é o país mais pacífico do índice.",
+      "ja": "グローバル平和指数は紛争、国内の安全、軍事化を点数化します。1位は指数上もっとも平和な国です。",
+      "he": "מדד השלום העולמי מדרג סכסוכים מתמשכים, ביטחון פנימי ומיליטריזציה. מקום 1 הוא המדינה השלווה ביותר במדד."
+    }
+  },
+  "rankCo2": {
+    "asOf": {
+      "de": "2023",
+      "zh": "2023年",
+      "es": "2023",
+      "hi": "2023",
+      "ar": "2023",
+      "bn": "2023",
+      "pt": "2023",
+      "ja": "2023年",
+      "he": "2023"
+    },
+    "source": {
+      "de": "CO₂-Emissionen aus fossilen Brennstoffen; Wikipedia / EDGAR",
+      "zh": "化石燃料二氧化碳排放；维基百科 / EDGAR",
+      "es": "Emisiones de CO₂ fósil; Wikipedia / EDGAR",
+      "hi": "जीवाश्म ईंधन से CO₂ उत्सर्जन; विकिपीडिया / EDGAR",
+      "ar": "انبعاثات ثاني أكسيد الكربون من الوقود الأحفوري؛ ويكيبيديا / EDGAR",
+      "bn": "জীবাশ্ম জ্বালানির CO₂ নির্গমন; উইকিপিডিয়া / EDGAR",
+      "pt": "Emissões de CO₂ de combustíveis fósseis; Wikipédia / EDGAR",
+      "ja": "化石燃料由来のCO₂排出；Wikipedia / EDGAR",
+      "he": "פליטות CO₂ מדלקים מאובנים; ויקיפדיה / EDGAR"
+    },
+    "about": {
+      "de": "Jährliche Kohlendioxidemissionen aus fossilen Brennstoffen auf dem Gebiet des Landes. Platz 1 ist der größte Emittent, nicht der „grünste“.",
+      "zh": "该国领土上化石燃料燃烧产生的年度二氧化碳排放。第一名是最大排放国，不是“最绿色”的国家。",
+      "es": "Emisiones anuales de dióxido de carbono de combustibles fósiles en el territorio del país. El puesto 1 es el mayor emisor, no el más verde.",
+      "hi": "देश के क्षेत्र में जीवाश्म ईंधन से वार्षिक कार्बन डाइऑक्साइड उत्सर्जन। पहला स्थान सबसे बड़ा उत्सर्जक है, सबसे हरित नहीं।",
+      "ar": "الانبعاثات السنوية لثاني أكسيد الكربون من الوقود الأحفوري على أراضي البلد. المرتبة 1 هي أكبر مصدر لا الأكثر خضرة.",
+      "bn": "দেশের ভূখণ্ডে জীবাশ্ম জ্বালানি থেকে বার্ষিক কার্বন ডাইঅক্সাইড নির্গমন। ১ম স্থান বৃহত্তম নির্গমনকারী, সবচেয়ে সবুজ নয়।",
+      "pt": "Emissões anuais de dióxido de carbono de combustíveis fósseis no território do país. O 1.º lugar é o maior emissor, não o mais verde.",
+      "ja": "その国の領域での化石燃料由来の年間二酸化炭素排出量です。1位は最大の排出国であり、「最も環境に優しい」国ではありません。",
+      "he": "פליטות פחמן דו-חמצני שנתיות מדלקים מאובנים בשטח המדינה. מקום 1 הוא הפולט הגדול ביותר, לא הירוק ביותר."
+    }
+  },
+  "rankOlympics": {
+    "asOf": {
+      "de": "alle Spiele bis 2026",
+      "zh": "截至2026年的全部奥运会",
+      "es": "todos los Juegos hasta 2026",
+      "hi": "2026 तक के सभी खेल",
+      "ar": "كل الدورات حتى 2026",
+      "bn": "2026 পর্যন্ত সব গেমস",
+      "pt": "todos os Jogos até 2026",
+      "ja": "2026年までの全大会",
+      "he": "כל המשחקים עד 2026"
+    },
+    "source": {
+      "de": "IOC, Goldmedaillen von Sommer- und Winterspielen zusammen; Wikipedia, All-time Olympic Games medal table",
+      "zh": "国际奥委会（IOC）夏季与冬季奥运会金牌合计；维基百科奥运奖牌总表",
+      "es": "COI, oros combinados de Juegos de verano e invierno; tabla histórica de Wikipedia",
+      "hi": "आईओसी, ग्रीष्म और शीतकालीन स्वर्ण पदक योग; विकिपीडिया पदक तालिका",
+      "ar": "اللجنة الأولمبية الدولية، مجموع الذهب الصيفي والشتوي؛ جدول ويكيبيديا التاريخي",
+      "bn": "আইওসি, গ্রীষ্ম ও শীতকালীন স্বর্ণপদকের যোগ; উইকিপিডিয়ার পদক সারণি",
+      "pt": "COI, ouros combinados de Verão e Inverno; tabela histórica da Wikipédia",
+      "ja": "IOC、夏季・冬季の金メダル合計；Wikipediaの通算メダル表",
+      "he": "הוועד האולימפי הבינלאומי, זהב קיץ וחורף במצטבר; טבלת ויקיפדיה לכל הזמנים"
+    },
+    "about": {
+      "de": "Summe der olympischen Goldmedaillen — Sommer und Winter — über alle Spiele bis einschließlich 2026. Platz 1 hat das meiste Gold.",
+      "zh": "夏季与冬季奥运会金牌合计，涵盖截至 2026 年（含）的全部赛事。第一名金牌最多。",
+      "es": "Suma de oros olímpicos de verano e invierno en todos los Juegos hasta 2026 inclusive. El puesto 1 tiene más oro.",
+      "hi": "ग्रीष्म और शीतकालीन ओलंपिक स्वर्ण पदकों का योग, 2026 तक के सभी खेल। पहला स्थान सबसे अधिक स्वर्ण है।",
+      "ar": "مجموع الميداليات الذهبية الأولمبية صيفًا وشتاءً في كل الدورات حتى 2026 ضمنًا. المرتبة 1 لديها أكثر ذهب.",
+      "bn": "গ্রীষ্ম ও শীতকালীন অলিম্পিক স্বর্ণপদকের যোগ, 2026 পর্যন্ত সব গেমস। ১ম স্থানে সবচেয়ে বেশি স্বর্ণ।",
+      "pt": "Soma dos ouros olímpicos de Verão e Inverno em todos os Jogos até 2026 inclusive. O 1.º lugar tem mais ouro.",
+      "ja": "夏季・冬季を合わせたオリンピック金メダルの通算（2026年まで）。1位が最も金が多いです。",
+      "he": "סך מדליות הזהב האולימפיות בקיץ ובחורף בכל המשחקים עד 2026 כולל. מקום 1 הוא עם הכי הרבה זהב."
+    }
+  },
+  "rankHeritage": {
+    "asOf": {
+      "de": "Juli 2026",
+      "zh": "2026年7月",
+      "es": "julio de 2026",
+      "hi": "जुलाई 2026",
+      "ar": "يوليو 2026",
+      "bn": "জুলাই 2026",
+      "pt": "julho de 2026",
+      "ja": "2026年7月",
+      "he": "יולי 2026"
+    },
+    "source": {
+      "de": "UNESCO, Länder mit 15 oder mehr Welterbestätten; Wikipedia, World Heritage Site",
+      "zh": "联合国教科文组织（UNESCO），拥有 15 处及以上世界遗产的国家；维基百科世界遗产条目",
+      "es": "UNESCO, países con 15 o más sitios del Patrimonio Mundial; Wikipedia, World Heritage Site",
+      "hi": "यूनेस्को, 15 या अधिक विश्व धरोहर स्थलों वाले देश; विकिपीडिया",
+      "ar": "يونسكو، بلدان لديها 15 موقع تراث عالمي أو أكثر؛ ويكيبيديا",
+      "bn": "ইউনেস্কো, ১৫ বা তার বেশি বিশ্ব ঐতিহ্য স্থানযুক্ত দেশ; উইকিপিডিয়া",
+      "pt": "UNESCO, países com 15 ou mais sítios do Património Mundial; Wikipédia",
+      "ja": "ユネスコ、世界遺産が15件以上の国；Wikipediaの世界遺産",
+      "he": "אונסק\"ו, מדינות עם 15 אתרי מורשת עולמית או יותר; ויקיפדיה"
+    },
+    "note": {
+      "de": "In diesem Ranking sind nur Länder mit 15 oder mehr Stätten.",
+      "zh": "本榜只收录拥有 15 处及以上遗产的国家。",
+      "es": "Este ranking solo incluye países con 15 o más sitios.",
+      "hi": "इस रैंकिंग में केवल 15 या अधिक स्थलों वाले देश हैं।",
+      "ar": "يدخل هذا التصنيف فقط البلدان ذات 15 موقعًا فأكثر.",
+      "bn": "এই র‍্যাঙ্কিংয়ে শুধু ১৫ বা তার বেশি স্থানযুক্ত দেশ আছে।",
+      "pt": "Este ranking só inclui países com 15 ou mais sítios.",
+      "ja": "この順位には遺産が15件以上の国だけが入っています。",
+      "he": "דירוג זה כולל רק מדינות עם 15 אתרים או יותר."
+    },
+    "about": {
+      "de": "Zahl der UNESCO-Welterbestätten. Im Ranking sind nur Länder mit 15 oder mehr Stätten.",
+      "zh": "联合国教科文组织世界遗产的数量。本榜只收录拥有 15 处及以上遗产的国家。",
+      "es": "Número de sitios del Patrimonio Mundial de la UNESCO. El ranking solo incluye países con 15 o más sitios.",
+      "hi": "यूनेस्को विश्व धरोहर स्थलों की संख्या। रैंकिंग में केवल 15 या अधिक स्थलों वाले देश हैं।",
+      "ar": "عدد مواقع التراث العالمي لليونسكو. يدخل التصنيف فقط البلدان ذات 15 موقعًا فأكثر.",
+      "bn": "ইউনেস্কো বিশ্ব ঐতিহ্য স্থানের সংখ্যা। র‍্যাঙ্কিংয়ে শুধু ১৫ বা তার বেশি স্থানযুক্ত দেশ।",
+      "pt": "Número de sítios do Património Mundial da UNESCO. O ranking só inclui países com 15 ou mais sítios.",
+      "ja": "ユネスコ世界遺産の件数です。順位には15件以上の国だけが入っています。",
+      "he": "מספר אתרי המורשת העולמית של אונסק\"ו. הדירוג כולל רק מדינות עם 15 אתרים או יותר."
+    }
+  }
+}
