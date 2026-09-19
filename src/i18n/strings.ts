@@ -168,6 +168,10 @@ export type Strings = {
   musicWorkPrompt: string
   musicComposerPrompt: string
   musicPhotoPrompt: string
+  melodyWorld: string
+  melodySubtitle: string
+  melodyEasyMixNote: string
+  melodyHardMixNote: string
   cs: string
   csSubtitle: string
   csFamilyCode: string
@@ -2585,6 +2589,14 @@ export function themeQuestionPrompt(mode: QuizMode, lang: Lang): string | null {
       return t.csBinPrompt
     case 'csPhotoToName':
       return t.csPhotoPrompt
+    case 'instrumentToFamily':
+      return t.musicInstrPrompt
+    case 'composerToWork':
+      return t.musicWorkPrompt
+    case 'workToComposer':
+      return t.musicComposerPrompt
+    case 'musicPhotoToName':
+      return t.musicPhotoPrompt
     case 'dishToCuisine':
       return t.foodDishPrompt
     case 'cuisineToDish':

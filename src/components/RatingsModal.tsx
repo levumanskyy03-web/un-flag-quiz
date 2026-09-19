@@ -234,6 +234,10 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
                           ? 'code'
                         : item === 'food'
                           ? 'bowl'
+                        : item === 'music'
+                          ? 'speaker'
+                        : item === 'melody'
+                          ? 'notes'
                         : 'laurel'
                 }
               />
@@ -414,6 +418,8 @@ function scopeLabel(scope: RatingWorld, lang: Lang): string {
   if (scope === 'olympics') return t.olympics
   if (scope === 'cs') return t.cs
   if (scope === 'food') return t.food
+  if (scope === 'music') return t.musicWorld
+  if (scope === 'melody') return t.melodyWorld
   return t.leaders
 }
 

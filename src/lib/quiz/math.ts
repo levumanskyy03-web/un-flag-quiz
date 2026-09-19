@@ -79,7 +79,7 @@ export function createMathRound(
   isos?: string[],
 ): Question[] {
   if (isos?.length) {
-    const items = isos.map((id) => mathById(id)).filter((item): item is MathItem => Boolean(item) && item.mode === mode)
+    const items = isos.map((id) => mathById(id)).filter((item): item is MathItem => item != null && item.mode === mode)
     if (items.length > 0) return questionsFromItems(items, count, mode)
     if (mathIsGenerated(mode)) return generateMathQuestions(mode, count, difficulty)
     return []

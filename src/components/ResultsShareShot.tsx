@@ -1,6 +1,9 @@
+"use client"
+
 import { STRINGS, type Lang } from '../i18n/strings'
 import { shareResultFile } from '../lib/shareCard'
 import { useTokens } from '../lib/tokenStore'
+import { ShareButton } from './ShareButton'
 
 interface ResultsShareShotProps {
   lang: Lang
@@ -43,7 +46,7 @@ export function ResultsShareShot({
         })
       }
     >
-      {(copied) => (
+      {(copied: boolean) => (
         <>
           <span className="results-shot-polaroid" aria-hidden="true">
             <span className="results-shot-copy">

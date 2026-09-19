@@ -146,6 +146,8 @@ export function worldFromPath(pathname: string): World | null {
   if (pathname === "/olympics" || pathname.startsWith("/olympics/")) return "olympics";
   if (pathname === "/cs" || pathname.startsWith("/cs/")) return "cs";
   if (pathname === "/food" || pathname.startsWith("/food/")) return "food";
+  if (pathname === "/music" || pathname.startsWith("/music/")) return "music";
+  if (pathname === "/melody" || pathname.startsWith("/melody/")) return "melody";
   if (pathname === "/geo" || pathname.startsWith("/geo/")) return "geo";
   return null;
 }
@@ -1796,7 +1798,7 @@ export default function PlayApp() {
       {world === "astronomy" ? <AstroPlay play={play} /> : null}
       {world && isThemeWorld(world) ? <ThemePlay world={world} play={play} /> : null}
       {world === "geo" ? <GeoPlay play={play} /> : null}
-      {hub !== "company" && hub !== "shop" && screen !== "quiz" ? (
+      {hub !== "company" && hub !== "shop" && hub !== null && screen !== "quiz" ? (
         <CompanyHud
           lang={quizSettings.lang}
           onOpen={() => {

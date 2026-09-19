@@ -103,7 +103,7 @@ export function StudioPlay({ play }: { play: PlaySession }) {
     setSelectedId(id);
     const ok = isPackCorrect(question, id);
     if (ok) {
-      playSfx("ok");
+      playSfx("correct");
       setCorrectCount((n) => n + 1);
     } else {
       playSfx("wrong");

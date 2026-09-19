@@ -40,6 +40,8 @@ const WORLD_ICON = {
   olympics: 'torch',
   cs: 'code',
   food: 'bowl',
+  music: 'speaker',
+  melody: 'notes',
 } as const
 
 export function ThemeScreen({
@@ -68,7 +70,7 @@ export function ThemeScreen({
 
   useEffect(() => {
     prefetchWikiPortraits(
-      THEME_ITEMS.filter((item) => item.wikiFile && item.mode === 'csPhotoToName')
+      THEME_ITEMS.filter((item) => item.wikiFile && (item.mode === 'csPhotoToName' || item.mode === 'musicPhotoToName'))
         .map((item) => ({ title: item.wiki ?? '', file: item.wikiFile }))
         .slice(0, 24),
     )
@@ -101,7 +103,17 @@ export function ThemeScreen({
   }
 
   const title =
-    world === 'biology' ? t.biology : world === 'olympics' ? t.olympics : world === 'cs' ? t.cs : t.food
+    world === 'biology'
+      ? t.biology
+      : world === 'olympics'
+        ? t.olympics
+        : world === 'cs'
+          ? t.cs
+          : world === 'music'
+            ? t.musicWorld
+            : world === 'melody'
+              ? t.melodyWorld
+              : t.food
   const subtitle =
     world === 'biology'
       ? t.bioSubtitle
@@ -109,7 +121,11 @@ export function ThemeScreen({
         ? t.olySubtitle
         : world === 'cs'
           ? t.csSubtitle
-          : t.foodSubtitle
+          : world === 'music'
+            ? t.musicSubtitle
+            : world === 'melody'
+              ? t.melodySubtitle
+              : t.foodSubtitle
 
   return (
     <div className="screen football-screen">

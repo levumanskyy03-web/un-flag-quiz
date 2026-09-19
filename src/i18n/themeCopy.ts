@@ -52,6 +52,10 @@ export type ThemeCopy = Pick<
   | 'musicWorkPrompt'
   | 'musicComposerPrompt'
   | 'musicPhotoPrompt'
+  | 'melodyWorld'
+  | 'melodySubtitle'
+  | 'melodyEasyMixNote'
+  | 'melodyHardMixNote'
   | 'cs'
   | 'csSubtitle'
   | 'csFamilyCode'
@@ -148,8 +152,12 @@ const ru: ThemeCopy = pack({
   musicInstrPrompt: 'Какое семейство?',
   musicWorkPrompt: 'Какое это произведение?',
   musicComposerPrompt: 'Кто автор?',
-  musicPhotoPrompt: 'Кто на портрете?',
-  cs: 'Информатика',
+    musicPhotoPrompt: 'Кто на портрете?',
+    melodyWorld: 'Мелодии',
+    melodySubtitle: 'Произведения и их авторы. Без аудио — по названию и композитору.',
+    melodyEasyMixNote: 'Композитор и произведение в обе стороны.',
+    melodyHardMixNote: 'Оба режима сочинений.',
+    cs: 'Информатика',
   csSubtitle: 'Термины, двоичная система и пионеры компьютеров.',
   csFamilyCode: 'Понятия',
   csFamilyBinary: 'Двоичная',
@@ -241,8 +249,12 @@ const en: ThemeCopy = pack({
   musicInstrPrompt: 'Which family?',
   musicWorkPrompt: 'Which work is this?',
   musicComposerPrompt: 'Who wrote it?',
-  musicPhotoPrompt: 'Who is in the portrait?',
-  cs: 'Computer science',
+    musicPhotoPrompt: 'Who is in the portrait?',
+    melodyWorld: 'Melodies',
+    melodySubtitle: 'Famous works and who wrote them. Titles only, no audio.',
+    melodyEasyMixNote: 'Composer and work both ways.',
+    melodyHardMixNote: 'Both work modes.',
+    cs: 'Computer science',
   csSubtitle: 'Terms, binary numbers, and computing pioneers.',
   csFamilyCode: 'Ideas',
   csFamilyBinary: 'Binary',
@@ -298,6 +310,7 @@ export const THEME_MODE_COPY: Record<Lang, ThemeCopy> = {
     olympics: 'Olympia',
     olySubtitle: 'Gastgeber, Sportarten und NOK-Codes. Keine Medaillen.',
     musicWorld: 'Musik',
+    melodyWorld: 'Melodien',
     cs: 'Informatik',
     food: 'Essen',
     transport: 'Verkehr',
@@ -337,6 +350,7 @@ export const THEME_MODE_COPY: Record<Lang, ThemeCopy> = {
     olympics: '奥运',
     olySubtitle: '主办城市、项目与国家奥委会代码。不含奖牌。',
     musicWorld: '音乐',
+    melodyWorld: '旋律',
     cs: '计算机',
     food: '食物',
     transport: '交通',
@@ -372,6 +386,7 @@ export const THEME_MODE_COPY: Record<Lang, ThemeCopy> = {
     bioSubtitle: 'Célula, órganos, fotosíntesis y reinos. Nivel escolar, sin patógenos.',
     olympics: 'Olimpiadas',
     musicWorld: 'Música',
+    melodyWorld: 'Melodías',
     cs: 'Informática',
     food: 'Comida',
     transport: 'Transporte',
@@ -389,6 +404,7 @@ export const THEME_MODE_COPY: Record<Lang, ThemeCopy> = {
     biology: 'जीव विज्ञान',
     olympics: 'ओलंपिक',
     musicWorld: 'संगीत',
+    melodyWorld: 'धुनें',
     cs: 'कंप्यूटर विज्ञान',
     food: 'खाना',
     transport: 'यातायात',
@@ -398,6 +414,7 @@ export const THEME_MODE_COPY: Record<Lang, ThemeCopy> = {
     biology: 'علم الأحياء',
     olympics: 'الأولمبياد',
     musicWorld: 'موسيقى',
+    melodyWorld: 'ألحان',
     cs: 'علوم الحاسوب',
     food: 'طعام',
     transport: 'نقل',
@@ -412,6 +429,7 @@ export const THEME_MODE_COPY: Record<Lang, ThemeCopy> = {
     biology: 'জীববিজ্ঞান',
     olympics: 'অলিম্পিক',
     musicWorld: 'সঙ্গীত',
+    melodyWorld: 'সুর',
     cs: 'কম্পিউটার বিজ্ঞান',
     food: 'খাবার',
     transport: 'পরিবহন',
@@ -421,6 +439,7 @@ export const THEME_MODE_COPY: Record<Lang, ThemeCopy> = {
     biology: 'Biologia',
     olympics: 'Olimpíadas',
     musicWorld: 'Música',
+    melodyWorld: 'Melodias',
     cs: 'Informática',
     food: 'Comida',
     transport: 'Transportes',
@@ -435,6 +454,7 @@ export const THEME_MODE_COPY: Record<Lang, ThemeCopy> = {
     biology: '生物',
     olympics: 'オリンピック',
     musicWorld: '音楽',
+    melodyWorld: 'メロディ',
     cs: '情報',
     food: '食べ物',
     transport: '交通',
@@ -449,6 +469,7 @@ export const THEME_MODE_COPY: Record<Lang, ThemeCopy> = {
     biology: 'ביולוגיה',
     olympics: 'אולימפיאדה',
     musicWorld: 'מוזיקה',
+    melodyWorld: 'מנגינות',
     cs: 'מדעי המחשב',
     food: 'אוכל',
     transport: 'תחבורה',

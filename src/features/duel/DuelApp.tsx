@@ -32,6 +32,7 @@ import { tokensForDuel } from "@/data/tokens";
 import { loadBests, loadHistory } from "@/lib/history";
 import { loadLevelClears } from "@/lib/levelProgress";
 import { awardAchievementTokens, awardPlayTokens } from "@/lib/tokenStore";
+import { duelPlayWorld, duelWorldHref, normalizeDuelCode } from "./paths";
 
 const POLL_MS = 700;
 

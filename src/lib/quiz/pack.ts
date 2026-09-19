@@ -258,7 +258,7 @@ export function packLevelGroups(pack: Pack): Array<{ level: number; group?: stri
   const groups = uniqueGroups(pack)
   const visible = pack.items.filter((item) => !item.hidden)
   if (groups.length >= 2) {
-    const levels = groups.map((group, index) => ({
+    const levels: Array<{ level: number; group?: string; ids: string[] }> = groups.map((group, index) => ({
       level: index + 1,
       group,
       ids: visible.filter((item) => item.group === group).map((item) => item.id),

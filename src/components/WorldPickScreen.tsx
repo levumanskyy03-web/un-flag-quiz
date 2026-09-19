@@ -26,6 +26,8 @@ const WORLD_ICON = {
   astronomy: 'orbit',
   cs: 'code',
   food: 'bowl',
+  music: 'speaker',
+  melody: 'notes',
 } as const
 
 function worldTitle(world: QuizWorld, t: (typeof STRINGS)[Lang]) {
@@ -37,6 +39,8 @@ function worldTitle(world: QuizWorld, t: (typeof STRINGS)[Lang]) {
   if (world === 'math') return t.math
   if (world === 'astronomy') return t.astronomy
   if (world === 'cs') return t.cs
+  if (world === 'music') return t.musicWorld
+  if (world === 'melody') return t.melodyWorld
   return t.food
 }
 
@@ -89,10 +93,6 @@ export function WorldPickScreen({ settings, onPick, onMultiplayer, onStudio, onC
 
   return (
     <div className="screen world-pick-screen">
-      <header className="home-header">
-        <h1>{t.worldsPick}</h1>
-      </header>
-
       <div className="world-pick-grid">
         {QUIZ_WORLDS.map((world) => (
           <button key={world} type="button" className={`world-pick is-${world}`} onClick={() => onPick(world)}>
@@ -106,51 +106,24 @@ export function WorldPickScreen({ settings, onPick, onMultiplayer, onStudio, onC
         ))}
       </div>
 
-      <div className="world-pick-grid is-extras">
-        <button type="button" className="world-pick is-company" onClick={onCompany}>
-          <span className="world-pick-art" aria-hidden="true">
-            <span className="wp-company">
-              <GeoIcon name="hq" size={28} />
-            </span>
-          </span>
-          <span className="world-pick-copy">
-            <FitText minPx={8}>{t.company}</FitText>
-          </span>
+      <nav className="world-pick-dock" aria-label={t.explore}>
+        <button type="button" className="world-dock-tab" onClick={onCompany}>
+          <GeoIcon name="hq" size={22} />
+          <FitText minPx={8}>{t.company}</FitText>
         </button>
-
-        <button type="button" className="world-pick is-shop" onClick={onShop}>
-          <span className="world-pick-art" aria-hidden="true">
-            <span className="wp-shop">
-              <GeoIcon name="pin" size={28} />
-            </span>
-          </span>
-          <span className="world-pick-copy">
-            <FitText minPx={8}>{t.shop}</FitText>
-          </span>
+        <button type="button" className="world-dock-tab" onClick={onShop}>
+          <GeoIcon name="pin" size={22} />
+          <FitText minPx={8}>{t.shop}</FitText>
         </button>
-
-        <button type="button" className="world-pick is-studio" onClick={onStudio}>
-          <span className="world-pick-art" aria-hidden="true">
-            <span className="wp-studio">
-              <GeoIcon name="stamp" size={28} />
-            </span>
-          </span>
-          <span className="world-pick-copy">
-            <FitText minPx={8}>{t.studio}</FitText>
-          </span>
+        <button type="button" className="world-dock-tab" onClick={onStudio}>
+          <GeoIcon name="stamp" size={22} />
+          <FitText minPx={8}>{t.studio}</FitText>
         </button>
-
-        <button type="button" className="world-pick is-multiplayer" onClick={onMultiplayer}>
-          <span className="world-pick-art" aria-hidden="true">
-            <span className="wp-duel">
-              <GeoIcon name="trophy" size={28} />
-            </span>
-          </span>
-          <span className="world-pick-copy">
-            <FitText minPx={8}>{t.multiplayer}</FitText>
-          </span>
+        <button type="button" className="world-dock-tab" onClick={onMultiplayer}>
+          <GeoIcon name="trophy" size={22} />
+          <FitText minPx={8}>{t.multiplayer}</FitText>
         </button>
-      </div>
+      </nav>
     </div>
   )
 }

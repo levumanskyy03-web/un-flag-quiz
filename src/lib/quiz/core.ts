@@ -310,6 +310,8 @@ export const QUIZ_WORLDS = [
   'astronomy',
   'cs',
   'food',
+  'music',
+  'melody',
 ] as const
 export type QuizWorld = (typeof QUIZ_WORLDS)[number]
 

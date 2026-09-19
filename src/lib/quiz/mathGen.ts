@@ -257,6 +257,7 @@ function buildOrder(tier: MathTier, rng: Rng): Built {
 function buildAngle(tier: MathTier, rng: Rng): Built {
   const kind =
     rng() < 0.28 ? 'acute' : rng() < 0.5 ? 'right' : rng() < 0.78 ? 'obtuse' : 'straight'
+  const deg =
     kind === 'right'
       ? 90
       : kind === 'straight'

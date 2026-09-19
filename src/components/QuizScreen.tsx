@@ -55,6 +55,7 @@ import { RankingFootnote } from './GeoModeGrids'
 import { TOKEN_COST } from '../data/tokens'
 import { useTokens } from '../lib/tokenStore'
 import { ChoiceLabel, FitText } from './FitText'
+import { WorldsBack } from './WorldsBack'
 
 interface QuizScreenProps {
   lang: Lang
@@ -309,7 +310,7 @@ export function QuizScreen({
           ) : themeItem ? (
             <div className="code-prompt-block">
               {themeAsk ? <p className="neighbors-prompt-label">{themeAsk}</p> : null}
-              {activeMode === 'csPhotoToName' ? (
+              {activeMode === 'csPhotoToName' || activeMode === 'musicPhotoToName' ? (
                 <div className="leader-prompt">
                   <LeaderPortrait
                     name={correctName}

@@ -6,9 +6,9 @@ import { publicMetadata } from "@/lib/pageMeta";
 export async function generateMetadata(): Promise<Metadata> {
   const lang = await requestLang();
   const t = STRINGS[lang];
-  return publicMetadata(lang, { title: t.musicWorld, description: t.musicSubtitle, path: "/music" });
+  return publicMetadata(lang, { title: t.melodyWorld, description: t.melodySubtitle, path: "/melody" });
 }
 
-export default function MusicPage() {
+export default function MelodyPage() {
   return null;
 }

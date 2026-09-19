@@ -4807,6 +4807,72 @@ html[data-world="food"]:not([data-result]) body {
   background: radial-gradient(ellipse at 50% 0%, #5a2818 0%, transparent 50%), #180e0c;
 }
 
+.world-pick.is-music {
+  --accent: #7a4ec2;
+  background: color-mix(in srgb, #7a4ec2 12%, var(--paper));
+  color: var(--text);
+  border-color: color-mix(in srgb, #7a4ec2 28%, var(--paper-edge));
+}
+.world-pick.is-music .world-pick-copy { color: var(--text); }
+.app.is-music { --accent: #7a4ec2; --accent-hover: #5e3a9a; --accent-soft: #efe8f8; }
+html:has(.app.is-music):not([data-result]) body,
+html[data-world="music"]:not([data-result]) body {
+  background: radial-gradient(ellipse at 50% 0%, #3a2460 0%, transparent 50%), #120e18;
+}
+
+.world-pick.is-melody {
+  --accent: #c45a7a;
+  background: color-mix(in srgb, #c45a7a 12%, var(--paper));
+  color: var(--text);
+  border-color: color-mix(in srgb, #c45a7a 28%, var(--paper-edge));
+}
+.world-pick.is-melody .world-pick-copy { color: var(--text); }
+.app.is-melody { --accent: #c45a7a; --accent-hover: #9a3e5c; --accent-soft: #f8e8ee; }
+html:has(.app.is-melody):not([data-result]) body,
+html[data-world="melody"]:not([data-result]) body {
+  background: radial-gradient(ellipse at 50% 0%, #5a2438 0%, transparent 50%), #180c12;
+}
+
+.world-pick-dock {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 14px;
+  padding: 6px 4px 4px;
+  border: 1px solid color-mix(in srgb, var(--paper-edge) 55%, var(--border));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--card) 88%, var(--paper));
+  box-shadow:
+    0 8px 18px rgba(40, 28, 12, 0.12),
+    inset 0 0 0 1px #fff8ee;
+}
+
+.world-dock-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 62px;
+  padding: 8px 2px 6px;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+}
+
+.world-dock-tab:hover,
+.world-dock-tab:focus-visible {
+  background: color-mix(in srgb, var(--accent-soft) 70%, var(--card));
+}
+
+.world-dock-tab .fit-text {
+  width: 100%;
+}
+
 .wp-board,
 .wp-orbit,
 .wp-duel,

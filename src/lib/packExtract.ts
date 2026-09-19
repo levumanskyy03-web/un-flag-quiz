@@ -195,17 +195,27 @@ function dataUrlParts(url: string): { mime: string; data: string } | null {
   return { mime: match[1], data: match[2] }
 }
 
+type MapInsertProto = {
+  getOrInsert?: (key: unknown, value: unknown) => unknown
+  getOrInsertComputed?: (key: unknown, callback: (key: unknown) => unknown) => unknown
+}
+
 function polyfillMapGetOrInsert() {
   if (typeof Map === 'undefined') return
-  if (typeof Map.prototype.getOrInsert !== 'function') {
-    Map.prototype.getOrInsert = function getOrInsert(key, value) {
+  const proto = Map.prototype as MapInsertProto
+  if (typeof proto.getOrInsert !== 'function') {
+    proto.getOrInsert = function getOrInsert(this: Map<unknown, unknown>, key: unknown, value: unknown) {
       if (this.has(key)) return this.get(key)
       this.set(key, value)
       return value
     }
   }
-  if (typeof Map.prototype.getOrInsertComputed !== 'function') {
-    Map.prototype.getOrInsertComputed = function getOrInsertComputed(key, callback) {
+  if (typeof proto.getOrInsertComputed !== 'function') {
+    proto.getOrInsertComputed = function getOrInsertComputed(
+      this: Map<unknown, unknown>,
+      key: unknown,
+      callback: (key: unknown) => unknown,
+    ) {
       if (this.has(key)) return this.get(key)
       const value = callback(key)
       this.set(key, value)
@@ -307,15 +317,18 @@ async function bitmapsFromArgs(page: PdfPage, node: unknown, out: ImageBitmap[])
 
 async function renderPdfPage(page: PdfPage, pdfjs: PdfJsLib): Promise<string> {
   const ops = await page.getOperatorList()
-  const paint = new Set<number>([
-    pdfjs.OPS.paintImageMaskXObject,
-    pdfjs.OPS.paintImageMaskXObjectGroup,
-    pdfjs.OPS.paintImageMaskXObjectRepeat,
-    pdfjs.OPS.paintImageXObject,
-    pdfjs.OPS.paintImageXObjectRepeat,
-    pdfjs.OPS.paintInlineImageXObject,
-    pdfjs.OPS.paintJpegXObject,
-  ])
+  const pdfOps = pdfjs.OPS as Record<string, number>
+  const paint = new Set(
+    [
+      pdfOps.paintImageMaskXObject,
+      pdfOps.paintImageMaskXObjectGroup,
+      pdfOps.paintImageMaskXObjectRepeat,
+      pdfOps.paintImageXObject,
+      pdfOps.paintImageXObjectRepeat,
+      pdfOps.paintInlineImageXObject,
+      pdfOps.paintJpegXObject,
+    ].filter((n): n is number => typeof n === 'number'),
+  )
   const bitmaps: ImageBitmap[] = []
   for (let i = 0; i < ops.fnArray.length; i += 1) {
     if (!paint.has(ops.fnArray[i])) continue
@@ -377,7 +390,8 @@ async function extractPdf(
     return { text: chunks.join('\n\n'), images, pages: doc.numPages }
   } finally {
     try {
-      await Promise.resolve(doc.destroy())
+      const destroy = (doc as { destroy?: () => unknown }).destroy
+      if (destroy) await Promise.resolve(destroy.call(doc))
     } catch {
       // worker already torn down
     }

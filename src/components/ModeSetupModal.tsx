@@ -480,6 +480,8 @@ function themeMixNote(world: ThemeWorld, kind: 'easy' | 'hard', t: (typeof STRIN
   if (world === 'biology') return kind === 'easy' ? t.bioEasyMixNote : t.bioHardMixNote
   if (world === 'olympics') return kind === 'easy' ? t.olyEasyMixNote : t.olyHardMixNote
   if (world === 'cs') return kind === 'easy' ? t.csEasyMixNote : t.csHardMixNote
+  if (world === 'music') return kind === 'easy' ? t.musicEasyMixNote : t.musicHardMixNote
+  if (world === 'melody') return kind === 'easy' ? t.melodyEasyMixNote : t.melodyHardMixNote
   return kind === 'easy' ? t.foodEasyMixNote : t.foodHardMixNote
 }
 
