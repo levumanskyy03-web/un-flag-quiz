@@ -34,6 +34,8 @@ import {
 } from '../lib/quiz'
 import { formatXp, accountProgress } from '../lib/xp'
 import { countLifetimeSeed, loadLifetime } from '../lib/lifetime'
+import { TOKEN_DAY_CAP } from '../data/tokens'
+import { useTokens } from '../lib/tokenStore'
 import { AchievementGallery } from './AchievementGallery'
 import { AvatarMark } from './AvatarMark'
 import { AvatarPicker } from './AvatarPicker'
@@ -73,6 +75,7 @@ export function SettingsModal({
   onClearBests,
 }: SettingsModalProps) {
   const t = STRINGS[lang]
+  const tokens = useTokens()
   const titleId = useId()
   const [tab, setTab] = useState<Tab>('account')
   const [authTab, setAuthTab] = useState<AuthTab>('login')
@@ -396,7 +399,7 @@ export function SettingsModal({
             <div className="settings-profile-row">
               <button
                 type="button"
-                className="avatar-open"
+                className={`avatar-open${tokens.frame ? ` avatar-frame is-${tokens.frame}` : ''}`}
                 onClick={() => setPickerOpen(true)}
                 aria-label={t.avatarChange}
               >
@@ -418,6 +421,9 @@ export function SettingsModal({
                 <p className="account-level">{t.accountLevel(rank.level)}</p>
                 <p className="profile-xp">
                   {t.xpTotal(formatXp(xp, lang))} · {t.accountLevelNext(formatXp(rank.remain, lang))}
+                </p>
+                <p className="profile-xp">
+                  {t.tokensBalance(tokens.balance)} · {t.tokensDayCap(tokens.earnedToday, TOKEN_DAY_CAP)}
                 </p>
                 <button type="button" className="btn-ghost avatar-change-btn" onClick={() => setPickerOpen(true)}>
                   {t.avatarChange}
@@ -693,6 +699,11 @@ export function SettingsModal({
             <p>{t.xpHowLevels}</p>
             <p>{t.xpHowRecord}</p>
             <p>{t.xpHowRank}</p>
+            <h3 className="settings-sub">{t.tokens}</h3>
+            <p>{t.tokenHowLead}</p>
+            <p>{t.tokenHowEarn}</p>
+            <p>{t.tokenHowSpend}</p>
+            <p>{t.tokenHowCap}</p>
           </div>
         ) : null}
 

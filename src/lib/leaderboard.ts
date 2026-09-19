@@ -6,6 +6,9 @@ import {
   FOOTBALL_MODES,
   LEADERS_MODES,
   LEVEL_MODES,
+  MATH_MODES,
+  ASTRO_MODES,
+  THEME_MODES,
   QUIZ_WORLDS,
   campaignLevelCount,
   campaignMaxForWorld,
@@ -255,14 +258,15 @@ export async function submitRatings(
     if (geoCleared > 0 && geoCleared <= RATING_CLEARS_MAX) {
       items.push({ board: 'clears', hardcore, levelsCleared: geoCleared })
     }
-    for (const world of ['football', 'leaders'] as const) {
+    for (const world of QUIZ_WORLDS) {
+      if (world === 'geo') continue
       const cleared = uniqueLevelsCleared(clears, hardcore, campaignModesForWorld(world))
       const max = Math.max(1, campaignMaxForWorld(world))
       if (cleared <= 0 || cleared > Math.max(max, RATING_CLEARS_MAX)) continue
       items.push({ board: 'clears', world, hardcore, levelsCleared: cleared })
     }
   }
-  const campaignModes = [...LEVEL_MODES, ...FOOTBALL_MODES, ...LEADERS_MODES]
+  const campaignModes = [...LEVEL_MODES, ...FOOTBALL_MODES, ...LEADERS_MODES, ...MATH_MODES, ...ASTRO_MODES, ...THEME_MODES]
   for (const mode of campaignModes) {
     for (const hardcore of [false, true]) {
       const stats = campaignStats(clears, mode, hardcore)

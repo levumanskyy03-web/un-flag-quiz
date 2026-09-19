@@ -25,11 +25,14 @@ import {
 import { nearbyRankingCountries, rankingCountries, rankingPlaceOf, type RankingMode } from '../../data/rankings'
 import { correctLanguageIds, quizLanguageId } from '../../data/languages'
 import { govKindOf } from '../../data/governments'
+import { drivingSide } from '../../data/driving'
 import {
   isCodesMode,
+  isDrivingMode,
+  isLanguageMode,
   isNameToGov,
-  isNameToLanguage,
   isRankingMode,
+  isSilhouetteMode,
   isWaterMapMode,
   isWaterMode,
   languageIdsFrom,
@@ -56,7 +59,7 @@ function extraHasMap(iso: string): boolean {
 
 export function extraFitsMode(country: Country, mode: QuizMode): boolean {
   if (!isExtraIso(country.iso)) return true
-  if (isWaterMode(mode) || isRankingMode(mode) || isNameToLanguage(mode) || isNameToGov(mode)) return false
+  if (isWaterMode(mode) || isRankingMode(mode) || isLanguageMode(mode) || isDrivingMode(mode) || isNameToGov(mode)) return false
   if (mode === 'neighborsToName') return canAskNeighbors(country.iso)
   if (
     mode === 'nameToCapital' ||
@@ -67,7 +70,7 @@ export function extraFitsMode(country: Country, mode: QuizMode): boolean {
     return Boolean(getPassport(country.iso))
   }
   if (mode === 'nameToFounded') return foundedYear(country.iso) !== undefined
-  if (mode === 'nameToMap' || mode === 'mapToName') return extraHasMap(country.iso)
+  if (mode === 'nameToMap' || mode === 'mapToName' || isSilhouetteMode(mode)) return extraHasMap(country.iso)
   if (isCodesMode(mode)) return Boolean(COUNTRY_CODES[country.iso])
   return true
 }
@@ -191,9 +194,12 @@ export function poolForMode(
   } else if (isRankingMode(mode)) {
     next = pool.filter((country) => rankingPlaceOf(mode, country.iso) !== null)
     if (next.length < 4) next = rankingCountries(mode)
-  } else if (isNameToLanguage(mode)) {
+  } else if (isLanguageMode(mode)) {
     next = pool.filter((country) => quizLanguageId(country.iso))
     if (next.length < 4) next = COUNTRIES.filter((country) => quizLanguageId(country.iso))
+  } else if (isDrivingMode(mode)) {
+    next = pool
+    if (next.length < 4) next = [...COUNTRIES]
   } else if (isNameToGov(mode)) {
     next = pool.filter((country) => govKindOf(country.iso))
     if (next.length < 4) next = COUNTRIES.filter((country) => govKindOf(country.iso))
@@ -215,7 +221,8 @@ export function createRound(
   if (mode && isWaterMapMode(mode)) return createWaterMapRound(pool, count, mode)
   if (mode && isWaterMode(mode)) return createWaterRound(pool, count, mode, pool.length > WATER_LEVEL_SIZE)
   if (mode && isRankingMode(mode)) return createRankingRound(pool, count, mode)
-  if (mode && isNameToLanguage(mode)) return createLanguageRound(pool, count)
+  if (mode && isLanguageMode(mode)) return createLanguageRound(pool, count, mode)
+  if (mode && isDrivingMode(mode)) return createDrivingRound(pool, count, mode)
   if (mode && isNameToGov(mode)) return createGovRound(pool, count)
   const targets = shuffle(pool).slice(0, Math.min(count, pool.length))
   const questions: Question[] = []
@@ -380,11 +387,25 @@ function questionForMode(
       ]),
     }
   }
-  if (isNameToLanguage(mode)) {
+  if (isLanguageMode(mode)) {
     return {
       country,
       mode,
       options: shuffle([country, ...pickLanguageDistractors(country, modePool, 3, languageIdsFrom(avoid.keys))]),
+    }
+  }
+  if (mode === 'nameToDriving') {
+    return {
+      country,
+      mode,
+      options: shuffle([country, ...pickDrivingSideDistractors(country, modePool)]),
+    }
+  }
+  if (mode === 'drivingToName') {
+    return {
+      country,
+      mode,
+      options: shuffle([country, ...pickDrivingNameDistractors(country, modePool)]),
     }
   }
   if (isNameToGov(mode)) {
@@ -455,7 +476,40 @@ function pickGovDistractors(correct: Country, pool: Country[]): Country[] {
   return pickDistractors(correct, pool, 3, (country) => govKindOf(country.iso) ?? country.iso)
 }
 
-function createLanguageRound(pool: Country[], count: number): Question[] {
+function createDrivingRound(pool: Country[], count: number, mode: QuizMode): Question[] {
+  const eligible = pool.length >= 4 ? pool : [...COUNTRIES]
+  const targets = shuffle(eligible).slice(0, Math.min(count, eligible.length))
+  const questions: Question[] = []
+  for (const country of targets) {
+    questions.push({
+      country,
+      mode,
+      options: shuffle([
+        country,
+        ...(mode === 'nameToDriving'
+          ? pickDrivingSideDistractors(country, eligible)
+          : pickDrivingNameDistractors(country, eligible)),
+      ]),
+    })
+  }
+  return questions
+}
+
+function pickDrivingSideDistractors(correct: Country, pool: Country[]): Country[] {
+  const side = drivingSide(correct.iso)
+  const opposite = pool.filter((country) => country.iso !== correct.iso && drivingSide(country.iso) !== side)
+  const source = opposite.length > 0 ? opposite : COUNTRIES.filter((country) => drivingSide(country.iso) !== side)
+  return pickDistractors(correct, source, 1, (country) => country.iso)
+}
+
+function pickDrivingNameDistractors(correct: Country, pool: Country[]): Country[] {
+  const side = drivingSide(correct.iso)
+  const opposite = pool.filter((country) => country.iso !== correct.iso && drivingSide(country.iso) !== side)
+  const source = opposite.length >= 3 ? opposite : COUNTRIES.filter((country) => drivingSide(country.iso) !== side)
+  return pickDistractors(correct, source, 3, (country) => country.iso)
+}
+
+function createLanguageRound(pool: Country[], count: number, mode: QuizMode = 'nameToLanguage'): Question[] {
   const eligible = pool.filter((country) => quizLanguageId(country.iso))
   const targets = shuffle(eligible).slice(0, Math.min(count, eligible.length))
   const questions: Question[] = []
@@ -463,7 +517,7 @@ function createLanguageRound(pool: Country[], count: number): Question[] {
   for (const country of targets) {
     questions.push({
       country,
-      mode: 'nameToLanguage',
+      mode,
       options: shuffle([country, ...pickLanguageDistractors(country, eligible, 3, avoidLangs)]),
     })
     const langId = quizLanguageId(country.iso)

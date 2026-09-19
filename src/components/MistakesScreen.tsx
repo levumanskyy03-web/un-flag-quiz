@@ -2,11 +2,15 @@ import { findCountry } from '../data/extras'
 import { leaderDisplayName, termById, yearsLabel } from '../data/leaders'
 import { portraitFileForTerm } from '../data/leaderPortraitFiles'
 import { playerById, playerDisplayName } from '../data/footballPlayers'
+import { PlayerCatalogNo } from './PlayerCatalogNo'
 import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS } from '../i18n/strings'
-import { codePromptLabel, countryName, isCodesMode, isFootballMode, isLeadersMode, isPlayerFootballMode, type QuizMode } from '../lib/quiz'
+import { codePromptLabel, countryName, isCodesMode, isFootballMode, isLeadersMode, isMathMode, isAstroMode, isThemeMode, isPlayerFootballMode, astroById, astroOptionLabel, astroPromptText, mathById, mathOptionLabel, mathPromptText, themeById, themeOptionLabel, themePromptText, themeWorldOf, type QuizMode } from '../lib/quiz'
 import { GeoModeGrids } from './GeoModeGrids'
 import { FootballSetup } from './FootballModeGrids'
+import { MathSetup } from './MathModeGrids'
+import { AstroSetup } from './AstroModeGrids'
+import { ThemeSetup } from './ThemeModeGrids'
 import { geoMistakeCountries, type MistakeEntry } from '../lib/mistakes'
 import type { QuizSettings } from './HomeScreen'
 import { Flag, TeamFlag } from './Flag'
@@ -41,10 +45,14 @@ export function MistakesScreen({
   const t = STRINGS[settings.lang]
   const football = isFootballMode(settings.mode)
   const leaders = isLeadersMode(settings.mode)
-  const byMode = football || leaders
+  const math = isMathMode(settings.mode)
+  const astro = isAstroMode(settings.mode)
+  const theme = isThemeMode(settings.mode)
+  const themeWorld = isThemeMode(settings.mode) ? themeWorldOf(settings.mode) : 'biology'
+  const byMode = football || leaders || math || astro || theme
   const list = byMode ? mistakes.filter((item) => item.mode === settings.mode) : geoMistakeCountries(mistakes)
   const empty = list.length === 0
-  const hubTabs = tabs ?? (football || leaders ? WORLD_HUB_TABS : undefined)
+  const hubTabs = tabs ?? (football || leaders || math || astro || theme ? WORLD_HUB_TABS : undefined)
 
   return (
     <div className="screen mistakes-screen">
@@ -62,6 +70,12 @@ export function MistakesScreen({
           settings={settings}
           onChange={(next) => onChange({ ...next, mix: null, path: 'mistakes' })}
         />
+      ) : math ? (
+        <MathSetup settings={settings} onChange={(next) => onChange({ ...next, mix: null, path: 'mistakes' })} />
+      ) : astro ? (
+        <AstroSetup settings={settings} onChange={(next) => onChange({ ...next, mix: null, path: 'mistakes' })} />
+      ) : theme ? (
+        <ThemeSetup world={themeWorld} settings={settings} onChange={(next) => onChange({ ...next, mix: null, path: 'mistakes' })} />
       ) : (
         <GeoModeGrids
           lang={settings.lang}
@@ -86,6 +100,27 @@ export function MistakesScreen({
                     ? leaderDisplayName(term, settings.lang)
                     : player
                       ? playerDisplayName(player, settings.lang)
+                      : math
+                        ? (() => {
+                            const mathItem = mathById(item.iso)
+                            return mathItem
+                              ? `${mathPromptText(mathItem, settings.lang)} → ${mathOptionLabel(mathItem, settings.lang)}`
+                              : item.iso
+                          })()
+                      : astro
+                        ? (() => {
+                            const astroItem = astroById(item.iso)
+                            return astroItem
+                              ? `${astroPromptText(astroItem, settings.lang)} → ${astroOptionLabel(astroItem, settings.lang)}`
+                              : item.iso
+                          })()
+                      : theme
+                        ? (() => {
+                            const themeItem = themeById(item.iso)
+                            return themeItem
+                              ? `${themePromptText(themeItem, settings.lang)} → ${themeOptionLabel(themeItem, settings.lang)}`
+                              : item.iso
+                          })()
                     : country
                       ? countryName(country, settings.lang)
                       : item.iso
@@ -95,16 +130,19 @@ export function MistakesScreen({
                       {leaders && term ? (
                         <LeaderPortrait name={name} wiki={term.wiki} file={portraitFileForTerm(term.id)} size="card" />
                       ) : player ? (
-                        <LeaderPortrait
-                          name={name}
-                          wiki={player.wiki}
-                          file={player.wikiFile}
-                          flagIso={player.nation}
-                          size="card"
-                        />
+                        <span className="player-portrait-wrap">
+                          <PlayerCatalogNo id={player.id} onPhoto />
+                          <LeaderPortrait
+                            name={name}
+                            wiki={player.wiki}
+                            file={player.wikiFile}
+                            flagIso={player.nation}
+                            size="card"
+                          />
+                        </span>
                       ) : football ? (
                         <TeamFlag iso={item.iso} name={name} size="card" />
-                      ) : (
+                      ) : math || astro ? null : (
                         <Flag iso={country?.iso ?? item.iso} name={name} size="card" />
                       )}
                       <p className="learn-card-name">

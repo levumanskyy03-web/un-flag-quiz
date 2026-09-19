@@ -32,6 +32,7 @@ function LegalShellInner({ title, children, catalogBack = false }: LegalShellPro
           <LanguageToggle lang={lang} onChange={setLang} />
           <a href="/countries">{t.legalCountries}</a>
           <a href="/languages">{t.legalLanguages}</a>
+          <a href="/lists">{t.legalLists}</a>
           <a href="/today">{t.legalToday}</a>
         </div>
       </nav>

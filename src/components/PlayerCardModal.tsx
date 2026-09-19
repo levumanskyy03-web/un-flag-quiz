@@ -5,6 +5,7 @@ import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { countryName } from '../lib/quiz'
 import { LeaderPortrait } from './LeaderPortrait'
+import { PlayerCatalogNo } from './PlayerCatalogNo'
 
 interface PlayerCardModalProps {
   player: FootballPlayer
@@ -81,7 +82,11 @@ export function PlayerCardModal({ player, lang, onClose }: PlayerCardModalProps)
         <button type="button" className="btn-ghost passport-close" onClick={onClose}>
           {t.close}
         </button>
-        <LeaderPortrait name={name} wiki={player.wiki} file={player.wikiFile} flagIso={player.nation} size="hero" />
+        <div className="player-portrait-wrap">
+          <PlayerCatalogNo id={player.id} onPhoto />
+          <LeaderPortrait name={name} wiki={player.wiki} file={player.wikiFile} flagIso={player.nation} size="hero" />
+        </div>
+        <PlayerCatalogNo id={player.id} />
         <h2 id="player-card-title" className="passport-title">
           {name}
         </h2>

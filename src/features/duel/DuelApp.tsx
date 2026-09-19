@@ -28,7 +28,10 @@ import { isCorrect, isFactsToName, isLeaderPhotoMode, isPlayerPhotoMode, type Qu
 import { playSfx } from "@/lib/sfx";
 import { prefetchWikiPortraits } from "@/lib/wikiThumb";
 import { trackFunnel } from "@/lib/funnel";
-import { duelIsFootball, duelWorldHref, normalizeDuelCode } from "./paths";
+import { tokensForDuel } from "@/data/tokens";
+import { loadBests, loadHistory } from "@/lib/history";
+import { loadLevelClears } from "@/lib/levelProgress";
+import { awardAchievementTokens, awardPlayTokens } from "@/lib/tokenStore";
 
 const POLL_MS = 700;
 
@@ -71,13 +74,19 @@ export function DuelApp({ code: rawCode }: { code: string }) {
   const [timedOut, setTimedOut] = useState(false);
   const [remainingMs, setRemainingMs] = useState(0);
   const [roundMs, setRoundMs] = useState(0);
+  const [earnedTokens, setEarnedTokens] = useState(0);
   const [resultTone, setResultTone] = useState<ResultTone | null>(null);
   const indexRef = useRef(-1);
   const phaseRef = useRef<DuelView["phase"] | null>(null);
   const joinAttemptedRef = useRef(false);
   const stoppedRef = useRef(false);
   const t = STRINGS[lang];
-  const football = duelIsFootball(view);
+  const playWorld = duelPlayWorld(view);
+  const football = playWorld === "football";
+  const leaders = playWorld === "leaders";
+  const math = playWorld === "math";
+  const astronomy = playWorld === "astronomy";
+  const themeWorld = playWorld !== "geo" && playWorld !== "football" && playWorld !== "leaders" && playWorld !== "math" && playWorld !== "astronomy";
   const question = questionFromWire(view?.question ?? null);
   const currentMode: QuizMode = question?.mode ?? view?.mode ?? "flagToName";
 
@@ -101,13 +110,21 @@ export function DuelApp({ code: rawCode }: { code: string }) {
   useEffect(() => {
     if (football) {
       document.documentElement.dataset.world = "football";
+    } else if (leaders) {
+      document.documentElement.dataset.world = "leaders";
+    } else if (math) {
+      document.documentElement.dataset.world = "math";
+    } else if (astronomy) {
+      document.documentElement.dataset.world = "astronomy";
+    } else if (themeWorld) {
+      document.documentElement.dataset.world = playWorld;
     } else {
       delete document.documentElement.dataset.world;
     }
     return () => {
       delete document.documentElement.dataset.world;
     };
-  }, [football]);
+  }, [football, leaders, math, astronomy, themeWorld, playWorld]);
 
   useEffect(() => {
     if (!question) return;
@@ -214,17 +231,25 @@ export function DuelApp({ code: rawCode }: { code: string }) {
     }
     if (next.phase === "waiting") {
       setResultTone(null);
+      setEarnedTokens(0);
       return;
     }
     if ((prevPhase === "waiting" || prevPhase === null) && next.phase !== "done") {
-      trackFunnel("duel_start", { world: duelIsFootball(next) ? "football" : "geo" });
+      trackFunnel("duel_start", { world: duelPlayWorld(next) });
     }
     if (next.phase === "done") {
       setRoundMs(next.roundMs);
       setResultTone(next.youWon === false ? "fail" : "success");
       if (prevPhase !== "done") {
         playSfx(next.youWon === false ? "fail" : "success");
-        trackFunnel("duel_end", { world: duelIsFootball(next) ? "football" : "geo" });
+        trackFunnel("duel_end", { world: duelPlayWorld(next) });
+        if (next.total > 0) {
+          const playGain = awardPlayTokens(tokensForDuel(next.youWon));
+          const achGain = awardAchievementTokens(loadHistory(), loadBests(), loadLevelClears());
+          setEarnedTokens(playGain + achGain);
+        } else {
+          setEarnedTokens(0);
+        }
       }
       return;
     }
@@ -281,7 +306,7 @@ export function DuelApp({ code: rawCode }: { code: string }) {
   }
 
   return (
-    <div className={`app is-duel${resultTone ? ` is-${resultTone}` : ""}${football ? " is-football" : ""}`}>
+    <div className={`app is-duel${resultTone ? ` is-${resultTone}` : ""}${football ? " is-football" : ""}${leaders ? " is-leaders" : ""}${math ? " is-math" : ""}${astronomy ? " is-astronomy" : ""}${themeWorld ? ` is-${playWorld}` : ""}`}>
       {!view ? null : football ? (
         <div className="pitch-marks" aria-hidden="true">
           <span className="pitch-mid" />
@@ -396,6 +421,7 @@ export function DuelApp({ code: rawCode }: { code: string }) {
           lang={lang}
           room={view}
           roundMs={roundMs}
+          earnedTokens={earnedTokens}
           onRematch={() => {
             void rematchDuel(code).then((result) => {
               if (result.ok) applyView(result.room);

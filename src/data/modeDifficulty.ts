@@ -506,6 +506,8 @@ const EASY_BY_MODE: Record<string, ReadonlySet<string> | 'flag'> = {
   neighborsToName: NEIGHBORS_EASY,
   nameToMap: MAP_FIND_EASY,
   mapToName: MAP_IDENTIFY_EASY,
+  silhouetteToName: MAP_IDENTIFY_EASY,
+  nameToSilhouette: MAP_IDENTIFY_EASY,
   nameToGov: GOV_EASY,
 }
 

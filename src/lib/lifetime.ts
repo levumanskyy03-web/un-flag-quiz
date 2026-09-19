@@ -1,6 +1,6 @@
 import type { RoundRecord } from './history'
 import type { LevelClear } from './levelProgress'
-import { FOOTBALL_MODES, isFootballMode, type FootballMode, type QuizWorld } from './quiz'
+import { FOOTBALL_MODES, QUIZ_WORLDS, isFootballMode, type FootballMode, type QuizWorld } from './quiz'
 import { clearBestXp } from './xp'
 
 const LIFETIME_KEY = 'un-flag-quiz-lifetime'
@@ -26,7 +26,7 @@ export interface LifetimeStats {
 }
 
 export function emptyXpByWorld(): Record<QuizWorld, number> {
-  return { geo: 0, football: 0, leaders: 0 }
+  return Object.fromEntries(QUIZ_WORLDS.map((world) => [world, 0])) as Record<QuizWorld, number>
 }
 
 export function emptyFootballLifetime(): FootballLifetime {
@@ -237,7 +237,7 @@ function parseXpByWorld(value: unknown): Record<QuizWorld, number> {
   const next = emptyXpByWorld()
   if (!value || typeof value !== 'object') return next
   const record = value as Record<string, unknown>
-  for (const world of ['geo', 'football', 'leaders'] as const) {
+  for (const world of QUIZ_WORLDS) {
     const amount = record[world]
     if (typeof amount === 'number' && Number.isFinite(amount) && amount >= 0) {
       next[world] = Math.floor(amount)

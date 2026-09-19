@@ -1894,5 +1894,341 @@
       "ja": "とても難しい。アカウントを365日保つ",
       "he": "קשה מאוד. שמרו חשבון 365 ימים"
     }
+  },
+  "mtKickoff": {
+    "title": {
+      "de": "Erste Aufgabe",
+      "zh": "第一道题",
+      "es": "Primera cuenta",
+      "hi": "पहला सवाल",
+      "ar": "المسألة الأولى",
+      "bn": "প্রথম অঙ্ক",
+      "pt": "Primeira conta",
+      "ja": "最初の問題",
+      "he": "תרגיל ראשון"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Mathe-Runde",
+      "zh": "完成一轮数学",
+      "es": "Termina una ronda de matemáticas",
+      "hi": "गणित का राउंड पूरा करें",
+      "ar": "أنهِ جولة رياضيات",
+      "bn": "গণিতের রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de matemática",
+      "ja": "数学のラウンドを終える",
+      "he": "סיימו סיבוב מתמטיקה"
+    }
+  },
+  "mtCorrect": {
+    "title": {
+      "de": "Richtige Antwort",
+      "zh": "答对了",
+      "es": "Respuesta correcta",
+      "hi": "सही उत्तर",
+      "ar": "إجابة صحيحة",
+      "bn": "সঠিক উত্তর",
+      "pt": "Resposta certa",
+      "ja": "正解",
+      "he": "תשובה נכונה"
+    },
+    "hint": {
+      "de": "Geben Sie eine richtige Mathe-Antwort",
+      "zh": "在数学中答对一题",
+      "es": "Acierte una respuesta de matemáticas",
+      "hi": "गणित में एक सही उत्तर दें",
+      "ar": "أجب إجابة صحيحة في الرياضيات",
+      "bn": "গণিতে একটি সঠিক উত্তর দিন",
+      "pt": "Acerte uma resposta de matemática",
+      "ja": "数学で1問正解する",
+      "he": "ענו נכון במתמטיקה"
+    }
+  },
+  "mtFive": {
+    "title": {
+      "de": "Fünf Richtige",
+      "zh": "五题全对",
+      "es": "Cinco aciertos",
+      "hi": "पाँच सही",
+      "ar": "خمس صحيحة",
+      "bn": "পাঁচটি সঠিক",
+      "pt": "Cinco acertos",
+      "ja": "五問正解",
+      "he": "חמש נכונות"
+    },
+    "hint": {
+      "de": "Fünf richtige Antworten in einer Mathe-Runde",
+      "zh": "一轮数学中答对 5 题",
+      "es": "Cinco aciertos en una ronda de matemáticas",
+      "hi": "एक गणित राउंड में 5 सही",
+      "ar": "خمس إجابات صحيحة في جولة رياضيات",
+      "bn": "এক গণিত রাউন্ডে ৫টি সঠিক",
+      "pt": "Cinco acertos numa rodada de matemática",
+      "ja": "数学の1ラウンドで5問正解",
+      "he": "חמש תשובות נכונות בסיבוב מתמטיקה"
+    }
+  },
+  "mtPerfect": {
+    "title": {
+      "de": "Sauberes Heft",
+      "zh": "干净的练习本",
+      "es": "Cuaderno limpio",
+      "hi": "साफ़ कॉपी",
+      "ar": "دفتر نظيف",
+      "bn": "পরিষ্কার খাতা",
+      "pt": "Caderno limpo",
+      "ja": "きれいなノート",
+      "he": "מחברת נקייה"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Mathe-Runde mit 10 Fragen ohne Fehler",
+      "zh": "完成一轮 10 题数学且全对",
+      "es": "Termina una ronda de 10 en matemáticas sin fallos",
+      "hi": "10 प्रश्नों का गणित राउंड बिना गलती पूरा करें",
+      "ar": "أنهِ جولة رياضيات من 10 بلا أخطاء",
+      "bn": "১০ প্রশ্নের গণিত রাউন্ড ভুল ছাড়া শেষ করুন",
+      "pt": "Termine uma rodada de 10 em matemática sem erros",
+      "ja": "数学10問をミスなく終える",
+      "he": "סיימו סיבוב מתמטיקה של 10 בלי טעויות"
+    }
+  },
+  "mtArith": {
+    "title": {
+      "de": "Arithmetik",
+      "zh": "算术",
+      "es": "Aritmética",
+      "hi": "अंकगणित",
+      "ar": "الحساب",
+      "bn": "পাটিগণিত",
+      "pt": "Aritmética",
+      "ja": "計算",
+      "he": "חשבון"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde Aufgabe → Antwort",
+      "zh": "完成一轮「算式 → 答案」",
+      "es": "Termina una ronda ejemplo → respuesta",
+      "hi": "उदाहरण → उत्तर राउंड पूरा करें",
+      "ar": "أنهِ جولة مسألة → جواب",
+      "bn": "উদাহরণ → উত্তর রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada exemplo → resposta",
+      "ja": "式→答えのラウンドを終える",
+      "he": "סיימו סיבוב תרגיל → תשובה"
+    }
+  },
+  "mtGeom": {
+    "title": {
+      "de": "Geometrie",
+      "zh": "几何",
+      "es": "Geometría",
+      "hi": "ज्यामिति",
+      "ar": "الهندسة",
+      "bn": "জ্যামিতি",
+      "pt": "Geometria",
+      "ja": "図形",
+      "he": "גאומטריה"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde Form → Name",
+      "zh": "完成一轮「图形 → 名称」",
+      "es": "Termina una ronda figura → nombre",
+      "hi": "आकृति → नाम राउंड पूरा करें",
+      "ar": "أنهِ جولة شكل → اسم",
+      "bn": "আকৃতি → নাম রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada figura → nome",
+      "ja": "図形→名前のラウンドを終える",
+      "he": "סיימו סיבוב צורה → שם"
+    }
+  },
+  "mtGlyph": {
+    "title": {
+      "de": "Symbole",
+      "zh": "符号",
+      "es": "Símbolos",
+      "hi": "प्रतीक",
+      "ar": "الرموز",
+      "bn": "প্রতীক",
+      "pt": "Símbolos",
+      "ja": "記号",
+      "he": "סימנים"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde Symbol → Bedeutung",
+      "zh": "完成一轮「符号 → 含义」",
+      "es": "Termina una ronda símbolo → significado",
+      "hi": "प्रतीक → अर्थ राउंड पूरा करें",
+      "ar": "أنهِ جولة رمز → معنى",
+      "bn": "প্রতীক → অর্থ রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada símbolo → significado",
+      "ja": "記号→意味のラウンドを終える",
+      "he": "סיימו סיבוב סימן → משמעות"
+    }
+  },
+  "mtPeople": {
+    "title": {
+      "de": "Mathematiker",
+      "zh": "数学家",
+      "es": "Matemáticos",
+      "hi": "गणितज्ञ",
+      "ar": "علماء الرياضيات",
+      "bn": "গণিতবিদ",
+      "pt": "Matemáticos",
+      "ja": "数学者",
+      "he": "מתמטיקאים"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Runde mit Porträt oder Satz",
+      "zh": "完成一轮数学家肖像或定理",
+      "es": "Termina una ronda de retrato o teorema",
+      "hi": "चित्र या प्रमेय राउंड पूरा करें",
+      "ar": "أنهِ جولة صورة أو مبرهنة",
+      "bn": "প্রতিকৃতি বা উপপাদ্য রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada de retrato ou teorema",
+      "ja": "肖像または定理のラウンドを終える",
+      "he": "סיימו סיבוב דיוקן או משפט"
+    }
+  },
+  "mtHard": {
+    "title": {
+      "de": "Schwere Aufgaben",
+      "zh": "难题",
+      "es": "Cuentas difíciles",
+      "hi": "कठिन सवाल",
+      "ar": "مسائل صعبة",
+      "bn": "কঠিন অঙ্ক",
+      "pt": "Contas difíceis",
+      "ja": "難しい問題",
+      "he": "תרגילים קשים"
+    },
+    "hint": {
+      "de": "Beenden Sie eine schwere Mathe-Runde mit 10+ Fragen",
+      "zh": "完成一轮 10 题以上的困难数学",
+      "es": "Termina una ronda difícil de 10+ en matemáticas",
+      "hi": "10+ प्रश्नों का कठिन गणित राउंड पूरा करें",
+      "ar": "أنهِ جولة رياضيات صعبة من 10 فأكثر",
+      "bn": "১০+ প্রশ্নের কঠিন গণিত রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada difícil de 10+ em matemática",
+      "ja": "難しい数学10問以上を終える",
+      "he": "סיימו סיבוב מתמטיקה קשה של 10+"
+    }
+  },
+  "mtAllArith": {
+    "title": {
+      "de": "Ganze Arithmetik",
+      "zh": "全部算术",
+      "es": "Toda la aritmética",
+      "hi": "पूरा अंकगणित",
+      "ar": "كل الحساب",
+      "bn": "সব পাটিগণিত",
+      "pt": "Toda a aritmética",
+      "ja": "計算ぜんぶ",
+      "he": "כל החשבון"
+    },
+    "hint": {
+      "de": "Beenden Sie jeden arithmetischen Modus",
+      "zh": "完成每一种算术模式",
+      "es": "Termina todos los modos de aritmética",
+      "hi": "हर अंकगणित मोड पूरा करें",
+      "ar": "أنهِ كل أوضاع الحساب",
+      "bn": "প্রতিটি পাটিগণিত মোড শেষ করুন",
+      "pt": "Termine todos os modos de aritmética",
+      "ja": "計算の全モードを終える",
+      "he": "סיימו כל מצב חשבון"
+    }
+  },
+  "mtAllModes": {
+    "title": {
+      "de": "Ganzer Kurs",
+      "zh": "全部课程",
+      "es": "Curso completo",
+      "hi": "पूरा कोर्स",
+      "ar": "الدورة كاملة",
+      "bn": "পূর্ণ কোর্স",
+      "pt": "Curso completo",
+      "ja": "全コース",
+      "he": "קורס מלא"
+    },
+    "hint": {
+      "de": "Beenden Sie jeden Mathe-Modus außer Fakten",
+      "zh": "完成除事实外的每一种数学模式",
+      "es": "Termina todos los modos de matemáticas salvo hechos",
+      "hi": "तथ्यों को छोड़ हर गणित मोड पूरा करें",
+      "ar": "أنهِ كل أوضاع الرياضيات عدا الوقائع",
+      "bn": "তথ্য ছাড়া সব গণিত মোড শেষ করুন",
+      "pt": "Termine todos os modos de matemática salvo factos",
+      "ja": "事実以外の数学モードをすべて終える",
+      "he": "סיימו כל מצב מתמטיקה מלבד עובדות"
+    }
+  },
+  "mtLevel": {
+    "title": {
+      "de": "Aufgabenblatt",
+      "zh": "习题单",
+      "es": "Hoja de problemas",
+      "hi": "प्रश्न पत्र",
+      "ar": "ورقة مسائل",
+      "bn": "প্রশ্নপত্র",
+      "pt": "Folha de problemas",
+      "ja": "問題プリント",
+      "he": "דף תרגילים"
+    },
+    "hint": {
+      "de": "Schließen Sie ein Mathe-Kampagnenlevel ab",
+      "zh": "通过一个数学战役关卡",
+      "es": "Supera un nivel de campaña de matemáticas",
+      "hi": "गणित अभियान का एक स्तर पूरा करें",
+      "ar": "اجتز مستوى حملة رياضيات",
+      "bn": "গণিত অভিযানের একটি লেভেল শেষ করুন",
+      "pt": "Passe um nível de campanha de matemática",
+      "ja": "数学キャンペーンのレベルをクリア",
+      "he": "עברו שלב במסע המתמטיקה"
+    }
+  },
+  "mtRoad": {
+    "title": {
+      "de": "Zwanzig Blätter",
+      "zh": "二十张习题",
+      "es": "Veinte hojas",
+      "hi": "बीस पत्रक",
+      "ar": "عشرون ورقة",
+      "bn": "বিশটি পাতা",
+      "pt": "Vinte folhas",
+      "ja": "二十枚",
+      "he": "עשרים דפים"
+    },
+    "hint": {
+      "de": "Schließen Sie alle 20 Kampagnenlevel eines arithmetischen Modus ab",
+      "zh": "在一种算术模式中通过全部 20 关",
+      "es": "Supera los 20 niveles de campaña de un modo aritmético",
+      "hi": "एक अंकगणित मोड के सभी 20 स्तर पूरे करें",
+      "ar": "اجتز كل مستويات الحملة العشرين في وضع حساب",
+      "bn": "এক পাটিগণিত মোডের ২০টি লেভেল শেষ করুন",
+      "pt": "Passe os 20 níveis de campanha de um modo aritmético",
+      "ja": "計算モードのキャンペーン20レベルをすべてクリア",
+      "he": "עברו את כל 20 שלבי המסע במצב חשבון אחד"
+    }
+  },
+  "mtHardcore": {
+    "title": {
+      "de": "Ohne Radiergummi",
+      "zh": "不用橡皮",
+      "es": "Sin goma",
+      "hi": "बिना रबर",
+      "ar": "بلا ممحاة",
+      "bn": "রাবার ছাড়া",
+      "pt": "Sem borracha",
+      "ja": "消しゴムなし",
+      "he": "בלי מחק"
+    },
+    "hint": {
+      "de": "Beenden Sie eine Hardcore-Mathe-Runde mit 10+ Fragen",
+      "zh": "完成一轮 10 题以上的硬核数学",
+      "es": "Termina una ronda hardcore de 10+ en matemáticas",
+      "hi": "10+ प्रश्नों का हार्डकोर गणित राउंड पूरा करें",
+      "ar": "أنهِ جولة رياضيات هاردكور من 10 فأكثر",
+      "bn": "১০+ প্রশ্নের হার্ডকোর গণিত রাউন্ড শেষ করুন",
+      "pt": "Termine uma rodada hardcore de 10+ em matemática",
+      "ja": "ハードコアの数学10問以上を終える",
+      "he": "סיימו סיבוב הארדקור במתמטיקה של 10+"
+    }
   }
 }

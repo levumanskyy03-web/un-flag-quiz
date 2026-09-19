@@ -7,11 +7,11 @@ alwaysApply: true
 
 The quiz is not a single SPA file. Do not add modes or screens to `src/App.tsx`.
 
-- Worlds have URL entries: `/geo`, `/football`, `/leaders`. Picker is `/`. `/codes` redirects into `/geo`.
-- World UI: `src/features/play/GeoPlay.tsx`, `FootballPlay.tsx`, `LeadersPlay.tsx`.
+- Worlds have URL entries: `/geo`, `/football`, `/leaders`, `/math`, `/astronomy`, `/biology`, `/olympics`, `/cs`, `/food`. Picker is `/`. `/codes` redirects into `/geo`. Multiplayer hub: `/multiplayer` (not a theme world). Student packs: `/studio` (not a theme world). Company HQ: `/company` (not a theme world). Shop: `/shop` (not a theme world).
+- World UI: `src/features/play/GeoPlay.tsx`, `FootballPlay.tsx`, `LeadersPlay.tsx`, `MathPlay.tsx`, `AstroPlay.tsx`, `ThemePlay.tsx` (biology, olympics, cs, food). Multiplayer hub: `src/features/play/MultiplayerPlay.tsx`. Packs: `src/features/play/StudioPlay.tsx`. Company: `src/features/play/CompanyPlay.tsx`. Shop: `src/features/play/ShopPlay.tsx`.
 - Shared session/orchestration: `src/features/play/PlayApp.tsx` and `session.ts`.
 - Country codes (TLD / calling / car) are geography modes, not a separate world. Quiz helpers: `src/lib/quiz/codes.ts`.
-- 1v1 duel lives on `/duel/[code]` (`src/features/duel/`). Create/join from geo and football homes navigate there. Do not put duel polling or room state back into PlayApp.
-- Quiz engine by world: `src/lib/quiz/geo.ts`, `football.ts`, `leaders.ts`. Shared types/helpers: `src/lib/quiz/core.ts`. Barrel: `src/lib/quiz/index.ts`.
+- 1v1 rooms still live on `/duel/[code]` (`src/features/duel/`). Launch from `/multiplayer`. Do not put duel polling or room state back into PlayApp.
+- Quiz engine by world: `src/lib/quiz/geo.ts`, `football.ts`, `leaders.ts`, `math.ts`, `astro.ts`, `theme.ts`. Packs: `src/lib/quiz/pack.ts`. Shared types/helpers: `src/lib/quiz/core.ts`. Barrel: `src/lib/quiz/index.ts`.
 
 When changing a mode, edit that world's quiz module and play file first. Do not read `src/data/facts/all.json` or `src/data/languageData.ts`. For UI strings, grep `src/i18n/strings.ts` / `src/i18n/extra.ts` for a key instead of loading the whole file.

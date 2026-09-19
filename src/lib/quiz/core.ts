@@ -4,6 +4,37 @@ import { playerById, playerDisplayName } from '../../data/footballPlayers'
 import { managerById, managerDisplayName } from '../../data/footballManagers'
 import { leaderDisplayName, termById, type LeaderKind } from '../../data/leaders'
 import { footballTeamCountry, footballTeamName, isNamedFootballTeam } from '../../data/worldCup'
+import { mathById, mathDisplayName } from '../../data/math'
+import { astroById, astroDisplayName } from '../../data/astro'
+import {
+  EASY_MATH_MIX_MODES,
+  HARD_MATH_MIX_MODES,
+  MATCH_MATH_MODES,
+  MATH_MODES,
+  isMathMode,
+  mathHasCampaign,
+  type MathMode,
+} from './mathModes'
+import {
+  ASTRO_MODES,
+  EASY_ASTRO_MIX_MODES,
+  HARD_ASTRO_MIX_MODES,
+  MATCH_ASTRO_MODES,
+  astroHasCampaign,
+  isAstroMode,
+  type AstroMode,
+} from './astroModes'
+import {
+  EASY_THEME_MIX,
+  HARD_THEME_MIX,
+  THEME_MODES,
+  isThemeMode,
+  isThemeWorld,
+  themeHasCampaign,
+  themeWorldOf,
+  type ThemeMode,
+  type ThemeWorld,
+} from './themeModes'
 import { isRankingEasy, isRankingMode, RANKING_MODES, type RankingMode } from '../../data/rankings'
 import { isEasyForMode, factsDifficultyOf, languageDifficultyOf } from '../../data/modeDifficulty'
 import { quizLanguageId } from '../../data/languages'
@@ -29,12 +60,17 @@ export const QUIZ_MODES = [
   'neighborsToName',
   'nameToMap',
   'mapToName',
+  'silhouetteToName',
+  'nameToSilhouette',
   'factsToName',
   'mapToSea',
   'mapToRiver',
   'seaToName',
   'riverToName',
   'nameToLanguage',
+  'languageToName',
+  'nameToDriving',
+  'drivingToName',
   'nameToGov',
 ] as const
 export const WC_FOOTBALL_MODES = ['wcWinners', 'wcFinalists', 'wcHosts', 'wcTitleYears', 'wcScorers'] as const
@@ -99,11 +135,52 @@ export type LeadersMode = (typeof LEADERS_MODES)[number]
 export const LEADERS_TOPICS = ['us', 'pope', 'rus', 'uk'] as const
 export const LEADERS_ASKS = ['years', 'number', 'photo'] as const
 export type LeaderAsk = (typeof LEADERS_ASKS)[number]
-export type QuizMode = (typeof QUIZ_MODES)[number] | FootballMode | CodesMode | LeadersMode | RankingMode
+export type QuizMode = (typeof QUIZ_MODES)[number] | FootballMode | CodesMode | LeadersMode | RankingMode | MathMode | AstroMode | ThemeMode
+export { MATH_MODES, EASY_MATH_MIX_MODES, HARD_MATH_MIX_MODES, MATCH_MATH_MODES, isMathMode }
+export { MATH_TOPICS, MATH_MATCH_MIX, MATH_CAMPAIGN_MODES, MATH_CAMPAIGN_LEVELS, mathTopicOf, mathModesOf, mathHasCampaign, mathIsGenerated } from './mathModes'
+export type { MathMode, MathTopic } from './mathModes'
+export { ASTRO_MODES, EASY_ASTRO_MIX_MODES, HARD_ASTRO_MIX_MODES, MATCH_ASTRO_MODES, isAstroMode }
+export {
+  ASTRO_TOPICS,
+  ASTRO_MATCH_MIX,
+  ASTRO_CAMPAIGN_MODES,
+  ASTRO_CAMPAIGN_LEVELS,
+  astroTopicOf,
+  astroModesOf,
+  astroHasCampaign,
+} from './astroModes'
+export type { AstroMode, AstroTopic } from './astroModes'
+export {
+  THEME_MODES,
+  THEME_WORLDS,
+  THEME_TOPICS,
+  THEME_CAMPAIGN_MODES,
+  THEME_CAMPAIGN_LEVELS,
+  THEME_DEFAULT_MODE,
+  THEME_MATCH_MIX,
+  EASY_THEME_MIX,
+  HARD_THEME_MIX,
+  MATCH_THEME_MODES,
+  isThemeMode,
+  isThemeWorld,
+  themeHasCampaign,
+  themeModesOfWorld,
+  themeModesOfTopic,
+  themeTopicOf,
+  themeTopicsOf,
+  themeWorldOf,
+} from './themeModes'
+export type { ThemeMode, ThemeTopic, ThemeWorld } from './themeModes'
 export const LEVEL_MODES: QuizMode[] = [
   ...QUIZ_MODES.filter(
     (mode) =>
-      mode !== 'neighborsToName' && mode !== 'factsToName' && mode !== 'nameToLanguage' && mode !== 'nameToGov',
+      mode !== 'neighborsToName' &&
+      mode !== 'factsToName' &&
+      mode !== 'nameToLanguage' &&
+      mode !== 'languageToName' &&
+      mode !== 'nameToDriving' &&
+      mode !== 'drivingToName' &&
+      mode !== 'nameToGov',
   ),
   ...CODES_MODES,
 ]
@@ -118,6 +195,8 @@ export const HARD_MIX_MODES: QuizMode[] = [
   'neighborsToName',
   'nameToMap',
   'mapToName',
+  'silhouetteToName',
+  'nameToSilhouette',
   'mapToSea',
   'mapToRiver',
   'seaToName',
@@ -133,8 +212,16 @@ export const MAP_MIX_MODES: QuizMode[] = ['nameToMap', 'mapToName']
 export const PLAYER_FOOTBALL_MATCH_MIX: FootballMode[] = ['playerPhotoToName', 'playerToNation', 'playerToClub']
 export const CLUB_FOOTBALL_MATCH_MIX: FootballMode[] = ['clubCrestToName', 'uclWinners', 'stadiumToClub']
 export const WC_FOOTBALL_MATCH_MIX: FootballMode[] = ['wcWinners', 'wcFinalists', 'wcHosts']
-export const MATCH_GEO_MODES: QuizMode[] = ['flagToName', 'nameToFlag', 'nameToCapital', 'mapToName']
-export const MATCH_FOOTBALL_MODES: FootballMode[] = ['wcWinners', 'playerPhotoToName', 'uclWinners', 'clubCrestToName']
+export const MATCH_GEO_MODES: QuizMode[] = ['flagToName', 'nameToCapital']
+export const MATCH_FOOTBALL_MODES: FootballMode[] = ['wcWinners', 'playerPhotoToName']
+export const US_LEADERS_MATCH_MIX: LeadersMode[] = ['usYearsToName', 'usNumberToName', 'usPhotoToName']
+export const PHOTO_LEADERS_MATCH_MIX: LeadersMode[] = [
+  'usPhotoToName',
+  'popePhotoToName',
+  'rusPhotoToName',
+  'ukPhotoToName',
+]
+export const MATCH_LEADERS_MODES: LeadersMode[] = ['usPhotoToName', 'usYearsToName']
 export const MIX_KINDS = ['easy', 'hard', 'custom'] as const
 export type MixKind = (typeof MIX_KINDS)[number]
 
@@ -151,12 +238,37 @@ export function modesForFootballMix(mix: MixKind, custom: readonly QuizMode[] = 
 
 export function modesForMix(mix: MixKind, world: QuizWorld = 'geo', custom: readonly QuizMode[] = []): QuizMode[] {
   if (world === 'football') return modesForFootballMix(mix, custom)
+  if (world === 'math') return modesForMathMix(mix, custom)
+  if (world === 'astronomy') return modesForAstroMix(mix, custom)
+  if (isThemeWorld(world)) return modesForThemeMix(world, mix, custom)
   if (mix === 'custom') {
     return custom.filter(
-      (mode) => !isFootballMode(mode) && !isLeadersMode(mode) && !isRankingMode(mode) && mode !== 'factsToName',
+      (mode) =>
+        !isFootballMode(mode) &&
+        !isLeadersMode(mode) &&
+        !isMathMode(mode) &&
+        !isAstroMode(mode) &&
+        !isThemeMode(mode) &&
+        !isRankingMode(mode) &&
+        mode !== 'factsToName',
     )
   }
   return mix === 'easy' ? [...EASY_MIX_MODES] : [...HARD_MIX_MODES]
+}
+
+export function modesForMathMix(mix: MixKind, custom: readonly QuizMode[] = []): MathMode[] {
+  if (mix === 'custom') return custom.filter(isMathMode).filter((mode) => mode !== 'mathFactsToName')
+  return mix === 'easy' ? [...EASY_MATH_MIX_MODES] : [...HARD_MATH_MIX_MODES]
+}
+
+export function modesForAstroMix(mix: MixKind, custom: readonly QuizMode[] = []): AstroMode[] {
+  if (mix === 'custom') return custom.filter(isAstroMode).filter((mode) => mode !== 'astroFactsToName')
+  return mix === 'easy' ? [...EASY_ASTRO_MIX_MODES] : [...HARD_ASTRO_MIX_MODES]
+}
+
+export function modesForThemeMix(world: ThemeWorld, mix: MixKind, custom: readonly QuizMode[] = []): ThemeMode[] {
+  if (mix === 'custom') return custom.filter(isThemeMode).filter((mode) => themeWorldOf(mode) === world)
+  return mix === 'easy' ? [...EASY_THEME_MIX[world]] : [...HARD_THEME_MIX[world]]
 }
 
 export function isQuizMode(value: unknown): value is QuizMode {
@@ -166,6 +278,9 @@ export function isQuizMode(value: unknown): value is QuizMode {
       (FOOTBALL_MODES as readonly string[]).includes(value) ||
       (CODES_MODES as readonly string[]).includes(value) ||
       (LEADERS_MODES as readonly string[]).includes(value) ||
+      (MATH_MODES as readonly string[]).includes(value) ||
+      (ASTRO_MODES as readonly string[]).includes(value) ||
+      (THEME_MODES as readonly string[]).includes(value) ||
       isRankingMode(value))
   )
 }
@@ -185,7 +300,17 @@ export function isLeadersMode(value: unknown): value is LeadersMode {
   )
 }
 
-export const QUIZ_WORLDS = ['geo', 'football', 'leaders'] as const
+export const QUIZ_WORLDS = [
+  'geo',
+  'leaders',
+  'football',
+  'olympics',
+  'biology',
+  'math',
+  'astronomy',
+  'cs',
+  'food',
+] as const
 export type QuizWorld = (typeof QUIZ_WORLDS)[number]
 
 export function isQuizWorld(value: unknown): value is QuizWorld {
@@ -195,6 +320,9 @@ export function isQuizWorld(value: unknown): value is QuizWorld {
 export function worldOfMode(mode: QuizMode): QuizWorld {
   if (isFootballMode(mode)) return 'football'
   if (isLeadersMode(mode)) return 'leaders'
+  if (isMathMode(mode)) return 'math'
+  if (isAstroMode(mode)) return 'astronomy'
+  if (isThemeMode(mode)) return themeWorldOf(mode)
   return 'geo'
 }
 
@@ -302,6 +430,8 @@ export function orderedModes(modes: readonly unknown[]): QuizMode[] {
   if (geo.length > 0) return geo
   const football = FOOTBALL_MODES.filter((mode) => set.has(mode))
   if (football.length > 0) return football
+  const math = MATH_MODES.filter((mode) => set.has(mode))
+  if (math.length > 0) return math
   return LEADERS_MODES.filter((mode) => set.has(mode))
 }
 
@@ -318,12 +448,25 @@ export function isFactMode(mode: QuizMode): boolean {
     mode === 'nameToPopulation' ||
     mode === 'nameToFounded' ||
     mode === 'nameToLanguage' ||
+    mode === 'nameToDriving' ||
     mode === 'nameToGov'
   )
 }
 
 export function isMapMode(mode: QuizMode): boolean {
   return mode === 'nameToMap' || mode === 'mapToName'
+}
+
+export function isSilhouetteMode(mode: QuizMode): boolean {
+  return mode === 'silhouetteToName' || mode === 'nameToSilhouette'
+}
+
+export function isDrivingMode(mode: QuizMode): boolean {
+  return mode === 'nameToDriving' || mode === 'drivingToName'
+}
+
+export function isLanguageMode(mode: QuizMode): boolean {
+  return mode === 'nameToLanguage' || mode === 'languageToName'
 }
 
 export function isFactsToName(mode: QuizMode): boolean {
@@ -396,11 +539,18 @@ export function hasLevels(mode: QuizMode): boolean {
   return (
     (isFootballMode(mode) && mode !== 'playerFactsToName') ||
     isLeadersMode(mode) ||
+    mathHasCampaign(mode) ||
+    astroHasCampaign(mode) ||
+    themeHasCampaign(mode) ||
     isCodesMode(mode) ||
     (!isRankingMode(mode) &&
+      !isThemeMode(mode) &&
       mode !== 'neighborsToName' &&
       mode !== 'factsToName' &&
       mode !== 'nameToLanguage' &&
+      mode !== 'languageToName' &&
+      mode !== 'nameToDriving' &&
+      mode !== 'drivingToName' &&
       mode !== 'nameToGov')
   )
 }
@@ -410,9 +560,15 @@ export function hasGeoFinale(mode: QuizMode): boolean {
     !isFootballMode(mode) &&
     !isWaterMode(mode) &&
     !isLeadersMode(mode) &&
+    !isMathMode(mode) &&
+    !isAstroMode(mode) &&
+    !isThemeMode(mode) &&
     !isCodesMode(mode) &&
     !isRankingMode(mode) &&
     mode !== 'nameToLanguage' &&
+    mode !== 'languageToName' &&
+    mode !== 'nameToDriving' &&
+    mode !== 'drivingToName' &&
     mode !== 'nameToGov'
   )
 }
@@ -592,6 +748,7 @@ export interface RoundAnswer {
   question: Question
   selectedIso: string | null
   timeMs: number
+  skipped?: boolean
 }
 
 export interface OptionAvoid {
@@ -647,7 +804,10 @@ export function countryName(country: Country, lang: Lang): string {
   if (manager) return managerDisplayName(manager, lang)
   const term = termById(country.iso)
   if (term) return leaderDisplayName(term, lang)
-  if (isNamedFootballTeam(country.iso)) return footballTeamName(country.iso, lang)
+  const math = mathById(country.iso)
+  if (math) return mathDisplayName(math, lang)
+  const astro = astroById(country.iso)
+  if (astro) return astroDisplayName(astro, lang)
   if (lang === 'ru') return country.nameRu
   if (lang === 'en') return country.nameEn
   try {

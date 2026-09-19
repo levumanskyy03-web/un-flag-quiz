@@ -21,6 +21,7 @@ import {
   campaignLevelCount,
   campaignMaxForWorld,
   campaignModesForWorld,
+  QUIZ_WORLDS,
   type QuizMode,
 } from '../lib/quiz'
 import { formatXp } from '../lib/xp'
@@ -39,7 +40,7 @@ interface RatingsModalProps {
 type Tab = 'xp' | 'levels' | 'duel'
 type ModeFilter = 'all' | QuizMode
 
-const SCOPES: RatingWorld[] = ['all', 'geo', 'football', 'leaders']
+const SCOPES: RatingWorld[] = ['all', ...QUIZ_WORLDS]
 
 export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }: RatingsModalProps) {
   const t = STRINGS[lang]
@@ -65,7 +66,7 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
   const [profileId, setProfileId] = useState<string | null>(null)
 
   const topic = scope === 'all' ? null : scope
-  const hasCampaign = topic === 'geo' || topic === 'football' || topic === 'leaders'
+  const hasCampaign = topic !== null
   const campaignModes = topic ? campaignModesForWorld(topic) : []
   const showLevels = tab === 'levels' && hasCampaign
   const showDuel = tab === 'duel'
@@ -143,12 +144,7 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
     if (!posted || tab !== 'duel') return
     let cancelled = false
     const player = loadPlayer()
-    const world = scope === 'football' || scope === 'geo' ? scope : 'all'
-    if (scope === 'leaders') {
-      setDuelEntries([])
-      setBoardReady(true)
-      return
-    }
+    const world = scope === 'all' ? 'all' : scope
     fetchDuelRatings(world, player.id)
       .then((result) => {
         if (cancelled) return
@@ -224,8 +220,20 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
                     ? 'trophy'
                     : item === 'geo'
                       ? 'globe'
-                      : item === 'football'
-                        ? 'ball'
+                    : item === 'football'
+                      ? 'ball'
+                      : item === 'math'
+                        ? 'sigma'
+                        : item === 'astronomy'
+                          ? 'orbit'
+                        : item === 'biology'
+                          ? 'leaf'
+                        : item === 'olympics'
+                          ? 'torch'
+                        : item === 'cs'
+                          ? 'code'
+                        : item === 'food'
+                          ? 'bowl'
                         : 'laurel'
                 }
               />
@@ -400,6 +408,12 @@ function scopeLabel(scope: RatingWorld, lang: Lang): string {
   if (scope === 'all') return t.ratingsWorld
   if (scope === 'geo') return t.geography
   if (scope === 'football') return t.football
+  if (scope === 'math') return t.math
+  if (scope === 'astronomy') return t.astronomy
+  if (scope === 'biology') return t.biology
+  if (scope === 'olympics') return t.olympics
+  if (scope === 'cs') return t.cs
+  if (scope === 'food') return t.food
   return t.leaders
 }
 

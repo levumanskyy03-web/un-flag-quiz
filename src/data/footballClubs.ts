@@ -16,6 +16,7 @@ export const FOOTBALL_CLUBS: Record<string, FootballClub> = {
   atletico: { id: 'atletico', nation: 'es', nameEn: 'Atlético Madrid', nameRu: 'Атлетико Мадрид', wiki: 'Atlético Madrid' },
   valencia: { id: 'valencia', nation: 'es', nameEn: 'Valencia', nameRu: 'Валенсия', wiki: 'Valencia CF' },
   sevilla: { id: 'sevilla', nation: 'es', nameEn: 'Sevilla', nameRu: 'Севилья', wiki: 'Sevilla FC' },
+  betis: { id: 'betis', nation: 'es', nameEn: 'Real Betis', nameRu: 'Бетис', wiki: 'Real Betis' },
   villarreal: { id: 'villarreal', nation: 'es', nameEn: 'Villarreal', nameRu: 'Вильярреал', wiki: 'Villarreal CF' },
   deportivo: { id: 'deportivo', nation: 'es', nameEn: 'Deportivo La Coruña', nameRu: 'Депортиво', wiki: 'Deportivo de La Coruña' },
   benfica: { id: 'benfica', nation: 'pt', nameEn: 'Benfica', nameRu: 'Бенфика', wiki: 'S.L. Benfica' },

@@ -6,10 +6,13 @@ import { STRINGS, modeLabel } from '../i18n/strings'
 import type { LevelClear } from '../lib/levelProgress'
 import { findLevelClear, isLevelUnlocked } from '../lib/levelProgress'
 import { fetchLevelBests, type LevelBest } from '../lib/leaderboard'
-import { MAX_LIVES, LEVEL_MODES, formatClock, hasGeoFinale, isLeadersMode, type QuizMode } from '../lib/quiz'
+import { MAX_LIVES, ASTRO_MODES, LEVEL_MODES, MATH_MODES, THEME_DEFAULT_MODE, astroHasCampaign, formatClock, hasGeoFinale, isLeadersMode, isThemeMode, mathHasCampaign, themeHasCampaign, themeWorldOf, type QuizMode } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
 import { HubNav, type HubTab } from './HubNav'
 import { FootballSetup, isFootballCatalog } from './FootballModeGrids'
+import { MathSetup, isMathCatalog } from './MathModeGrids'
+import { AstroSetup, isAstroCatalog } from './AstroModeGrids'
+import { ThemeSetup, isThemeCatalog, themeCatalogWorld } from './ThemeModeGrids'
 import { modeCampaignPercent } from '../lib/campaignPercent'
 import { LeadersSetup } from './LeadersScreen'
 import { ModeChoice } from './ModeChoice'
@@ -60,6 +63,22 @@ export function LevelsScreen({
     onChange({ ...settings, path: 'levels', mode: 'playerPhotoToName', mix: null })
   }, [modes, settings.mode])
 
+  useEffect(() => {
+    if (!isMathCatalog(modes) || mathHasCampaign(settings.mode)) return
+    onChange({ ...settings, path: 'levels', mode: 'exprToValue', mix: null })
+  }, [modes, settings.mode])
+
+  useEffect(() => {
+    if (!isAstroCatalog(modes) || astroHasCampaign(settings.mode)) return
+    onChange({ ...settings, path: 'levels', mode: 'planetToOrder', mix: null })
+  }, [modes, settings.mode])
+
+  useEffect(() => {
+    if (!isThemeCatalog(modes) || themeHasCampaign(settings.mode)) return
+    const world = themeCatalogWorld(modes) ?? (isThemeMode(settings.mode) ? themeWorldOf(settings.mode) : 'biology')
+    onChange({ ...settings, path: 'levels', mode: THEME_DEFAULT_MODE[world], mix: null })
+  }, [modes, settings.mode])
+
   const pickedBest = picked !== null ? worldBests[picked] : undefined
 
   return (
@@ -82,6 +101,25 @@ export function LevelsScreen({
             onChange={(next) => onChange({ ...next, path: 'levels', mix: null })}
             hideModes={['playerFactsToName']}
             campaignPercent={(mode) => modeCampaignPercent(levelClears, mode)}
+          />
+        ) : isMathCatalog(modes) ? (
+          <MathSetup
+            settings={settings}
+            onChange={(next) => onChange({ ...next, path: 'levels', mix: null })}
+            hideModes={MATH_MODES.filter((mode) => !mathHasCampaign(mode))}
+          />
+        ) : isAstroCatalog(modes) ? (
+          <AstroSetup
+            settings={settings}
+            onChange={(next) => onChange({ ...next, path: 'levels', mix: null })}
+            hideModes={ASTRO_MODES.filter((mode) => !astroHasCampaign(mode))}
+          />
+        ) : isThemeCatalog(modes) ? (
+          <ThemeSetup
+            world={themeCatalogWorld(modes) ?? 'biology'}
+            settings={settings}
+            onChange={(next) => onChange({ ...next, path: 'levels', mix: null })}
+            hideModes={modes.filter((mode) => !themeHasCampaign(mode))}
           />
         ) : (
           <div className="choice-grid is-modes">

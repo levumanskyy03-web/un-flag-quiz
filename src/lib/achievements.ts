@@ -12,6 +12,9 @@ import {
   FOOTBALL_MODES,
   LEADERS_MODES,
   LEVEL_MODES,
+  MATH_CAMPAIGN_LEVELS,
+  MATH_CAMPAIGN_MODES,
+  MATH_MODES,
   QUIZ_MODES,
   RANKING_MODES,
   isAllRegions,
@@ -19,6 +22,9 @@ import {
   isFootballMode,
   footballHasDifficulty,
   isLeadersMode,
+  isMathMode,
+  isAstroMode,
+  isThemeMode,
   isRankingMode,
   parseRegions,
   type QuizDifficulty,
@@ -117,6 +123,16 @@ export function listAchievements(
   const leaderFamilies = new Set(
     [...leaderModes].map(leaderFamily).filter((item): item is 'us' | 'pope' | 'rus' | 'uk' => item !== null),
   )
+  const mathPool = pool.filter((round) => isMathMode(round.mode))
+  const mathComplete = completedPool.filter((round) => isMathMode(round.mode))
+  const mathModes = new Set(mathComplete.map((round) => round.mode))
+  const mathCampaignMax = Math.max(
+    0,
+    ...MATH_CAMPAIGN_MODES.map((mode) => campaignStats(levelClears, mode, false).levelsCleared),
+  )
+  const mathCampaignFull = MATH_CAMPAIGN_MODES.some(
+    (mode) => campaignStats(levelClears, mode, false).levelsCleared >= MATH_CAMPAIGN_LEVELS,
+  )
   const album = loadStamps()
   const stamps = stampCopyCount(album)
   const stampCountries = stampCountryCount(album)
@@ -195,6 +211,26 @@ export function listAchievements(
     fbHardcore: footballComplete.some((round) => isRoundHardcore(round) && finished(round, 10)),
     fbLevel: footballCampaignMax >= 1 || levelClears.some((item) => isFootballMode(item.mode)),
     fbCampaign: footballCampaignFull,
+    mtKickoff: mathPool.length > 0,
+    mtCorrect: mathPool.some((round) => round.correct > 0),
+    mtFive: mathPool.some((round) => round.correct >= 5),
+    mtPerfect: mathComplete.some((round) => round.total >= 10 && round.correct === round.total),
+    mtArith: mathComplete.some((round) => round.mode === 'exprToValue'),
+    mtGeom: mathComplete.some((round) => round.mode === 'shapeToName' || round.mode === 'nameToShape'),
+    mtGlyph: mathComplete.some((round) => round.mode === 'symbolToMeaning'),
+    mtPeople: mathComplete.some(
+      (round) =>
+        round.mode === 'mathPhotoToName' ||
+        round.mode === 'theoremToAuthor' ||
+        round.mode === 'mathPersonToPlace' ||
+        round.mode === 'mathFactsToName',
+    ),
+    mtHard: mathComplete.some((round) => hardPlus(round.difficulty) && finished(round, 10)),
+    mtAllArith: MATH_CAMPAIGN_MODES.every((mode) => mathModes.has(mode)),
+    mtAllModes: MATH_MODES.filter((mode) => mode !== 'mathFactsToName').every((mode) => mathModes.has(mode)),
+    mtLevel: mathCampaignMax >= 1 || levelClears.some((item) => isMathMode(item.mode)),
+    mtRoad: mathCampaignFull,
+    mtHardcore: mathComplete.some((round) => isRoundHardcore(round) && finished(round, 10)),
     stFirst: stamps >= 1,
     stTen: stamps >= 20,
     stFifty: stamps >= 75,
@@ -218,6 +254,9 @@ export function listAchievements(
         perfect(round, 10) &&
         !isFootballMode(round.mode) &&
         !isLeadersMode(round.mode) &&
+        !isMathMode(round.mode) &&
+        !isAstroMode(round.mode) &&
+        !isThemeMode(round.mode) &&
         !isRankingMode(round.mode),
     ),
     campaignTriple: campaignEightModes >= 3,
@@ -234,7 +273,8 @@ export function listAchievements(
       QUIZ_MODES.every((mode) => completedModes.has(mode)) &&
       FOOTBALL_MODES.every((mode) => footballModes.has(mode)) &&
       CODES_MODES.every((mode) => codesModes.has(mode)) &&
-      LEADERS_MODES.every((mode) => leaderModes.has(mode)),
+      LEADERS_MODES.every((mode) => leaderModes.has(mode)) &&
+      MATH_MODES.every((mode) => mathModes.has(mode)),
     mythRankings: RANKING_MODES.every((mode) => rankingModes.has(mode)),
     mythRegions: REGIONS.every((region) => hardRegionPerfect.has(region)),
     mythLevel40: rank >= 40,

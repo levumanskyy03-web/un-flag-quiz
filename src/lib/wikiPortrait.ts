@@ -1,6 +1,7 @@
 import { SITE_UA } from './site'
 import { allFootballClubs } from '../data/footballClubs'
 import { footballPlayerWikis } from '../data/footballPlayers'
+import { mathWikis } from '../data/math'
 import { ALL_LEADER_TERMS } from '../data/leaders'
 import { WIKI_PORTRAIT_FILES, isAllowedPortraitFile } from '../data/leaderPortraitFiles'
 
@@ -21,6 +22,7 @@ const THUMB_WIDTH = 500
 const ALLOWED_TITLES = new Set(
   [
     ...ALL_LEADER_TERMS.map((term) => term.wiki),
+    ...mathWikis(),
     ...footballPlayerWikis(),
     ...allFootballClubs().map((club) => club.wiki ?? club.nameEn),
   ]
@@ -430,9 +432,7 @@ async function commonsSearchFiles(query: string, limit = 8): Promise<string[]> {
 
 async function portraitFromCommonsSearch(title: string): Promise<WikiPortrait | null> {
   const name = title.replace(/\s*\([^)]*\)\s*$/, '').trim()
-  const queries = name.includes(' ')
-    ? [`"${name}" footballer`, `"${name}"`]
-    : [`"${name}" footballer`, `${name} footballer`]
+  const queries = [`"${name}" footballer`, `"${name}" football`]
   const seen = new Set<string>()
   for (const query of queries) {
     for (const fileName of await commonsSearchFiles(query, 8)) {

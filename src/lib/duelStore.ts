@@ -22,10 +22,22 @@ import {
   answerPauseMs,
   createFootballMixedRound,
   createFootballRound,
+  createLeadersMixedRound,
+  createLeadersRound,
+  createMathMixedRound,
+  createMathRound,
+  createAstroMixedRound,
+  createAstroRound,
+  createThemeMixedRound,
+  createThemeRound,
   createMixedRound,
   getRegionPool,
   isFactsToName,
   isFootballMode,
+  isLeadersMode,
+  isMathMode,
+  isAstroMode,
+  isThemeMode,
   isFootballYearChoice,
   isPlayerFactsToName,
   isQuizDifficulty,
@@ -670,6 +682,55 @@ function buildQuestions(
       mode: question.mode ?? footballModes[0],
       year: question.year,
       yearOptions: question.yearOptions,
+    }))
+  }
+  const leaderModes = modes.filter(isLeadersMode)
+  if (leaderModes.length === modes.length && leaderModes.length > 0) {
+    const round =
+      leaderModes.length === 1
+        ? createLeadersRound(leaderModes[0], roundSize, difficulty)
+        : createLeadersMixedRound(leaderModes, roundSize, difficulty)
+    return round.map((question) => ({
+      countryIso: question.country.iso,
+      optionIsos: question.options.map((option) => option.iso),
+      mode: question.mode ?? leaderModes[0],
+      year: question.year,
+    }))
+  }
+  const mathModes = modes.filter(isMathMode)
+  if (mathModes.length === modes.length && mathModes.length > 0) {
+    const round =
+      mathModes.length === 1
+        ? createMathRound(mathModes[0], roundSize, difficulty)
+        : createMathMixedRound(mathModes, roundSize, difficulty)
+    return round.map((question) => ({
+      countryIso: question.country.iso,
+      optionIsos: question.options.map((option) => option.iso),
+      mode: question.mode ?? mathModes[0],
+    }))
+  }
+  const astroModes = modes.filter(isAstroMode)
+  if (astroModes.length === modes.length && astroModes.length > 0) {
+    const round =
+      astroModes.length === 1
+        ? createAstroRound(astroModes[0], roundSize, difficulty)
+        : createAstroMixedRound(astroModes, roundSize, difficulty)
+    return round.map((question) => ({
+      countryIso: question.country.iso,
+      optionIsos: question.options.map((option) => option.iso),
+      mode: question.mode ?? astroModes[0],
+    }))
+  }
+  const themeModes = modes.filter(isThemeMode)
+  if (themeModes.length === modes.length && themeModes.length > 0) {
+    const round =
+      themeModes.length === 1
+        ? createThemeRound(themeModes[0], roundSize, difficulty)
+        : createThemeMixedRound(themeModes, roundSize, difficulty)
+    return round.map((question) => ({
+      countryIso: question.country.iso,
+      optionIsos: question.options.map((option) => option.iso),
+      mode: question.mode ?? themeModes[0],
     }))
   }
   const round = createMixedRound(

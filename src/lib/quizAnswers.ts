@@ -9,7 +9,8 @@ import {
 } from '../data/passports'
 import { languageName, quizLanguageId } from '../data/languages'
 import { govKindOf } from '../data/governments'
-import { governmentLabel, type Lang } from '../i18n/strings'
+import { drivingSide } from '../data/driving'
+import { drivingLabel, governmentLabel, type Lang } from '../i18n/strings'
 import { currencyChoiceLabel } from './currencyFakes'
 import { foundedChoiceLabel } from './foundedFakes'
 import { populationChoiceLabel } from './populationFakes'
@@ -22,14 +23,23 @@ import {
   isCodeOptionMode,
   isFootballMode,
   isLeadersMode,
+  isMathMode,
+  isAstroMode,
+  isThemeMode,
   isPlayerFootballMode,
+  astroItemFromCountry,
+  astroOptionLabel,
+  themeItemFromCountry,
+  themeOptionLabel,
+  mathItemFromCountry,
+  mathOptionLabel,
   type Question,
   type QuizMode,
 } from './quiz'
 import { isWaterMode, waterAnswerKey } from '../data/water'
 
 export function answerKey(country: Country, mode: QuizMode): string {
-  if (isFootballMode(mode) || isRankingMode(mode) || isLeadersMode(mode) || isPlayerFootballMode(mode)) {
+  if (isAstroMode(mode) || isThemeMode(mode) || isFootballMode(mode) || isRankingMode(mode) || isLeadersMode(mode) || isMathMode(mode) || isPlayerFootballMode(mode)) {
     return country.iso
   }
   if (isWaterMode(mode)) return waterAnswerKey(country.iso, mode)
@@ -37,6 +47,10 @@ export function answerKey(country: Country, mode: QuizMode): string {
   if (mode === 'neighborsToName') return `neighbors:${neighborKey(country.iso)}`
   if (mode === 'nameToFounded') return `founded:${foundedYear(country.iso) ?? country.iso}`
   if (mode === 'nameToGov') return `gov:${govKindOf(country.iso) ?? country.iso}`
+  if (mode === 'nameToDriving') return `drive:${drivingSide(country.iso)}`
+  if (mode === 'languageToName' || mode === 'drivingToName' || mode === 'silhouetteToName' || mode === 'nameToSilhouette') {
+    return country.iso
+  }
   const passport = PASSPORTS[country.iso]
   if (!passport) return country.iso
   if (mode === 'nameToCapital') return `capital:${passport.capitalEn}`
@@ -46,6 +60,18 @@ export function answerKey(country: Country, mode: QuizMode): string {
 }
 
 export function optionLabel(country: Country, mode: QuizMode, lang: Lang, question?: Question): string {
+  if (isMathMode(mode)) {
+    const item = mathItemFromCountry(country, mode)
+    return mathOptionLabel(item, lang)
+  }
+  if (isAstroMode(mode)) {
+    const item = astroItemFromCountry(country, mode)
+    return astroOptionLabel(item, lang)
+  }
+  if (isThemeMode(mode)) {
+    const item = themeItemFromCountry(country, mode)
+    return themeOptionLabel(item, lang)
+  }
   if (isFootballMode(mode) || isRankingMode(mode) || isLeadersMode(mode) || isPlayerFootballMode(mode)) {
     return countryName(country, lang)
   }
@@ -64,6 +90,7 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
     const kind = govKindOf(country.iso)
     return kind ? governmentLabel(kind, lang) : countryName(country, lang)
   }
+  if (mode === 'nameToDriving') return drivingLabel(drivingSide(country.iso), lang)
   const passport = PASSPORTS[country.iso]
   if (!passport) return countryName(country, lang)
   if (mode === 'nameToCapital') return passportCapital(passport, lang, country.iso)

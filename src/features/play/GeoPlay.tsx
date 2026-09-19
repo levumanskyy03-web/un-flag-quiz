@@ -12,7 +12,6 @@ import { QuizScreen } from "@/components/QuizScreen";
 import { RecordModal } from "@/components/RecordModal";
 import { ResultsScreen } from "@/components/ResultsScreen";
 import { STRINGS } from "@/i18n/strings";
-import { useDuelLaunch } from "@/features/duel/useDuelLaunch";
 import { clearMistakes } from "@/lib/mistakes";
 import { WORLD_RECORD_XP } from "@/lib/xp";
 import {
@@ -21,12 +20,13 @@ import {
   isFactsToName,
   isFootballMode,
   isLeadersMode,
+  isMathMode,
+  isAstroMode,
   isWaterMode,
 } from "@/lib/quiz";
 import type { PlaySession } from "./session";
 
 export function GeoPlay({ play }: { play: PlaySession }) {
-  const duel = useDuelLaunch(play.quizSettings);
   return (
     <>
       {play.screen === "home" && (
@@ -34,12 +34,8 @@ export function GeoPlay({ play }: { play: PlaySession }) {
           settings={play.quizSettings}
           history={play.history}
           bests={play.bests}
-          duelError={duel.error}
           onChange={play.handleSettingsChange}
           onStart={play.startRound}
-          onCreateDuel={(modes, facts) => void duel.create(modes, facts)}
-          onMatchDuel={(modes, facts) => void duel.match(modes, facts)}
-          onJoinDuel={duel.join}
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
           onClearHistory={play.handleClearHistory}
@@ -94,7 +90,7 @@ export function GeoPlay({ play }: { play: PlaySession }) {
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
           onPractice={play.startMistakesPractice}
-          onClear={() => play.setMistakeList(clearMistakes((item) => isFootballMode(item.mode) || isLeadersMode(item.mode)))}
+          onClear={() => play.setMistakeList(clearMistakes((item) => isFootballMode(item.mode) || isLeadersMode(item.mode) || isMathMode(item.mode) || isAstroMode(item.mode)))}
         />
       )}
       {play.screen === "album" && (
@@ -139,6 +135,7 @@ export function GeoPlay({ play }: { play: PlaySession }) {
           practice={play.isPractice}
           mix={Boolean(play.quizSettings.mix && play.quizSettings.path === "pool")}
           includeExtras={play.quizSettings.includeExtras}
+          power={play.quizPower}
           onSelect={play.selectAnswer}
           onNext={play.isPractice ? play.handlePracticeNext : undefined}
           onBack={play.goBackFromPlay}
@@ -150,12 +147,15 @@ export function GeoPlay({ play }: { play: PlaySession }) {
         <ResultsScreen
           lang={play.quizSettings.lang}
           mode={play.quizSettings.mode}
+          mix={play.quizSettings.path === "pool" ? play.quizSettings.mix : null}
+          mixModes={play.quizSettings.mixModes}
           hardcore={play.quizSettings.levelHardcore || play.quizSettings.difficulty === "hardcore"}
           answers={play.answers}
           roundMs={play.roundMs}
           endedBy={play.endedBy}
           isNewBest={play.isNewBest}
           earnedXp={play.earnedXp}
+          earnedTokens={play.earnedTokens}
           totalXp={play.xp}
           saveNote={!play.isPractice}
           menuLabel={play.isPractice ? STRINGS[play.quizSettings.lang].backToCards : undefined}

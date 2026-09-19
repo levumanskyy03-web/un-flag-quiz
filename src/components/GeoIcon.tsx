@@ -11,8 +11,27 @@ type GeoIconName =
   | 'stamp'
   | 'hash'
   | 'laurel'
+  | 'sigma'
+  | 'orbit'
   | 'speaker'
   | 'speakerOff'
+  | 'leaf'
+  | 'torch'
+  | 'code'
+  | 'bowl'
+  | 'hq'
+
+const BOX_24: ReadonlySet<GeoIconName> = new Set([
+  'ball',
+  'laurel',
+  'sigma',
+  'orbit',
+  'leaf',
+  'torch',
+  'code',
+  'bowl',
+  'hq',
+])
 
 interface GeoIconProps {
   name: GeoIconName
@@ -27,7 +46,7 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
       className="geo-icon"
       width={size}
       height={size}
-      viewBox={name === 'trophy' ? '0 0 20 20' : name === 'ball' || name === 'laurel' ? '0 0 24 24' : '0 0 16 16'}
+      viewBox={name === 'trophy' ? '0 0 20 20' : BOX_24.has(name) ? '0 0 24 24' : '0 0 16 16'}
       fill="none"
       aria-hidden="true"
     >
@@ -151,6 +170,110 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
           <ellipse cx="14.8" cy="17.85" rx="1.22" ry="2.2" transform="rotate(-38 14.8 17.85)" />
           <path d="M10.2 18.85c.55.95 1.2 1.55 1.8 1.55s1.25-.6 1.8-1.55c-.55.28-1.15.42-1.8.42s-1.25-.14-1.8-.42Z" />
         </g>
+      ) : null}
+      {name === 'sigma' ? (
+        <path
+          d="M6 5.2h12.2L12.4 12 18.2 18.8H6.1V16.7h8.4L9.6 12l4.8-4.6H6Z"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinejoin="round"
+          fill="none"
+        />
+      ) : null}
+      {name === 'orbit' ? (
+        <>
+          <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.6" />
+          <ellipse cx="12" cy="12" rx="9.2" ry="3.4" stroke="currentColor" strokeWidth="1.4" />
+          <circle cx="20.4" cy="12" r="1.35" fill="currentColor" />
+        </>
+      ) : null}
+      {name === 'leaf' ? (
+        <>
+          <path
+            d="M12 3.8c5.2 3.2 7.6 8.2 7.4 13.4-4.8.4-8.4-1.2-11.4-4.6C5.6 9.4 7.6 5.4 12 3.8Z"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinejoin="round"
+          />
+          <path d="M12 4.2v13.8" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" />
+          <path
+            d="M12 9.4c-1.7 1.2-2.8 2.7-3.4 4.4M12 11.8c1.5 1 2.6 2.3 3.2 3.8"
+            stroke="currentColor"
+            strokeWidth="1.45"
+            strokeLinecap="round"
+          />
+        </>
+      ) : null}
+      {name === 'torch' ? (
+        <>
+          <path
+            d="M12 3.4c1.85 1.55 2.85 3.15 2.85 4.85 0 1.7-1.25 3-2.85 3s-2.85-1.3-2.85-3c0-1.7 1-3.3 2.85-4.85Z"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M8.35 12.1h7.3l-.85 2.35H9.2Z"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinejoin="round"
+          />
+          <path d="M12 14.45v5.4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          <path d="M9.6 20.6h4.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        </>
+      ) : null}
+      {name === 'code' ? (
+        <>
+          <path
+            d="M9.2 6.6 4.7 12 9.2 17.4"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M14.8 6.6 19.3 12 14.8 17.4"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path d="M13.15 5.8 10.85 18.2" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" />
+        </>
+      ) : null}
+      {name === 'bowl' ? (
+        <>
+          <path
+            d="M4.6 11.2h14.8c-.45 5.05-3.55 8.05-7.4 8.05s-6.95-3-7.4-8.05Z"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M8.2 11.2c.25-3.05 1.85-4.85 3.8-4.85s3.55 1.8 3.8 4.85"
+            stroke="currentColor"
+            strokeWidth="1.55"
+            strokeLinecap="round"
+          />
+          <path
+            d="M10.2 4.35c.15-1.05.7-1.7 1.8-1.7M13.7 4.7c.2-1 .75-1.55 1.7-1.45"
+            stroke="currentColor"
+            strokeWidth="1.45"
+            strokeLinecap="round"
+          />
+        </>
+      ) : null}
+      {name === 'hq' ? (
+        <>
+          <path
+            d="M4.4 19.2V9.4L12 4.6l7.6 4.8v9.8"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinejoin="round"
+          />
+          <path d="M9.2 19.2v-5.2h5.6v5.2" stroke="currentColor" strokeWidth="1.55" strokeLinejoin="round" />
+          <path d="M8.4 11.2h.1M12 11.2h.1M15.6 11.2h.1" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </>
       ) : null}
       {name === 'speaker' || name === 'speakerOff' ? (
         <>

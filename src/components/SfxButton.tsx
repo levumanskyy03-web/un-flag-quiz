@@ -65,7 +65,7 @@ export function SfxButton({ lang }: SfxButtonProps) {
   }
 
   return (
-    <div className="sfx-menu-wrap" ref={wrapRef}>
+    <div className={`sfx-menu-wrap${open ? ' is-open' : ''}`} ref={wrapRef}>
       <button
         type="button"
         className={`settings-chip ratings-chip sfx-chip${allOff ? ' is-muted' : sfxOff || musicOff ? ' is-partial' : ''}`}

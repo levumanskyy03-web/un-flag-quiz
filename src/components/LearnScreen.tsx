@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { type Region } from '../data/countries'
 import { findCountry } from '../data/extras'
 import { isFinalLevel } from '../data/levels'
-import { difficultyLabel, governmentLabel, REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
+import { difficultyLabel, drivingLabel, governmentLabel, REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
 import {
   QUIZ_MODES,
   LEVEL_MODES,
@@ -18,6 +18,13 @@ import {
   isCodesMode,
   isFootballMode,
   isLeadersMode,
+  isMathMode,
+  isAstroMode,
+  isThemeMode,
+  themeWorldOf,
+  MATH_MODES,
+  ASTRO_MODES,
+  THEME_MODES,
   isLeaderNumberPrompt,
   isLeaderPhotoMode,
   leaderKindOf,
@@ -25,7 +32,9 @@ import {
   isFootballRosterMode,
   isManagerFootballMode,
   isNameToGov,
-  isNameToLanguage,
+  isLanguageMode,
+  isDrivingMode,
+  isSilhouetteMode,
   isPlayerFactsToName,
   isPlayerFootballMode,
   isPlayerPhotoMode,
@@ -41,9 +50,11 @@ import {
 import { footballLevelYears } from '../data/footballLevels'
 import { playerById } from '../data/footballPlayers'
 import { PlayerCardModal } from './PlayerCardModal'
+import { PlayerCatalogNo } from './PlayerCatalogNo'
 import { playerClueSequence, playerFactLabel } from '../lib/playerFacts'
 import { languageName, quizLanguageId } from '../data/languages'
 import { govKindOf } from '../data/governments'
+import { drivingSide } from '../data/driving'
 import { watersFor } from '../data/water'
 import { formatLeaderNumbers, formatTermNumber, leaderShowsNumber, personYearsLabel, splitLearnTerms, termById, yearsLabel } from '../data/leaders'
 import { leaderBio, leaderFeat } from '../data/leaderBios'
@@ -51,9 +62,10 @@ import { getPassport } from '../data/passports'
 import { formatRankingValue, rankingCount, rankingPlaceOf } from '../data/rankings'
 import type { QuizSettings } from './HomeScreen'
 import { ExtrasToggle } from './HomeScreen'
-import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
+import { HubNav, WORLD_HUB_TABS, MATH_HUB_TABS, ASTRO_HUB_TABS, type HubTab } from './HubNav'
 import { GeoModeGrids } from './GeoModeGrids'
 import { Flag, TeamFlag } from './Flag'
+import { QuizSilhouette } from './QuizSilhouette'
 import { FootballLearnTable } from './FootballLearnTable'
 import { FootballModeGrids, FootballSetup } from './FootballModeGrids'
 import { FitText, ChoiceLabel } from './FitText'
@@ -62,6 +74,12 @@ import { LeaderBioModal } from './LeaderBioModal'
 import { LeaderNoteMark } from './LeaderNoteMark'
 import { LeadersLearnTable } from './LeadersLearnTable'
 import { LeadersSetup } from './LeadersScreen'
+import { MathLearnTable } from './MathLearnTable'
+import { AstroLearnTable } from './AstroLearnTable'
+import { ThemeLearnTable } from './ThemeLearnTable'
+import { MathSetup } from './MathModeGrids'
+import { AstroSetup } from './AstroModeGrids'
+import { ThemeSetup } from './ThemeModeGrids'
 import { PassportModal } from './PassportModal'
 import { WorldsBack } from './WorldsBack'
 import { prefetchWikiPortraits, type PortraitRequest } from '../lib/wikiThumb'
@@ -82,6 +100,10 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   const football = isFootballMode(settings.mode)
   const mixModes = football && settings.mix ? modesForFootballMix(settings.mix, settings.mixModes) : null
   const leaders = isLeadersMode(settings.mode)
+  const math = isMathMode(settings.mode)
+  const astro = isAstroMode(settings.mode)
+  const theme = isThemeMode(settings.mode)
+  const themeWorld = isThemeMode(settings.mode) ? themeWorldOf(settings.mode) : 'biology'
   const pool = getLearnPool(
     settings.learnFrom,
     settings.region,
@@ -91,6 +113,12 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   )
   const modes = football
     ? FOOTBALL_MODES
+    : math
+      ? MATH_MODES
+    : astro
+      ? ASTRO_MODES
+    : theme
+      ? THEME_MODES
     : settings.learnFrom === 'level'
       ? LEVEL_MODES
       : QUIZ_MODES
@@ -105,7 +133,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   const [revealed, setRevealed] = useState<Set<string>>(() => new Set())
   const leaderKind = leaders ? leaderKindOf(settings.mode) : null
   const rosterLearn = isFootballRosterMode(settings.mode) && !mixModes
-  const countries = (settings.learnFrom === 'level' || football || leaders
+  const countries = (settings.learnFrom === 'level' || football || leaders || math || astro || theme
     ? pool
     : sortCountriesByName(pool, settings.lang)
   ).filter((country) => {
@@ -137,10 +165,20 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           ? t.footballLearnHint
           : leaders
             ? t.leadersSubtitle
+            : math
+              ? t.mathSubtitle
+              : astro
+                ? t.astroSubtitle
+              : theme
+                ? themeWorld === 'olympics'
+                  ? t.olySubtitle
+                  : themeWorld === 'cs'
+                    ? t.csSubtitle
+                    : themeWorld === 'food'
+                      ? t.foodSubtitle
+                      : t.bioSubtitle
             : regionLabel(settings.region, settings.lang)
-  const hubTabs = football || leaders
-    ? WORLD_HUB_TABS
-    : undefined
+  const hubTabs = math ? MATH_HUB_TABS : astro || theme ? ASTRO_HUB_TABS : football || leaders ? WORLD_HUB_TABS : undefined
 
   useEffect(() => {
     const pool = getLearnPool(
@@ -216,7 +254,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
             : `${subtitle ? ' · ' : ''}${t.countriesCount(countries.length)}`}
       </p>
 
-      {settings.learnFrom === 'region' && !football && !leaders && (
+      {settings.learnFrom === 'region' && !football && !leaders && !math && !astro && (
         <div className="choice-wrap">
           {regions.map((region) => (
             <button
@@ -237,7 +275,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         </div>
       )}
 
-      {settings.learnFrom === 'region' && !football && !leaders ? (
+      {settings.learnFrom === 'region' && !football && !leaders && !math && !astro && !theme ? (
         <ExtrasToggle
           settings={settings}
           onChange={(includeExtras) => onChange({ ...settings, includeExtras })}
@@ -385,6 +423,12 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
             </button>
           ))}
         </div>
+      ) : math ? (
+        <MathSetup settings={settings} onChange={(next) => onChange({ ...next, mix: null })} />
+      ) : astro ? (
+        <AstroSetup settings={settings} onChange={(next) => onChange({ ...next, mix: null })} />
+      ) : theme ? (
+        <ThemeSetup world={themeWorld} settings={settings} onChange={(next) => onChange({ ...next, mix: null })} />
       ) : (
         <GeoModeGrids
           lang={settings.lang}
@@ -462,6 +506,12 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           lang={settings.lang}
           years={settings.learnFrom === 'level' ? footballLevelYears(settings.mode, settings.level) : undefined}
         />
+      ) : math ? (
+        <MathLearnTable isos={countries.map((country) => country.iso)} lang={settings.lang} hideAnswers={hideAnswers} />
+      ) : astro ? (
+        <AstroLearnTable isos={countries.map((country) => country.iso)} lang={settings.lang} hideAnswers={hideAnswers} />
+      ) : theme ? (
+        <ThemeLearnTable isos={countries.map((country) => country.iso)} lang={settings.lang} hideAnswers={hideAnswers} />
       ) : null}
 
       {mixModes ? null : leaders && !isLeaderPhotoMode(settings.mode) ? (
@@ -486,8 +536,9 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           const rankingTotal = isRankingMode(settings.mode) ? rankingCount(settings.mode) : 0
           const rankingValue =
             isRankingMode(settings.mode) ? formatRankingValue(settings.mode, country.iso, settings.lang) : null
-          const quizLang = isNameToLanguage(settings.mode) ? quizLanguageId(country.iso) : null
+          const quizLang = isLanguageMode(settings.mode) ? quizLanguageId(country.iso) : null
           const govKind = isNameToGov(settings.mode) ? govKindOf(country.iso) : undefined
+          const drive = isDrivingMode(settings.mode) ? drivingSide(country.iso) : null
           const term = leaders ? termById(country.iso) : undefined
           if (leaders && term) {
             const bio = leaderBio(term, settings.lang)
@@ -563,7 +614,11 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 if (getPassport(country.iso)) setOpenIso(country.iso)
               }}
             >
-              <Flag iso={country.iso} name={name} size="card" />
+              {isSilhouetteMode(settings.mode) ? (
+                <QuizSilhouette iso={country.iso} size="thumb" />
+              ) : (
+                <Flag iso={country.iso} name={name} size="card" />
+              )}
               <p className="learn-card-name">
                 <FitText>{mapWater && waterLabel ? waterLabel : name}</FitText>
               </p>
@@ -582,6 +637,8 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 <p className="learn-card-meta">{languageName(quizLang, settings.lang)}</p>
               ) : govKind ? (
                 <p className="learn-card-meta">{governmentLabel(govKind, settings.lang)}</p>
+              ) : drive ? (
+                <p className="learn-card-meta">{drivingLabel(drive, settings.lang)}</p>
               ) : null}
             </button>
           )
@@ -640,7 +697,10 @@ function PlayerLearnCard({
   return (
     <button type="button" className="learn-card is-leader" onClick={onOpen}>
       {player ? (
-        <LeaderPortrait name={name} wiki={player.wiki} file={player.wikiFile} flagIso={player.nation} size="card" />
+        <span className="player-portrait-wrap">
+          <PlayerCatalogNo id={player.id} onPhoto />
+          <LeaderPortrait name={name} wiki={player.wiki} file={player.wikiFile} flagIso={player.nation} size="card" />
+        </span>
       ) : null}
       <p className="learn-card-name">
         <FitText>{name}</FitText>

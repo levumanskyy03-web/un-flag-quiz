@@ -2,11 +2,20 @@ import { useEffect, useState } from 'react'
 import { REGIONS, STRINGS, modeLabel, regionLabel, type Lang } from '../i18n/strings'
 import { GeoModeGrids } from './GeoModeGrids'
 import { FootballModeGrids, isFootballCatalog } from './FootballModeGrids'
+import { MathModeGrids, isMathCatalog } from './MathModeGrids'
+import { AstroModeGrids, isAstroCatalog } from './AstroModeGrids'
+import { ThemeModeGrids, isThemeCatalog, themeCatalogWorld } from './ThemeModeGrids'
 import { ChoiceLabel, FitText } from './FitText'
 import {
   EASY_FOOTBALL_MIX_MODES,
+  EASY_MATH_MIX_MODES,
+  EASY_ASTRO_MIX_MODES,
+  EASY_THEME_MIX,
   EASY_MIX_MODES,
   HARD_FOOTBALL_MIX_MODES,
+  HARD_MATH_MIX_MODES,
+  HARD_ASTRO_MIX_MODES,
+  HARD_THEME_MIX,
   HARD_MIX_MODES,
   QUIZ_MODES,
   isFactsToName,
@@ -57,9 +66,13 @@ export function DuelCreateModal({
   const t = STRINGS[lang]
   const [step, setStep] = useState<'modes' | 'facts'>('modes')
   const footballCatalog = isFootballCatalog(modeCatalog)
+  const mathCatalog = isMathCatalog(modeCatalog)
+  const astroCatalog = isAstroCatalog(modeCatalog)
+  const themeWorld = themeCatalogWorld(modeCatalog)
+  const themeCatalog = isThemeCatalog(modeCatalog)
   const [selected, setSelected] = useState<QuizMode[]>(() =>
     intent === 'match'
-      ? initialMatchModes(initialMode, footballCatalog)
+      ? initialMatchModes(initialMode)
       : orderedModes([isRankingMode(initialMode) ? 'flagToName' : initialMode]),
   )
   const [factsRegion, setFactsRegion] = useState<RegionFilter>(region)
@@ -84,10 +97,25 @@ export function DuelCreateModal({
   const modes = orderedModes(selected)
   const factsOnly = intent !== 'match' && modes.length === 1 && isFactsToName(modes[0])
   const football = footballCatalog
-  const easyMix = football ? sameModes(modes, EASY_FOOTBALL_MIX_MODES) : sameModes(modes, EASY_MIX_MODES)
-  const hardMix = football ? sameModes(modes, HARD_FOOTBALL_MIX_MODES) : sameModes(modes, HARD_MIX_MODES)
-  const mixButtons = showMix || football
-  const queues = matchQueues(football)
+  const math = mathCatalog
+  const astro = astroCatalog
+  const theme = themeCatalog
+  const easyMix = football
+    ? sameModes(modes, EASY_FOOTBALL_MIX_MODES)
+    : math
+      ? sameModes(modes, EASY_MATH_MIX_MODES)
+      : astro
+        ? sameModes(modes, EASY_ASTRO_MIX_MODES)
+      : sameModes(modes, EASY_MIX_MODES)
+  const hardMix = football
+    ? sameModes(modes, HARD_FOOTBALL_MIX_MODES)
+    : math
+      ? sameModes(modes, HARD_MATH_MIX_MODES)
+      : astro
+        ? sameModes(modes, HARD_ASTRO_MIX_MODES)
+      : sameModes(modes, HARD_MIX_MODES)
+  const mixButtons = showMix || football || math || astro
+  const queues = matchQueues()
 
   function toggleMode(mode: QuizMode) {
     setSelected((prev) => {
@@ -160,22 +188,26 @@ export function DuelCreateModal({
                 type="button"
                 className={`choice has-note is-wide ${easyMix ? 'is-active' : ''}`}
                 aria-pressed={easyMix}
-                onClick={() => setSelected(football ? [...EASY_FOOTBALL_MIX_MODES] : [...EASY_MIX_MODES])}
+                onClick={() =>
+                  setSelected(football ? [...EASY_FOOTBALL_MIX_MODES] : math ? [...EASY_MATH_MIX_MODES] : astro ? [...EASY_ASTRO_MIX_MODES] : theme && themeWorld ? [...EASY_THEME_MIX[themeWorld]] : [...EASY_MIX_MODES])
+                }
               >
                 <FitText minPx={9}>{t.easyMix}</FitText>
                 <FitText className="choice-note" wrap minPx={7}>
-                  {football ? t.footballEasyMixNote : t.easyMixNote}
+                  {football ? t.footballEasyMixNote : math ? t.mathEasyMixNote : astro ? t.astroEasyMixNote : theme && themeWorld === 'biology' ? t.bioEasyMixNote : theme && themeWorld === 'olympics' ? t.olyEasyMixNote : theme && themeWorld === 'cs' ? t.csEasyMixNote : theme && themeWorld === 'food' ? t.foodEasyMixNote : t.easyMixNote}
                 </FitText>
               </button>
               <button
                 type="button"
                 className={`choice has-note is-wide ${hardMix ? 'is-active' : ''}`}
                 aria-pressed={hardMix}
-                onClick={() => setSelected(football ? [...HARD_FOOTBALL_MIX_MODES] : [...HARD_MIX_MODES])}
+                onClick={() =>
+                  setSelected(football ? [...HARD_FOOTBALL_MIX_MODES] : math ? [...HARD_MATH_MIX_MODES] : astro ? [...HARD_ASTRO_MIX_MODES] : theme && themeWorld ? [...HARD_THEME_MIX[themeWorld]] : [...HARD_MIX_MODES])
+                }
               >
                 <FitText minPx={9}>{t.hardMix}</FitText>
                 <FitText className="choice-note" wrap minPx={7}>
-                  {football ? t.footballHardMixNote : t.hardMixNote}
+                  {football ? t.footballHardMixNote : math ? t.mathHardMixNote : astro ? t.astroHardMixNote : theme && themeWorld === 'biology' ? t.bioHardMixNote : theme && themeWorld === 'olympics' ? t.olyHardMixNote : theme && themeWorld === 'cs' ? t.csHardMixNote : theme && themeWorld === 'food' ? t.foodHardMixNote : t.hardMixNote}
                 </FitText>
               </button>
             </div>
@@ -192,6 +224,31 @@ export function DuelCreateModal({
               <FootballModeGrids
                 lang={lang}
                 activeMode={selected[0] ?? 'wcWinners'}
+                selectedModes={selected}
+                mix={modes.length > 1}
+                onPick={toggleMode}
+              />
+            ) : math ? (
+              <MathModeGrids
+                lang={lang}
+                activeMode={selected[0] ?? 'exprToValue'}
+                selectedModes={selected}
+                mix={modes.length > 1}
+                onPick={toggleMode}
+              />
+            ) : astro ? (
+              <AstroModeGrids
+                lang={lang}
+                activeMode={selected[0] ?? 'planetToOrder'}
+                selectedModes={selected}
+                mix={modes.length > 1}
+                onPick={toggleMode}
+              />
+            ) : theme && themeWorld ? (
+              <ThemeModeGrids
+                world={themeWorld}
+                lang={lang}
+                activeMode={selected[0] ?? EASY_THEME_MIX[themeWorld][0]}
                 selectedModes={selected}
                 mix={modes.length > 1}
                 onPick={toggleMode}
@@ -221,9 +278,9 @@ export function DuelCreateModal({
         ) : (
           <>
             <h2 id="duel-setup-title" className="passport-title">
-              {football ? t.duelFactsRules : t.duelFactsRegion}
+              {football || math || astro || theme ? t.duelFactsRules : t.duelFactsRegion}
             </h2>
-            {football ? null : (
+            {football || math || astro || theme ? null : (
             <div className="choice-wrap">
               {regions.map((item) => (
                 <button
@@ -238,7 +295,7 @@ export function DuelCreateModal({
               ))}
             </div>
             )}
-            {football ? null : <h2>{t.duelFactsRules}</h2>}
+            {football || math || astro || theme ? null : <h2>{t.duelFactsRules}</h2>}
             <div className="choice-grid">
               {(
                 [
@@ -294,7 +351,7 @@ export function DuelCreateModal({
                   end: factsEnd,
                   hardcore: factsHardcore,
                   series: factsSeries,
-                  region: football ? 'all' : factsRegion,
+                  region: football || math || astro || theme ? 'all' : factsRegion,
                 })
               }
             >

@@ -14,6 +14,26 @@ export function WorldsBack({ lang, onClick, label }: WorldsBackProps) {
   )
 }
 
+export function StudioChromeNav({
+  lang,
+  onBack,
+  onWorlds,
+}: {
+  lang: Lang
+  onBack: () => void
+  onWorlds: () => void
+}) {
+  const t = STRINGS[lang]
+  return (
+    <div className="pack-chrome-nav">
+      <WorldsBack lang={lang} label={t.back} onClick={onBack} />
+      <button type="button" className="btn-ghost pack-worlds-link" onClick={onWorlds}>
+        {t.worldsBack}
+      </button>
+    </div>
+  )
+}
+
 export function WorldsBackLink({ lang }: { lang?: Lang }) {
   const t = STRINGS[lang ?? 'ru']
   return (

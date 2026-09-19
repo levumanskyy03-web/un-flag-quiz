@@ -9,6 +9,9 @@ import {
   isFactsToName,
   isFootballMode,
   isLeadersMode,
+  isMathMode,
+  isAstroMode,
+  isThemeMode,
   type LearnFrom,
   type MixKind,
   type PlayPath,
@@ -17,9 +20,7 @@ import {
   type RegionFilter,
   type RoundSize,
 } from '../lib/quiz'
-import type { FactsDuelConfig } from '../lib/factsRules'
 import { HubNav, type HubTab } from './HubNav'
-import { DuelCreateModal } from './DuelCreateModal'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import { FitText } from './FitText'
@@ -52,12 +53,8 @@ interface HomeScreenProps {
   settings: QuizSettings
   history: RoundRecord[]
   bests: RoundRecord[]
-  duelError?: string | null
   onChange: (settings: QuizSettings) => void
   onStart: () => void
-  onCreateDuel: (modes: QuizMode[], facts?: FactsDuelConfig) => void
-  onMatchDuel: (modes: QuizMode[], facts?: FactsDuelConfig) => void
-  onJoinDuel: (code: string) => void
   onHub: (tab: HubTab) => void
   onWorlds: () => void
   onClearHistory: () => void
@@ -67,12 +64,8 @@ export function HomeScreen({
   settings,
   history,
   bests,
-  duelError,
   onChange,
   onStart,
-  onCreateDuel,
-  onMatchDuel,
-  onJoinDuel,
   onHub,
   onWorlds,
   onClearHistory,
@@ -86,9 +79,7 @@ export function HomeScreen({
         ? getRegionPool(settings.region, settings.includeExtras).length
         : getPool(settings.region, settings.difficulty, settings.mode, settings.includeExtras).length
   const currentBest = findBest(bests, settings)
-  const geoHistory = history.filter((item) => !isFootballMode(item.mode) && !isLeadersMode(item.mode))
-  const [joinCode, setJoinCode] = useState('')
-  const [duelSetup, setDuelSetup] = useState<'create' | 'match' | null>(null)
+  const geoHistory = history.filter((item) => !isFootballMode(item.mode) && !isLeadersMode(item.mode) && !isMathMode(item.mode) && !isAstroMode(item.mode) && !isThemeMode(item.mode))
   const [setupFamily, setSetupFamily] = useState<SetupFamily | null>(null)
   const activeFamily = geoFamilyOf(settings.mode, settings.mix)
 
@@ -176,42 +167,6 @@ export function HomeScreen({
         </button>
       </div>
 
-      <section className="card settings-card">
-        <h2>{t.multiplayer}</h2>
-        <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={() => setDuelSetup('match')}>
-          {t.multiplayerPlay}
-        </button>
-      </section>
-
-      <section className="card settings-card">
-        <h2>{t.duel}</h2>
-        <p className="setting-hint">{t.duelHint}</p>
-        <button type="button" className="btn-secondary" disabled={poolSize === 0} onClick={() => setDuelSetup('create')}>
-          {t.duelCreate}
-        </button>
-        <form
-          className="duel-join"
-          onSubmit={(event) => {
-            event.preventDefault()
-            onJoinDuel(joinCode)
-          }}
-        >
-          <input
-            value={joinCode}
-            onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
-            placeholder={t.duelCode}
-            autoComplete="off"
-            maxLength={4}
-            spellCheck={false}
-            aria-label={t.duelCode}
-          />
-          <button type="submit" className="choice" disabled={joinCode.trim().length !== 4}>
-            {t.duelJoin}
-          </button>
-        </form>
-        {duelError ? <p className="account-error">{duelError}</p> : null}
-      </section>
-
       {setupFamily ? (
         <ModeSetupModal
           family={setupFamily}
@@ -222,22 +177,6 @@ export function HomeScreen({
             onStart()
           }}
           onClose={() => setSetupFamily(null)}
-        />
-      ) : null}
-
-      {duelSetup ? (
-        <DuelCreateModal
-          lang={settings.lang}
-          initialMode={settings.mode}
-          region={settings.region}
-          intent={duelSetup}
-          onCancel={() => setDuelSetup(null)}
-          onConfirm={(modes, facts) => {
-            const kind = duelSetup
-            setDuelSetup(null)
-            if (kind === 'match') onMatchDuel(modes, facts)
-            else onCreateDuel(modes, facts)
-          }}
         />
       ) : null}
 

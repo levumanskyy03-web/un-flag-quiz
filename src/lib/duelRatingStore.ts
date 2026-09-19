@@ -2,9 +2,9 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { LEADERBOARD_LIMIT, isPlayerId } from './leaderboard'
 import type { DuelRatingSnapshot } from './duelTypes'
-import { isFootballMode, type QuizMode } from './quiz'
+import { isFootballMode, isLeadersMode, isMathMode, isAstroMode, isThemeMode, isThemeWorld, worldOfMode, QUIZ_WORLDS, type QuizMode, type QuizWorld } from './quiz'
 
-export type DuelRatingWorld = 'all' | 'geo' | 'football'
+export type DuelRatingWorld = 'all' | QuizWorld
 
 export interface DuelRatingEntry {
   id: string
@@ -23,17 +23,15 @@ interface WorldStats {
   draws: number
 }
 
-interface StoredPlayer {
+type StoredPlayer = {
   id: string
   name: string
   elo: number
   wins: number
   losses: number
   draws: number
-  geo: WorldStats
-  football: WorldStats
   at: number
-}
+} & Record<QuizWorld, WorldStats>
 
 interface Store {
   players: Record<string, StoredPlayer>
@@ -48,13 +46,21 @@ const K = 24
 
 let writeChain: Promise<void> = Promise.resolve()
 
-export function duelWorldOf(modes: QuizMode[]): 'geo' | 'football' {
-  return modes.length > 0 && modes.every((mode) => isFootballMode(mode)) ? 'football' : 'geo'
+export function duelWorldOf(modes: QuizMode[]): QuizWorld {
+  if (modes.length > 0 && modes.every((mode) => isFootballMode(mode))) return 'football'
+  if (modes.length > 0 && modes.every((mode) => isLeadersMode(mode))) return 'leaders'
+  if (modes.length > 0 && modes.every((mode) => isMathMode(mode))) return 'math'
+  if (modes.length > 0 && modes.every((mode) => isAstroMode(mode))) return 'astronomy'
+  if (modes.length > 0 && modes.every(isThemeMode)) {
+    const world = worldOfMode(modes[0])
+    if (isThemeWorld(world) && modes.every((mode) => worldOfMode(mode) === world)) return world
+  }
+  return 'geo'
 }
 
 export async function applyDuelMatch(input: {
   matchId: string
-  world: 'geo' | 'football'
+  world: QuizWorld
   host: { id: string; name: string; bot: boolean; elo?: number; score: number }
   guest: { id: string; name: string; bot: boolean; elo?: number; score: number }
 }): Promise<DuelRatingSnapshot> {
@@ -111,7 +117,7 @@ export async function readDuelRatings(
   if (!store) return { configured: false, entries: [] }
   const rows = Object.values(store.players)
     .map((player) => {
-      const stats = world === 'all' ? player : player[world]
+      const stats = world === 'all' ? player : player[world] ?? blankWorld()
       const games = stats.wins + stats.losses + stats.draws
       return {
         id: player.id,
@@ -142,7 +148,7 @@ export async function readDuelRatings(
 function bump(
   store: Store,
   player: { id: string; name: string },
-  world: 'geo' | 'football',
+  world: QuizWorld,
   delta: number,
   score: number,
 ) {
@@ -163,18 +169,22 @@ function applyResult(stats: WorldStats, delta: number, score: number) {
 
 function ratingOf(store: Store, id: string): StoredPlayer {
   const existing = store.players[id]
-  if (existing) return existing
-  const fresh: StoredPlayer = {
+  if (existing) {
+    for (const world of QUIZ_WORLDS) {
+      existing[world] = existing[world] ?? blankWorld()
+    }
+    return existing
+  }
+  const fresh = {
     id,
     name: 'Player',
     elo: START_ELO,
     wins: 0,
     losses: 0,
     draws: 0,
-    geo: blankWorld(),
-    football: blankWorld(),
     at: Date.now(),
-  }
+    ...Object.fromEntries(QUIZ_WORLDS.map((world) => [world, blankWorld()])),
+  } as StoredPlayer
   store.players[id] = fresh
   return fresh
 }

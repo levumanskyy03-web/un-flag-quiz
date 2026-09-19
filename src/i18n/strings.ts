@@ -11,10 +11,15 @@ import {
   HARD_MIX_MODES,
   MAP_MIX_MODES,
   PLAYER_FOOTBALL_MATCH_MIX,
+  PHOTO_LEADERS_MATCH_MIX,
+  US_LEADERS_MATCH_MIX,
   WC_FOOTBALL_MATCH_MIX,
   isAllRegions,
   isFootballMode,
   isLeadersMode,
+  isMathMode,
+  isAstroMode,
+  isThemeMode,
   leaderKindOf,
   leadersAskOf,
   parseRegions,
@@ -27,6 +32,12 @@ import {
   type RegionFilter,
 } from '../lib/quiz'
 import { EXTRA_STRINGS } from './extra'
+import { MATH_MODE_COPY } from './mathCopy'
+import { ASTRO_MODE_COPY } from './astroCopy'
+import { THEME_MODE_COPY } from './themeCopy'
+import { PACK_MODE_COPY } from './packCopy'
+import { COMPANY_COPY } from './companyCopy'
+import { TOKEN_COPY } from './tokenCopy'
 import { isRtl, rtlModeArrows, type Lang } from './lang'
 
 export { REGIONS }
@@ -38,6 +49,166 @@ export type Strings = {
   worldsPick: string
   geography: string
   football: string
+  math: string
+  mathSubtitle: string
+  mathFamilyArithmetic: string
+  mathFamilyGeometry: string
+  mathFamilySymbols: string
+  mathFamilyPeople: string
+  mathEasyMixNote: string
+  mathHardMixNote: string
+  exprToValue: string
+  valueToExpr: string
+  fractionDecimal: string
+  percentToValue: string
+  powerToValue: string
+  orderOfOps: string
+  shapeToName: string
+  nameToShape: string
+  angleToKind: string
+  formulaToQuantity: string
+  unitsConvert: string
+  symbolToMeaning: string
+  constantToValue: string
+  siPrefixToFactor: string
+  mathPhotoToName: string
+  mathFactsToName: string
+  mathPersonToPlace: string
+  theoremToAuthor: string
+  mathExprPrompt: string
+  mathValuePrompt: string
+  mathFractionPrompt: string
+  mathPercentPrompt: string
+  mathPowerPrompt: string
+  mathOrderPrompt: string
+  mathShapePrompt: string
+  mathNameToShapePrompt: string
+  mathAnglePrompt: string
+  mathFormulaPrompt: string
+  mathUnitsPrompt: string
+  mathSymbolPrompt: string
+  mathConstantPrompt: string
+  mathSiPrompt: string
+  mathPhotoPrompt: string
+  mathFactsPrompt: string
+  mathPersonPlacePrompt: string
+  mathTheoremPrompt: string
+  astronomy: string
+  astroSubtitle: string
+  astroFamilyPlanets: string
+  astroFamilyMoons: string
+  astroFamilySky: string
+  astroFamilyPeople: string
+  astroEasyMixNote: string
+  astroHardMixNote: string
+  planetToOrder: string
+  orderToPlanet: string
+  planetToKind: string
+  moonToPlanet: string
+  planetToMoon: string
+  starToClass: string
+  constelToName: string
+  astroPhotoToName: string
+  astroFactsToName: string
+  astroPlanetPrompt: string
+  astroOrderPrompt: string
+  astroKindPrompt: string
+  astroMoonPrompt: string
+  astroPlanetMoonPrompt: string
+  astroStarPrompt: string
+  astroConstelPrompt: string
+  astroPhotoPrompt: string
+  astroFactsPrompt: string
+  biology: string
+  bioSubtitle: string
+  bioFamilyCell: string
+  bioFamilyBody: string
+  bioFamilyLife: string
+  bioEasyMixNote: string
+  bioHardMixNote: string
+  organelleToRole: string
+  roleToOrganelle: string
+  organToSystem: string
+  photoStepToName: string
+  kingdomToExample: string
+  bioOrganellePrompt: string
+  bioRolePrompt: string
+  bioOrganPrompt: string
+  bioPhotoPrompt: string
+  bioKingdomPrompt: string
+  olympics: string
+  olySubtitle: string
+  olyFamilyHosts: string
+  olyFamilySports: string
+  olyFamilyNoc: string
+  olyEasyMixNote: string
+  olyHardMixNote: string
+  olyYearToHost: string
+  olyHostToYear: string
+  olyHostCount: string
+  sportToCategory: string
+  nocToName: string
+  olyYearPrompt: string
+  olyHostPrompt: string
+  olyCountPrompt: string
+  olySportPrompt: string
+  olyNocPrompt: string
+  musicWorld: string
+  musicSubtitle: string
+  musicFamilyInstruments: string
+  musicFamilyWorks: string
+  musicFamilyPeople: string
+  musicEasyMixNote: string
+  musicHardMixNote: string
+  instrumentToFamily: string
+  composerToWork: string
+  workToComposer: string
+  musicPhotoToName: string
+  musicInstrPrompt: string
+  musicWorkPrompt: string
+  musicComposerPrompt: string
+  musicPhotoPrompt: string
+  cs: string
+  csSubtitle: string
+  csFamilyCode: string
+  csFamilyBinary: string
+  csFamilyPeople: string
+  csEasyMixNote: string
+  csHardMixNote: string
+  csTermToMeaning: string
+  meaningToCsTerm: string
+  decToBinary: string
+  binaryToDec: string
+  csPhotoToName: string
+  csTermPrompt: string
+  csMeaningPrompt: string
+  csDecPrompt: string
+  csBinPrompt: string
+  csPhotoPrompt: string
+  food: string
+  foodSubtitle: string
+  foodFamilyDishes: string
+  foodFamilyOrigin: string
+  foodEasyMixNote: string
+  foodHardMixNote: string
+  dishToCuisine: string
+  cuisineToDish: string
+  foodToOrigin: string
+  foodDishPrompt: string
+  foodCuisinePrompt: string
+  foodOriginPrompt: string
+  transport: string
+  transportSubtitle: string
+  transFamilyVehicles: string
+  transFamilyPeople: string
+  transEasyMixNote: string
+  transHardMixNote: string
+  vehicleToKind: string
+  kindToVehicle: string
+  inventorToVehicle: string
+  transVehiclePrompt: string
+  transKindPrompt: string
+  transInventorPrompt: string
   wcWinners: string
   wcWinnerPrompt: (year: number) => string
   wcFinalists: string
@@ -282,6 +453,8 @@ export type Strings = {
   neighborsToName: string
   nameToMap: string
   mapToName: string
+  silhouetteToName: string
+  nameToSilhouette: string
   factsToName: string
   mapToSea: string
   mapToRiver: string
@@ -289,6 +462,17 @@ export type Strings = {
   riverToName: string
   nameToLanguage: string
   nameToLanguagePrompt: string
+  languageToName: string
+  languageToNamePrompt: string
+  nameToDriving: string
+  nameToDrivingPrompt: string
+  drivingToName: string
+  drivingToNamePrompt: string
+  drivingLeft: string
+  drivingRight: string
+  familySilhouette: string
+  familyDriving: string
+  silhouettePrompt: string
   nameToGov: string
   nameToGovPrompt: string
   govPresidential: string
@@ -336,6 +520,9 @@ export type Strings = {
   mixAskFounded: string
   mixAskGov: string
   mixAskMap: string
+  mixAskSilhouette: string
+  mixAskDriving: string
+  mixAskLanguage: string
   mixAskSea: string
   mixAskRiver: string
   founded: string
@@ -469,9 +656,12 @@ export type Strings = {
   legalCountries: string
   legalToday: string
   legalLanguages: string
+  legalLists: string
   share: string
   shareCopied: string
-  shareResult: (score: string, url: string) => string
+  shareBetter: string
+  shareTap: string
+  shareResult: (score: string, theme: string, url: string) => string
   shareToday: (name: string, url: string) => string
   settings: string
   settingsAccount: string
@@ -496,6 +686,10 @@ export type Strings = {
   xpHowLevels: string
   xpHowRecord: string
   xpHowRank: string
+  tokenHowLead: string
+  tokenHowEarn: string
+  tokenHowSpend: string
+  tokenHowCap: string
   avatars: string
   avatarChange: string
   avatarPickerHint: string
@@ -578,6 +772,177 @@ export type Strings = {
   multiplayer: string
   multiplayerPlay: string
   multiplayerWaiting: string
+  multiplayerHint: string
+  company: string
+  companyHint: string
+  companyKnowledge: string
+  companyRate: (n: string) => string
+  companyCap: (hours: string) => string
+  companyClaim: string
+  companyClaimed: string
+  companyStage: (n: number) => string
+  companyHq: string
+  companyBuyHq: string
+  companyHqOwned: string
+  companyHqHint: string
+  companySparkCatch: string
+  companySparkHint: string
+  companyBuff: string
+  companyTaskFocus: (n: number) => string
+  companyTaskSparks: (n: number) => string
+  companyTaskRounds: (n: number) => string
+  companyTaskWorldRounds: (n: number, world: string) => string
+  companyTaskCompletes: (n: number) => string
+  companyTaskBuyHq: string
+  companyRewardKnowledge: (n: string) => string
+  companyRewardRate: (n: number) => string
+  companyRewardCap: (min: number) => string
+  companyLocked: string
+  companyDone: string
+  companyHud: string
+  companyPlay: string
+  companyFinished: string
+  shop: string
+  shopHint: string
+  tokens: string
+  tokensBalance: (n: number) => string
+  tokensGained: (n: number) => string
+  tokensDayCap: (earned: number, cap: number) => string
+  shopCosmetics: string
+  shopBoosts: string
+  shopOwned: string
+  shopEquip: string
+  shopEquipped: string
+  shopBuy: string
+  shopLocked: string
+  shopFrameLaurel: string
+  shopFrameGold: string
+  shopFrameNight: string
+  shopFrameOrbit: string
+  shopShareInk: string
+  shopShareGold: string
+  shopShareNight: string
+  shopHqSkin: string
+  shopHqSkinHint: string
+  shopBoostKnowledge: string
+  shopBoostXp: string
+  shopBoostActive: string
+  quizHint: string
+  quizSkip: string
+  quizExtraLife: string
+  studio: string
+  studioSubtitle: string
+  studioNew: string
+  studioEmpty: string
+  studioUpload: string
+  studioPaste: string
+  studioPasteHint: string
+  studioPdfSkip: string
+  studioPdfScan: (taken: number, total: number) => string
+  studioGuideTitle: string
+  studioGuideHow: string
+  studioGuideNeed: string
+  studioGuideLimits: (files: number, mb: number, photos: number, textK: number, cards: number) => string
+  studioDrop: string
+  studioPhotos: string
+  studioAddPhotos: string
+  studioAddPhotosHint: string
+  studioHelp: string
+  studioQuota: string
+  studioOverLimit: string
+  studioAnalyzing: string
+  studioAnalyze: string
+  studioAnalyzeFail: string
+  studioAnalyzeNoKey: string
+  studioSummary: string
+  studioFormats: string
+  studioFormatsHint: string
+  studioToneGreen: string
+  studioToneYellow: string
+  studioToneGray: string
+  studioContinue: string
+  studioDraft: string
+  studioAccept: string
+  studioPlay: string
+  studioFix: string
+  studioDelete: string
+  studioLoaded: (photos: number, files: number) => string
+  studioLoadedEmpty: string
+  studioLoadedFiles: string
+  studioRemoveUpload: string
+  studioIncludeWeb: string
+  studioNoPlay: string
+  packFamilyTerms: string
+  packFamilyPortraits: string
+  packFamilySilhouettes: string
+  packFamilyDiagrams: string
+  packFamilyField: string
+  packFamilyDates: string
+  packFamilyNumbers: string
+  packFamilyOrder: string
+  packFamilyQty: string
+  packFamilyFormula: string
+  packFamilyKind: string
+  packFamilyLinks: string
+  packFamilyPairs: string
+  packFamilyPlace: string
+  packFamilyGroups: string
+  packFamilyClues: string
+  termToDef: string
+  defToTerm: string
+  photoToName: string
+  nameToPhoto: string
+  silToName: string
+  nameToSil: string
+  diagramToName: string
+  nameToDiagram: string
+  nameToField: string
+  fieldToName: string
+  dateToName: string
+  nameToDate: string
+  numToName: string
+  nameToNum: string
+  orderToName: string
+  nameToOrder: string
+  nameToQty: string
+  qtyToName: string
+  exprToSense: string
+  senseToExpr: string
+  nameToKind: string
+  kindToName: string
+  relToName: string
+  nameToRel: string
+  pairFwd: string
+  pairRev: string
+  nameToPlace: string
+  placeToName: string
+  setMember: string
+  cluesToName: string
+  packEasyMix: string
+  packHardMix: string
+  packCustomMix: string
+  packChapters: string
+  packAllChapters: string
+  fixTitle: string
+  fixSwap: string
+  fixBadFact: string
+  fixWording: string
+  fixImage: string
+  fixOptions: string
+  fixNotInSource: string
+  fixWrongFormat: string
+  fixDuplicate: string
+  fixOther: string
+  fixApply: string
+  fixNeedAi: string
+  fixAiHint: string
+  fixAiGo: string
+  fixHide: string
+  fixDrop: string
+  fixOptionsGroup: string
+  fixOptionsPack: string
+  studioNCards: (n: number) => string
+  studioFound: (kind: string, n: number) => string
   duelCreate: string
   duelJoin: string
   duelCode: string
@@ -719,6 +1084,12 @@ export const STRINGS: Record<Lang, Strings> = {
     worldsPick: 'Выберите тему',
     geography: 'География',
     football: 'Футбол',
+    ...MATH_MODE_COPY.ru,
+    ...ASTRO_MODE_COPY.ru,
+    ...PACK_MODE_COPY.ru,
+    ...COMPANY_COPY.ru,
+    ...TOKEN_COPY.ru,
+    ...THEME_MODE_COPY.ru,
     wcWinners: 'Победители ЧМ',
     wcWinnerPrompt: (year) => `Кто выиграл ЧМ ${year}?`,
     wcFinalists: 'Финалисты ЧМ',
@@ -972,6 +1343,8 @@ export const STRINGS: Record<Lang, Strings> = {
     neighborsToName: 'Соседи → страна',
     nameToMap: 'Страна → карта',
     mapToName: 'Карта → страна',
+    silhouetteToName: 'Силуэт → страна',
+    nameToSilhouette: 'Страна → силуэт',
     factsToName: 'Факты → страна',
     mapToSea: 'Море → страна',
     mapToRiver: 'Река → страна',
@@ -979,6 +1352,17 @@ export const STRINGS: Record<Lang, Strings> = {
     riverToName: 'Водоем → страна',
     nameToLanguage: 'Страна → язык',
     nameToLanguagePrompt: 'Какой язык у этой страны?',
+    languageToName: 'Язык → страна',
+    languageToNamePrompt: 'Какая это страна по языку?',
+    nameToDriving: 'Страна → сторона движения',
+    nameToDrivingPrompt: 'По какой стороне здесь ездят?',
+    drivingToName: 'Сторона движения → страна',
+    drivingToNamePrompt: 'Какая страна ездит по этой стороне?',
+    drivingLeft: 'Левая',
+    drivingRight: 'Правая',
+    familySilhouette: 'Силуэт',
+    familyDriving: 'Сторона движения',
+    silhouettePrompt: 'Какая это страна?',
     nameToGov: 'Страна → гос. устройство',
     nameToGovPrompt: 'Какое государственное устройство у этой страны?',
     govPresidential: 'Президентская республика',
@@ -1027,6 +1411,9 @@ export const STRINGS: Record<Lang, Strings> = {
     mixAskFounded: 'Назовите год основания',
     mixAskGov: 'Назовите гос. устройство',
     mixAskMap: 'Найдите страну на карте',
+    mixAskSilhouette: 'Назовите страну по силуэту',
+    mixAskDriving: 'Назовите сторону движения',
+    mixAskLanguage: 'Назовите страну по языку',
     mixAskSea: 'Назовите море или океан',
     mixAskRiver: 'Назовите реку или озеро',
     founded: 'Основание',
@@ -1270,9 +1657,12 @@ export const STRINGS: Record<Lang, Strings> = {
     legalCountries: 'Страны',
     legalToday: 'Страна дня',
     legalLanguages: 'Языки',
+    legalLists: 'Подборки',
     share: 'Поделиться',
     shareCopied: 'Ссылка скопирована',
-    shareResult: (score, url) => `Я сыграл в «Паспорт страны»: ${score}. ${url}`,
+    shareBetter: 'Сможешь лучше?',
+    shareTap: 'Нажми, чтобы отправить',
+    shareResult: (score, theme, url) => `${score} · ${theme}\nСможешь лучше?\n${url}`,
     shareToday: (name, url) => `Страна дня — ${name}. ${url}`,
     duel: 'Дуэль',
     duelHint: 'Один на один с другом: создайте комнату или введите код.',
@@ -1280,6 +1670,7 @@ export const STRINGS: Record<Lang, Strings> = {
     multiplayer: 'Мультиплеер',
     multiplayerPlay: 'Играть онлайн',
     multiplayerWaiting: 'Ищем соперника',
+    multiplayerHint: 'География, футбол и лидеры стран — один онлайн-режим вне тем.',
     duelCreate: 'Создать комнату',
     duelJoin: 'Войти',
     duelCode: 'Код комнаты',
@@ -1400,6 +1791,12 @@ export const STRINGS: Record<Lang, Strings> = {
     worldsPick: 'Choose a topic',
     geography: 'Geography',
     football: 'Football',
+    ...MATH_MODE_COPY.en,
+    ...ASTRO_MODE_COPY.en,
+    ...PACK_MODE_COPY.en,
+    ...COMPANY_COPY.en,
+    ...TOKEN_COPY.en,
+    ...THEME_MODE_COPY.en,
     wcWinners: 'World Cup winners',
     wcWinnerPrompt: (year) => `Who won the ${year} World Cup?`,
     wcFinalists: 'World Cup finalists',
@@ -1653,6 +2050,8 @@ export const STRINGS: Record<Lang, Strings> = {
     neighborsToName: 'Neighbors → country',
     nameToMap: 'Country → map',
     mapToName: 'Map → country',
+    silhouetteToName: 'Silhouette → country',
+    nameToSilhouette: 'Country → silhouette',
     factsToName: 'Facts → country',
     mapToSea: 'Sea → country',
     mapToRiver: 'River → country',
@@ -1660,6 +2059,17 @@ export const STRINGS: Record<Lang, Strings> = {
     riverToName: 'River/lake → country',
     nameToLanguage: 'Country → language',
     nameToLanguagePrompt: 'What is this country’s language?',
+    languageToName: 'Language → country',
+    languageToNamePrompt: 'Which country is this language from?',
+    nameToDriving: 'Country → driving side',
+    nameToDrivingPrompt: 'Which side do they drive on?',
+    drivingToName: 'Driving side → country',
+    drivingToNamePrompt: 'Which country drives on this side?',
+    drivingLeft: 'Left',
+    drivingRight: 'Right',
+    familySilhouette: 'Silhouette',
+    familyDriving: 'Driving side',
+    silhouettePrompt: 'Which country is this?',
     nameToGov: 'Country → government',
     nameToGovPrompt: 'What is this country’s form of government?',
     govPresidential: 'Presidential republic',
@@ -1708,6 +2118,9 @@ export const STRINGS: Record<Lang, Strings> = {
     mixAskFounded: 'Name the founding year',
     mixAskGov: 'Name the form of government',
     mixAskMap: 'Find the country on the map',
+    mixAskSilhouette: 'Name the country from the silhouette',
+    mixAskDriving: 'Name the driving side',
+    mixAskLanguage: 'Name the country from the language',
     mixAskSea: 'Name the sea or ocean',
     mixAskRiver: 'Name the river or lake',
     founded: 'Founded',
@@ -1945,9 +2358,12 @@ export const STRINGS: Record<Lang, Strings> = {
     legalCountries: 'Countries',
     legalToday: 'Country of the day',
     legalLanguages: 'Languages',
+    legalLists: 'Lists',
     share: 'Share',
     shareCopied: 'Link copied',
-    shareResult: (score, url) => `I played Country Passport: ${score}. ${url}`,
+    shareBetter: 'Can you do better?',
+    shareTap: 'Tap to send',
+    shareResult: (score, theme, url) => `${score} · ${theme}\nCan you do better?\n${url}`,
     shareToday: (name, url) => `Country of the day: ${name}. ${url}`,
     duel: 'Duel',
     duelHint: 'One on one with a friend: create a room or enter a code.',
@@ -1955,6 +2371,7 @@ export const STRINGS: Record<Lang, Strings> = {
     multiplayer: 'Multiplayer',
     multiplayerPlay: 'Play online',
     multiplayerWaiting: 'Looking for an opponent',
+    multiplayerHint: 'Geography, football and country leaders — one online mode outside the themes.',
     duelCreate: 'Create room',
     duelJoin: 'Join',
     duelCode: 'Room code',
@@ -2107,6 +2524,123 @@ export function modeLabel(mode: QuizMode, lang: Lang): string {
   return rtlModeArrows(STRINGS[lang][mode], lang)
 }
 
+export function astroQuestionPrompt(mode: QuizMode, lang: Lang): string | null {
+  if (!isAstroMode(mode)) return null
+  const t = STRINGS[lang]
+  switch (mode) {
+    case 'planetToOrder':
+      return t.astroPlanetPrompt
+    case 'orderToPlanet':
+      return t.astroOrderPrompt
+    case 'planetToKind':
+      return t.astroKindPrompt
+    case 'moonToPlanet':
+      return t.astroMoonPrompt
+    case 'planetToMoon':
+      return t.astroPlanetMoonPrompt
+    case 'starToClass':
+      return t.astroStarPrompt
+    case 'constelToName':
+      return t.astroConstelPrompt
+    case 'astroPhotoToName':
+      return t.astroPhotoPrompt
+    case 'astroFactsToName':
+      return t.astroFactsPrompt
+    default:
+      return null
+  }
+}
+
+export function themeQuestionPrompt(mode: QuizMode, lang: Lang): string | null {
+  if (!isThemeMode(mode)) return null
+  const t = STRINGS[lang]
+  switch (mode) {
+    case 'organelleToRole':
+      return t.bioOrganellePrompt
+    case 'roleToOrganelle':
+      return t.bioRolePrompt
+    case 'organToSystem':
+      return t.bioOrganPrompt
+    case 'photoStepToName':
+      return t.bioPhotoPrompt
+    case 'kingdomToExample':
+      return t.bioKingdomPrompt
+    case 'olyYearToHost':
+      return t.olyYearPrompt
+    case 'olyHostToYear':
+      return t.olyHostPrompt
+    case 'olyHostCount':
+      return t.olyCountPrompt
+    case 'sportToCategory':
+      return t.olySportPrompt
+    case 'nocToName':
+      return t.olyNocPrompt
+    case 'csTermToMeaning':
+      return t.csTermPrompt
+    case 'meaningToCsTerm':
+      return t.csMeaningPrompt
+    case 'decToBinary':
+      return t.csDecPrompt
+    case 'binaryToDec':
+      return t.csBinPrompt
+    case 'csPhotoToName':
+      return t.csPhotoPrompt
+    case 'dishToCuisine':
+      return t.foodDishPrompt
+    case 'cuisineToDish':
+      return t.foodCuisinePrompt
+    case 'foodToOrigin':
+      return t.foodOriginPrompt
+    default:
+      return null
+  }
+}
+
+export function mathQuestionPrompt(mode: QuizMode, lang: Lang): string | null {
+  if (!isMathMode(mode)) return null
+  const t = STRINGS[lang]
+  switch (mode) {
+    case 'exprToValue':
+      return t.mathExprPrompt
+    case 'valueToExpr':
+      return t.mathValuePrompt
+    case 'fractionDecimal':
+      return t.mathFractionPrompt
+    case 'percentToValue':
+      return t.mathPercentPrompt
+    case 'powerToValue':
+      return t.mathPowerPrompt
+    case 'orderOfOps':
+      return t.mathOrderPrompt
+    case 'shapeToName':
+      return t.mathShapePrompt
+    case 'nameToShape':
+      return t.mathNameToShapePrompt
+    case 'angleToKind':
+      return t.mathAnglePrompt
+    case 'formulaToQuantity':
+      return t.mathFormulaPrompt
+    case 'unitsConvert':
+      return t.mathUnitsPrompt
+    case 'symbolToMeaning':
+      return t.mathSymbolPrompt
+    case 'constantToValue':
+      return t.mathConstantPrompt
+    case 'siPrefixToFactor':
+      return t.mathSiPrompt
+    case 'mathPhotoToName':
+      return t.mathPhotoPrompt
+    case 'mathFactsToName':
+      return t.mathFactsPrompt
+    case 'mathPersonToPlace':
+      return t.mathPersonPlacePrompt
+    case 'theoremToAuthor':
+      return t.mathTheoremPrompt
+    default:
+      return null
+  }
+}
+
 export function footballQuestionPrompt(
   mode: QuizMode,
   year: number,
@@ -2217,6 +2751,10 @@ export function modesLabel(modes: readonly QuizMode[], lang: Lang): string {
   if (sameModes(football, PLAYER_FOOTBALL_MATCH_MIX)) return t.footballGroupPlayers
   if (sameModes(football, CLUB_FOOTBALL_MATCH_MIX)) return t.footballGroupClubs
   if (football.length > 0) return football.map((mode) => modeLabel(mode, lang)).join(' · ')
+  const leaders = modes.filter(isLeadersMode)
+  if (sameModes(leaders, US_LEADERS_MATCH_MIX)) return t.usPresidents
+  if (sameModes(leaders, PHOTO_LEADERS_MATCH_MIX)) return `${t.leaders} · ${t.leaderAskPhoto}`
+  if (leaders.length > 0) return leaders.map((mode) => modeLabel(mode, lang)).join(' · ')
   if (modes.length === 0) return modeLabel('flagToName', lang)
   return modes.map((mode) => modeLabel(mode, lang)).join(' · ')
 }
@@ -2230,6 +2768,9 @@ export function mixLabel(mix: MixKind, lang: Lang): string {
 export function mixAskHint(mode: QuizMode, lang: Lang): string {
   const t = STRINGS[lang]
   if (isFootballMode(mode)) return ''
+  if (isMathMode(mode)) return mathQuestionPrompt(mode, lang) ?? ''
+  if (isAstroMode(mode)) return astroQuestionPrompt(mode, lang) ?? ''
+  if (isThemeMode(mode)) return themeQuestionPrompt(mode, lang) ?? ''
   if (mode === 'nameToFlag') return t.mixAskFlag
   if (mode === 'nameToCapital') return t.mixAskCapital
   if (mode === 'nameToCurrency') return t.mixAskCurrency
@@ -2237,9 +2778,16 @@ export function mixAskHint(mode: QuizMode, lang: Lang): string {
   if (mode === 'nameToFounded') return t.mixAskFounded
   if (mode === 'nameToGov') return t.mixAskGov
   if (mode === 'nameToMap') return t.mixAskMap
+  if (mode === 'silhouetteToName' || mode === 'nameToSilhouette') return t.mixAskSilhouette
+  if (mode === 'nameToDriving' || mode === 'drivingToName') return t.mixAskDriving
+  if (mode === 'languageToName') return t.mixAskLanguage
   if (mode === 'mapToSea') return t.mixAskSea
   if (mode === 'mapToRiver') return t.mixAskRiver
   return t.mixAskCountry
+}
+
+export function drivingLabel(side: 'left' | 'right', lang: Lang): string {
+  return side === 'left' ? STRINGS[lang].drivingLeft : STRINGS[lang].drivingRight
 }
 
 export function governmentLabel(kind: GovKind, lang: Lang): string {

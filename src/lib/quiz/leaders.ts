@@ -96,6 +96,33 @@ export function createLeadersRound(
   return questions
 }
 
+export function createLeadersMixedRound(
+  modes: readonly LeadersMode[],
+  count = QUESTIONS_PER_ROUND,
+  difficulty?: QuizDifficulty,
+): Question[] {
+  const cycle = modes.filter((mode) => leaderKindOf(mode))
+  if (cycle.length === 0 || count <= 0) return []
+  const questions: Question[] = []
+  const usedPeople = new Set<string>()
+  const avoidPersonIds: string[] = []
+  for (let i = 0; i < count * 8 && questions.length < count; i += 1) {
+    const mode = cycle[i % cycle.length]
+    const pool = leaderPoolTerms(mode, difficulty).filter((term) => !usedPeople.has(term.personId))
+    const term = shuffle(pool)[0]
+    if (!term) continue
+    usedPeople.add(term.personId)
+    questions.push({
+      country: leaderCountry(term),
+      mode,
+      options: pickLeaderNameOptions(term, leaderPoolTerms(mode), avoidPersonIds),
+      year: term.from,
+    })
+    avoidPersonIds.push(term.personId)
+  }
+  return questions
+}
+
 function filterLeaderTerms(terms: LeaderTerm[], difficulty: QuizDifficulty): LeaderTerm[] {
   const wanted = difficulty === 'easy' ? 'easy' : difficulty === 'medium' ? 'medium' : 'hard'
   const match = terms.filter((term) => term.tier === wanted)

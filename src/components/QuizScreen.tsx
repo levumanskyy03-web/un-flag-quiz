@@ -1,4 +1,4 @@
-import { STRINGS, footballQuestionPrompt, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
+import { STRINGS, astroQuestionPrompt, themeQuestionPrompt, drivingLabel, footballQuestionPrompt, mathQuestionPrompt, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
 import { type Country } from '../data/countries'
 import { findCountry } from '../data/extras'
 import { landNeighbors } from '../data/neighbors'
@@ -17,9 +17,18 @@ import {
   isLeaderYearsPrompt,
   isPlayerPhotoMode,
   isStadiumMode,
+  isMathMode,
+  isAstroMode,
+  isThemeMode,
   isRankingMode,
   isWaterMapMode,
   isWaterMode,
+  mathItemFromCountry,
+  mathPromptText,
+  astroItemFromCountry,
+  astroPromptText,
+  themeItemFromCountry,
+  themePromptText,
   questionLimitMs,
   quizMapRegion,
   waterName,
@@ -28,6 +37,7 @@ import {
   type QuizMode,
   type RegionFilter,
 } from '../lib/quiz'
+import { drivingSide } from '../data/driving'
 import { rankingPlaceOf } from '../data/rankings'
 import { optionLabel } from '../lib/quizAnswers'
 import { termById, yearsLabel } from '../data/leaders'
@@ -37,10 +47,13 @@ import { FOOTBALL_MANAGERS } from '../data/footballManagers'
 import { clubWiki } from '../data/footballClubs'
 import { Flag, TeamFlag } from './Flag'
 import { LeaderPortrait } from './LeaderPortrait'
+import { MathShape } from './MathShape'
 import { Lives } from './Lives'
 import { QuizMap } from './QuizMap'
+import { QuizSilhouette } from './QuizSilhouette'
 import { RankingFootnote } from './GeoModeGrids'
-import { WorldsBack } from './WorldsBack'
+import { TOKEN_COST } from '../data/tokens'
+import { useTokens } from '../lib/tokenStore'
 import { ChoiceLabel, FitText } from './FitText'
 
 interface QuizScreenProps {
@@ -72,6 +85,15 @@ interface QuizScreenProps {
   onNext?: () => void
   onBack: () => void
   onWorlds?: () => void
+  power?: {
+    enabled: boolean
+    hiddenKeys: string[]
+    extraLifeUsed: boolean
+    hintReady: boolean
+    onHint: () => void
+    onSkip: () => void
+    onLife: () => void
+  }
 }
 
 export function QuizScreen({
@@ -96,8 +118,11 @@ export function QuizScreen({
   onNext,
   onBack,
   onWorlds,
+  power,
 }: QuizScreenProps) {
   const t = STRINGS[lang]
+  const tokens = useTokens()
+  const hidden = new Set(power?.hiddenKeys ?? [])
   const activeMode = question.mode ?? mode
   const answered = selectedIso !== null || timedOut
   const correctName = countryName(question.country, lang)
@@ -116,6 +141,15 @@ export function QuizScreen({
     stadiumName: question.stadiumName,
     goldenEvent: question.goldenEvent,
   })
+  const mathItem = isMathMode(activeMode) ? mathItemFromCountry(question.country, activeMode) : undefined
+  const mathAsk = mathQuestionPrompt(activeMode, lang)
+  const mathPrompt = mathItem ? mathPromptText(mathItem, lang) : ''
+  const astroItem = isAstroMode(activeMode) ? astroItemFromCountry(question.country, activeMode) : undefined
+  const astroAsk = astroQuestionPrompt(activeMode, lang)
+  const astroPrompt = astroItem ? astroPromptText(astroItem, lang) : ''
+  const themeItem = isThemeMode(activeMode) ? themeItemFromCountry(question.country, activeMode) : undefined
+  const themeAsk = themeQuestionPrompt(activeMode, lang)
+  const themePrompt = themeItem ? themePromptText(themeItem, lang) : ''
   const leaderRange = leaderTerm ? yearsLabel(leaderTerm.from, leaderTerm.to, t.present) : ''
   const promptNeighbors =
     activeMode === 'neighborsToName'
@@ -218,7 +252,78 @@ export function QuizScreen({
           {activeMode === 'playerToClub' || activeMode === 'playerClubToName' ? (
             <p className="mix-ask-hint">{t.playerClubNote}</p>
           ) : null}
-          {activeMode === 'flagToName' ? (
+          {mathItem ? (
+            <div className="code-prompt-block">
+              {mathAsk ? <p className="neighbors-prompt-label">{mathAsk}</p> : null}
+              {activeMode === 'shapeToName' && mathItem.shape ? (
+                <MathShape id={mathItem.shape} size={120} />
+              ) : activeMode === 'mathPhotoToName' ? (
+                <div className="leader-prompt">
+                  <LeaderPortrait
+                    name={correctName}
+                    wiki={mathItem.wiki ?? ''}
+                    file={mathItem.wikiFile}
+                    size="hero"
+                    compact={!answered}
+                  />
+                </div>
+              ) : activeMode === 'mathFactsToName' ? (
+                <ul className="neighbors-prompt-list">
+                  {mathPrompt.split('\n').map((line) => (
+                    <li key={line} className="neighbors-prompt-item">
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <h2 className={`prompt-name${activeMode === 'symbolToMeaning' || activeMode === 'siPrefixToFactor' ? ' code-prompt' : ''}`}>
+                  {mathPrompt}
+                </h2>
+              )}
+            </div>
+          ) : astroItem ? (
+            <div className="code-prompt-block">
+              {astroAsk ? <p className="neighbors-prompt-label">{astroAsk}</p> : null}
+              {activeMode === 'astroPhotoToName' ? (
+                <div className="leader-prompt">
+                  <LeaderPortrait
+                    name={correctName}
+                    wiki={astroItem.wiki ?? ''}
+                    file={astroItem.wikiFile}
+                    size="hero"
+                    compact={!answered}
+                  />
+                </div>
+              ) : activeMode === 'astroFactsToName' ? (
+                <ul className="neighbors-prompt-list">
+                  {astroPrompt.split('\n').map((line) => (
+                    <li key={line} className="neighbors-prompt-item">
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <h2 className="prompt-name">{astroPrompt}</h2>
+              )}
+            </div>
+          ) : themeItem ? (
+            <div className="code-prompt-block">
+              {themeAsk ? <p className="neighbors-prompt-label">{themeAsk}</p> : null}
+              {activeMode === 'csPhotoToName' ? (
+                <div className="leader-prompt">
+                  <LeaderPortrait
+                    name={correctName}
+                    wiki={themeItem.wiki ?? ''}
+                    file={themeItem.wikiFile}
+                    size="hero"
+                    compact={!answered}
+                  />
+                </div>
+              ) : (
+                <h2 className="prompt-name">{themePrompt}</h2>
+              )}
+            </div>
+          ) : activeMode === 'flagToName' ? (
             <Flag iso={question.country.iso} name={correctName} size="hero" />
           ) : isFootballYearChoice(activeMode) ? (
             <div className="title-year-prompt">
@@ -333,11 +438,30 @@ export function QuizScreen({
                 })}
               </ul>
             </div>
-          ) : activeMode === 'nameToLanguage' || activeMode === 'nameToGov' ? (
+          ) : activeMode === 'silhouetteToName' ? (
+            <div className="code-prompt-block">
+              {mixHint ? null : <p className="neighbors-prompt-label">{t.silhouettePrompt}</p>}
+              <QuizSilhouette iso={question.country.iso} size="hero" />
+            </div>
+          ) : activeMode === 'languageToName' ? (
+            <div className="code-prompt-block">
+              {mixHint ? null : <p className="neighbors-prompt-label">{t.languageToNamePrompt}</p>}
+              <h2 className="prompt-name">{optionLabel(question.country, 'nameToLanguage', lang, question)}</h2>
+            </div>
+          ) : activeMode === 'drivingToName' ? (
+            <div className="code-prompt-block">
+              {mixHint ? null : <p className="neighbors-prompt-label">{t.drivingToNamePrompt}</p>}
+              <h2 className="prompt-name">{drivingLabel(drivingSide(question.country.iso), lang)}</h2>
+            </div>
+          ) : activeMode === 'nameToLanguage' || activeMode === 'nameToGov' || activeMode === 'nameToDriving' ? (
             <div className="code-prompt-block">
               {mixHint ? null : (
                 <p className="neighbors-prompt-label">
-                  {activeMode === 'nameToGov' ? t.nameToGovPrompt : t.nameToLanguagePrompt}
+                  {activeMode === 'nameToGov'
+                    ? t.nameToGovPrompt
+                    : activeMode === 'nameToDriving'
+                      ? t.nameToDrivingPrompt
+                      : t.nameToLanguagePrompt}
                 </p>
               )}
               <Flag iso={question.country.iso} name={correctName} size="hero" />
@@ -364,9 +488,9 @@ export function QuizScreen({
           onPick={onSelect}
         />
       ) : (
-        <div className={`options ${activeMode === 'nameToFlag' ? 'options-flags' : 'options-names'}`}>
+        <div className={`options ${activeMode === 'nameToFlag' || activeMode === 'nameToSilhouette' ? 'options-flags' : 'options-names'}`}>
           {isWaterMapMode(activeMode)
-            ? (question.waterOptions ?? []).map((id) => {
+            ? (question.waterOptions ?? []).filter((id) => !hidden.has(id)).map((id) => {
                 const isCorrectOption = id === question.waterId
                 const isSelected = id === selectedIso
                 const isOpponent = Boolean(duel?.reveal && duel.opponentAnswer === id)
@@ -390,7 +514,7 @@ export function QuizScreen({
                 )
               })
             : isFootballYearChoice(activeMode)
-            ? (question.yearOptions ?? []).map((year) => {
+            ? (question.yearOptions ?? []).filter((year) => !hidden.has(String(year))).map((year) => {
                 const key = String(year)
                 const isCorrectOption = year === question.year
                 const isSelected = key === selectedIso
@@ -414,7 +538,7 @@ export function QuizScreen({
                   </button>
                 )
               })
-            : question.options.map((option) => {
+            : question.options.filter((option) => !hidden.has(option.iso)).map((option) => {
             const name = countryName(option, lang)
             const isCorrectOption = option.iso === question.country.iso
             const isSelected = option.iso === selectedIso
@@ -440,6 +564,18 @@ export function QuizScreen({
                     <Flag iso={option.iso} name={name} size="option" />
                     {answered && <span className="option-caption">{name}</span>}
                   </>
+                ) : activeMode === 'nameToSilhouette' ? (
+                  <>
+                    <QuizSilhouette iso={option.iso} size="option" />
+                    {answered && <span className="option-caption">{name}</span>}
+                  </>
+                ) : activeMode === 'nameToShape' ? (
+                  <>
+                    {isMathMode(activeMode) && mathItemFromCountry(option, activeMode).shape ? (
+                      <MathShape id={mathItemFromCountry(option, activeMode).shape!} size={52} />
+                    ) : null}
+                    {answered && <span className="option-caption">{optionLabel(option, activeMode, lang, question)}</span>}
+                  </>
                 ) : isFootballTeamChoice(activeMode) || activeMode === 'playerToNation' || activeMode === 'playerToClub' ? (
                   <span className="option-team">
                     <TeamFlag iso={option.iso} name={name} size="thumb" />
@@ -453,6 +589,35 @@ export function QuizScreen({
           })}
         </div>
       )}
+
+      {power?.enabled && !duel ? (
+        <div className="quiz-power">
+          <button
+            type="button"
+            className="btn-ghost"
+            disabled={answered || !power.hintReady || tokens.balance < TOKEN_COST.hint}
+            onClick={power.onHint}
+          >
+            {t.quizHint} · {TOKEN_COST.hint}
+          </button>
+          <button
+            type="button"
+            className="btn-ghost"
+            disabled={answered || tokens.balance < TOKEN_COST.skip}
+            onClick={power.onSkip}
+          >
+            {t.quizSkip} · {TOKEN_COST.skip}
+          </button>
+          <button
+            type="button"
+            className="btn-ghost"
+            disabled={answered || power.extraLifeUsed || tokens.balance < TOKEN_COST.life}
+            onClick={power.onLife}
+          >
+            {t.quizExtraLife} · {TOKEN_COST.life}
+          </button>
+        </div>
+      ) : null}
 
       {practice && answered && onNext && (
         <button type="button" className="btn-primary" onClick={onNext}>

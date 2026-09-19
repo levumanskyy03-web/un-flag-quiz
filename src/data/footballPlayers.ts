@@ -80,7 +80,15 @@ function fromRow(row: FootballPlayerRow): FootballPlayer {
 
 export const FOOTBALL_PLAYERS: FootballPlayer[] = FOOTBALL_PLAYER_ROWS.map(fromRow)
 
+/** Temporary overlay so portraits can be checked against catalog order. */
+export const SHOW_PLAYER_CATALOG_NOS = true
+
 const BY_ID = new Map(FOOTBALL_PLAYERS.map((player) => [player.id, player]))
+const CATALOG_NO = new Map(FOOTBALL_PLAYERS.map((player, index) => [player.id, index + 1]))
+
+export function playerCatalogNo(id: string): number | undefined {
+  return CATALOG_NO.get(id)
+}
 
 export function playerById(id: string): FootballPlayer | undefined {
   return BY_ID.get(id)

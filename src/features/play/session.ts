@@ -36,6 +36,7 @@ export type PlaySession = {
   endedBy: RoundEnd;
   isNewBest: boolean;
   earnedXp: number;
+  earnedTokens: number;
   worldRecord: { previousName: string | null } | null;
   livesLeft: number;
   livesLimit: number;
@@ -44,15 +45,30 @@ export type PlaySession = {
   currentMode: QuizMode;
   stamps: StampAlbum;
   mistakeList: MistakeEntry[];
+  quizPower: {
+    enabled: boolean;
+    hiddenKeys: string[];
+    extraLifeUsed: boolean;
+    hintReady: boolean;
+    onHint: () => void;
+    onSkip: () => void;
+    onLife: () => void;
+  };
   handleSettingsChange: (next: QuizSettings) => void;
   startFootballRound: (path?: PlayPath, level?: number, years?: number[], playerIds?: string[]) => void;
   startLeadersRound: (path?: PlayPath, isos?: string[], level?: number) => void;
+  startMathRound: (path?: PlayPath, isos?: string[], level?: number) => void;
+  startAstroRound: (path?: PlayPath, isos?: string[], level?: number) => void;
+  startThemeRound: (path?: PlayPath, isos?: string[], level?: number) => void;
   startRound: () => void;
   goHub: (tab: HubTab) => void;
   goToWorlds: () => void;
   goBackFromPlay: () => void;
   handleClearFootballHistory: () => void;
   handleClearLeadersHistory: () => void;
+  handleClearMathHistory: () => void;
+  handleClearAstroHistory: () => void;
+  handleClearThemeHistory: () => void;
   handleClearHistory: () => void;
   handleClearBests: () => void;
   playLevel: (level: number) => void;

@@ -84,6 +84,7 @@ export function LeadersPlay({ play }: { play: PlaySession }) {
           livesLeft={play.livesLeft}
           maxLives={play.isPractice ? 0 : play.livesLimit}
           practice={play.isPractice}
+          power={play.quizPower}
           onSelect={play.selectAnswer}
           onNext={play.isPractice ? play.handlePracticeNext : undefined}
           onBack={play.goBackFromPlay}
@@ -94,12 +95,15 @@ export function LeadersPlay({ play }: { play: PlaySession }) {
         <ResultsScreen
           lang={play.quizSettings.lang}
           mode={play.quizSettings.mode}
+          mix={play.quizSettings.path === "pool" ? play.quizSettings.mix : null}
+          mixModes={play.quizSettings.mixModes}
           hardcore={play.quizSettings.levelHardcore || play.quizSettings.difficulty === "hardcore"}
           answers={play.answers}
           roundMs={play.roundMs}
           endedBy={play.endedBy}
           isNewBest={play.isNewBest}
           earnedXp={play.earnedXp}
+          earnedTokens={play.earnedTokens}
           totalXp={play.xp}
           saveNote={!play.isPractice}
           menuLabel={play.isPractice ? STRINGS[play.quizSettings.lang].backToCards : undefined}

@@ -18,26 +18,31 @@ import {
   isWaterMode,
   slowestAnswer,
   waterName,
+  type MixKind,
   type QuizMode,
   type RoundAnswer,
   type RoundEnd,
 } from '../lib/quiz'
 import { formatXp, accountProgress } from '../lib/xp'
-import { SITE_ORIGIN } from '../lib/site'
+import { playShareUrl } from '../lib/playHash'
+import { shareThemeLabel } from '../lib/shareTheme'
 import { optionLabel } from '../lib/quizAnswers'
 import { TeamFlag } from './Flag'
-import { ShareButton } from './ShareButton'
+import { ResultsShareShot } from './ResultsShareShot'
 import { WorldsBack } from './WorldsBack'
 
 interface ResultsScreenProps {
   lang: Lang
   mode: QuizMode
+  mix?: MixKind | null
+  mixModes?: QuizMode[]
   hardcore: boolean
   answers: RoundAnswer[]
   roundMs: number
   endedBy: RoundEnd
   isNewBest: boolean
   earnedXp?: number
+  earnedTokens?: number
   totalXp?: number
   saveNote?: boolean
   menuLabel?: string
@@ -50,12 +55,15 @@ interface ResultsScreenProps {
 export function ResultsScreen({
   lang,
   mode,
+  mix = null,
+  mixModes = [],
   hardcore,
   answers,
   roundMs,
   endedBy,
   isNewBest,
   earnedXp = 0,
+  earnedTokens = 0,
   totalXp,
   saveNote = true,
   menuLabel,
@@ -65,6 +73,8 @@ export function ResultsScreen({
   onWorlds,
 }: ResultsScreenProps) {
   const t = STRINGS[lang]
+  const theme = shareThemeLabel(lang, mode, mix, mixModes)
+  const shareUrl = playShareUrl(mode, mix, mixModes)
   const correctCount = answers.filter(isCorrect).length
   const total = answers.length
   const percent = total === 0 ? 0 : Math.round((correctCount / total) * 100)
@@ -91,8 +101,10 @@ export function ResultsScreen({
   return (
     <div className={`screen results-screen ${success ? 'is-success' : 'is-fail'}`}>
       <WorldsBack lang={lang} onClick={onMenu} label={t.back} />
+      <div className="results-body">
+        <div className="results-main">
       <section className={`card score-card ${success ? 'is-success' : 'is-fail'}`}>
-        <p className="score-kicker">{t.results}</p>
+        <p className="score-kicker">{theme}</p>
         <p className="score-value">{t.score(correctCount, total)}</p>
         <p className="score-percent">{percent}%</p>
         <p className="score-time">{t.totalTime(formatClock(roundMs))}</p>
@@ -107,6 +119,7 @@ export function ResultsScreen({
             ) : null}
           </p>
         ) : null}
+        {earnedTokens > 0 ? <p className="score-xp">{t.tokensGained(earnedTokens)}</p> : null}
         {success && <p className="score-avg">{t.avgTime(avgSeconds)}</p>}
         {slowest && (
           <p className="score-slowest">
@@ -197,15 +210,21 @@ export function ResultsScreen({
         <button type="button" className={success && onNextLevel ? 'btn-secondary' : 'btn-primary'} onClick={onAgain}>
           {t.playAgain}
         </button>
-        <ShareButton
-          lang={lang}
-          className="btn-secondary"
-          url={SITE_ORIGIN}
-          text={t.shareResult(t.score(correctCount, total), SITE_ORIGIN)}
-        />
         <button type="button" className="btn-secondary" onClick={onWorlds ?? onMenu}>
           {onWorlds ? t.worldsBack : (menuLabel ?? t.backToMenu)}
         </button>
+      </div>
+        </div>
+        <ResultsShareShot
+          lang={lang}
+          url={shareUrl}
+          theme={theme}
+          score={t.score(correctCount, total)}
+          percent={`${percent}%`}
+          time={t.totalTime(formatClock(roundMs))}
+          headline={headline}
+          success={success}
+        />
       </div>
     </div>
   )

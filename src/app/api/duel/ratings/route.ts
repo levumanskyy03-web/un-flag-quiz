@@ -1,4 +1,5 @@
 import { isPlayerId } from '../../../../lib/leaderboard'
+import { isQuizWorld } from '../../../../lib/quiz'
 import { readDuelRatings, type DuelRatingWorld } from '../../../../lib/duelRatingStore'
 
 export const dynamic = 'force-dynamic'
@@ -18,6 +19,6 @@ export async function GET(request: Request) {
 }
 
 function parseWorld(value: string | null): DuelRatingWorld {
-  if (value === 'geo' || value === 'football' || value === 'all') return value
+  if (value === 'all' || isQuizWorld(value)) return value
   return 'all'
 }

@@ -13,6 +13,9 @@ interface HubNavProps {
 
 export const GEO_HUB_TABS: HubTab[] = ['levels', 'free', 'learn', 'map', 'mistakes', 'album']
 export const WORLD_HUB_TABS: HubTab[] = ['levels', 'free', 'learn', 'mistakes']
+export const MATH_HUB_TABS: HubTab[] = ['free', 'levels', 'learn', 'mistakes']
+export const ASTRO_HUB_TABS: HubTab[] = MATH_HUB_TABS
+export const THEME_HUB_TABS: HubTab[] = MATH_HUB_TABS
 const ICONS: Record<HubTab, 'compass' | 'map' | 'meridians' | 'pin' | 'stamp' | 'hash'> = {
   free: 'compass',
   levels: 'map',

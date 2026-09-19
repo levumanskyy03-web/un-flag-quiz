@@ -9,7 +9,6 @@ import { MistakesScreen } from "@/components/MistakesScreen";
 import { QuizScreen } from "@/components/QuizScreen";
 import { ResultsScreen } from "@/components/ResultsScreen";
 import { STRINGS } from "@/i18n/strings";
-import { useDuelLaunch } from "@/features/duel/useDuelLaunch";
 import { clearMistakes } from "@/lib/mistakes";
 import {
   campaignLevelCount,
@@ -21,7 +20,6 @@ import {
 import type { PlaySession } from "./session";
 
 export function FootballPlay({ play }: { play: PlaySession }) {
-  const duel = useDuelLaunch(play.quizSettings);
   return (
     <>
       {play.screen === "home" && (
@@ -29,14 +27,10 @@ export function FootballPlay({ play }: { play: PlaySession }) {
           settings={play.quizSettings}
           history={play.history.filter((item) => isFootballMode(item.mode))}
           bests={play.bests.filter((item) => isFootballMode(item.mode))}
-          duelError={duel.error}
           onChange={play.handleSettingsChange}
           onStart={() => play.startFootballRound()}
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
-          onCreateDuel={(modes, facts) => void duel.create(modes, facts)}
-          onMatchDuel={(modes, facts) => void duel.match(modes, facts)}
-          onJoinDuel={duel.join}
           onClearHistory={play.handleClearFootballHistory}
         />
       )}
@@ -108,6 +102,7 @@ export function FootballPlay({ play }: { play: PlaySession }) {
           maxLives={play.isPractice ? 0 : play.livesLimit}
           practice={play.isPractice}
           mix={Boolean(play.quizSettings.mix && play.quizSettings.path === "pool")}
+          power={play.quizPower}
           onSelect={play.selectAnswer}
           onNext={play.isPractice ? play.handlePracticeNext : undefined}
           onBack={play.goBackFromPlay}
@@ -119,12 +114,15 @@ export function FootballPlay({ play }: { play: PlaySession }) {
         <ResultsScreen
           lang={play.quizSettings.lang}
           mode={play.quizSettings.mode}
+          mix={play.quizSettings.path === "pool" ? play.quizSettings.mix : null}
+          mixModes={play.quizSettings.mixModes}
           hardcore={play.quizSettings.levelHardcore || play.quizSettings.difficulty === "hardcore"}
           answers={play.answers}
           roundMs={play.roundMs}
           endedBy={play.endedBy}
           isNewBest={play.isNewBest}
           earnedXp={play.earnedXp}
+          earnedTokens={play.earnedTokens}
           totalXp={play.xp}
           saveNote={!play.isPractice}
           menuLabel={play.isPractice ? STRINGS[play.quizSettings.lang].backToCards : undefined}

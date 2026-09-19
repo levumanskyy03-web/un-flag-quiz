@@ -19,7 +19,9 @@ export function CountriesIndex() {
       <h1>{copy.catalogTitle}</h1>
       <p>{copy.catalogLead(COUNTRIES.length)}</p>
       <p>
-        {copy.catalogToday} <a href="/today">{copy.catalogTodayLink}</a>.
+        {copy.catalogToday} <a href="/today">{copy.catalogTodayLink}</a>
+        {' · '}
+        <a href="/lists">{copy.listsTitle}</a>.
       </p>
       {groups.map(({ region, countries }) => (
         <section key={region} className="country-region">

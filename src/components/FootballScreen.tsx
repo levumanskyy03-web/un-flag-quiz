@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { STRINGS, localeTag, mixLabel, modeLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import {
-  FOOTBALL_MODES,
   fitRoundSize,
   footballMixPoolSize,
   footballPoolSize,
@@ -11,8 +10,6 @@ import {
   isPlayerPhotoMode,
   modesForFootballMix,
 } from '../lib/quiz'
-import type { FactsDuelConfig } from '../lib/factsRules'
-import { DuelCreateModal } from './DuelCreateModal'
 import { GeoIcon } from './GeoIcon'
 import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
@@ -38,10 +35,6 @@ interface FootballScreenProps {
   onStart: () => void
   onHub: (tab: HubTab) => void
   onWorlds: () => void
-  onCreateDuel: (modes: QuizSettings['mode'][], facts?: FactsDuelConfig) => void
-  onMatchDuel: (modes: QuizSettings['mode'][], facts?: FactsDuelConfig) => void
-  onJoinDuel: (code: string) => void
-  duelError?: string | null
   onClearHistory: () => void
 }
 
@@ -53,10 +46,6 @@ export function FootballScreen({
   onStart,
   onHub,
   onWorlds,
-  onCreateDuel,
-  onMatchDuel,
-  onJoinDuel,
-  duelError,
   onClearHistory,
 }: FootballScreenProps) {
   const t = STRINGS[settings.lang]
@@ -66,8 +55,6 @@ export function FootballScreen({
     ? footballMixPoolSize(mix, settings.difficulty, settings.mixModes)
     : footballPoolSize(settings.mode, settings.difficulty)
   const currentBest = findBest(bests, settings)
-  const [joinCode, setJoinCode] = useState('')
-  const [duelSetup, setDuelSetup] = useState<'create' | 'match' | null>(null)
   const [setupFamily, setSetupFamily] = useState<SetupFamily | null>(null)
   const activeFamily = footballFamilyOf(settings.mode, settings.mix)
 
@@ -170,42 +157,6 @@ export function FootballScreen({
         {t.start}
       </button>
 
-      <section className="card settings-card">
-        <h2>{t.multiplayer}</h2>
-        <button type="button" className="btn-primary" onClick={() => setDuelSetup('match')}>
-          {t.multiplayerPlay}
-        </button>
-      </section>
-
-      <section className="card settings-card">
-        <h2>{t.duel}</h2>
-        <p className="setting-hint">{t.duelHint}</p>
-        <button type="button" className="btn-secondary" onClick={() => setDuelSetup('create')}>
-          {t.duelCreate}
-        </button>
-        <form
-          className="duel-join"
-          onSubmit={(event) => {
-            event.preventDefault()
-            onJoinDuel(joinCode)
-          }}
-        >
-          <input
-            value={joinCode}
-            onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
-            placeholder={t.duelCode}
-            autoComplete="off"
-            maxLength={4}
-            spellCheck={false}
-            aria-label={t.duelCode}
-          />
-          <button type="submit" className="choice" disabled={joinCode.trim().length !== 4}>
-            {t.duelJoin}
-          </button>
-        </form>
-        {duelError ? <p className="account-error">{duelError}</p> : null}
-      </section>
-
       {setupFamily ? (
         <ModeSetupModal
           family={setupFamily}
@@ -216,24 +167,6 @@ export function FootballScreen({
             onStart()
           }}
           onClose={() => setSetupFamily(null)}
-        />
-      ) : null}
-
-      {duelSetup ? (
-        <DuelCreateModal
-          lang={settings.lang}
-          initialMode={settings.mode}
-          region="all"
-          modeCatalog={FOOTBALL_MODES}
-          showMix={false}
-          intent={duelSetup}
-          onCancel={() => setDuelSetup(null)}
-          onConfirm={(modes, facts) => {
-            const kind = duelSetup
-            setDuelSetup(null)
-            if (kind === 'match') onMatchDuel(modes, facts)
-            else onCreateDuel(modes, facts)
-          }}
         />
       ) : null}
 

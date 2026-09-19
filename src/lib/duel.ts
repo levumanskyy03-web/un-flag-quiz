@@ -1,11 +1,15 @@
 import { playerById, playerCountry } from '../data/footballPlayers'
 import { findCountry } from '../data/extras'
 import { type Country } from '../data/countries'
+import { mathById, mathCountry } from '../data/math'
+import { astroById, astroCountry } from '../data/astro'
+import { themeById, themeCountry } from '../data/theme'
+import { leaderCountry, termById } from '../data/leaders'
 import { footballTeamCountry, isNamedFootballTeam } from '../data/worldCup'
 import type { DuelQuestionWire, DuelView } from './duelTypes'
 import type { FactsDuelConfig } from './factsRules'
 import { isPlayerId, loadPlayer } from './leaderboard'
-import { isFactsToName, isFootballMode, isFootballYearChoice, isQuizMode, type Question } from './quiz'
+import { isFactsToName, isFootballMode, isFootballYearChoice, isQuizMode, type Question, type QuizWorld } from './quiz'
 
 const DUEL_ID_KEY = 'pq-duel-player'
 
@@ -35,6 +39,14 @@ export function bindDuelPlayerId(id: string) {
 function resolveDuelCountry(iso: string, mode?: string): Country | undefined {
   const player = playerById(iso)
   if (player) return playerCountry(player)
+  const term = termById(iso)
+  if (term) return leaderCountry(term)
+  const math = mathById(iso)
+  if (math) return mathCountry(math)
+  const astro = astroById(iso)
+  if (astro) return astroCountry(astro)
+  const theme = themeById(iso)
+  if (theme) return themeCountry(theme)
   return (
     findCountry(iso) ??
     (isFootballMode(mode) || isNamedFootballTeam(iso) || iso.includes('+') ? footballTeamCountry(iso) : undefined)
@@ -199,7 +211,7 @@ async function parseResponse(
 }
 
 export async function fetchDuelRatings(
-  world: 'all' | 'geo' | 'football',
+  world: 'all' | QuizWorld,
   playerId: string,
 ): Promise<{ entries: Array<{
   id: string

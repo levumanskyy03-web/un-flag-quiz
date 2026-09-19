@@ -18,7 +18,9 @@ Priority to ship:
 
 Also on the list:
 
-7. Extra geo modes: country silhouette, language/driving side.
-8. Fact roundups — editorial pages like «5 countries without an army».
+7. Extra geo modes: country silhouette, language/driving side. — **in the codebase**.
+8. Fact roundups — editorial pages like «5 countries without an army». — **in the codebase** (first page: `/lists/microstates`).
 
-Do not build now: anthems (copyright), bulk coats of arms, news, chat, user-authored quizzes.
+Do not build now: anthems (copyright), bulk coats of arms, news, chat.
+
+User-authored packs (`/studio`) — **in the codebase** (first slice: text/files → catalog → draft → play/learn/levels/mistakes; Gemini last-resort fix).

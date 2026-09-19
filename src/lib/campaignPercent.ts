@@ -41,7 +41,8 @@ export function modeCampaignPercent(clears: LevelClear[], mode: QuizMode): numbe
 
 function modePace(mode: QuizMode): number {
   if (mode === 'nameToMap') return 25 / 17
-  if (mode === 'mapToName' || isWaterMapMode(mode)) return 20 / 17
+  if (mode === 'mapToName' || mode === 'silhouetteToName' || isWaterMapMode(mode)) return 20 / 17
+  if (mode === 'nameToSilhouette') return 22 / 17
   return 1
 }
 

@@ -9,12 +9,20 @@ import {
   isFootballMode,
   isLeadersMode,
   isManagerFootballMode,
+  isMathMode,
+  isAstroMode,
+  isLanguageMode,
   isNameToGov,
-  isNameToLanguage,
   isPlayerFootballMode,
   isRankingMode,
+  isThemeMode,
+  isThemeWorld,
   LEVEL_MODES,
   LEADERS_MODES,
+  MATH_MODES,
+  MATH_CAMPAIGN_MODES,
+  ASTRO_CAMPAIGN_MODES,
+  THEME_CAMPAIGN_MODES,
   type Country,
   type LearnFrom,
   type QuizMode,
@@ -24,17 +32,26 @@ import {
 import { extraFitsMode, getGeoLevelPool, getRegionPool } from './geo'
 import { footballCountryForYear, footballLearnCountries } from './football'
 import { leaderLearnCountries, leaderLevelChunks, leaderCampaignLevels } from './leaders'
+import { mathCampaignLevels, mathLearnCountries, mathLevelChunks } from './math'
+import { astroCampaignLevels, astroLearnCountries, astroLevelChunks } from './astro'
+import { themeCampaignLevels, themeLearnCountries, themeLevelChunks } from './theme'
 
 export * from './core'
 export * from './geo'
 export * from './football'
 export * from './codes'
 export * from './leaders'
+export * from './math'
+export * from './astro'
+export * from './theme'
 
 export function campaignLevelCount(mode: QuizMode): number {
   if (isFootballMode(mode)) return footballCampaignLevels(mode)
   if (isWaterMode(mode)) return waterCampaignLevels(mode)
   if (isLeadersMode(mode)) return leaderCampaignLevels(mode)
+  if (isMathMode(mode)) return mathCampaignLevels(mode)
+  if (isAstroMode(mode)) return astroCampaignLevels(mode)
+  if (isThemeMode(mode)) return themeCampaignLevels(mode)
   return LEVEL_COUNT
 }
 
@@ -45,6 +62,9 @@ export function campaignLevelNumbers(mode: QuizMode): number[] {
 export function campaignModesForWorld(world: QuizWorld): QuizMode[] {
   if (world === 'football') return [...FOOTBALL_MODES]
   if (world === 'leaders') return [...LEADERS_MODES]
+  if (world === 'math') return [...MATH_CAMPAIGN_MODES]
+  if (world === 'astronomy') return [...ASTRO_CAMPAIGN_MODES]
+  if (isThemeWorld(world)) return [...THEME_CAMPAIGN_MODES[world]]
   return [...LEVEL_MODES]
 }
 
@@ -67,6 +87,15 @@ export function getLevelPool(level: number, mode: QuizMode = 'flagToName'): Coun
   }
   if (isLeadersMode(mode)) {
     return leaderLevelChunks(mode)[level - 1] ?? []
+  }
+  if (isMathMode(mode)) {
+    return mathLevelChunks(mode)[level - 1] ?? []
+  }
+  if (isAstroMode(mode)) {
+    return astroLevelChunks(mode)[level - 1] ?? []
+  }
+  if (isThemeMode(mode)) {
+    return themeLevelChunks(mode)[level - 1] ?? []
   }
   return getGeoLevelPool(level, mode)
 }
@@ -102,6 +131,15 @@ export function getLearnPool(
   if (isLeadersMode(mode)) {
     return learnFrom === 'level' ? getLevelPool(level, mode) : leaderLearnCountries(mode)
   }
+  if (isMathMode(mode)) {
+    return learnFrom === 'level' ? getLevelPool(level, mode) : mathLearnCountries(mode)
+  }
+  if (isAstroMode(mode)) {
+    return learnFrom === 'level' ? getLevelPool(level, mode) : astroLearnCountries(mode)
+  }
+  if (isThemeMode(mode)) {
+    return learnFrom === 'level' ? getLevelPool(level, mode) : themeLearnCountries(mode)
+  }
   const extras = learnFrom === 'level' ? false : includeExtras
   const pool = learnFrom === 'level' ? getLevelPool(level, mode) : getRegionPool(region, extras)
   if (isWaterMapMode(mode)) {
@@ -119,7 +157,7 @@ export function getLearnPool(
     ? pool.filter((country) => canAskWater(country.iso, mode))
     : isRankingMode(mode)
       ? pool.filter((country) => rankingPlaceOf(mode, country.iso) !== null)
-      : isNameToLanguage(mode)
+      : isLanguageMode(mode)
         ? pool.filter((country) => quizLanguageId(country.iso))
         : isNameToGov(mode)
           ? pool.filter((country) => govKindOf(country.iso))

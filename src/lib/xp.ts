@@ -6,6 +6,9 @@ import {
   levelQuestionCount,
   isFootballMode,
   isLeadersMode,
+  isMathMode,
+  isAstroMode,
+  isThemeMode,
   isRankingMode,
   questionLimitMs,
   type FootballMode,
@@ -55,6 +58,8 @@ const BONUS_MODES = new Set<QuizMode>([
   'nameToFounded',
   'nameToMap',
   'mapToName',
+  'silhouetteToName',
+  'nameToSilhouette',
   'neighborsToName',
   'seaToName',
   'riverToName',
@@ -127,6 +132,8 @@ const HARD_FREE_MODES = new Set<QuizMode>([
   'nameToFounded',
   'nameToMap',
   'mapToName',
+  'silhouetteToName',
+  'nameToSilhouette',
   'neighborsToName',
   'factsToName',
   'playerFactsToName',
@@ -176,6 +183,25 @@ export function xpPerFreePlayCorrect(difficulty: QuizDifficulty, mode: QuizMode)
   return HARD_FREE_MODES.has(mode) || isRankingMode(mode) ? byDifficulty + 1 : byDifficulty
 }
 
+export function xpForMathRound(
+  answers: RoundAnswer[],
+  mode: QuizMode,
+  difficulty: QuizDifficulty,
+  endedBy: RoundEnd,
+): number {
+  if ((!isMathMode(mode) && !isAstroMode(mode) && !isThemeMode(mode)) || answers.length === 0) return 0
+  let xp = 0
+  for (const answer of answers) {
+    if (!isCorrect(answer)) continue
+    xp += xpPerFreePlayCorrect(difficulty, answer.question.mode ?? mode)
+  }
+  if (endedBy === 'complete') {
+    xp += answers.length
+    if (answers.every(isCorrect)) xp += 2 * answers.length
+  }
+  return Math.max(0, Math.round(xp))
+}
+
 export function xpForFreePlay(
   answers: RoundAnswer[],
   difficulty: QuizDifficulty,
@@ -183,6 +209,7 @@ export function xpForFreePlay(
   endedBy: RoundEnd = 'complete',
 ): number {
   if (isFootballMode(mode)) return xpForFootballRound(answers, mode, difficulty, endedBy)
+  if (isMathMode(mode) || isAstroMode(mode) || isThemeMode(mode)) return xpForMathRound(answers, mode, difficulty, endedBy)
   return answers
     .filter(isCorrect)
     .reduce((sum, answer) => sum + xpPerFreePlayCorrect(difficulty, answer.question.mode ?? mode), 0)

@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { defaultLeadersMode } from "@/components/LeadersScreen";
+import { defaultMathMode } from "@/components/MathScreen";
+import { defaultAstroMode } from "@/components/AstroScreen";
+import { defaultThemeMode } from "@/lib/quiz";
 import { AppChrome } from "@/components/AppChrome";
 import { type QuizSettings } from "@/components/HomeScreen";
 import { type HubTab } from "@/components/HubNav";
@@ -35,6 +38,15 @@ import {
   createFootballRound,
   createFootballMixedRound,
   createLeadersRound,
+  createMathRound,
+  createMathLevelRound,
+  createMathMixedRound,
+  createAstroRound,
+  createAstroLevelRound,
+  createAstroMixedRound,
+  createThemeRound,
+  createThemeLevelRound,
+  createThemeMixedRound,
   getLevelPool,
   getLearnPool,
   getPool,
@@ -46,6 +58,14 @@ import {
   isFootballMode,
   isLeaderPhotoMode,
   isLeadersMode,
+  isMathMode,
+  isAstroMode,
+  isThemeMode,
+  isThemeWorld,
+  themeWorldOf,
+  mathHasCampaign,
+  astroHasCampaign,
+  themeHasCampaign,
   isManagerFootballMode,
   isPlayerFactsToName,
   isPlayerFootballMode,
@@ -56,6 +76,10 @@ import {
   livesFor,
   MAX_LIVES,
   modesForFootballMix,
+  modesForMathMix,
+  modesForAstroMix,
+  modesForThemeMix,
+  THEME_DEFAULT_MODE,
   modesForMix,
   poolForMode,
   questionLimitMs,
@@ -65,6 +89,7 @@ import {
   type RoundAnswer,
   type RoundEnd,
 } from "@/lib/quiz";
+import { encodePlayHash, parsePlayHash } from "@/lib/playHash";
 import { bumpTrainerComplete, clearMistakes, loadMistakes, recordMistakes, clearCorrected, type MistakeEntry } from "@/lib/mistakes";
 import { awardRoundStamps, loadStamps, type StampAlbum } from "@/lib/stamps";
 import { playSfx } from "@/lib/sfx";
@@ -73,16 +98,64 @@ import { prefetchWikiPortraits } from "@/lib/wikiThumb";
 import { FootballPlay } from "./FootballPlay";
 import { GeoPlay } from "./GeoPlay";
 import { LeadersPlay } from "./LeadersPlay";
+import { MathPlay } from "./MathPlay";
+import { AstroPlay } from "./AstroPlay";
+import { ThemePlay } from "./ThemePlay";
+import { MultiplayerPlay } from "./MultiplayerPlay";
+import { StudioPlay } from "./StudioPlay";
+import { CompanyPlay } from "./CompanyPlay";
+import { ShopPlay } from "./ShopPlay";
+import { CompanyHud, CompanySpark } from "@/components/CompanyScreen";
+import { companyOnRound, startCompanyLoop, stopCompanyLoop } from "@/lib/companyStore";
+import { tokensForCampaign, TOKEN_COST } from "@/data/tokens";
+import { tokensForFreePlay } from "@/lib/tokenAward";
+import {
+  awardAchievementTokens,
+  awardPlayTokens,
+  spendTokens,
+  tokenXpMultiplier,
+} from "@/lib/tokenStore";
 
 type Screen = "home" | "levels" | "level20" | "learn" | "map" | "quiz" | "results" | "mistakes" | "album";
 type ResultTone = "success" | "fail" | "gold";
+type Hub = World | "multiplayer" | "studio" | "company" | "shop";
+
+function isMetaHub(hub: Hub | null | undefined): hub is "multiplayer" | "studio" | "company" | "shop" {
+  return hub === "multiplayer" || hub === "studio" || hub === "company" || hub === "shop";
+}
+
+const SKIP_ISO = "__skip__";
+
+function choiceKeys(question: Question): { all: string[]; correct: string } {
+  if (question.yearOptions && question.yearOptions.length > 0) {
+    return { all: question.yearOptions.map(String), correct: String(question.year ?? "") };
+  }
+  if (question.waterOptions && question.waterOptions.length > 0 && question.waterId) {
+    return { all: question.waterOptions, correct: question.waterId };
+  }
+  return { all: question.options.map((item) => item.iso), correct: question.country.iso };
+}
 
 export function worldFromPath(pathname: string): World | null {
   if (pathname === "/football" || pathname.startsWith("/football/")) return "football";
   if (pathname === "/codes" || pathname.startsWith("/codes/")) return "geo";
   if (pathname === "/leaders" || pathname.startsWith("/leaders/")) return "leaders";
+  if (pathname === "/math" || pathname.startsWith("/math/")) return "math";
+  if (pathname === "/astronomy" || pathname.startsWith("/astronomy/")) return "astronomy";
+  if (pathname === "/biology" || pathname.startsWith("/biology/")) return "biology";
+  if (pathname === "/olympics" || pathname.startsWith("/olympics/")) return "olympics";
+  if (pathname === "/cs" || pathname.startsWith("/cs/")) return "cs";
+  if (pathname === "/food" || pathname.startsWith("/food/")) return "food";
   if (pathname === "/geo" || pathname.startsWith("/geo/")) return "geo";
   return null;
+}
+
+export function hubFromPath(pathname: string): Hub | null {
+  if (pathname === "/multiplayer" || pathname.startsWith("/multiplayer/")) return "multiplayer";
+  if (pathname === "/studio" || pathname.startsWith("/studio/")) return "studio";
+  if (pathname === "/company" || pathname.startsWith("/company/")) return "company";
+  if (pathname === "/shop" || pathname.startsWith("/shop/")) return "shop";
+  return worldFromPath(pathname);
 }
 
 export function worldHref(world: World): string {
@@ -94,6 +167,12 @@ function syncWorldAttr(next: World | null) {
     document.documentElement.dataset.world = "football";
   } else if (next === "leaders") {
     document.documentElement.dataset.world = "leaders";
+  } else if (next === "math") {
+    document.documentElement.dataset.world = "math";
+  } else if (next === "astronomy") {
+    document.documentElement.dataset.world = "astronomy";
+  } else if (next && isThemeWorld(next)) {
+    document.documentElement.dataset.world = next;
   } else {
     delete document.documentElement.dataset.world;
   }
@@ -116,9 +195,10 @@ function publishRatings(clears: LevelClear[], xp: number, createdAt?: number) {
 export default function PlayApp() {
   const router = useRouter();
   const pathname = usePathname();
-  const pathWorld = worldFromPath(pathname);
-  const [worldNav, setWorldNav] = useState<World | null | undefined>(undefined);
-  const world = worldNav !== undefined ? worldNav : pathWorld;
+  const pathHub = hubFromPath(pathname);
+  const [worldNav, setWorldNav] = useState<Hub | null | undefined>(undefined);
+  const hub = worldNav !== undefined ? worldNav : pathHub;
+  const world: World | null = isMetaHub(hub) ? null : hub;
   const storedLang = useSyncExternalStore(subscribeLang, getStoredLang, (): Lang => "ru");
   const [lang, setLang] = useState<Lang | null>(null);
   const [settings, setSettings] = useState<Omit<QuizSettings, "lang">>({
@@ -159,6 +239,9 @@ export default function PlayApp() {
   const [levelClears, setLevelClears] = useState<LevelClear[]>([]);
   const [isNewBest, setIsNewBest] = useState(false);
   const [earnedXp, setEarnedXp] = useState(0);
+  const [earnedTokens, setEarnedTokens] = useState(0);
+  const [extraLifeBought, setExtraLifeBought] = useState(false);
+  const [hintHidden, setHintHidden] = useState<Record<number, string[]>>({});
   const [worldRecord, setWorldRecord] = useState<{ previousName: string | null } | null>(null);
   const [xp, setXp] = useState(0);
   const [xpReady, setXpReady] = useState(false);
@@ -177,7 +260,7 @@ export default function PlayApp() {
   const isLearn = quizSettings.path === "learn";
   const isPractice = isLearn || quizSettings.path === "mistakes";
   const livesLimit =
-    isFootballMode(quizSettings.mode) && !footballHasDifficulty(quizSettings.mode)
+    (isFootballMode(quizSettings.mode) && !footballHasDifficulty(quizSettings.mode)
       ? MAX_LIVES
       : livesFor(
           quizSettings.path,
@@ -186,8 +269,8 @@ export default function PlayApp() {
           quizSettings.level,
           quizSettings.levelLives,
           quizSettings.mode,
-        );
-  const mistakes = answers.filter((answer) => !isCorrect(answer)).length;
+        )) + (extraLifeBought ? 1 : 0);
+  const mistakes = answers.filter((answer) => !isCorrect(answer) && !answer.skipped).length;
   const livesLeft = Math.max(0, livesLimit - mistakes);
   const endedBy: RoundEnd = timedOut ? "timeout" : mistakes >= livesLimit ? "lives" : "complete";
   const currentMode = questions[index]?.mode ?? quizSettings.mode;
@@ -198,8 +281,17 @@ export default function PlayApp() {
     persistLang(quizSettings.lang);
     document.documentElement.lang = localeTag(quizSettings.lang);
     document.documentElement.dir = langDir(quizSettings.lang);
-    document.title = STRINGS[quizSettings.lang].title;
-  }, [quizSettings.lang]);
+    document.title =
+      hub === "multiplayer"
+        ? STRINGS[quizSettings.lang].multiplayer
+        : hub === "studio"
+          ? STRINGS[quizSettings.lang].studio
+          : hub === "company"
+            ? STRINGS[quizSettings.lang].company
+            : hub === "shop"
+              ? STRINGS[quizSettings.lang].shop
+            : STRINGS[quizSettings.lang].title;
+  }, [quizSettings.lang, hub]);
 
   useEffect(() => {
     if (resultTone) {
@@ -212,6 +304,11 @@ export default function PlayApp() {
   useEffect(() => {
     setWorldNav(undefined);
   }, [pathname]);
+
+  useEffect(() => {
+    startCompanyLoop();
+    return () => stopCompanyLoop();
+  }, []);
 
   useEffect(() => {
     syncWorldAttr(world);
@@ -242,9 +339,33 @@ export default function PlayApp() {
         path: "levels",
         region: "all",
       }));
+    } else if (world === "math" && !isMathMode(settings.mode)) {
+      setSettings((prev) => ({
+        ...prev,
+        mode: defaultMathMode(prev.mode),
+        mix: null,
+        path: "levels",
+        region: "all",
+      }));
+    } else if (world === "astronomy" && !isAstroMode(settings.mode)) {
+      setSettings((prev) => ({
+        ...prev,
+        mode: defaultAstroMode(prev.mode),
+        mix: null,
+        path: "levels",
+        region: "all",
+      }));
+    } else if (world && isThemeWorld(world) && (!isThemeMode(settings.mode) || worldOfMode(settings.mode) !== world)) {
+      setSettings((prev) => ({
+        ...prev,
+        mode: defaultThemeMode(world, prev.mode),
+        mix: null,
+        path: "levels",
+        region: "all",
+      }));
     } else if (
       world === "geo" &&
-      (isFootballMode(settings.mode) || isLeadersMode(settings.mode))
+      (isFootballMode(settings.mode) || isLeadersMode(settings.mode) || isMathMode(settings.mode) || isAstroMode(settings.mode) || isThemeMode(settings.mode))
     ) {
       setSettings((prev) => ({
         ...prev,
@@ -256,6 +377,70 @@ export default function PlayApp() {
       }));
     }
   }, [world, settings.mode, settings.difficulty]);
+
+  useEffect(() => {
+    function applyHash() {
+      if (screenRef.current === "quiz" || screenRef.current === "results") return;
+      const parsed = parsePlayHash(window.location.hash);
+      if (!parsed) return;
+      const pathWorld = worldFromPath(window.location.pathname);
+      if (!parsed.mix) {
+        const want = worldOfMode(parsed.mode);
+        if (pathWorld !== want) {
+          window.history.replaceState(null, "", `/${want}#${parsed.mode}`);
+          setWorldNav(want);
+          return;
+        }
+        setSettings((prev) =>
+          prev.mode === parsed.mode && prev.mix === null
+            ? prev
+            : {
+                ...prev,
+                mode: parsed.mode,
+                mix: null,
+                mixModes: [],
+                ...(isFactsToName(parsed.mode) ? { path: "pool" as const } : {}),
+              },
+        );
+        if (isFactsToName(parsed.mode)) setScreen("home");
+        return;
+      }
+      if (parsed.mix === "custom") {
+        const want = worldOfMode(parsed.mixModes[0] ?? parsed.mode);
+        const hash = encodePlayHash(parsed);
+        if (pathWorld !== want) {
+          window.history.replaceState(null, "", `/${want}#${hash}`);
+          setWorldNav(want);
+          return;
+        }
+        const mixModes = parsed.mixModes.filter((item) => worldOfMode(item) === want);
+        setSettings((prev) => ({
+          ...prev,
+          mode: mixModes[0] ?? parsed.mode,
+          mix: "custom",
+          mixModes,
+          path: "pool",
+        }));
+        setScreen("home");
+        return;
+      }
+      setSettings((prev) => ({
+        ...prev,
+        mix: parsed.mix,
+        mixModes: [],
+        path: "pool",
+      }));
+      setScreen("home");
+    }
+
+    applyHash();
+    const frame = window.requestAnimationFrame(applyHash);
+    window.addEventListener("hashchange", applyHash);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("hashchange", applyHash);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     const nextHistory = loadHistory();
@@ -376,6 +561,7 @@ export default function PlayApp() {
                 }
                 setEarnedXp(award);
                 const lifetime = bumpLifetime(true, seed, award, finishedMs, worldOfMode(quizSettings.mode));
+                companyOnRound(worldOfMode(quizSettings.mode), true);
                 setXp(lifetime.xp);
                 const nextClears = saveLevelClear({
                   level: quizSettings.level,
@@ -388,6 +574,7 @@ export default function PlayApp() {
                   xp: bestXp,
                 });
                 setLevelClears(nextClears);
+                grantRoundTokens(tokensForCampaign(baseAward, Boolean(record.beat)), loadHistory(), loadBests(), nextClears);
                 void publishRatings(nextClears, lifetime.xp);
                 rememberRound(answers);
                 const gold = quizSettings.levelHardcore || record.beat;
@@ -398,18 +585,21 @@ export default function PlayApp() {
               return;
             } else {
               setEarnedXp(0);
+              setEarnedTokens(0);
               setWorldRecord(null);
               addPlayMs(finishedMs, countLifetimeSeed(loadHistory(), loadLevelClears()));
+              companyOnRound(worldOfMode(quizSettings.mode), false);
             }
           } else {
             const footballDifficulty =
               isFootballMode(quizSettings.mode) && !footballHasDifficulty(quizSettings.mode)
                 ? "easy"
                 : quizSettings.difficulty;
-            const gained =
+            let gained =
               quizSettings.path === "pool"
                 ? xpForFreePlay(answers, footballDifficulty, quizSettings.mode, endedBy)
                 : 0;
+            if (gained > 0) gained = Math.round(gained * tokenXpMultiplier());
             setEarnedXp(gained);
             const seed = countLifetimeSeed(loadHistory(), loadLevelClears());
             let lifetime = bumpLifetime(
@@ -419,6 +609,7 @@ export default function PlayApp() {
               finishedMs,
               worldOfMode(quizSettings.mode),
             );
+            companyOnRound(worldOfMode(quizSettings.mode), endedBy === "complete");
             if (isFootballMode(quizSettings.mode)) {
               lifetime = bumpFootballLifetime(seed, {
                 complete: endedBy === "complete",
@@ -437,19 +628,29 @@ export default function PlayApp() {
               mix: quizSettings.path === "pool" ? quizSettings.mix ?? undefined : undefined,
               mixModes:
                 quizSettings.path === "pool" && quizSettings.mix === "custom" ? quizSettings.mixModes : undefined,
-              region: isFootballMode(quizSettings.mode) ? "all" : quizSettings.region,
+              region: isFootballMode(quizSettings.mode) || isLeadersMode(quizSettings.mode) || isMathMode(quizSettings.mode) || isAstroMode(quizSettings.mode) || isThemeMode(quizSettings.mode) ? "all" : quizSettings.region,
               difficulty: footballDifficulty === "hardcore" ? "hard" : footballDifficulty,
               roundSize: questions.length,
               endedBy,
               hardcore: quizSettings.levelHardcore || quizSettings.difficulty === "hardcore",
               includeExtras:
-                quizSettings.path === "pool" && !isFootballMode(quizSettings.mode) && !isLeadersMode(quizSettings.mode)
+                quizSettings.path === "pool" && !isFootballMode(quizSettings.mode) && !isLeadersMode(quizSettings.mode) && !isMathMode(quizSettings.mode) && !isAstroMode(quizSettings.mode) && !isThemeMode(quizSettings.mode)
                   ? quizSettings.includeExtras
                   : undefined,
             });
             setHistory(saved.history);
             setBests(saved.bests);
             setIsNewBest(saved.isNewBest);
+            if (quizSettings.path === "pool") {
+              grantRoundTokens(
+                tokensForFreePlay(answers, footballDifficulty, endedBy),
+                saved.history,
+                saved.bests,
+                loadLevelClears(),
+              );
+            } else {
+              setEarnedTokens(0);
+            }
             rememberRound(answers);
             if (gained > 0) {
               void publishRatings(loadLevelClears(), lifetime.xp);
@@ -589,6 +790,9 @@ export default function PlayApp() {
     savedRoundRef.current = false;
     setIsNewBest(false);
     setEarnedXp(0);
+    setEarnedTokens(0);
+    setExtraLifeBought(false);
+    setHintHidden({});
     setWorldRecord(null);
     setResultTone(null);
     setQuestions(round);
@@ -609,6 +813,18 @@ export default function PlayApp() {
     }
     if (world === "leaders" || isLeadersMode(quizSettings.mode)) {
       startLeadersRound();
+      return;
+    }
+    if (world === "math" || isMathMode(quizSettings.mode)) {
+      startMathRound();
+      return;
+    }
+    if (world === "astronomy" || isAstroMode(quizSettings.mode)) {
+      startAstroRound();
+      return;
+    }
+    if ((world && isThemeWorld(world)) || isThemeMode(quizSettings.mode)) {
+      startThemeRound();
       return;
     }
     if (world === "football" || isFootballMode(quizSettings.mode)) {
@@ -681,6 +897,99 @@ export default function PlayApp() {
     });
   }
 
+  function startMathRound(path: PlayPath = "pool", isos?: string[], level = quizSettings.level) {
+    const mix = path === "levels" ? null : quizSettings.mix;
+    if (mix) {
+      const modes = modesForMathMix(mix, quizSettings.mixModes);
+      const round = createMathMixedRound(modes, isos ? isos.length : quizSettings.roundSize, quizSettings.difficulty);
+      if (round.length === 0) return;
+      beginPreparedRound(round, path, level, {
+        mode: modes[0] ?? "exprToValue",
+        mix,
+        region: "all",
+      });
+      return;
+    }
+    const mode = defaultMathMode(quizSettings.mode);
+    if (!isMathMode(mode)) return;
+    const round = createMathRound(
+      mode,
+      isos ? isos.length : quizSettings.roundSize,
+      path === "pool" ? quizSettings.difficulty : undefined,
+      isos,
+    );
+    if (round.length === 0) return;
+    beginPreparedRound(round, path, level, {
+      mode,
+      mix: null,
+      region: "all",
+    });
+  }
+
+  function startAstroRound(path: PlayPath = "pool", isos?: string[], level = quizSettings.level) {
+    const mix = path === "levels" ? null : quizSettings.mix;
+    if (mix) {
+      const modes = modesForAstroMix(mix, quizSettings.mixModes);
+      const round = createAstroMixedRound(modes, isos ? isos.length : quizSettings.roundSize, quizSettings.difficulty);
+      if (round.length === 0) return;
+      beginPreparedRound(round, path, level, {
+        mode: modes[0] ?? "planetToOrder",
+        mix,
+        region: "all",
+      });
+      return;
+    }
+    const mode = defaultAstroMode(quizSettings.mode);
+    if (!isAstroMode(mode)) return;
+    const round = createAstroRound(
+      mode,
+      isos ? isos.length : quizSettings.roundSize,
+      path === "pool" ? quizSettings.difficulty : undefined,
+      isos,
+    );
+    if (round.length === 0) return;
+    beginPreparedRound(round, path, level, {
+      mode,
+      mix: null,
+      region: "all",
+    });
+  }
+
+  function startThemeRound(path: PlayPath = "pool", isos?: string[], level = quizSettings.level) {
+    const themeWorld: import("@/lib/quiz").ThemeWorld =
+      world && isThemeWorld(world)
+        ? world
+        : isThemeMode(quizSettings.mode)
+          ? (worldOfMode(quizSettings.mode) as import("@/lib/quiz").ThemeWorld)
+          : "biology";
+    const mix = path === "levels" ? null : quizSettings.mix;
+    if (mix) {
+      const modes = modesForThemeMix(themeWorld, mix, quizSettings.mixModes);
+      const round = createThemeMixedRound(modes, isos ? isos.length : quizSettings.roundSize, quizSettings.difficulty);
+      if (round.length === 0) return;
+      beginPreparedRound(round, path, level, {
+        mode: modes[0] ?? THEME_DEFAULT_MODE[themeWorld],
+        mix,
+        region: "all",
+      });
+      return;
+    }
+    const mode = defaultThemeMode(themeWorld, quizSettings.mode);
+    if (!isThemeMode(mode)) return;
+    const round = createThemeRound(
+      mode,
+      isos ? isos.length : quizSettings.roundSize,
+      path === "pool" ? quizSettings.difficulty : undefined,
+      isos,
+    );
+    if (round.length === 0) return;
+    beginPreparedRound(round, path, level, {
+      mode,
+      mix: null,
+      region: "all",
+    });
+  }
+
   function beginPreparedRound(
     round: Question[],
     path: PlayPath,
@@ -693,6 +1002,9 @@ export default function PlayApp() {
     savedRoundRef.current = false;
     setIsNewBest(false);
     setEarnedXp(0);
+    setEarnedTokens(0);
+    setExtraLifeBought(false);
+    setHintHidden({});
     setWorldRecord(null);
     setResultTone(null);
     setQuestions(round);
@@ -735,6 +1047,36 @@ export default function PlayApp() {
         pool.map((country) => country.iso),
         level,
       );
+      return;
+    }
+    if (isMathMode(quizSettings.mode)) {
+      const round = createMathLevelRound(quizSettings.mode, level);
+      if (round.length === 0) return;
+      beginPreparedRound(round, "levels", level, {
+        mode: quizSettings.mode,
+        mix: null,
+        region: "all",
+      });
+      return;
+    }
+    if (isAstroMode(quizSettings.mode)) {
+      const round = createAstroLevelRound(quizSettings.mode, level);
+      if (round.length === 0) return;
+      beginPreparedRound(round, "levels", level, {
+        mode: quizSettings.mode,
+        mix: null,
+        region: "all",
+      });
+      return;
+    }
+    if (isThemeMode(quizSettings.mode)) {
+      const round = createThemeLevelRound(quizSettings.mode, level);
+      if (round.length === 0) return;
+      beginPreparedRound(round, "levels", level, {
+        mode: quizSettings.mode,
+        mix: null,
+        region: "all",
+      });
       return;
     }
     if (isFinalLevel(level) && hasGeoFinale(quizSettings.mode)) {
@@ -789,10 +1131,19 @@ export default function PlayApp() {
       mode === "neighborsToName" ||
       mode === "factsToName" ||
       mode === "nameToLanguage" ||
+      mode === "languageToName" ||
+      mode === "nameToDriving" ||
+      mode === "drivingToName" ||
       mode === "nameToGov" ||
       isRankingMode(mode)
     ) {
       return "flagToName";
+    }
+    if (isMathMode(mode) && !mathHasCampaign(mode)) return "exprToValue";
+    if (isAstroMode(mode) && !astroHasCampaign(mode)) return "planetToOrder";
+    if (isThemeMode(mode) && !themeHasCampaign(mode)) {
+      const themeWorld = world && isThemeWorld(world) ? world : (worldOfMode(mode) as import("@/lib/quiz").ThemeWorld);
+      return THEME_DEFAULT_MODE[themeWorld];
     }
     return mode;
   }
@@ -801,6 +1152,7 @@ export default function PlayApp() {
     setSettings((prev) => ({
       ...prev,
       path: "levels",
+      mix: null,
       mode: campaignModeForLevels(prev.mode),
     }));
     setScreen("levels");
@@ -863,6 +1215,48 @@ export default function PlayApp() {
       startLeadersRound("learn", ids);
       return;
     }
+    if (isMathMode(quizSettings.mode)) {
+      const ids =
+        isos?.length
+          ? isos
+          : getLearnPool(
+              quizSettings.learnFrom,
+              quizSettings.region,
+              quizSettings.level,
+              quizSettings.mode,
+              quizSettings.includeExtras,
+            ).map((country) => country.iso);
+      startMathRound("learn", ids);
+      return;
+    }
+    if (isAstroMode(quizSettings.mode)) {
+      const ids =
+        isos?.length
+          ? isos
+          : getLearnPool(
+              quizSettings.learnFrom,
+              quizSettings.region,
+              quizSettings.level,
+              quizSettings.mode,
+              quizSettings.includeExtras,
+            ).map((country) => country.iso);
+      startAstroRound("learn", ids);
+      return;
+    }
+    if (isThemeMode(quizSettings.mode)) {
+      const ids =
+        isos?.length
+          ? isos
+          : getLearnPool(
+              quizSettings.learnFrom,
+              quizSettings.region,
+              quizSettings.level,
+              quizSettings.mode,
+              quizSettings.includeExtras,
+            ).map((country) => country.iso);
+      startThemeRound("learn", ids);
+      return;
+    }
     const pool = getLearnPool(
       quizSettings.learnFrom,
       quizSettings.region,
@@ -892,6 +1286,24 @@ export default function PlayApp() {
       startLeadersRound("mistakes", isos);
       return;
     }
+    if (isMathMode(quizSettings.mode)) {
+      const isos = mistakeList.filter((item) => item.mode === quizSettings.mode).map((item) => item.iso);
+      if (isos.length === 0) return;
+      startMathRound("mistakes", isos);
+      return;
+    }
+    if (isAstroMode(quizSettings.mode)) {
+      const isos = mistakeList.filter((item) => item.mode === quizSettings.mode).map((item) => item.iso);
+      if (isos.length === 0) return;
+      startAstroRound("mistakes", isos);
+      return;
+    }
+    if (isThemeMode(quizSettings.mode)) {
+      const isos = mistakeList.filter((item) => item.mode === quizSettings.mode).map((item) => item.iso);
+      if (isos.length === 0) return;
+      startThemeRound("mistakes", isos);
+      return;
+    }
     const pool = getRegionPool(quizSettings.region, true).filter((country) =>
       mistakeList.some((item) => item.iso === country.iso && worldOfMode(item.mode) === "geo"),
     );
@@ -918,6 +1330,51 @@ export default function PlayApp() {
     setSelectedIso(null);
     setTimedOut(false);
     questionStartRef.current = Date.now();
+  }
+
+  function grantRoundTokens(
+    playAmount: number,
+    historyRows = loadHistory(),
+    bestRows = loadBests(),
+    clears = loadLevelClears(),
+  ) {
+    const playGain = awardPlayTokens(playAmount);
+    const achGain = awardAchievementTokens(historyRows, bestRows, clears);
+    setEarnedTokens(playGain + achGain);
+  }
+
+  function powerEnabled() {
+    return quizSettings.path === "pool" && !isPractice && screen === "quiz" && !answered;
+  }
+
+  function spendHint() {
+    if (!powerEnabled()) return;
+    const question = questions[index];
+    if (!question) return;
+    const { all, correct } = choiceKeys(question);
+    const hidden = new Set(hintHidden[index] ?? []);
+    const wrong = all.filter((key) => key !== correct && !hidden.has(key));
+    if (wrong.length < 2) return;
+    if (!spendTokens(TOKEN_COST.hint)) return;
+    const pick = [...wrong].sort(() => Math.random() - 0.5).slice(0, 2);
+    setHintHidden((prev) => ({ ...prev, [index]: [...(prev[index] ?? []), ...pick] }));
+  }
+
+  function spendSkip() {
+    if (!powerEnabled()) return;
+    const question = questions[index];
+    if (!question) return;
+    if (!spendTokens(TOKEN_COST.skip)) return;
+    setSelectedIso(SKIP_ISO);
+    const next: RoundAnswer = { question, selectedIso: SKIP_ISO, timeMs: questionTimeMs(), skipped: true };
+    playSfx("wrong");
+    setAnswers((prev) => [...prev, next]);
+  }
+
+  function spendLife() {
+    if (!powerEnabled() || extraLifeBought) return;
+    if (!spendTokens(TOKEN_COST.life)) return;
+    setExtraLifeBought(true);
   }
 
   function finishFacts(iso: string | null, timeMs: number) {
@@ -1009,6 +1466,54 @@ export default function PlayApp() {
       setScreen("home");
       return;
     }
+    if (world === "math") {
+      if (quizSettings.path === "learn") {
+        setScreen("learn");
+        return;
+      }
+      if (quizSettings.path === "levels") {
+        setScreen("levels");
+        return;
+      }
+      if (quizSettings.path === "mistakes") {
+        setScreen("mistakes");
+        return;
+      }
+      setScreen("home");
+      return;
+    }
+    if (world === "astronomy") {
+      if (quizSettings.path === "learn") {
+        setScreen("learn");
+        return;
+      }
+      if (quizSettings.path === "levels") {
+        setScreen("levels");
+        return;
+      }
+      if (quizSettings.path === "mistakes") {
+        setScreen("mistakes");
+        return;
+      }
+      setScreen("home");
+      return;
+    }
+    if (world && isThemeWorld(world)) {
+      if (quizSettings.path === "learn") {
+        setScreen("learn");
+        return;
+      }
+      if (quizSettings.path === "levels") {
+        setScreen("levels");
+        return;
+      }
+      if (quizSettings.path === "mistakes") {
+        setScreen("mistakes");
+        return;
+      }
+      setScreen("home");
+      return;
+    }
     if (quizSettings.path === "learn") {
       setScreen("learn");
       return;
@@ -1030,7 +1535,7 @@ export default function PlayApp() {
   }
 
   function handleClearHistory() {
-    setHistory(clearHistory((item) => isFootballMode(item.mode) || isLeadersMode(item.mode)));
+    setHistory(clearHistory((item) => isFootballMode(item.mode) || isLeadersMode(item.mode) || isMathMode(item.mode) || isAstroMode(item.mode) || isThemeMode(item.mode)));
   }
 
   function handleClearBests() {
@@ -1044,6 +1549,33 @@ export default function PlayApp() {
   function handleClearLeadersHistory() {
     setHistory(clearHistory((item) => !isLeadersMode(item.mode)));
   }
+
+  function handleClearMathHistory() {
+    setHistory(clearHistory((item) => !isMathMode(item.mode)));
+  }
+
+  function handleClearAstroHistory() {
+    setHistory(clearHistory((item) => !isAstroMode(item.mode)));
+  }
+
+  function handleClearThemeHistory() {
+    const current = world
+    setHistory(
+      clearHistory((item) =>
+        current && isThemeWorld(current)
+          ? !(isThemeMode(item.mode) && themeWorldOf(item.mode) === current)
+          : !isThemeMode(item.mode),
+      ),
+    )
+  }
+
+  const hiddenKeys = hintHidden[index] ?? [];
+  const currentQuestion = questions[index];
+  const hintReady = currentQuestion
+    ? choiceKeys(currentQuestion).all.filter(
+        (key) => key !== choiceKeys(currentQuestion).correct && !hiddenKeys.includes(key),
+      ).length >= 2
+    : false;
 
   const play = {
     screen,
@@ -1063,6 +1595,7 @@ export default function PlayApp() {
     endedBy,
     isNewBest,
     earnedXp,
+    earnedTokens,
     worldRecord,
     livesLeft,
     livesLimit,
@@ -1071,15 +1604,30 @@ export default function PlayApp() {
     currentMode,
     stamps,
     mistakeList,
+    quizPower: {
+      enabled: quizSettings.path === "pool" && !isPractice,
+      hiddenKeys,
+      extraLifeUsed: extraLifeBought,
+      hintReady,
+      onHint: spendHint,
+      onSkip: spendSkip,
+      onLife: spendLife,
+    },
     handleSettingsChange,
     startFootballRound,
     startLeadersRound,
+    startMathRound,
+    startAstroRound,
+    startThemeRound,
     startRound,
     goHub,
     goToWorlds,
     goBackFromPlay,
     handleClearFootballHistory,
     handleClearLeadersHistory,
+    handleClearMathHistory,
+    handleClearAstroHistory,
+    handleClearThemeHistory,
     handleClearHistory,
     handleClearBests,
     playLevel,
@@ -1097,7 +1645,7 @@ export default function PlayApp() {
   };
 
   return (
-    <div className={`app${resultTone ? ` is-${resultTone}` : ""}${world === "football" ? " is-football" : ""}${world === "leaders" ? " is-leaders" : ""}${world === null ? " is-worlds" : ""}`}>
+    <div className={`app${resultTone ? ` is-${resultTone}` : ""}${world === "football" ? " is-football" : ""}${world === "leaders" ? " is-leaders" : ""}${world === "math" ? " is-math" : ""}${world === "astronomy" ? " is-astronomy" : ""}${world && isThemeWorld(world) ? ` is-${world}` : ""}${hub === null ? " is-worlds" : ""}`}>
       {world === "geo" ? (
         <div className="map-marks" aria-hidden="true">
           <span className="map-marks-n">N</span>
@@ -1130,9 +1678,45 @@ export default function PlayApp() {
         onChange={handleSettingsChange}
         onClearBests={handleClearBests}
       />
-      {world === null && (
+      {hub === null && (
         <WorldPickScreen
           settings={quizSettings}
+          onStudio={() => {
+            softNav(() => {
+              syncWorldAttr(null);
+              setWorldNav("studio");
+              screenRef.current = "home";
+              setScreenState("home");
+              router.push("/studio");
+            });
+          }}
+          onCompany={() => {
+            softNav(() => {
+              syncWorldAttr(null);
+              setWorldNav("company");
+              screenRef.current = "home";
+              setScreenState("home");
+              router.push("/company");
+            });
+          }}
+          onShop={() => {
+            softNav(() => {
+              syncWorldAttr(null);
+              setWorldNav("shop");
+              screenRef.current = "home";
+              setScreenState("home");
+              router.push("/shop");
+            });
+          }}
+          onMultiplayer={() => {
+            softNav(() => {
+              syncWorldAttr(null);
+              setWorldNav("multiplayer");
+              screenRef.current = "home";
+              setScreenState("home");
+              router.push("/multiplayer");
+            });
+          }}
           onPick={(next) => {
             softNav(() => {
               setSettings((prev) => {
@@ -1156,7 +1740,28 @@ export default function PlayApp() {
                     mix: null,
                     region: "all",
                   };
-                } else if (next === "geo" && (isFootballMode(prev.mode) || isLeadersMode(prev.mode))) {
+                } else if (next === "math") {
+                  nextSettings = {
+                    ...prev,
+                    mode: defaultMathMode(prev.mode),
+                    mix: null,
+                    region: "all",
+                  };
+                } else if (next === "astronomy") {
+                  nextSettings = {
+                    ...prev,
+                    mode: defaultAstroMode(prev.mode),
+                    mix: null,
+                    region: "all",
+                  };
+                } else if (isThemeWorld(next)) {
+                  nextSettings = {
+                    ...prev,
+                    mode: defaultThemeMode(next, prev.mode),
+                    mix: null,
+                    region: "all",
+                  };
+                } else if (next === "geo" && (isFootballMode(prev.mode) || isLeadersMode(prev.mode) || isMathMode(prev.mode) || isAstroMode(prev.mode) || isThemeMode(prev.mode))) {
                   nextSettings = {
                     ...prev,
                     mode: "flagToName",
@@ -1181,14 +1786,37 @@ export default function PlayApp() {
           }}
         />
       )}
+      {hub === "multiplayer" ? <MultiplayerPlay play={play} /> : null}
+      {hub === "studio" ? <StudioPlay play={play} /> : null}
+      {hub === "company" ? <CompanyPlay play={play} /> : null}
+      {hub === "shop" ? <ShopPlay play={play} /> : null}
       {world === "football" ? <FootballPlay play={play} /> : null}
       {world === "leaders" ? <LeadersPlay play={play} /> : null}
+      {world === "math" ? <MathPlay play={play} /> : null}
+      {world === "astronomy" ? <AstroPlay play={play} /> : null}
+      {world && isThemeWorld(world) ? <ThemePlay world={world} play={play} /> : null}
       {world === "geo" ? <GeoPlay play={play} /> : null}
+      {hub !== "company" && hub !== "shop" && screen !== "quiz" ? (
+        <CompanyHud
+          lang={quizSettings.lang}
+          onOpen={() => {
+            softNav(() => {
+              syncWorldAttr(null);
+              setWorldNav("company");
+              screenRef.current = "home";
+              setScreenState("home");
+              router.push("/company");
+            });
+          }}
+        />
+      ) : null}
+      <CompanySpark lang={quizSettings.lang} />
       <footer className="legal-footer">
         {world === "geo" ? (
           <nav className="legal-links">
             <a href="/countries">{STRINGS[quizSettings.lang].legalCountries}</a>
             <a href="/languages">{STRINGS[quizSettings.lang].legalLanguages}</a>
+            <a href="/lists">{STRINGS[quizSettings.lang].legalLists}</a>
             <a href="/today">{STRINGS[quizSettings.lang].legalToday}</a>
           </nav>
         ) : null}
