@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { COUNTRIES } from '../data/countries'
 import { languagesIndex } from '../data/languages'
+import { SITE_LISTS } from '../data/lists'
 import { SITE_ORIGIN } from '../lib/site'
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -16,22 +17,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_ORIGIN}/olympics`, lastModified: now },
     { url: `${SITE_ORIGIN}/cs`, lastModified: now },
     { url: `${SITE_ORIGIN}/food`, lastModified: now },
-    { url: `${SITE_ORIGIN}/music`, lastModified: now },
-    { url: `${SITE_ORIGIN}/melody`, lastModified: now },
     { url: `${SITE_ORIGIN}/multiplayer`, lastModified: now },
     { url: `${SITE_ORIGIN}/studio`, lastModified: now },
     { url: `${SITE_ORIGIN}/company`, lastModified: now },
     { url: `${SITE_ORIGIN}/shop`, lastModified: now },
+    { url: `${SITE_ORIGIN}/state`, lastModified: now },
     { url: `${SITE_ORIGIN}/about`, lastModified: now },
     { url: `${SITE_ORIGIN}/privacy`, lastModified: now },
+    { url: `${SITE_ORIGIN}/cookies`, lastModified: now },
     { url: `${SITE_ORIGIN}/terms`, lastModified: now },
     { url: `${SITE_ORIGIN}/contacts`, lastModified: now },
     { url: `${SITE_ORIGIN}/countries`, lastModified: now },
     { url: `${SITE_ORIGIN}/languages`, lastModified: now },
     { url: `${SITE_ORIGIN}/lists`, lastModified: now },
-    { url: `${SITE_ORIGIN}/lists/microstates`, lastModified: now },
     { url: `${SITE_ORIGIN}/today`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
   ]
+  for (const list of SITE_LISTS) {
+    pages.push({ url: `${SITE_ORIGIN}/lists/${list.id}`, lastModified: now })
+  }
   for (const country of COUNTRIES) {
     pages.push({ url: `${SITE_ORIGIN}/country/${country.iso}`, lastModified: now })
   }

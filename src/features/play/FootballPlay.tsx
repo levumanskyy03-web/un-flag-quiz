@@ -1,5 +1,6 @@
 "use client";
 
+import { WorldAlbumScreen } from "@/components/WorldAlbumScreen";
 import { FactsScreen } from "@/components/FactsScreen";
 import { FootballScreen } from "@/components/FootballScreen";
 import { LearnScreen } from "@/components/LearnScreen";
@@ -67,6 +68,15 @@ export function FootballPlay({ play }: { play: PlaySession }) {
           onWorlds={play.goToWorlds}
           onPractice={play.startMistakesPractice}
           onClear={() => play.setMistakeList(clearMistakes((item) => !isFootballMode(item.mode)))}
+        />
+      )}
+      {play.screen === "album" && (
+        <WorldAlbumScreen
+          settings={play.quizSettings}
+          world="football"
+          tabs={WORLD_HUB_TABS}
+          onHub={play.goHub}
+          onWorlds={play.goToWorlds}
         />
       )}
       {play.screen === "quiz" && play.questions[play.index] && (

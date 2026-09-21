@@ -11,8 +11,6 @@ export function quizWorldTitle(world: QuizWorld, lang: Lang): string {
   if (world === 'math') return t.math
   if (world === 'astronomy') return t.astronomy
   if (world === 'cs') return t.cs
-  if (world === 'music') return t.musicWorld
-  if (world === 'melody') return t.melodyWorld
   return t.food
 }
 

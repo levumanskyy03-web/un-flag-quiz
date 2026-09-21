@@ -61,6 +61,7 @@ export function AstroSetup({
             <ModeChoice
               key={item}
               label={topicLabel(item, settings.lang)}
+              mode={modes[0]}
               active={!settings.mix && topic === item}
               onClick={() => pickTopic(item)}
             />
@@ -94,6 +95,7 @@ export function AstroModeGrids({ lang, activeMode, onPick, selectedModes, mix, h
                 <ModeChoice
                   key={mode}
                   label={modeLabel(mode, lang)}
+                  mode={mode}
                   active={selected.has(mode)}
                   onClick={() => onPick(mode)}
                 />

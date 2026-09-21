@@ -81,19 +81,15 @@ export function StudioPlay({ play }: { play: PlaySession }) {
 
   useEffect(() => {
     if (view !== "quiz" || selectedId !== null || timedOut || practice) return;
-    const started = Date.now();
     const limit = QUESTION_TIME_MS + 5000;
-    const tick = window.setInterval(() => {
-      const left = Math.max(0, limit - (Date.now() - started));
-      setRemainingMs(left);
-      if (left <= 0) {
-        window.clearInterval(tick);
-        setTimedOut(true);
-        playSfx("wrong");
-        setLivesLeft((n) => Math.max(0, n - 1));
-      }
-    }, 100);
-    return () => window.clearInterval(tick);
+    setRemainingMs(limit);
+    const tick = window.setTimeout(() => {
+      setRemainingMs(0);
+      setTimedOut(true);
+      playSfx("wrong");
+      setLivesLeft((n) => Math.max(0, n - 1));
+    }, limit);
+    return () => window.clearTimeout(tick);
   }, [view, index, selectedId, timedOut, practice]);
 
   const question = questions[index];

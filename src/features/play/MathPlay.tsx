@@ -1,5 +1,6 @@
 "use client";
 
+import { WorldAlbumScreen } from "@/components/WorldAlbumScreen";
 import { MATH_HUB_TABS } from "@/components/HubNav";
 import { defaultMathMode, MathScreen } from "@/components/MathScreen";
 import { LearnScreen } from "@/components/LearnScreen";
@@ -72,6 +73,15 @@ export function MathPlay({ play }: { play: PlaySession }) {
           onWorlds={play.goToWorlds}
           onPractice={play.startMistakesPractice}
           onClear={() => play.setMistakeList(clearMistakes((item) => !isMathMode(item.mode)))}
+        />
+      )}
+      {play.screen === "album" && (
+        <WorldAlbumScreen
+          settings={play.quizSettings}
+          world="math"
+          tabs={MATH_HUB_TABS}
+          onHub={play.goHub}
+          onWorlds={play.goToWorlds}
         />
       )}
       {play.screen === "quiz" && play.questions[play.index] && (

@@ -1,5 +1,7 @@
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
+import { modeCatalogNo } from '../lib/modeCatalog'
 import { ModeChoice } from './ModeChoice'
+import { FitGroup } from './FitText'
 import type { QuizSettings } from './HomeScreen'
 import {
   isThemeMode,
@@ -43,9 +45,6 @@ export function themeTopicLabel(topic: ThemeTopic, lang: Lang): string {
   if (topic === 'code') return t.csFamilyCode
   if (topic === 'binary') return t.csFamilyBinary
   if (topic === 'hackers') return t.csFamilyPeople
-  if (topic === 'instruments') return t.musicFamilyInstruments
-  if (topic === 'people') return t.musicFamilyPeople
-  if (topic === 'works') return t.musicFamilyWorks
   if (topic === 'dishes') return t.foodFamilyDishes
   return t.foodFamilyOrigin
 }
@@ -80,12 +79,13 @@ export function ThemeSetup({
           const modes = themeModesOfTopic(item).filter((mode) => !hidden.has(mode))
           if (modes.length === 0) return null
           return (
-            <ModeChoice
-              key={item}
-              label={themeTopicLabel(item, settings.lang)}
-              active={!settings.mix && topic === item}
-              onClick={() => pickTopic(item)}
-            />
+          <ModeChoice
+            key={item}
+            label={themeTopicLabel(item, settings.lang)}
+            no={modes[0] ? modeCatalogNo(modes[0]) : undefined}
+            active={!settings.mix && topic === item}
+            onClick={() => pickTopic(item)}
+          />
           )
         })}
       </div>
@@ -113,14 +113,17 @@ export function ThemeModeGrids({ world, lang, activeMode, onPick, selectedModes,
           <div key={topic}>
             <h2>{themeTopicLabel(topic, lang)}</h2>
             <div className="choice-grid is-modes">
-              {modes.map((mode) => (
+              <FitGroup wrap minPx={8}>
+                {modes.map((mode) => (
                 <ModeChoice
                   key={mode}
                   label={modeLabel(mode, lang)}
+                  mode={mode}
                   active={selected.has(mode)}
                   onClick={() => onPick(mode)}
                 />
-              ))}
+                ))}
+              </FitGroup>
             </div>
           </div>
         )

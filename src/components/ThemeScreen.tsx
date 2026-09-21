@@ -18,10 +18,12 @@ import { HubNav, THEME_HUB_TABS, type HubTab } from './HubNav'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
-import { FitText } from './FitText'
+import { FitGroup, FitText } from './FitText'
+import { CatalogNo } from './ModeChoice'
 import { setupDifficultyText } from './DifficultyPicker'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
-import { difficultyForMode, settingsForThemeFamily, themeFamilyLabel } from '../lib/modeFamilies'
+import { difficultyForMode, modesOfThemeFamily, settingsForThemeFamily, themeFamilyLabel } from '../lib/modeFamilies'
+import { modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
 
 interface ThemeScreenProps {
   world: ThemeWorld
@@ -40,8 +42,6 @@ const WORLD_ICON = {
   olympics: 'torch',
   cs: 'code',
   food: 'bowl',
-  music: 'speaker',
-  melody: 'notes',
 } as const
 
 export function ThemeScreen({
@@ -70,7 +70,7 @@ export function ThemeScreen({
 
   useEffect(() => {
     prefetchWikiPortraits(
-      THEME_ITEMS.filter((item) => item.wikiFile && (item.mode === 'csPhotoToName' || item.mode === 'musicPhotoToName'))
+      THEME_ITEMS.filter((item) => item.wikiFile && item.mode === 'csPhotoToName')
         .map((item) => ({ title: item.wiki ?? '', file: item.wikiFile }))
         .slice(0, 24),
     )
@@ -109,11 +109,7 @@ export function ThemeScreen({
         ? t.olympics
         : world === 'cs'
           ? t.cs
-          : world === 'music'
-            ? t.musicWorld
-            : world === 'melody'
-              ? t.melodyWorld
-              : t.food
+          : t.food
   const subtitle =
     world === 'biology'
       ? t.bioSubtitle
@@ -121,11 +117,7 @@ export function ThemeScreen({
         ? t.olySubtitle
         : world === 'cs'
           ? t.csSubtitle
-          : world === 'music'
-            ? t.musicSubtitle
-            : world === 'melody'
-              ? t.melodySubtitle
-              : t.foodSubtitle
+          : t.foodSubtitle
 
   return (
     <div className="screen football-screen">
@@ -143,32 +135,36 @@ export function ThemeScreen({
       <section className="card settings-card">
         <h2>{t.mode}</h2>
         <div className="choice-grid is-modes">
-          {families.map((id) => (
-            <button
-              key={id}
-              type="button"
-              className={`choice ${!mix && activeFamily === id ? 'is-active' : ''}`}
-              aria-pressed={!mix && activeFamily === id}
-              onClick={() => {
-                applyThemeSettings({ ...settings, ...settingsForThemeFamily(world, settings, id) })
-                setSetupFamily({ world, id })
-              }}
-            >
-              <FitText minPx={9}>{themeFamilyLabel(world, id, settings.lang)}</FitText>
-            </button>
-          ))}
+          <FitGroup wrap minPx={8}>
+            {families.map((id) => (
+              <button
+                key={id}
+                type="button"
+                className={`choice has-mode-no ${!mix && activeFamily === id ? 'is-active' : ''}`}
+                aria-pressed={!mix && activeFamily === id}
+                onClick={() => {
+                  applyThemeSettings({ ...settings, ...settingsForThemeFamily(world, settings, id) })
+                  setSetupFamily({ world, id })
+                }}
+              >
+                <CatalogNo n={modesCatalogNo(modesOfThemeFamily(id))} />
+                <FitText>{themeFamilyLabel(world, id, settings.lang)}</FitText>
+              </button>
+            ))}
+          </FitGroup>
         </div>
         <div className="mode-aside">
           <h2>{t.familyMix}</h2>
           <button
             type="button"
-            className={`choice has-note is-wide ${mix ? 'is-active' : ''}`}
+            className={`choice has-note has-mode-no is-wide ${mix ? 'is-active' : ''}`}
             aria-pressed={Boolean(mix)}
             onClick={() => {
               applyThemeSettings({ ...settings, ...settingsForThemeFamily(world, settings, 'mix') })
               setSetupFamily({ world, id: 'mix' })
             }}
           >
+            <CatalogNo n={worldCatalogNo(world)} />
             <FitText minPx={9}>{mix ? mixLabel(mix, settings.lang) : t.familyMix}</FitText>
             <FitText className="choice-note" wrap minPx={7}>
               {t.customMixNote}

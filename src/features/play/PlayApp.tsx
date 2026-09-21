@@ -8,6 +8,7 @@ import { defaultAstroMode } from "@/components/AstroScreen";
 import { defaultThemeMode } from "@/lib/quiz";
 import { AppChrome } from "@/components/AppChrome";
 import { type QuizSettings } from "@/components/HomeScreen";
+import { geoOpts } from "@/components/ExtrasToggle";
 import { type HubTab } from "@/components/HubNav";
 import { WorldPickScreen, type World } from "@/components/WorldPickScreen";
 import { footballLevelPlayerIds, footballLevelYears } from "@/data/footballLevels";
@@ -15,6 +16,8 @@ import { portraitFileForTerm } from "@/data/leaderPortraitFiles";
 import { playerById } from "@/data/footballPlayers";
 import { termById } from "@/data/leaders";
 import { FINAL_LEVEL, isFinalLevel } from "@/data/levels";
+import { COUNTRIES } from "@/data/countries";
+import { STATE_ROUND_SIZE } from "@/data/state";
 import { STRINGS, isLang, langDir, localeTag, type Lang } from "@/i18n/strings";
 import { SITE_LANG_KEY } from "@/i18n/lang";
 import { persistLang } from "@/i18n/persistLang";
@@ -22,15 +25,14 @@ import { clearBests, clearHistory, loadBests, loadHistory, saveRound, type Round
 import { loadLevelClears, saveLevelClear, findLevelClear, isLevelUnlocked, type LevelClear } from "@/lib/levelProgress";
 import { addPlayMs, bumpFootballLifetime, bumpLifetime, bumpRecordBreaks, countLifetimeSeed, seedLifetimeIfEmpty } from "@/lib/lifetime";
 import { campaignXpDelta, WORLD_RECORD_XP, xpForAnswers, xpForFreePlay } from "@/lib/xp";
-import { fetchAccount } from "@/lib/account";
-import { unlockedAchievementIds } from "@/lib/achievements";
-import { submitLevelBest, submitRatings } from "@/lib/leaderboard";
+import { submitRound } from "@/lib/leaderboard";
 import { answerKey } from "@/lib/quizAnswers";
 import {
   answerPauseMs,
   QUESTION_TIME_MS,
   createMixedRound,
   createRound,
+  STATE_GRAPHIC_MODES,
   LEADERS_MODES,
   FOOTBALL_MODES,
   campaignLevelCount,
@@ -72,6 +74,8 @@ import {
   isPlayerPhotoMode,
   isRankingMode,
   isWaterMode,
+  isMapMode,
+  isSilhouetteMode,
   hasGeoFinale,
   livesFor,
   MAX_LIVES,
@@ -91,7 +95,7 @@ import {
 } from "@/lib/quiz";
 import { encodePlayHash, parsePlayHash } from "@/lib/playHash";
 import { bumpTrainerComplete, clearMistakes, loadMistakes, recordMistakes, clearCorrected, type MistakeEntry } from "@/lib/mistakes";
-import { awardRoundStamps, loadStamps, type StampAlbum } from "@/lib/stamps";
+import { awardRoundStamps, loadStamps, subscribeStamps, type StampAlbum } from "@/lib/stamps";
 import { playSfx } from "@/lib/sfx";
 import { softNav } from "@/lib/softNav";
 import { prefetchWikiPortraits } from "@/lib/wikiThumb";
@@ -105,10 +109,13 @@ import { MultiplayerPlay } from "./MultiplayerPlay";
 import { StudioPlay } from "./StudioPlay";
 import { CompanyPlay } from "./CompanyPlay";
 import { ShopPlay } from "./ShopPlay";
+import { StatePlay } from "./StatePlay";
 import { CompanyHud, CompanySpark } from "@/components/CompanyScreen";
 import { companyOnRound, startCompanyLoop, stopCompanyLoop } from "@/lib/companyStore";
-import { tokensForCampaign, TOKEN_COST } from "@/data/tokens";
+import { loadRealm, realmOnRound, startStateLoop, stopStateLoop, stateInfraBonusMs } from "@/lib/stateStore";
+import { tokensForCampaign } from "@/data/tokens";
 import { tokensForFreePlay } from "@/lib/tokenAward";
+import { economyOnRound, noteWorldTokenGain, powerTokenCost } from "@/lib/economyStore";
 import {
   awardAchievementTokens,
   awardPlayTokens,
@@ -118,10 +125,24 @@ import {
 
 type Screen = "home" | "levels" | "level20" | "learn" | "map" | "quiz" | "results" | "mistakes" | "album";
 type ResultTone = "success" | "fail" | "gold";
-type Hub = World | "multiplayer" | "studio" | "company" | "shop";
+type Hub = World | "multiplayer" | "studio" | "company" | "shop" | "state";
 
-function isMetaHub(hub: Hub | null | undefined): hub is "multiplayer" | "studio" | "company" | "shop" {
-  return hub === "multiplayer" || hub === "studio" || hub === "company" || hub === "shop";
+function isMetaHub(hub: Hub | null | undefined): hub is "multiplayer" | "studio" | "company" | "shop" | "state" {
+  return hub === "multiplayer" || hub === "studio" || hub === "company" || hub === "shop" || hub === "state";
+}
+
+function questionMs(
+  mode: Question["mode"] | QuizSettings["mode"],
+  path: PlayPath,
+  region: QuizSettings["region"],
+  stateRound: boolean,
+) {
+  const quizMode = mode ?? "flagToName";
+  let ms = questionLimitMs(quizMode, { region, path });
+  if (stateRound && (isMapMode(quizMode) || isSilhouetteMode(quizMode))) {
+    ms += stateInfraBonusMs();
+  }
+  return ms;
 }
 
 const SKIP_ISO = "__skip__";
@@ -146,8 +167,6 @@ export function worldFromPath(pathname: string): World | null {
   if (pathname === "/olympics" || pathname.startsWith("/olympics/")) return "olympics";
   if (pathname === "/cs" || pathname.startsWith("/cs/")) return "cs";
   if (pathname === "/food" || pathname.startsWith("/food/")) return "food";
-  if (pathname === "/music" || pathname.startsWith("/music/")) return "music";
-  if (pathname === "/melody" || pathname.startsWith("/melody/")) return "melody";
   if (pathname === "/geo" || pathname.startsWith("/geo/")) return "geo";
   return null;
 }
@@ -157,6 +176,7 @@ export function hubFromPath(pathname: string): Hub | null {
   if (pathname === "/studio" || pathname.startsWith("/studio/")) return "studio";
   if (pathname === "/company" || pathname.startsWith("/company/")) return "company";
   if (pathname === "/shop" || pathname.startsWith("/shop/")) return "shop";
+  if (pathname === "/state" || pathname.startsWith("/state/")) return "state";
   return worldFromPath(pathname);
 }
 
@@ -190,10 +210,6 @@ function getStoredLang(): Lang {
   return isLang(stored) ? stored : "ru";
 }
 
-function publishRatings(clears: LevelClear[], xp: number, createdAt?: number) {
-  return submitRatings(clears, xp, unlockedAchievementIds(loadHistory(), loadBests(), clears, createdAt))
-}
-
 export default function PlayApp() {
   const router = useRouter();
   const pathname = usePathname();
@@ -217,6 +233,8 @@ export default function PlayApp() {
     levelLearn: false,
     learnFrom: "region",
     includeExtras: false,
+    includeEraStates: false,
+    eraYear: new Date().getFullYear(),
   });
   const [screen, setScreenState] = useState<Screen>("levels");
   const screenRef = useRef(screen);
@@ -253,6 +271,7 @@ export default function PlayApp() {
   const roundStartRef = useRef<number | null>(null);
   const questionStartRef = useRef<number | null>(null);
   const savedRoundRef = useRef(false);
+  const stateRoundRef = useRef(false);
 
   const quizSettings: QuizSettings = {
     ...settings,
@@ -292,6 +311,8 @@ export default function PlayApp() {
             ? STRINGS[quizSettings.lang].company
             : hub === "shop"
               ? STRINGS[quizSettings.lang].shop
+            : hub === "state"
+              ? STRINGS[quizSettings.lang].state
             : STRINGS[quizSettings.lang].title;
   }, [quizSettings.lang, hub]);
 
@@ -309,7 +330,11 @@ export default function PlayApp() {
 
   useEffect(() => {
     startCompanyLoop();
-    return () => stopCompanyLoop();
+    startStateLoop();
+    return () => {
+      stopCompanyLoop();
+      stopStateLoop();
+    };
   }, []);
 
   useEffect(() => {
@@ -451,24 +476,12 @@ export default function PlayApp() {
     setBests(loadBests());
     setLevelClears(nextClears);
     setStamps(loadStamps());
+    const unsubStamps = subscribeStamps(() => setStamps(loadStamps()));
     setMistakeList(loadMistakes());
     setXp(seedLifetimeIfEmpty(countLifetimeSeed(nextHistory, nextClears)).xp);
     setXpReady(true);
-    void fetchAccount().then((user) => {
-      if (!user) return
-      const lifetime = seedLifetimeIfEmpty(countLifetimeSeed(nextHistory, nextClears))
-      void publishRatings(nextClears, lifetime.xp, user.createdAt)
-    })
+    return unsubStamps
   }, []);
-
-  useEffect(() => {
-    if (screen !== "quiz" || roundStartRef.current === null) return;
-    const started = roundStartRef.current;
-    const id = window.setInterval(() => {
-      setRoundMs(Date.now() - started);
-    }, 200);
-    return () => window.clearInterval(id);
-  }, [screen]);
 
   useEffect(() => {
     const titles: Array<{ title: string; file?: string }> = [];
@@ -490,28 +503,20 @@ export default function PlayApp() {
     if (isFactsToName(currentMode)) return;
     const started = Date.now();
     questionStartRef.current = started;
-    const limitMs = questionLimitMs(currentMode, {
-      region: currentRegion,
-      path: currentPath,
-    });
-    const id = window.setInterval(() => {
-      const left = limitMs - (Date.now() - started);
-      if (left <= 0) {
-        window.clearInterval(id);
-        setRemainingMs(0);
-        setTimedOut(true);
-        playSfx("wrong");
-        setAnswers((prev) => {
-          if (prev.length > index) return prev;
-          const question = questions[index];
-          if (!question) return prev;
-          return [...prev, { question, selectedIso: null, timeMs: limitMs }];
-        });
-        return;
-      }
-      setRemainingMs(left);
-    }, 50);
-    return () => window.clearInterval(id);
+    const limitMs = questionMs(currentMode, currentPath, currentRegion, stateRoundRef.current);
+    setRemainingMs(limitMs);
+    const id = window.setTimeout(() => {
+      setRemainingMs(0);
+      setTimedOut(true);
+      playSfx("wrong");
+      setAnswers((prev) => {
+        if (prev.length > index) return prev;
+        const question = questions[index];
+        if (!question) return prev;
+        return [...prev, { question, selectedIso: null, timeMs: limitMs }];
+      });
+    }, limitMs);
+    return () => window.clearTimeout(id);
   }, [answered, index, isPractice, questions, currentMode, currentPath, currentRegion, screen]);
 
   useEffect(() => {
@@ -545,12 +550,16 @@ export default function PlayApp() {
               );
               const { award: baseAward, bestXp } = campaignXpDelta(runXp, previousClear);
               void (async () => {
-                const record = await submitLevelBest({
+                const record = await submitRound({
+                  path: "levels",
                   mode: quizSettings.mode,
+                  questions: answers.length,
+                  correct: answers.filter(isCorrect).length,
+                  roundMs: finishedMs,
                   level: quizSettings.level,
                   hardcore: quizSettings.levelHardcore,
-                  roundMs: finishedMs,
                   livesLeft,
+                  livesLimit,
                 });
                 const seed = countLifetimeSeed(loadHistory(), loadLevelClears());
                 let award = baseAward;
@@ -564,6 +573,12 @@ export default function PlayApp() {
                 setEarnedXp(award);
                 const lifetime = bumpLifetime(true, seed, award, finishedMs, worldOfMode(quizSettings.mode));
                 companyOnRound(worldOfMode(quizSettings.mode), true);
+                economyOnRound({
+                  world: worldOfMode(quizSettings.mode),
+                  path: "levels",
+                  complete: true,
+                  perfect: answers.length > 0 && answers.every(isCorrect),
+                });
                 setXp(lifetime.xp);
                 const nextClears = saveLevelClear({
                   level: quizSettings.level,
@@ -577,7 +592,6 @@ export default function PlayApp() {
                 });
                 setLevelClears(nextClears);
                 grantRoundTokens(tokensForCampaign(baseAward, Boolean(record.beat)), loadHistory(), loadBests(), nextClears);
-                void publishRatings(nextClears, lifetime.xp);
                 rememberRound(answers);
                 const gold = quizSettings.levelHardcore || record.beat;
                 setResultTone(gold ? "gold" : "success");
@@ -591,6 +605,12 @@ export default function PlayApp() {
               setWorldRecord(null);
               addPlayMs(finishedMs, countLifetimeSeed(loadHistory(), loadLevelClears()));
               companyOnRound(worldOfMode(quizSettings.mode), false);
+              economyOnRound({
+                world: worldOfMode(quizSettings.mode),
+                path: "levels",
+                complete: false,
+                perfect: false,
+              });
             }
           } else {
             const footballDifficulty =
@@ -612,6 +632,12 @@ export default function PlayApp() {
               worldOfMode(quizSettings.mode),
             );
             companyOnRound(worldOfMode(quizSettings.mode), endedBy === "complete");
+            economyOnRound({
+              world: worldOfMode(quizSettings.mode),
+              path: quizSettings.path,
+              complete: endedBy === "complete",
+              perfect: endedBy === "complete" && answers.length > 0 && answers.every(isCorrect),
+            });
             if (isFootballMode(quizSettings.mode)) {
               lifetime = bumpFootballLifetime(seed, {
                 complete: endedBy === "complete",
@@ -652,10 +678,19 @@ export default function PlayApp() {
               );
             } else {
               setEarnedTokens(0);
+              if (stateRoundRef.current) realmOnRound(endedBy === "complete");
             }
             rememberRound(answers);
             if (gained > 0) {
-              void publishRatings(loadLevelClears(), lifetime.xp);
+              void submitRound({
+                path: "pool",
+                mode: quizSettings.mode,
+                questions: answers.length,
+                correct: answers.filter(isCorrect).length,
+                roundMs: finishedMs,
+                difficulty: footballDifficulty,
+                endedBy,
+              });
             }
             playSfx(saved.isNewBest ? "record" : endedBy === "complete" ? "success" : "fail");
           }
@@ -672,7 +707,7 @@ export default function PlayApp() {
       setSelectedIso(null);
       setTimedOut(false);
       const nextMode = questions[index + 1]?.mode ?? currentMode;
-      setRemainingMs(questionLimitMs(nextMode, { region: currentRegion, path: currentPath }));
+      setRemainingMs(questionMs(nextMode, currentPath, currentRegion, stateRoundRef.current));
     }, answerPauseMs(currentMode));
     return () => window.clearTimeout(id);
   }, [
@@ -705,7 +740,7 @@ export default function PlayApp() {
     const started = questionStartRef.current;
     if (started === null) return 0;
     const elapsed = Math.max(0, Date.now() - started);
-    return isPractice ? elapsed : Math.min(questionLimitMs(currentMode, { region: currentRegion, path: currentPath }), elapsed);
+    return isPractice ? elapsed : Math.min(questionMs(currentMode, currentPath, currentRegion, stateRoundRef.current), elapsed);
   }
 
   function rememberRound(roundAnswers: RoundAnswer[]) {
@@ -761,6 +796,8 @@ export default function PlayApp() {
       levelLearn: next.levelLearn,
       learnFrom: next.learnFrom,
       includeExtras: next.includeExtras,
+      includeEraStates: next.includeEraStates,
+      eraYear: next.eraYear,
     });
   }
 
@@ -775,7 +812,7 @@ export default function PlayApp() {
     const round = mix
       ? createMixedRound(
           modesForMix(mix, "geo", quizSettings.mixModes),
-          getRegionPool(quizSettings.region, quizSettings.includeExtras),
+          getRegionPool(quizSettings.region, geoOpts(quizSettings)),
           size,
           (country, mode) => answerKey(country, mode),
           quizSettings.difficulty,
@@ -802,13 +839,14 @@ export default function PlayApp() {
     setSelectedIso(null);
     setTimedOut(false);
     setAnswers([]);
-    setRemainingMs(questionLimitMs(round[0]?.mode ?? quizSettings.mode, { region: quizSettings.region, path }));
+    setRemainingMs(questionMs(round[0]?.mode ?? quizSettings.mode, path, quizSettings.region, stateRoundRef.current));
     setRoundMs(0);
     setSettings((prev) => ({ ...prev, path, level, ...extras }));
     setScreen("quiz");
   }
 
   function startRound() {
+    stateRoundRef.current = false;
     if (isRankingMode(quizSettings.mode)) {
       setSettings((prev) => ({ ...prev, mode: "flagToName" }));
       return;
@@ -834,10 +872,10 @@ export default function PlayApp() {
       return;
     }
     if (quizSettings.mix) {
-      beginRound(getRegionPool(quizSettings.region, quizSettings.includeExtras), quizSettings.roundSize, "pool", quizSettings.level)
+      beginRound(getRegionPool(quizSettings.region, geoOpts(quizSettings)), quizSettings.roundSize, "pool", quizSettings.level)
       return
     }
-    const pool = getPool(quizSettings.region, quizSettings.difficulty, quizSettings.mode, quizSettings.includeExtras);
+    const pool = getPool(quizSettings.region, quizSettings.difficulty, quizSettings.mode, geoOpts(quizSettings));
     beginRound(
       pool,
       isFactsToName(quizSettings.mode) ? 1 : quizSettings.roundSize,
@@ -1014,10 +1052,34 @@ export default function PlayApp() {
     setSelectedIso(null);
     setTimedOut(false);
     setAnswers([]);
-    setRemainingMs(questionLimitMs(round[0]?.mode ?? quizSettings.mode, { region: quizSettings.region, path }));
+    setRemainingMs(questionMs(round[0]?.mode ?? quizSettings.mode, path, quizSettings.region, stateRoundRef.current));
     setRoundMs(0);
     setSettings((prev) => ({ ...prev, path, level, ...extras }));
     setScreen("quiz");
+  }
+
+  function startStateRound() {
+    const stateModes =
+      loadRealm().ministries.foreign > 0
+        ? STATE_GRAPHIC_MODES
+        : STATE_GRAPHIC_MODES.filter((mode) => mode !== "neighborsToName");
+    const round = createMixedRound(
+      stateModes,
+      COUNTRIES,
+      STATE_ROUND_SIZE,
+      (country, mode) => answerKey(country, mode),
+      quizSettings.difficulty === "hardcore" ? "hard" : quizSettings.difficulty,
+    );
+    if (round.length === 0) return;
+    stateRoundRef.current = true;
+    beginPreparedRound(round, "pool", quizSettings.level, {
+      mode: round[0]?.mode ?? "mapToName",
+      mix: "custom",
+      mixModes: [...stateModes],
+      region: "all",
+      includeExtras: false,
+      includeEraStates: false,
+    });
   }
 
   function playLevel(level: number) {
@@ -1341,8 +1403,10 @@ export default function PlayApp() {
     clears = loadLevelClears(),
   ) {
     const playGain = awardPlayTokens(playAmount);
+    if (playGain > 0) noteWorldTokenGain(worldOfMode(quizSettings.mode), playGain);
     const achGain = awardAchievementTokens(historyRows, bestRows, clears);
-    setEarnedTokens(playGain + achGain);
+    const extra = stateRoundRef.current ? realmOnRound(endedBy === "complete") : 0;
+    setEarnedTokens(playGain + achGain + extra);
   }
 
   function powerEnabled() {
@@ -1357,7 +1421,7 @@ export default function PlayApp() {
     const hidden = new Set(hintHidden[index] ?? []);
     const wrong = all.filter((key) => key !== correct && !hidden.has(key));
     if (wrong.length < 2) return;
-    if (!spendTokens(TOKEN_COST.hint)) return;
+    if (!spendTokens(powerTokenCost("hint"))) return;
     const pick = [...wrong].sort(() => Math.random() - 0.5).slice(0, 2);
     setHintHidden((prev) => ({ ...prev, [index]: [...(prev[index] ?? []), ...pick] }));
   }
@@ -1366,7 +1430,7 @@ export default function PlayApp() {
     if (!powerEnabled()) return;
     const question = questions[index];
     if (!question) return;
-    if (!spendTokens(TOKEN_COST.skip)) return;
+    if (!spendTokens(powerTokenCost("skip"))) return;
     setSelectedIso(SKIP_ISO);
     const next: RoundAnswer = { question, selectedIso: SKIP_ISO, timeMs: questionTimeMs(), skipped: true };
     playSfx("wrong");
@@ -1375,7 +1439,7 @@ export default function PlayApp() {
 
   function spendLife() {
     if (!powerEnabled() || extraLifeBought) return;
-    if (!spendTokens(TOKEN_COST.life)) return;
+    if (!spendTokens(powerTokenCost("life"))) return;
     setExtraLifeBought(true);
   }
 
@@ -1400,6 +1464,10 @@ export default function PlayApp() {
   }
 
   function playAgain() {
+    if (stateRoundRef.current || hub === "state") {
+      startStateRound();
+      return;
+    }
     if (quizSettings.path === "learn" || quizSettings.path === "mistakes") {
       if (quizSettings.path === "mistakes") {
         startMistakesPractice();
@@ -1425,6 +1493,7 @@ export default function PlayApp() {
 
   function goToWorlds() {
     roundStartRef.current = null;
+    stateRoundRef.current = false;
     softNav(() => {
       syncWorldAttr(null);
       setWorldNav(null);
@@ -1434,8 +1503,25 @@ export default function PlayApp() {
     });
   }
 
+  function goState() {
+    roundStartRef.current = null;
+    stateRoundRef.current = false;
+    softNav(() => {
+      syncWorldAttr(null);
+      setWorldNav("state");
+      screenRef.current = "home";
+      setScreenState("home");
+      router.push("/state");
+    });
+  }
+
   function goBackFromPlay() {
     roundStartRef.current = null;
+    if (stateRoundRef.current || hub === "state") {
+      stateRoundRef.current = false;
+      setScreen("home");
+      return;
+    }
     if (world === "football") {
       if (quizSettings.path === "learn") {
         setScreen("learn");
@@ -1622,8 +1708,10 @@ export default function PlayApp() {
     startAstroRound,
     startThemeRound,
     startRound,
+    startStateRound,
     goHub,
     goToWorlds,
+    goState,
     goBackFromPlay,
     handleClearFootballHistory,
     handleClearLeadersHistory,
@@ -1710,6 +1798,15 @@ export default function PlayApp() {
               router.push("/shop");
             });
           }}
+          onState={() => {
+            softNav(() => {
+              syncWorldAttr(null);
+              setWorldNav("state");
+              screenRef.current = "home";
+              setScreenState("home");
+              router.push("/state");
+            });
+          }}
           onMultiplayer={() => {
             softNav(() => {
               syncWorldAttr(null);
@@ -1792,13 +1889,15 @@ export default function PlayApp() {
       {hub === "studio" ? <StudioPlay play={play} /> : null}
       {hub === "company" ? <CompanyPlay play={play} /> : null}
       {hub === "shop" ? <ShopPlay play={play} /> : null}
+      {hub === "state" && screen !== "quiz" && screen !== "results" ? <StatePlay play={play} /> : null}
+      {hub === "state" && (screen === "quiz" || screen === "results") ? <GeoPlay play={play} /> : null}
       {world === "football" ? <FootballPlay play={play} /> : null}
       {world === "leaders" ? <LeadersPlay play={play} /> : null}
       {world === "math" ? <MathPlay play={play} /> : null}
       {world === "astronomy" ? <AstroPlay play={play} /> : null}
       {world && isThemeWorld(world) ? <ThemePlay world={world} play={play} /> : null}
       {world === "geo" ? <GeoPlay play={play} /> : null}
-      {hub !== "company" && hub !== "shop" && hub !== null && screen !== "quiz" ? (
+      {hub !== "company" && hub !== "shop" && hub !== "state" && hub !== null && screen !== "quiz" ? (
         <CompanyHud
           lang={quizSettings.lang}
           onOpen={() => {
@@ -1825,6 +1924,7 @@ export default function PlayApp() {
         <nav className="legal-links">
           <a href="/about">{STRINGS[quizSettings.lang].legalAbout}</a>
           <a href="/privacy">{STRINGS[quizSettings.lang].legalPrivacy}</a>
+          <a href="/cookies">{STRINGS[quizSettings.lang].legalCookies}</a>
           <a href="/terms">{STRINGS[quizSettings.lang].legalTerms}</a>
           <a href="/contacts">{STRINGS[quizSettings.lang].legalContacts}</a>
         </nav>

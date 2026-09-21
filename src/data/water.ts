@@ -139,14 +139,14 @@ export const WATER_BODIES: Record<string, WaterBody> = {
   orange: { id: 'orange', kind: 'river', en: 'Orange River', ru: 'Оранжевая' },
   limpopo: { id: 'limpopo', kind: 'river', en: 'Limpopo', ru: 'Лимпопо' },
   senegal: { id: 'senegal', kind: 'river', en: 'Senegal River', ru: 'Сенегал' },
-  volta: { id: 'volta', kind: 'river', en: 'Volta', ru: 'Вольта' },
+  volta: { id: 'volta', kind: 'river', en: 'Volta', ru: 'Река Вольта' },
   ubangi: { id: 'ubangi', kind: 'river', en: 'Ubangi', ru: 'Убанги' },
   kasai: { id: 'kasai', kind: 'river', en: 'Kasai', ru: 'Касаи' },
   okavango: { id: 'okavango', kind: 'river', en: 'Okavango', ru: 'Окаванго' },
   kwanza: { id: 'kwanza', kind: 'river', en: 'Kwanza', ru: 'Кванза' },
   jubba: { id: 'jubba', kind: 'river', en: 'Jubba', ru: 'Джубба' },
   shebelle: { id: 'shebelle', kind: 'river', en: 'Shebelle', ru: 'Веби-Шебели' },
-  tana: { id: 'tana', kind: 'river', en: 'Tana', ru: 'Тана' },
+  tana: { id: 'tana', kind: 'river', en: 'Tana', ru: 'Река Тана' },
   parana: { id: 'parana', kind: 'river', en: 'Paraná', ru: 'Парана' },
   paraguay: { id: 'paraguay', kind: 'river', en: 'Paraguay River', ru: 'Парагвай' },
   uruguay: { id: 'uruguay', kind: 'river', en: 'Uruguay River', ru: 'Уругвай' },
@@ -187,9 +187,9 @@ export const WATER_BODIES: Record<string, WaterBody> = {
   kivu: { id: 'kivu', kind: 'lake', en: 'Lake Kivu', ru: 'Киву' },
   albert: { id: 'albert', kind: 'lake', en: 'Lake Albert', ru: 'Озеро Альберт' },
   turkana: { id: 'turkana', kind: 'lake', en: 'Lake Turkana', ru: 'Туркана' },
-  tana_lake: { id: 'tana_lake', kind: 'lake', en: 'Lake Tana', ru: 'Тана' },
+  tana_lake: { id: 'tana_lake', kind: 'lake', en: 'Lake Tana', ru: 'Озеро Тана' },
   kariba: { id: 'kariba', kind: 'lake', en: 'Lake Kariba', ru: 'Кариба' },
-  volta_lake: { id: 'volta_lake', kind: 'lake', en: 'Lake Volta', ru: 'Вольта' },
+  volta_lake: { id: 'volta_lake', kind: 'lake', en: 'Lake Volta', ru: 'Озеро Вольта' },
   nasser: { id: 'nasser', kind: 'lake', en: 'Lake Nasser', ru: 'Насер' },
   tuz: { id: 'tuz', kind: 'lake', en: 'Lake Tuz', ru: 'Туз' },
   banda: { id: 'banda', kind: 'sea', en: 'Banda Sea', ru: 'Море Банда' },
@@ -553,6 +553,67 @@ export const COUNTRY_RIVERS: Record<string, string[]> = {
 const FAME_INDEX = new Map(LEVEL_ISOS.flat().map((iso, index) => [iso, index]))
 export const WATER_LEVEL_SIZE = 10
 
+/** Child water is part of the parent, so both names can be valid for the same prompt. */
+const WATER_PARENT: Record<string, readonly string[]> = {
+  adriatic: ['mediterranean'],
+  aegean: ['mediterranean'],
+  ionian: ['mediterranean'],
+  tyrrhenian: ['mediterranean'],
+  azov: ['black_sea'],
+  biscay: ['atlantic'],
+  english_channel: ['atlantic'],
+  irish: ['atlantic'],
+  north_sea: ['atlantic'],
+  guinea_gulf: ['atlantic'],
+  caribbean: ['atlantic'],
+  gulf_mexico: ['atlantic'],
+  arabian: ['indian'],
+  bengal: ['indian'],
+  andaman: ['indian'],
+  mozambique: ['indian'],
+  timor: ['indian'],
+  coral: ['pacific'],
+  tasman: ['pacific'],
+  south_china: ['pacific'],
+  east_china: ['pacific'],
+  japan_sea: ['pacific'],
+  philippine: ['pacific'],
+  celebes: ['pacific'],
+  banda: ['pacific'],
+  arafura: ['pacific'],
+  yellow_sea: ['pacific'],
+  bering: ['pacific', 'arctic'],
+  barents: ['arctic'],
+  norwegian: ['arctic'],
+  greenland_sea: ['arctic'],
+  hudson: ['atlantic', 'arctic'],
+  aden: ['red_sea', 'arabian'],
+  oman_gulf: ['arabian', 'indian'],
+  vltava: ['elbe'],
+  moselle: ['rhine'],
+  meuse: ['rhine'],
+  scheldt: ['rhine'],
+  tisa: ['danube'],
+  sava: ['danube'],
+  drava: ['danube'],
+  morava: ['danube'],
+  prut: ['danube'],
+  ubangi: ['congo'],
+  kasai: ['congo'],
+  paraguay: ['parana'],
+  uruguay: ['parana'],
+  shebelle: ['jubba'],
+  tana_lake: ['nile'],
+  nasser: ['nile'],
+  victoria: ['nile'],
+  albert: ['nile'],
+  volta_lake: ['volta'],
+  kariba: ['zambezi'],
+  dead_sea: ['jordan'],
+  geneva: ['rhone'],
+  constance: ['rhine'],
+}
+
 function invertWaters(table: Record<string, string[]>): Record<string, string[]> {
   const next: Record<string, string[]> = {}
   for (const [iso, ids] of Object.entries(table)) {
@@ -637,6 +698,65 @@ export function isosForWater(id: string, mode?: WaterDataMode): string[] {
   if (mode === 'seaToName') return SEAS_BY_WATER[id] ?? []
   if (mode === 'riverToName') return RIVERS_BY_WATER[id] ?? []
   return SEAS_BY_WATER[id] ?? RIVERS_BY_WATER[id] ?? []
+}
+
+function walkWaterLinks(start: string, edges: Record<string, readonly string[]>): string[] {
+  const seen = new Set<string>()
+  const stack = [...(edges[start] ?? [])]
+  while (stack.length > 0) {
+    const id = stack.pop()
+    if (!id || seen.has(id)) continue
+    seen.add(id)
+    stack.push(...(edges[id] ?? []))
+  }
+  return [...seen]
+}
+
+const WATER_CHILDREN: Record<string, string[]> = {}
+for (const [child, parents] of Object.entries(WATER_PARENT)) {
+  for (const parent of parents) {
+    if (!WATER_CHILDREN[parent]) WATER_CHILDREN[parent] = []
+    WATER_CHILDREN[parent].push(child)
+  }
+}
+
+function waterAncestors(id: string): string[] {
+  return walkWaterLinks(id, WATER_PARENT)
+}
+
+function waterDescendants(id: string): string[] {
+  return walkWaterLinks(id, WATER_CHILDREN)
+}
+
+const WATER_SAME_LABEL: Record<string, string[]> = {}
+{
+  const byLabel = new Map<string, string[]>()
+  for (const body of Object.values(WATER_BODIES)) {
+    for (const label of [body.en, body.ru]) {
+      const key = `${body.kind === 'river' || body.kind === 'lake' ? 'river' : 'sea'}:${label}`
+      const ids = byLabel.get(key)
+      if (ids) ids.push(body.id)
+      else byLabel.set(key, [body.id])
+    }
+  }
+  for (const ids of byLabel.values()) {
+    if (ids.length < 2) continue
+    for (const id of ids) {
+      WATER_SAME_LABEL[id] = ids.filter((other) => other !== id)
+    }
+  }
+}
+
+/** Parent / same-name waters that would also be a valid label for this body. */
+export function blockedWaterOptionIds(id: string): string[] {
+  return [...new Set([...waterAncestors(id), ...(WATER_SAME_LABEL[id] ?? [])])]
+}
+
+/** Countries for which this water (or a water inside it) is a correct coast/river answer. */
+export function countryFitsWater(iso: string, waterId: string, mode: WaterMode | WaterDataMode): boolean {
+  const data = waterDataMode(mode)
+  const ids = new Set([waterId, ...waterDescendants(waterId)])
+  return watersFor(iso, data).some((id) => ids.has(id))
 }
 
 export function neighboringWaters(id: string, mode: WaterMode | WaterDataMode): string[] {

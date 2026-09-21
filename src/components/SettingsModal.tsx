@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { type AvatarId } from '../data/avatars'
 import { PAGE_COPY } from '../i18n/pages'
 import { STRINGS, localeTag, mixLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
@@ -19,7 +20,7 @@ import {
 import { unlockedAchievementIds } from '../lib/achievements'
 import type { RoundRecord } from '../lib/history'
 import type { LevelClear } from '../lib/levelProgress'
-import { NAME_MIN, PASSWORD_MIN, submitRatings } from '../lib/leaderboard'
+import { NAME_MIN, PASSWORD_MIN, submitAchievements } from '../lib/leaderboard'
 import { isNameAllowed } from '../lib/nameFilter'
 import { isNameCooldown } from '../lib/nameRules'
 import { statsByMode } from '../lib/modeStats'
@@ -36,15 +37,19 @@ import { formatXp, accountProgress } from '../lib/xp'
 import { countLifetimeSeed, loadLifetime } from '../lib/lifetime'
 import { TOKEN_DAY_CAP } from '../data/tokens'
 import { useTokens } from '../lib/tokenStore'
+import { renameRealm, useRealm } from '../lib/stateStore'
 import { AchievementGallery } from './AchievementGallery'
+import { CookieConsentControls } from './CookieConsentControls'
 import { AvatarMark } from './AvatarMark'
 import { AvatarPicker } from './AvatarPicker'
 import { CountryMark, CountryPicker } from './CountryPicker'
+import { IntellectRankPlaque } from './IntellectRankPlaque'
 import { LanguageToggle } from './LanguageToggle'
 import { PasswordModal } from './PasswordModal'
 import { DeleteAccountModal } from './DeleteAccountModal'
 import { downloadPlayerExport } from '../lib/dataExport'
 import { trackFunnel } from '../lib/funnel'
+import { requestSiteTour } from '../lib/siteTour'
 
 const REPORT_EMAIL = 'levumanskyy03@gmail.com'
 
@@ -75,7 +80,9 @@ export function SettingsModal({
   onClearBests,
 }: SettingsModalProps) {
   const t = STRINGS[lang]
+  const router = useRouter()
   const tokens = useTokens()
+  const realm = useRealm()
   const titleId = useId()
   const [tab, setTab] = useState<Tab>('account')
   const [authTab, setAuthTab] = useState<AuthTab>('login')
@@ -83,6 +90,9 @@ export function SettingsModal({
   const [authReady, setAuthReady] = useState(false)
   const [profile, setProfile] = useState(loadProfile)
   const [name, setName] = useState(loadProfile().name)
+  const [realmName, setRealmName] = useState('')
+  const [realmNameError, setRealmNameError] = useState(false)
+  const [realmNameSaved, setRealmNameSaved] = useState(false)
   const [loginName, setLoginName] = useState(loadProfile().name)
   const [password, setPassword] = useState('')
   const [repeat, setRepeat] = useState('')
@@ -129,9 +139,7 @@ export function SettingsModal({
         setCountryIso(user.countryIso ?? '')
         const local = loadProfile()
         setProfile(local)
-        void submitRatings(
-          levelClears,
-          xp,
+        void submitAchievements(
           unlockedAchievementIds(history, bests, levelClears, user.createdAt),
         )
         if (local.avatarId && local.avatarId !== user.avatarId) {
@@ -277,6 +285,19 @@ export function SettingsModal({
     setNameFree(null)
   }
 
+  function saveRealmName() {
+    const next = realmName.trim()
+    if (next.length < NAME_MIN) {
+      setRealmNameError(true)
+      setRealmNameSaved(false)
+      return
+    }
+    renameRealm(next)
+    setRealmName(next)
+    setRealmNameError(false)
+    setRealmNameSaved(true)
+  }
+
   async function submitAuth() {
     if (busy) return
     const trimmed = loginName.trim()
@@ -419,6 +440,7 @@ export function SettingsModal({
                 ) : null}
                 <CountryMark iso={account?.countryIso} lang={lang} />
                 <p className="account-level">{t.accountLevel(rank.level)}</p>
+                <IntellectRankPlaque level={rank.level} lang={lang} className="is-profile" />
                 <p className="profile-xp">
                   {t.xpTotal(formatXp(xp, lang))} · {t.accountLevelNext(formatXp(rank.remain, lang))}
                 </p>
@@ -679,6 +701,44 @@ export function SettingsModal({
             ) : (
               <p className="setting-hint">{t.modeStatsEmpty}</p>
             )}
+
+            <details
+              className="settings-state-name"
+              onToggle={(event) => {
+                if (!event.currentTarget.open) return
+                setRealmName(realm.name)
+                setRealmNameError(false)
+                setRealmNameSaved(false)
+              }}
+            >
+              <summary>{t.state}</summary>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault()
+                  saveRealmName()
+                }}
+              >
+                <label className="player-name">
+                  <span>{t.state}</span>
+                  <input
+                    type="text"
+                    maxLength={32}
+                    value={realmName}
+                    placeholder={t.state}
+                    onChange={(event) => {
+                      setRealmName(event.target.value)
+                      setRealmNameError(false)
+                      setRealmNameSaved(false)
+                    }}
+                  />
+                </label>
+                {realmNameError ? <p className="account-error">{t.playerNameShort}</p> : null}
+                <button type="submit" className="btn-secondary">
+                  {t.saveProfile}
+                </button>
+                {realmNameSaved ? <p className="settings-ok">{t.profileSaved}</p> : null}
+              </form>
+            </details>
           </div>
         ) : null}
 
@@ -772,6 +832,18 @@ export function SettingsModal({
                 {t.soundsOff}
               </button>
             </div>
+            <CookieConsentControls lang={lang} />
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => {
+                requestSiteTour()
+                onClose()
+                router.push('/')
+              }}
+            >
+              {t.tourReplay}
+            </button>
             {PAGE_COPY[lang].about.map((paragraph) => (
               <p key={paragraph.slice(0, 40)}>{paragraph}</p>
             ))}
@@ -786,6 +858,7 @@ export function SettingsModal({
             <p className="legal-inline">
               <a href="/about">{t.legalAbout}</a>
               <a href="/privacy">{t.legalPrivacy}</a>
+              <a href="/cookies">{t.legalCookies}</a>
               <a href="/terms">{t.legalTerms}</a>
               <a href="/contacts">{t.legalContacts}</a>
             </p>

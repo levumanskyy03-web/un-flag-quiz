@@ -19,7 +19,7 @@ Priority to ship:
 Also on the list:
 
 7. Extra geo modes: country silhouette, language/driving side. — **in the codebase**.
-8. Fact roundups — editorial pages like «5 countries without an army». — **in the codebase** (first page: `/lists/microstates`).
+8. Fact roundups — editorial pages like «5 countries without an army». — **in the codebase** (`/lists`: microstates plus further geo roundups).
 
 Do not build now: anthems (copyright), bulk coats of arms, news, chat.
 

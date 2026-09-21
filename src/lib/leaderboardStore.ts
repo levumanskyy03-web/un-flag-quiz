@@ -13,6 +13,7 @@ import {
   type RatingWorld,
 } from './leaderboard'
 import { FOOTBALL_MODES, LEADERS_MODES, LEVEL_MODES, type QuizMode } from './quiz'
+import { RATING_LIVES_MAX } from './ratingRound'
 
 export interface StoredEntry {
   id: string
@@ -298,14 +299,14 @@ function isValidEntry(board: RatingBoard, incoming: StoredEntry): boolean {
       incoming.totalMs >= 1 &&
       incoming.totalMs <= 3_600_000 &&
       (incoming.livesLeft ?? 0) >= 0 &&
-      (incoming.livesLeft ?? 0) <= 200
+      (incoming.livesLeft ?? 0) <= RATING_LIVES_MAX
     )
   }
   const max = board.kind === 'clears' ? RATING_CLEARS_MAX : RATING_LEVEL_MAX
   return incoming.levelsCleared >= 1 && incoming.levelsCleared <= max
 }
 
-function isBetterLevelBest(candidate: StoredEntry, current: StoredEntry): boolean {
+export function isBetterLevelBest(candidate: StoredEntry, current: StoredEntry): boolean {
   const aLives = candidate.livesLeft ?? 0
   const bLives = current.livesLeft ?? 0
   if (aLives !== bLives) return aLives > bLives

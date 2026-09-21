@@ -71,6 +71,7 @@ export function FootballSetup({
           <ModeChoice
             key={item}
             label={topicLabel(item, settings.lang)}
+            mode={defaultFootballModeOf(item)}
             active={!settings.mix && topic === item}
             onClick={() => pickTopic(item)}
             percent={campaignPercent?.(defaultFootballModeOf(item))}
@@ -93,6 +94,7 @@ export function FootballSetup({
               <ModeChoice
                 key={mode}
                 label={modeLabel(mode, settings.lang)}
+                mode={mode}
                 active={settings.mode === mode}
                 onClick={() => onChange({ ...settings, mix: null, mode })}
                 percent={campaignPercent?.(mode)}
@@ -215,6 +217,7 @@ function ModeGroup({
             <ModeChoice
               key={mode}
               label={modeLabel(mode, lang)}
+              mode={mode}
               active={active}
               onClick={() => onPick(mode)}
               percent={campaignPercent?.(mode)}

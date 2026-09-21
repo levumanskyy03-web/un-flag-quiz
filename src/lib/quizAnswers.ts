@@ -1,5 +1,6 @@
 import { type Country } from '../data/countries'
 import { foundedYear } from '../data/founded'
+import { polityById, polityCapital } from '../data/history'
 import { neighborKey } from '../data/neighbors'
 import {
   PASSPORTS,
@@ -38,6 +39,10 @@ import {
 } from './quiz'
 import { isWaterMode, waterAnswerKey } from '../data/water'
 
+function foundingYearOf(iso: string) {
+  return foundedYear(iso) ?? polityById(iso)?.from
+}
+
 export function answerKey(country: Country, mode: QuizMode): string {
   if (isAstroMode(mode) || isThemeMode(mode) || isFootballMode(mode) || isRankingMode(mode) || isLeadersMode(mode) || isMathMode(mode) || isPlayerFootballMode(mode)) {
     return country.iso
@@ -45,7 +50,11 @@ export function answerKey(country: Country, mode: QuizMode): string {
   if (isWaterMode(mode)) return waterAnswerKey(country.iso, mode)
   if (isCodesMode(mode)) return codeAnswerKey(country, mode)
   if (mode === 'neighborsToName') return `neighbors:${neighborKey(country.iso)}`
-  if (mode === 'nameToFounded') return `founded:${foundedYear(country.iso) ?? country.iso}`
+  if (mode === 'nameToFounded') return `founded:${foundingYearOf(country.iso) ?? country.iso}`
+  if (mode === 'nameToCapital') {
+    const historical = polityById(country.iso)
+    if (historical) return `capital:${historical.capital.en}`
+  }
   if (mode === 'nameToGov') return `gov:${govKindOf(country.iso) ?? country.iso}`
   if (mode === 'nameToDriving') return `drive:${drivingSide(country.iso)}`
   if (mode === 'languageToName' || mode === 'drivingToName' || mode === 'silhouetteToName' || mode === 'nameToSilhouette') {
@@ -77,7 +86,7 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
   }
   if (isCodeOptionMode(mode)) return codePromptLabel(country, mode)
   if (mode === 'nameToFounded') {
-    if (!question) return String(foundedYear(country.iso) ?? '')
+    if (!question) return String(foundingYearOf(country.iso) ?? '')
     return foundedChoiceLabel(
       country,
       lang,
@@ -85,6 +94,10 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
       question.options.map((option) => option.iso),
       question.priorBan?.years,
     )
+  }
+  if (mode === 'nameToCapital') {
+    const historical = polityCapital(country.iso, lang)
+    if (historical) return historical
   }
   if (mode === 'nameToGov') {
     const kind = govKindOf(country.iso)

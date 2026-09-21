@@ -38,6 +38,7 @@ yarn-error.log*
 
 # local leaderboard / accounts for next dev
 /.data/
+/.cache/
 
 # one-off portrait scrape cache
 scripts/.free-portraits.json

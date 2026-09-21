@@ -7,8 +7,8 @@ alwaysApply: true
 
 The quiz is not a single SPA file. Do not add modes or screens to `src/App.tsx`.
 
-- Worlds have URL entries: `/geo`, `/football`, `/leaders`, `/math`, `/astronomy`, `/biology`, `/olympics`, `/cs`, `/food`, `/music`, `/melody`. Picker is `/`. `/codes` redirects into `/geo`. Multiplayer hub: `/multiplayer` (not a theme world). Student packs: `/studio` (not a theme world). Company HQ: `/company` (not a theme world). Shop: `/shop` (not a theme world).
-- World UI: `src/features/play/GeoPlay.tsx`, `FootballPlay.tsx`, `LeadersPlay.tsx`, `MathPlay.tsx`, `AstroPlay.tsx`, `ThemePlay.tsx` (biology, olympics, cs, food, music, melody). Multiplayer hub: `src/features/play/MultiplayerPlay.tsx`. Packs: `src/features/play/StudioPlay.tsx`. Company: `src/features/play/CompanyPlay.tsx`. Shop: `src/features/play/ShopPlay.tsx`.
+- Worlds have URL entries: `/geo`, `/football`, `/leaders`, `/math`, `/astronomy`, `/biology`, `/olympics`, `/cs`, `/food`. Picker is `/`. `/codes` redirects into `/geo`. Multiplayer hub: `/multiplayer` (not a theme world). Student packs: `/studio` (not a theme world). Company HQ: `/company` (not a theme world). Shop: `/shop` (not a theme world). State: `/state` (not a theme world).
+- World UI: `src/features/play/GeoPlay.tsx`, `FootballPlay.tsx`, `LeadersPlay.tsx`, `MathPlay.tsx`, `AstroPlay.tsx`, `ThemePlay.tsx` (biology, olympics, cs, food). Multiplayer hub: `src/features/play/MultiplayerPlay.tsx`. Packs: `src/features/play/StudioPlay.tsx`. Company: `src/features/play/CompanyPlay.tsx`. Shop: `src/features/play/ShopPlay.tsx`. State: `src/features/play/StatePlay.tsx`.
 - Shared session/orchestration: `src/features/play/PlayApp.tsx` and `session.ts`.
 - Country codes (TLD / calling / car) are geography modes, not a separate world. Quiz helpers: `src/lib/quiz/codes.ts`.
 - 1v1 rooms still live on `/duel/[code]` (`src/features/duel/`). Launch from `/multiplayer`. Do not put duel polling or room state back into PlayApp.

@@ -1,4 +1,4 @@
-export const THEME_WORLDS = ['biology', 'olympics', 'cs', 'food', 'music', 'melody'] as const
+export const THEME_WORLDS = ['biology', 'olympics', 'cs', 'food'] as const
 export type ThemeWorld = (typeof THEME_WORLDS)[number]
 
 export const BIO_CELL_MODES = ['organelleToRole', 'roleToOrganelle'] as const
@@ -20,14 +20,7 @@ export const FOOD_DISH_MODES = ['dishToCuisine', 'cuisineToDish'] as const
 export const FOOD_ORIGIN_MODES = ['foodToOrigin'] as const
 export const FOOD_MODES = [...FOOD_DISH_MODES, ...FOOD_ORIGIN_MODES] as const
 
-export const MUSIC_INSTR_MODES = ['instrumentToFamily'] as const
-export const MUSIC_PEOPLE_MODES = ['musicPhotoToName'] as const
-export const MUSIC_MODES = [...MUSIC_INSTR_MODES, ...MUSIC_PEOPLE_MODES] as const
-
-export const MELODY_WORK_MODES = ['composerToWork', 'workToComposer'] as const
-export const MELODY_MODES = [...MELODY_WORK_MODES] as const
-
-export const THEME_MODES = [...BIO_MODES, ...OLY_MODES, ...CS_MODES, ...FOOD_MODES, ...MUSIC_MODES, ...MELODY_MODES] as const
+export const THEME_MODES = [...BIO_MODES, ...OLY_MODES, ...CS_MODES, ...FOOD_MODES] as const
 export type ThemeMode = (typeof THEME_MODES)[number]
 
 export const THEME_TOPICS = [
@@ -42,9 +35,6 @@ export const THEME_TOPICS = [
   'hackers',
   'dishes',
   'origin',
-  'instruments',
-  'people',
-  'works',
 ] as const
 export type ThemeTopic = (typeof THEME_TOPICS)[number]
 
@@ -60,8 +50,6 @@ export function themeWorldOf(mode: ThemeMode): ThemeWorld {
   if ((BIO_MODES as readonly string[]).includes(mode)) return 'biology'
   if ((OLY_MODES as readonly string[]).includes(mode)) return 'olympics'
   if ((CS_MODES as readonly string[]).includes(mode)) return 'cs'
-  if ((MUSIC_MODES as readonly string[]).includes(mode)) return 'music'
-  if ((MELODY_MODES as readonly string[]).includes(mode)) return 'melody'
   return 'food'
 }
 
@@ -69,8 +57,6 @@ export function themeModesOfWorld(world: ThemeWorld): readonly ThemeMode[] {
   if (world === 'biology') return BIO_MODES
   if (world === 'olympics') return OLY_MODES
   if (world === 'cs') return CS_MODES
-  if (world === 'music') return MUSIC_MODES
-  if (world === 'melody') return MELODY_MODES
   return FOOD_MODES
 }
 
@@ -78,8 +64,6 @@ export function themeTopicsOf(world: ThemeWorld): readonly ThemeTopic[] {
   if (world === 'biology') return ['cell', 'body', 'life']
   if (world === 'olympics') return ['hosts', 'sports', 'noc']
   if (world === 'cs') return ['code', 'binary', 'hackers']
-  if (world === 'music') return ['instruments', 'people']
-  if (world === 'melody') return ['works']
   return ['dishes', 'origin']
 }
 
@@ -94,9 +78,6 @@ export function themeModesOfTopic(topic: ThemeTopic): readonly ThemeMode[] {
   if (topic === 'binary') return CS_BIN_MODES
   if (topic === 'hackers') return CS_PEOPLE_MODES
   if (topic === 'dishes') return FOOD_DISH_MODES
-  if (topic === 'instruments') return MUSIC_INSTR_MODES
-  if (topic === 'people') return MUSIC_PEOPLE_MODES
-  if (topic === 'works') return MELODY_WORK_MODES
   return FOOD_ORIGIN_MODES
 }
 
@@ -112,8 +93,6 @@ export const EASY_THEME_MIX: Record<ThemeWorld, ThemeMode[]> = {
   olympics: ['olyYearToHost', 'sportToCategory', 'nocToName'],
   cs: ['csTermToMeaning', 'decToBinary'],
   food: ['dishToCuisine', 'foodToOrigin'],
-  music: ['instrumentToFamily'],
-  melody: ['composerToWork', 'workToComposer'],
 }
 
 export const HARD_THEME_MIX: Record<ThemeWorld, ThemeMode[]> = {
@@ -121,8 +100,6 @@ export const HARD_THEME_MIX: Record<ThemeWorld, ThemeMode[]> = {
   olympics: [...OLY_MODES],
   cs: CS_MODES.filter((mode) => mode !== 'csPhotoToName'),
   food: [...FOOD_MODES],
-  music: [...MUSIC_INSTR_MODES],
-  melody: [...MELODY_MODES],
 }
 
 export const MATCH_THEME_MODES: Record<ThemeWorld, ThemeMode[]> = {
@@ -130,8 +107,6 @@ export const MATCH_THEME_MODES: Record<ThemeWorld, ThemeMode[]> = {
   olympics: ['olyYearToHost', 'nocToName'],
   cs: ['csTermToMeaning', 'csPhotoToName'],
   food: ['dishToCuisine'],
-  music: ['instrumentToFamily'],
-  melody: ['composerToWork'],
 }
 
 export const THEME_MATCH_MIX: Record<ThemeWorld, ThemeMode[]> = EASY_THEME_MIX
@@ -141,8 +116,6 @@ export const THEME_CAMPAIGN_MODES: Record<ThemeWorld, ThemeMode[]> = {
   olympics: ['olyYearToHost', 'nocToName'],
   cs: ['csTermToMeaning', 'decToBinary'],
   food: ['dishToCuisine', 'foodToOrigin'],
-  music: ['instrumentToFamily'],
-  melody: ['composerToWork'],
 }
 
 export const THEME_DEFAULT_MODE: Record<ThemeWorld, ThemeMode> = {
@@ -150,8 +123,6 @@ export const THEME_DEFAULT_MODE: Record<ThemeWorld, ThemeMode> = {
   olympics: 'olyYearToHost',
   cs: 'csTermToMeaning',
   food: 'dishToCuisine',
-  music: 'instrumentToFamily',
-  melody: 'composerToWork',
 }
 
 export const THEME_CAMPAIGN_LEVELS = 12
@@ -163,7 +134,7 @@ export function themeHasCampaign(mode: string): boolean {
 }
 
 export function themeFactsMode(mode: string): boolean {
-  return mode === 'csPhotoToName' || mode === 'musicPhotoToName'
+  return mode === 'csPhotoToName'
 }
 
-export const THEME_PHOTO_MODES = ['csPhotoToName', 'musicPhotoToName'] as const
+export const THEME_PHOTO_MODES = ['csPhotoToName'] as const

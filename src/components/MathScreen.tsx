@@ -13,7 +13,9 @@ import { HubNav, MATH_HUB_TABS, type HubTab } from './HubNav'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
-import { FitText } from './FitText'
+import { modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
+import { FitGroup, FitText } from './FitText'
+import { CatalogNo } from './ModeChoice'
 import { setupDifficultyText } from './DifficultyPicker'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
 import { MATH_PEOPLE } from '../data/math'
@@ -22,6 +24,7 @@ import {
   difficultyForMode,
   mathFamilyLabel,
   mathFamilyOf,
+  modesOfMathFamily,
   settingsForMathFamily,
 } from '../lib/modeFamilies'
 
@@ -112,32 +115,36 @@ export function MathScreen({
       <section className="card settings-card">
         <h2>{t.mode}</h2>
         <div className="choice-grid is-modes">
-          {MATH_PLAY_FAMILIES.map((id) => (
-            <button
-              key={id}
-              type="button"
-              className={`choice ${activeFamily === id ? 'is-active' : ''}`}
-              aria-pressed={activeFamily === id}
-              onClick={() => {
-                applyMathSettings({ ...settings, ...settingsForMathFamily(settings, id) })
-                setSetupFamily({ world: 'math', id })
-              }}
-            >
-              <FitText minPx={9}>{mathFamilyLabel(id, settings.lang)}</FitText>
-            </button>
-          ))}
+          <FitGroup wrap minPx={8}>
+            {MATH_PLAY_FAMILIES.map((id) => (
+              <button
+                key={id}
+                type="button"
+                className={`choice has-mode-no ${activeFamily === id ? 'is-active' : ''}`}
+                aria-pressed={activeFamily === id}
+                onClick={() => {
+                  applyMathSettings({ ...settings, ...settingsForMathFamily(settings, id) })
+                  setSetupFamily({ world: 'math', id })
+                }}
+              >
+                <CatalogNo n={modesCatalogNo(modesOfMathFamily(id))} />
+                <FitText>{mathFamilyLabel(id, settings.lang)}</FitText>
+              </button>
+            ))}
+          </FitGroup>
         </div>
         <div className="mode-aside">
           <h2>{t.familyMix}</h2>
           <button
             type="button"
-            className={`choice has-note is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
+            className={`choice has-note has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
             aria-pressed={activeFamily === 'mix'}
             onClick={() => {
               applyMathSettings({ ...settings, ...settingsForMathFamily(settings, 'mix') })
               setSetupFamily({ world: 'math', id: 'mix' })
             }}
           >
+            <CatalogNo n={worldCatalogNo('math')} />
             <FitText minPx={9}>{mix ? mixLabel(mix, settings.lang) : t.familyMix}</FitText>
             <FitText className="choice-note" wrap minPx={7}>
               {t.customMixNote}

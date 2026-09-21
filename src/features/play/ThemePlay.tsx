@@ -1,5 +1,6 @@
 "use client";
 
+import { WorldAlbumScreen } from "@/components/WorldAlbumScreen";
 import { THEME_HUB_TABS } from "@/components/HubNav";
 import { ThemeScreen } from "@/components/ThemeScreen";
 import { LearnScreen } from "@/components/LearnScreen";
@@ -73,6 +74,15 @@ export function ThemePlay({ world, play }: { world: ThemeWorld; play: PlaySessio
           onWorlds={play.goToWorlds}
           onPractice={play.startMistakesPractice}
           onClear={() => play.setMistakeList(clearMistakes((item) => !(isThemeMode(item.mode) && themeWorldOf(item.mode) === world)))}
+        />
+      )}
+      {play.screen === "album" && (
+        <WorldAlbumScreen
+          settings={play.quizSettings}
+          world={world}
+          tabs={THEME_HUB_TABS}
+          onHub={play.goHub}
+          onWorlds={play.goToWorlds}
         />
       )}
       {play.screen === "quiz" && play.questions[play.index] && (

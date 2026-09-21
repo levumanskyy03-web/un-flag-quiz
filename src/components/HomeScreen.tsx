@@ -20,15 +20,19 @@ import {
   type RegionFilter,
   type RoundSize,
 } from '../lib/quiz'
+import { modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
 import { HubNav, type HubTab } from './HubNav'
+import { CatalogNo } from './ModeChoice'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
+import { geoOpts } from './ExtrasToggle'
 import { WorldsBack } from './WorldsBack'
-import { FitText } from './FitText'
+import { FitGroup, FitText } from './FitText'
 import { setupDifficultyText } from './DifficultyPicker'
 import {
   GEO_PLAY_FAMILIES,
   geoFamilyLabel,
   geoFamilyOf,
+  modesOfGeoFamily,
   settingsForGeoFamily,
 } from '../lib/modeFamilies'
 
@@ -47,6 +51,8 @@ export interface QuizSettings {
   levelLearn: boolean
   learnFrom: LearnFrom
   includeExtras: boolean
+  includeEraStates: boolean
+  eraYear: number
 }
 
 interface HomeScreenProps {
@@ -76,8 +82,8 @@ export function HomeScreen({
     settings.mix === 'custom' && settings.mixModes.length === 0
       ? 0
       : settings.mix
-        ? getRegionPool(settings.region, settings.includeExtras).length
-        : getPool(settings.region, settings.difficulty, settings.mode, settings.includeExtras).length
+        ? getRegionPool(settings.region, geoOpts(settings)).length
+        : getPool(settings.region, settings.difficulty, settings.mode, geoOpts(settings)).length
   const currentBest = findBest(bests, settings)
   const geoHistory = history.filter((item) => !isFootballMode(item.mode) && !isLeadersMode(item.mode) && !isMathMode(item.mode) && !isAstroMode(item.mode) && !isThemeMode(item.mode))
   const [setupFamily, setSetupFamily] = useState<SetupFamily | null>(null)
@@ -89,8 +95,8 @@ export function HomeScreen({
       next.mix === 'custom' && next.mixModes.length === 0
         ? 0
         : next.mix
-          ? getRegionPool(next.region, next.includeExtras).length
-          : getPool(next.region, next.difficulty, next.mode, next.includeExtras).length
+          ? getRegionPool(next.region, geoOpts(next)).length
+          : getPool(next.region, next.difficulty, next.mode, geoOpts(next)).length
     onChange({ ...next, roundSize: fitRoundSize(next.roundSize, nextPool) })
   }
 
@@ -107,32 +113,36 @@ export function HomeScreen({
       <section className="card settings-card">
         <h2>{t.mode}</h2>
         <div className="choice-grid is-modes">
-          {GEO_PLAY_FAMILIES.map((id) => (
-            <button
-              key={id}
-              type="button"
-              className={`choice ${activeFamily === id ? 'is-active' : ''}`}
-              aria-pressed={activeFamily === id}
-              onClick={() => {
-                update(settingsForGeoFamily(settings, id))
-                setSetupFamily({ world: 'geo', id })
-              }}
-            >
-              <FitText minPx={9}>{geoFamilyLabel(id, settings.lang)}</FitText>
-            </button>
-          ))}
+          <FitGroup wrap minPx={8}>
+            {GEO_PLAY_FAMILIES.map((id) => (
+              <button
+                key={id}
+                type="button"
+                className={`choice has-mode-no ${activeFamily === id ? 'is-active' : ''}`}
+                aria-pressed={activeFamily === id}
+                onClick={() => {
+                  update(settingsForGeoFamily(settings, id))
+                  setSetupFamily({ world: 'geo', id })
+                }}
+              >
+                <CatalogNo n={modesCatalogNo(modesOfGeoFamily(id))} />
+                <FitText>{geoFamilyLabel(id, settings.lang)}</FitText>
+              </button>
+            ))}
+          </FitGroup>
         </div>
         <div className="mode-aside">
           <h2>{t.familyMix}</h2>
           <button
             type="button"
-            className={`choice has-note is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
+            className={`choice has-note has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
             aria-pressed={activeFamily === 'mix'}
             onClick={() => {
               update(settingsForGeoFamily(settings, 'mix'))
               setSetupFamily({ world: 'geo', id: 'mix' })
             }}
           >
+            <CatalogNo n={worldCatalogNo('geo')} />
             <FitText minPx={9}>{settings.mix ? mixLabel(settings.mix, settings.lang) : t.familyMix}</FitText>
             <FitText className="choice-note" wrap minPx={7}>
               {t.customMixNote}
@@ -229,30 +239,4 @@ function formatPlayedAt(at: number, lang: Lang): string {
     hour: '2-digit',
     minute: '2-digit',
   })
-}
-
-export function ExtrasToggle({
-  settings,
-  onChange,
-}: {
-  settings: QuizSettings
-  onChange: (includeExtras: boolean) => void
-}) {
-  const t = STRINGS[settings.lang]
-  return (
-    <>
-      <div className="choice-wrap extras-toggle-row">
-        <button
-          type="button"
-          className={`extras-toggle ${settings.includeExtras ? 'is-active' : ''}`}
-          aria-pressed={settings.includeExtras}
-          onClick={() => onChange(!settings.includeExtras)}
-        >
-          <span className="region-dot" aria-hidden />
-          {t.includeExtras}
-        </button>
-      </div>
-      <p className="setting-hint extras-hint">{t.includeExtrasHint}</p>
-    </>
-  )
 }

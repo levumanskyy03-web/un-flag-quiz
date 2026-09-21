@@ -6,6 +6,7 @@ import { leaderDisplayName, termById, type LeaderKind } from '../../data/leaders
 import { footballTeamCountry, footballTeamName, isNamedFootballTeam } from '../../data/worldCup'
 import { mathById, mathDisplayName } from '../../data/math'
 import { astroById, astroDisplayName } from '../../data/astro'
+import { isHistoryId, polityById, polityFlagUrl, polityName } from '../../data/history'
 import {
   EASY_MATH_MIX_MODES,
   HARD_MATH_MIX_MODES,
@@ -310,8 +311,6 @@ export const QUIZ_WORLDS = [
   'astronomy',
   'cs',
   'food',
-  'music',
-  'melody',
 ] as const
 export type QuizWorld = (typeof QUIZ_WORLDS)[number]
 
@@ -810,6 +809,8 @@ export function countryName(country: Country, lang: Lang): string {
   if (math) return mathDisplayName(math, lang)
   const astro = astroById(country.iso)
   if (astro) return astroDisplayName(astro, lang)
+  const historical = polityName(country.iso, lang)
+  if (historical) return historical
   if (lang === 'ru') return country.nameRu
   if (lang === 'en') return country.nameEn
   try {
@@ -824,6 +825,8 @@ export function countryName(country: Country, lang: Lang): string {
 export function flagUrl(iso: string): string {
   const nation = clubNation(iso)
   if (nation) return flagUrl(nation)
+  const historical = polityFlagUrl(iso)
+  if (historical) return historical
   if (iso === 'af') return '/flags/af.svg'
   if (iso === 'su') return '/flags/su.svg'
   if (iso === 'yu') return '/flags/yu.svg'
@@ -843,6 +846,25 @@ export function withFacts(question: Question): Question {
     return { ...question, facts: playerClueSequence(question.country.iso) }
   }
   if (question.mode !== 'factsToName') return question
+  if (isHistoryId(question.country.iso)) {
+    const polity = polityById(question.country.iso)
+    const facts: FactClue[] = []
+    if (polity) {
+      facts.push({
+        id: `founded:${polity.id}`,
+        kind: 'founded',
+        uniqueness: 12,
+        year: polity.from,
+      })
+      facts.push({
+        id: `region:${polity.region}`,
+        kind: 'region',
+        uniqueness: 40,
+        region: polity.region,
+      })
+    }
+    return { ...question, facts }
+  }
   return { ...question, facts: clueSequence(question.country.iso) }
 }
 

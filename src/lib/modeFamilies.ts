@@ -207,9 +207,6 @@ export function themeFamilyLabel(world: ThemeWorld, id: ThemeFamilyId, lang: Lan
   if (id === 'code') return t.csFamilyCode
   if (id === 'binary') return t.csFamilyBinary
   if (id === 'hackers') return t.csFamilyPeople
-  if (id === 'instruments') return t.musicFamilyInstruments
-  if (id === 'people') return t.musicFamilyPeople
-  if (id === 'works') return t.musicFamilyWorks
   if (id === 'dishes') return t.foodFamilyDishes
   return t.foodFamilyOrigin
 }

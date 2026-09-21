@@ -1,15 +1,27 @@
 import { parseAchievementIds } from '../../../data/achievements'
+import { isPlayerId, parseRatingBoard } from '../../../lib/leaderboard'
 import {
-  RATING_CLEARS_MAX,
-  RATING_LEVEL_MAX,
-  RATING_XP_MAX,
-  isPlayerId,
-  parseRatingBoard,
-  type RatingBoard,
-} from '../../../lib/leaderboard'
-import { accountFromRequest, publishPlayerStats } from '../../../lib/authStore'
-import { publicEntries, readLevelBests, readRating, upsertLevelBest, upsertRatings } from '../../../lib/leaderboardStore'
-import { isQuizMode, isQuizWorld, type QuizMode } from '../../../lib/quiz'
+  accountFromRequest,
+  applyRatedRound,
+  publishPlayerStats,
+} from '../../../lib/authStore'
+import {
+  publicEntries,
+  readLevelBests,
+  readRating,
+  upsertLevelBest,
+  upsertRatings,
+} from '../../../lib/leaderboardStore'
+import { isQuizMode } from '../../../lib/quiz'
+import { clientIp, consumeRateLimit } from '../../../lib/rateLimit'
+import {
+  RATING_ROUND_LIMIT,
+  RATING_ROUND_WINDOW_SEC,
+  boardsFromServerRating,
+  parseRatedRound,
+  scoreRatedRound,
+} from '../../../lib/ratingRound'
+import { WORLD_RECORD_XP } from '../../../lib/xp'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -73,149 +85,86 @@ export async function POST(request: Request) {
   if (!session) {
     return Response.json({ error: 'auth' }, { status: 401 })
   }
-  const levelBest = parseLevelBest(body)
-  if (levelBest) {
+  const round = parseRatedRound(body)
+  if (round) {
+    const allowed = await consumeRateLimit(
+      `rating:${session.id}:${clientIp(request)}`,
+      RATING_ROUND_LIMIT,
+      RATING_ROUND_WINDOW_SEC,
+    )
+    if (!allowed) return Response.json({ error: 'rate' }, { status: 429 })
+    const scored = scoreRatedRound(round)
+    if (!scored) return Response.json({ error: 'bad request' }, { status: 400 })
     try {
-      const saved = await upsertLevelBest(levelBest.board, {
-        id: session.id,
-        name: session.name,
-        at: Date.now(),
-        levelsCleared: 0,
-        totalMs: levelBest.roundMs,
-        livesLeft: levelBest.livesLeft,
-      })
-      if (!saved.configured) {
-        return Response.json({ configured: false }, { status: 503 })
+      const applied = await applyRatedRound(session.id, scored, 0)
+      if (!applied) return Response.json({ configured: false }, { status: 503 })
+      let rating = applied
+      let beat = false
+      let previousName: string | null = null
+      if (scored.path === 'levels' && scored.level !== undefined) {
+        const saved = await upsertLevelBest(
+          {
+            kind: 'levelBest',
+            mode: scored.mode,
+            level: scored.level,
+            hardcore: scored.hardcore,
+          },
+          {
+            id: session.id,
+            name: session.name,
+            at: Date.now(),
+            levelsCleared: 0,
+            totalMs: scored.roundMs,
+            livesLeft: scored.livesLeft,
+          },
+        )
+        if (!saved.configured) {
+          return Response.json({ configured: false }, { status: 503 })
+        }
+        beat = saved.accepted && saved.previous !== null
+        previousName = saved.previous?.name ?? null
+        if (beat) {
+          const extra = await applyRatedRound(session.id, scored, WORLD_RECORD_XP)
+          if (extra) rating = extra
+        }
+      }
+      const items = boardsFromServerRating(rating)
+      if (items.length > 0) {
+        const saved = await upsertRatings(
+          items.map((item) => ({
+            board: item.board,
+            incoming: {
+              id: session.id,
+              name: session.name,
+              at: Date.now(),
+              ...item.entry,
+            },
+          })),
+        )
+        if (!saved.configured) {
+          return Response.json({ configured: false }, { status: 503 })
+        }
       }
       return Response.json({
         ok: true,
-        beat: saved.accepted && saved.previous !== null,
-        previousName: saved.previous?.name ?? null,
+        beat,
+        previousName,
+        xpGain: applied.xpGain + (rating === applied ? 0 : rating.xpGain),
       })
     } catch {
       return Response.json({ configured: false }, { status: 503 })
     }
   }
-  const parsed = parseBody(body)
   const achievements = parseAchievementIds(
     body && typeof body === 'object' ? (body as { achievements?: unknown }).achievements : undefined,
   )
-  if (parsed === null && achievements === undefined) {
+  if (achievements === undefined) {
     return Response.json({ error: 'bad request' }, { status: 400 })
   }
   try {
-    if (parsed && parsed.length > 0) {
-      const saved = await upsertRatings(
-        parsed.map((item) => ({
-          board: item.board,
-          incoming: {
-            id: session.id,
-            name: session.name,
-            at: Date.now(),
-            ...item.entry,
-          },
-        })),
-      )
-      if (!saved.configured) {
-        return Response.json({ configured: false }, { status: 503 })
-      }
-    }
-    const xpItem = parsed?.find((item) => item.board.kind === 'xp')
-    await publishPlayerStats(session.id, {
-      xp: xpItem?.entry.xp,
-      level: xpItem?.entry.level,
-      achievementIds: achievements,
-    })
+    await publishPlayerStats(session.id, { achievementIds: achievements })
     return Response.json({ ok: true })
   } catch {
     return Response.json({ configured: false }, { status: 503 })
-  }
-}
-
-function parseBody(body: unknown): null | Array<{
-  board: RatingBoard
-  entry: { levelsCleared: number; totalMs: number; xp?: number; level?: number }
-}> {
-  if (!body || typeof body !== 'object') return null
-  const record = body as Record<string, unknown>
-  if (Array.isArray(record.items)) {
-    const items: Array<{
-      board: RatingBoard
-      entry: { levelsCleared: number; totalMs: number; xp?: number; level?: number }
-    }> = []
-    for (const item of record.items) {
-      const parsed = parseEntry(item)
-      if (parsed === null) return null
-      items.push(parsed)
-    }
-    return items
-  }
-  const single = parseEntry(body)
-  return single ? [single] : null
-}
-
-function parseEntry(body: unknown): null | {
-  board: RatingBoard
-  entry: { levelsCleared: number; totalMs: number; xp?: number; level?: number }
-} {
-  if (!body || typeof body !== 'object') return null
-  const record = body as Record<string, unknown>
-  const boardName = typeof record.board === 'string' ? record.board : 'mode'
-  if (boardName === 'xp') {
-    if (typeof record.xp !== 'number' || !Number.isInteger(record.xp)) return null
-    if (typeof record.level !== 'number' || !Number.isInteger(record.level)) return null
-    if (record.xp < 1 || record.xp > RATING_XP_MAX) return null
-    if (record.level < 1 || record.level > RATING_LEVEL_MAX) return null
-    const world = record.world === undefined || record.world === 'all' ? 'all' : record.world === 'codes' ? 'geo' : record.world
-    if (world !== 'all' && !isQuizWorld(world)) return null
-    return {
-      board: { kind: 'xp', world, period: 'all' },
-      entry: { levelsCleared: 0, totalMs: 0, xp: record.xp, level: record.level },
-    }
-  }
-  if (typeof record.hardcore !== 'boolean') return null
-  if (typeof record.levelsCleared !== 'number' || !Number.isInteger(record.levelsCleared)) return null
-  if (boardName === 'clears') {
-    if (record.levelsCleared < 1 || record.levelsCleared > RATING_CLEARS_MAX) return null
-    const world = record.world === undefined ? 'geo' : record.world
-    if (!isQuizWorld(world)) return null
-    return {
-      board: { kind: 'clears', hardcore: record.hardcore, world },
-      entry: { levelsCleared: record.levelsCleared, totalMs: 0 },
-    }
-  }
-  if (typeof record.mode !== 'string' || !isQuizMode(record.mode)) return null
-  const mode: QuizMode = record.mode
-  const totalMs =
-    typeof record.totalMs === 'number' && Number.isFinite(record.totalMs) ? Math.round(record.totalMs) : 0
-  if (record.levelsCleared < 1 || record.levelsCleared > RATING_LEVEL_MAX) return null
-  if (totalMs < 0 || totalMs > RATING_LEVEL_MAX * 3_600_000) return null
-  return {
-    board: { kind: 'mode', mode, hardcore: record.hardcore },
-    entry: { levelsCleared: record.levelsCleared, totalMs },
-  }
-}
-
-function parseLevelBest(body: unknown): null | {
-  board: Extract<RatingBoard, { kind: 'levelBest' }>
-  roundMs: number
-  livesLeft: number
-} {
-  if (!body || typeof body !== 'object') return null
-  const record = body as Record<string, unknown>
-  if (record.board !== 'levelBest') return null
-  if (typeof record.mode !== 'string' || !isQuizMode(record.mode)) return null
-  if (typeof record.hardcore !== 'boolean') return null
-  if (typeof record.level !== 'number' || record.level < 1 || record.level > RATING_LEVEL_MAX) return null
-  if (typeof record.roundMs !== 'number' || !Number.isFinite(record.roundMs)) return null
-  const roundMs = Math.round(record.roundMs)
-  const livesLeft =
-    typeof record.livesLeft === 'number' && Number.isFinite(record.livesLeft) ? Math.round(record.livesLeft) : 0
-  if (roundMs < 1 || roundMs > 3_600_000) return null
-  if (livesLeft < 0 || livesLeft > 200) return null
-  return {
-    board: { kind: 'levelBest', mode: record.mode, level: record.level, hardcore: record.hardcore },
-    roundMs,
-    livesLeft,
   }
 }

@@ -19,6 +19,7 @@ import { ModeChoice } from './ModeChoice'
 import { HardcoreToggle } from './DifficultyPicker'
 import { Lives } from './Lives'
 import { WorldsBack } from './WorldsBack'
+import { FitGroup } from './FitText'
 
 interface LevelsScreenProps {
   settings: QuizSettings
@@ -127,6 +128,7 @@ export function LevelsScreen({
               <ModeChoice
                 key={mode}
                 label={modeLabel(mode, settings.lang)}
+                mode={mode}
                 active={settings.mode === mode}
                 onClick={() => onChange({ ...settings, path: 'levels', mode })}
                 percent={modeCampaignPercent(levelClears, mode)}
@@ -135,48 +137,50 @@ export function LevelsScreen({
           </div>
         )}
 
-        <div className="choice-grid is-levels">
-          {levels.map((level) => {
-            const cleared = findLevelClear(levelClears, level, settings.mode)
-            const unlocked = isLevelUnlocked(levelClears, level, settings.mode)
-            const canOpen = settings.levelLearn || unlocked
-            const livesLimit = cleared ? cleared.livesLimit ?? (cleared.hardcore ? 1 : MAX_LIVES) : MAX_LIVES
-            return (
-              <button
-                key={level}
-                type="button"
-                className={`choice level-choice${cleared?.hardcore ? ' is-gold' : cleared ? ' is-cleared' : ''}${
-                  canOpen ? '' : ' is-locked'
-                }${picked === level ? ' is-picked' : ''}`}
-                onClick={() => {
-                  if (picked === level && canOpen) {
-                    onPlay(level)
-                    return
-                  }
-                  setPicked(level)
-                }}
-              >
-                <span className="level-number">{level}</span>
-                {cleared ? (
-                  <span className="level-meta">
-                    {!cleared.hardcore && livesLimit <= MAX_LIVES && (
-                      <Lives
-                        filled={cleared.livesLeft}
-                        total={livesLimit}
-                        gold={cleared.livesLeft === livesLimit}
-                        size="sm"
-                      />
-                    )}
-                    {isFinalLevel(level) && livesLimit > MAX_LIVES ? `${cleared.livesLeft}/${livesLimit} · ` : ''}
-                    {formatClock(cleared.roundMs)}
-                  </span>
-                ) : isFinalLevel(level) && hasGeoFinale(settings.mode) ? (
-                  <span className="level-meta">193</span>
-                ) : null}
-              </button>
-            )
-          })}
-        </div>
+        <FitGroup minPx={6} wrap={false}>
+          <div className="choice-grid is-levels">
+            {levels.map((level) => {
+              const cleared = findLevelClear(levelClears, level, settings.mode)
+              const unlocked = isLevelUnlocked(levelClears, level, settings.mode)
+              const canOpen = settings.levelLearn || unlocked
+              const livesLimit = cleared ? cleared.livesLimit ?? (cleared.hardcore ? 1 : MAX_LIVES) : MAX_LIVES
+              return (
+                <button
+                  key={level}
+                  type="button"
+                  className={`choice level-choice${cleared?.hardcore ? ' is-gold' : cleared ? ' is-cleared' : ''}${
+                    canOpen ? '' : ' is-locked'
+                  }${picked === level ? ' is-picked' : ''}`}
+                  onClick={() => {
+                    if (picked === level && canOpen) {
+                      onPlay(level)
+                      return
+                    }
+                    setPicked(level)
+                  }}
+                >
+                  <span className="level-number">{level}</span>
+                  {cleared ? (
+                    <span className="level-meta">
+                      {!cleared.hardcore && livesLimit <= MAX_LIVES && (
+                        <Lives
+                          filled={cleared.livesLeft}
+                          total={livesLimit}
+                          gold={cleared.livesLeft === livesLimit}
+                          size="sm"
+                        />
+                      )}
+                      {isFinalLevel(level) && livesLimit > MAX_LIVES ? `${cleared.livesLeft}/${livesLimit} · ` : ''}
+                      {formatClock(cleared.roundMs)}
+                    </span>
+                  ) : isFinalLevel(level) && hasGeoFinale(settings.mode) ? (
+                    <span className="level-meta">193</span>
+                  ) : null}
+                </button>
+              )
+            })}
+          </div>
+        </FitGroup>
 
         <p className="levels-world-best" aria-live="polite">
           {pickedBest ? (

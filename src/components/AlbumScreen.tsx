@@ -13,6 +13,7 @@ import {
   type StampAlbum,
 } from '../lib/stamps'
 import type { QuizSettings } from './HomeScreen'
+import { AlbumLootHow } from './AlbumLootHow'
 import { Flag } from './Flag'
 import { FitText } from './FitText'
 import { HubNav, type HubTab } from './HubNav'
@@ -44,6 +45,8 @@ export function AlbumScreen({ settings, stamps, onHub, onWorlds }: AlbumScreenPr
 
       <HubNav lang={settings.lang} active="album" onSelect={onHub} />
 
+      <AlbumLootHow lang={settings.lang} world="geo" />
+
       {copies === 0 ? <p className="setting-hint">{t.albumEmpty}</p> : null}
 
       <section className="stamp-grid">
@@ -64,15 +67,13 @@ export function AlbumScreen({ settings, stamps, onHub, onWorlds }: AlbumScreenPr
               <span className="stamp-frame">
                 <Flag iso={country.iso} name={name} size="card" />
               </span>
-              {owned ? (
-                <span className="stamp-pips" aria-hidden="true">
-                  {Array.from({ length: STAMP_MAX }, (_, index) => (
-                    <span key={index} className={`stamp-pip${index < count ? ' is-on' : ''}`} />
-                  ))}
-                </span>
-              ) : null}
+              <span className="stamp-pips" aria-hidden="true">
+                {Array.from({ length: STAMP_MAX }, (_, index) => (
+                  <span key={index} className={`stamp-pip${index < count ? ' is-on' : ''}`} />
+                ))}
+              </span>
               <p className="stamp-name">
-                <FitText>{owned ? name : '—'}</FitText>
+                <FitText>{name}</FitText>
               </p>
             </button>
           )

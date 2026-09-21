@@ -1,5 +1,6 @@
 "use client";
 
+import { WorldAlbumScreen } from "@/components/WorldAlbumScreen";
 import { WORLD_HUB_TABS } from "@/components/HubNav";
 import { defaultLeadersMode, LeadersScreen } from "@/components/LeadersScreen";
 import { LearnScreen } from "@/components/LearnScreen";
@@ -66,6 +67,15 @@ export function LeadersPlay({ play }: { play: PlaySession }) {
           onWorlds={play.goToWorlds}
           onPractice={play.startMistakesPractice}
           onClear={() => play.setMistakeList(clearMistakes((item) => !isLeadersMode(item.mode)))}
+        />
+      )}
+      {play.screen === "album" && (
+        <WorldAlbumScreen
+          settings={play.quizSettings}
+          world="leaders"
+          tabs={WORLD_HUB_TABS}
+          onHub={play.goHub}
+          onWorlds={play.goToWorlds}
         />
       )}
       {play.screen === "quiz" && play.questions[play.index] && (

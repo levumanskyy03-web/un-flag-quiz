@@ -11,6 +11,7 @@ import { formatXp } from '../lib/xp'
 import { AchievementGallery } from './AchievementGallery'
 import { AvatarMark } from './AvatarMark'
 import { CountryMark } from './CountryPicker'
+import { IntellectRankPlaque } from './IntellectRankPlaque'
 
 interface PlayerProfileModalProps {
   lang: Lang
@@ -105,6 +106,7 @@ export function PlayerProfileModal({
                 ) : null}
                 <CountryMark iso={player?.countryIso} lang={lang} />
                 <p className="account-level">{t.accountLevel(level || 1)}</p>
+                <IntellectRankPlaque level={level || 1} lang={lang} className="is-profile" />
                 <p className="profile-xp">{t.xpTotal(formatXp(xp, lang))}</p>
               </div>
             </div>

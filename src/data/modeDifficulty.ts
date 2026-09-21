@@ -1,7 +1,10 @@
 import { COUNTRIES, type Country } from './countries'
+import { POLITIES } from './history/polities'
 import { LEVEL_ISOS } from './levels'
 import { quizLanguageId } from './languages'
 import { isEasyWaterCountry, isWaterMode } from './water'
+
+const HISTORY_IDS = new Set(POLITIES.map((item) => item.id))
 
 const KNOWN = new Set(COUNTRIES.map((country) => country.iso))
 
@@ -512,6 +515,7 @@ const EASY_BY_MODE: Record<string, ReadonlySet<string> | 'flag'> = {
 }
 
 export function isEasyForMode(country: Country, mode: string): boolean {
+  if (HISTORY_IDS.has(country.iso)) return country.difficulty === 'easy'
   if (isWaterMode(mode)) return isEasyWaterCountry(country.iso, mode)
   const easy = EASY_BY_MODE[mode]
   if (!easy || easy === 'flag') return country.difficulty === 'easy'

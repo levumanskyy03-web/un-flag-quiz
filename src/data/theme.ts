@@ -109,29 +109,6 @@ const COUNT3 = t11('3 летних Игр', '3 Summer Games', '3 Sommerspiele', 
 const COUNT2 = t11('2 летние Игры', '2 Summer Games', '2 Sommerspiele', '2 届夏奥', '2 Juegos de verano', '2 ग्रीष्म खेल', 'دورتان صيفيتان', '২ গ্রীষ্মকালীন', '2 Jogos de verão', '夏季2回', '2 משחקי קיץ')
 const COUNT1 = t11('1 летние Игры', '1 Summer Games', '1 Sommerspiele', '1 届夏奥', '1 Juegos de verano', '1 ग्रीष्म खेल', 'دورة صيفية واحدة', '১ গ্রীষ্মকালীন', '1 Jogos de verão', '夏季1回', 'משחקי קיץ אחד')
 
-const VIOLIN = t11('скрипка', 'violin', 'Violine', '小提琴', 'violín', 'वायलिन', 'كمان', 'বেহালা', 'violino', 'バイオリン', 'כינור')
-const PIANO = t11('фортепиано', 'piano', 'Klavier', '钢琴', 'piano', 'पियानो', 'بيانو', 'পিয়ানো', 'piano', 'ピアノ', 'פסנתר')
-const FLUTE = t11('флейта', 'flute', 'Flöte', '长笛', 'flauta', 'बांसुरी', 'ناي', 'বাঁশি', 'flauta', 'フルート', 'חליל')
-const TRUMPET = t11('труба', 'trumpet', 'Trompete', '小号', 'trompeta', 'तुरही', 'بوق', 'ট্রাম্পেট', 'trompete', 'トランペット', 'חצוצרה')
-const GUITAR = t11('гитара', 'guitar', 'Gitarre', '吉他', 'guitarra', 'गिटार', 'غيتار', 'গিটার', 'guitarra', 'ギター', 'גיטרה')
-const DRUMS = t11('ударные', 'drums', 'Schlagzeug', '鼓', 'batería', 'ढोल', 'طبول', 'ড্রাম', 'bateria', 'ドラム', 'תופים')
-const STRINGS = t11('струнные', 'strings', 'Streicher', '弦乐', 'cuerdas', 'तार', 'أوتار', 'স্ট্রিং', 'cordas', '弦楽器', 'מיתרים')
-const KEYS = t11('клавишные', 'keyboard', 'Tasten', '键盘', 'teclado', 'कीबोर्ड', 'لوحة مفاتيح', 'কীবোর্ড', 'teclado', '鍵盤', 'קלידים')
-const WIND = t11('деревянные духовые', 'woodwind', 'Holzbläser', '木管', 'viento madera', 'वुडविंड', 'خشبية', 'উডউইন্ড', 'madeiras', '木管', 'עץ')
-const BRASS = t11('медные духовые', 'brass', 'Blechbläser', '铜管', 'metal', 'पीतल', 'نحاسية', 'ব্রাস', 'metais', '金管', 'פליז')
-const PERC = t11('ударные', 'percussion', 'Percussion', '打击', 'percusión', 'ताल', 'إيقاع', 'পারকাশন', 'percussão', '打楽器', 'הקשה')
-
-const BACH = t11('Бах', 'Bach', 'Bach', '巴赫', 'Bach', 'बाख', 'باخ', 'বাখ', 'Bach', 'バッハ', 'באך')
-const MOZART = t11('Моцарт', 'Mozart', 'Mozart', '莫扎特', 'Mozart', 'मोत्सार्ट', 'موتسارت', 'মোৎসার্ট', 'Mozart', 'モーツァルト', 'מוצרט')
-const BEETH = t11('Бетховен', 'Beethoven', 'Beethoven', '贝多芬', 'Beethoven', 'बीथोवेन', 'بيتهوفن', 'বেটোফেন', 'Beethoven', 'ベートーヴェン', 'בטהובן')
-const TCHAI = t11('Чайковский', 'Tchaikovsky', 'Tschaikowsky', '柴可夫斯基', 'Chaikovski', 'चाइकोव्स्की', 'تشايكوفسكي', 'চাইকোভস্কি', 'Tchaikovsky', 'チャイコフスキー', 'צ׳ייקובסקי')
-const CHOPIN = t11('Шопен', 'Chopin', 'Chopin', '肖邦', 'Chopin', 'शोपन', 'شوبان', 'শোপাঁ', 'Chopin', 'ショパン', 'שופן')
-const TOCCATA = t11('Токката и фуга ре минор', 'Toccata and Fugue in D minor', 'Toccata und Fuge d-Moll', 'd小调托卡塔与赋格', 'Tocata y fuga en re menor', 'डी माइनर टोकाटा', 'توكاتا وfugue', 'ডি মাইনর টোকাটা', 'Toccata e fuga em ré menor', 'ニ短調トッカータとフーガ', 'טוקטה ופוגה ברה מינור')
-const EINE = t11('Маленькая ночная серенада', 'Eine kleine Nachtmusik', 'Eine kleine Nachtmusik', '小夜曲', 'Eine kleine Nachtmusik', 'नाच्टमुसिक', 'سرينادة ليلية', 'নাখটমুজিক', 'Eine kleine Nachtmusik', 'アイネ・クライネ', 'איינה קליינה')
-const FIFTH = t11('Симфония № 5', 'Symphony No. 5', '5. Sinfonie', '第五交响曲', 'Sinfonía n.º 5', 'सिम्फनी 5', 'السيمفونية الخامسة', 'সিমফনি ৫', 'Sinfonia n.º 5', '交響曲第5番', 'סימפוניה מס׳ 5')
-const SWAN = t11('Лебединое озеро', 'Swan Lake', 'Schwanensee', '天鹅湖', 'El lago de los cisnes', 'स्वान लेक', 'بحيرة البجع', 'সোয়ান লেক', 'O Lago dos Cisnes', '白鳥の湖', 'אגם הברבורים')
-const MINUTE = t11('Минутный вальс', 'Minute Waltz', 'Minutenwalzer', '一分钟圆舞曲', 'Vals del minuto', 'मिनट वाल्ट्ज', 'فالس الدقيقة', 'মিনিট ওয়াল্টজ', 'Valsa do Minuto', '子犬のワルツ', 'ואלס הדקה')
-
 const ALGO = t11('алгоритм', 'algorithm', 'Algorithmus', '算法', 'algoritmo', 'एल्गोरिदम', 'خوارزمية', 'অ্যালগরিদম', 'algoritmo', 'アルゴリズム', 'אלגוריתם')
 const VARB = t11('переменная', 'variable', 'Variable', '变量', 'variable', 'चर', 'متغير', 'ভেরিয়েবল', 'variável', '変数', 'משתנה')
 const LOOP = t11('цикл', 'loop', 'Schleife', '循环', 'bucle', 'लूप', 'حلقة', 'লুপ', 'ciclo', 'ループ', 'לולאה')
@@ -255,27 +232,6 @@ export const THEME_ITEMS: ThemeItem[] = [
   row('noc-aus', 'nocToName', 'medium', t11('AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS'), AUS, { key: 'aus' }),
   row('noc-bra', 'nocToName', 'medium', t11('BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA'), BRA, { key: 'bra' }),
   row('noc-gre', 'nocToName', 'medium', t11('GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE'), GRE, { key: 'gre' }),
-
-  row('in-vi', 'instrumentToFamily', 'easy', VIOLIN, STRINGS, { key: 'str' }),
-  row('in-pi', 'instrumentToFamily', 'easy', PIANO, KEYS, { key: 'keys' }),
-  row('in-fl', 'instrumentToFamily', 'easy', FLUTE, WIND, { key: 'wind' }),
-  row('in-tr', 'instrumentToFamily', 'medium', TRUMPET, BRASS, { key: 'brass' }),
-  row('in-gu', 'instrumentToFamily', 'easy', GUITAR, STRINGS, { key: 'str' }),
-  row('in-dr', 'instrumentToFamily', 'easy', DRUMS, PERC, { key: 'perc' }),
-  row('cw-ba', 'composerToWork', 'easy', BACH, TOCCATA, { key: 'tocc' }),
-  row('cw-mo', 'composerToWork', 'easy', MOZART, EINE, { key: 'eine' }),
-  row('cw-be', 'composerToWork', 'easy', BEETH, FIFTH, { key: 'fifth' }),
-  row('cw-tc', 'composerToWork', 'medium', TCHAI, SWAN, { key: 'swan' }),
-  row('cw-ch', 'composerToWork', 'medium', CHOPIN, MINUTE, { key: 'min' }),
-  row('wc-ba', 'workToComposer', 'easy', TOCCATA, BACH, { key: 'bach' }),
-  row('wc-mo', 'workToComposer', 'easy', EINE, MOZART, { key: 'moz' }),
-  row('wc-be', 'workToComposer', 'easy', FIFTH, BEETH, { key: 'bee' }),
-  row('wc-tc', 'workToComposer', 'medium', SWAN, TCHAI, { key: 'tch' }),
-  row('wc-ch', 'workToComposer', 'medium', MINUTE, CHOPIN, { key: 'cho' }),
-  row('ph-be', 'musicPhotoToName', 'easy', BEETH, BEETH, { key: 'bee', wiki: 'Ludwig van Beethoven', wikiFile: 'Beethoven.jpg' }),
-  row('ph-mo', 'musicPhotoToName', 'easy', MOZART, MOZART, { key: 'moz', wiki: 'Wolfgang Amadeus Mozart', wikiFile: 'Wolfgang-amadeus-mozart_1.jpg' }),
-  row('ph-ba', 'musicPhotoToName', 'medium', BACH, BACH, { key: 'bach', wiki: 'Johann Sebastian Bach', wikiFile: 'Johann Sebastian Bach.jpg' }),
-  row('ph-ch', 'musicPhotoToName', 'medium', CHOPIN, CHOPIN, { key: 'cho', wiki: 'Frédéric Chopin', wikiFile: 'Frederic Chopin photo.jpeg' }),
 
   row('t-al', 'csTermToMeaning', 'easy', ALGO, ALGOA, { key: 'algoa' }),
   row('t-va', 'csTermToMeaning', 'easy', VARB, VARA, { key: 'vara' }),

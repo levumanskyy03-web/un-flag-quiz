@@ -19,6 +19,7 @@ import {
   type LeadersMode,
   type QuizMode,
 } from '../lib/quiz'
+import { modeCatalogNo } from '../lib/modeCatalog'
 import type { LeaderKind } from '../data/leaders'
 import { GeoIcon } from './GeoIcon'
 import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
@@ -97,6 +98,7 @@ export function LeadersScreen({
               <ModeChoice
                 key={kind}
                 label={label}
+                no={modeCatalogNo(leadersModeOf(kind, leadersAskOf(mode)))}
                 active={leaderKindOf(mode) === kind}
                 onClick={() => {
                   const ask = leadersAskOf(mode)
@@ -198,6 +200,7 @@ export function LeadersSetup({
             <ModeChoice
               key={kind}
               label={label}
+              no={modeCatalogNo(topicMode)}
               active={topic === kind}
               onClick={() => setTopic(kind)}
               percent={campaignPercent?.(topicMode)}
@@ -215,6 +218,7 @@ export function LeadersSetup({
             <ModeChoice
               key={item}
               label={label}
+              mode={askMode}
               active={ask === item}
               onClick={() => setAsk(item)}
               percent={campaignPercent?.(askMode)}

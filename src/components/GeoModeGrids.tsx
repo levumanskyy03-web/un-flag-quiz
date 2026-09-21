@@ -7,6 +7,8 @@ import { RANKING_MODES, rankingCite, rankingUnit, type RankingMode } from '../da
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import { ChoiceLabel } from './FitText'
 import { CODES_MODES, QUIZ_MODES, type QuizMode } from '../lib/quiz'
+import { modeCatalogNo } from '../lib/modeCatalog'
+import { CatalogNo, ModeChoice } from './ModeChoice'
 import { PassportModal } from './PassportModal'
 import { RankingAboutDialog } from './RankingAboutDialog'
 
@@ -150,7 +152,7 @@ export function RankingModeGrid({
             <div key={mode} className="ranking-choice-wrap">
               <button
                 type="button"
-                className={`choice ${active ? 'is-active' : ''}`}
+                className={`choice has-mode-no ${active ? 'is-active' : ''}`}
                 aria-pressed={active}
                 onClick={() => {
                   onPick(mode)
@@ -160,6 +162,7 @@ export function RankingModeGrid({
                   }
                 }}
               >
+                <CatalogNo n={modeCatalogNo(mode)} />
                 <ChoiceLabel>{modeLabel(mode, lang)}</ChoiceLabel>
               </button>
               <button
@@ -225,15 +228,13 @@ function ModeButtons({
         .map((mode) => {
         const active = selectedModes ? selectedModes.includes(mode) : !mix && activeMode === mode
         return (
-          <button
+          <ModeChoice
             key={mode}
-            type="button"
-            className={`choice ${active ? 'is-active' : ''}`}
-            aria-pressed={active}
+            label={modeLabel(mode, lang)}
+            mode={mode}
+            active={active}
             onClick={() => onPick(mode)}
-          >
-            <ChoiceLabel>{modeLabel(mode, lang)}</ChoiceLabel>
-          </button>
+          />
         )
       })}
     </div>

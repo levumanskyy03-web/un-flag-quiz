@@ -31,6 +31,8 @@ import {
   type Camera,
 } from '../lib/mapCamera'
 import { isAllRegions, parseRegions, type RegionFilter } from '../lib/quiz'
+import { useModernWorldMap } from '../data/history'
+import { loadHistoryMap, type HistoryMapData } from '../lib/historyMap'
 
 const PAN_STEP = 0.28
 const CLICK_SLOP = 14
@@ -46,6 +48,8 @@ interface QuizMapProps {
   disabled?: boolean
   waterId?: string
   includeExtras?: boolean
+  includeEraStates?: boolean
+  eraYear?: number
   onPick?: (iso: string) => void
 }
 
@@ -59,6 +63,8 @@ export function QuizMap({
   disabled = false,
   waterId,
   includeExtras = false,
+  includeEraStates = false,
+  eraYear,
   onPick,
 }: QuizMapProps) {
   const t = STRINGS[lang]
@@ -74,6 +80,7 @@ export function QuizMap({
   } | null>(null)
   const cameraRef = useRef<Camera>(WORLD)
   const [world, setWorld] = useState<WorldMapData | null>(null)
+  const [historyMap, setHistoryMap] = useState<HistoryMapData | null>(null)
   const [boxes, setBoxes] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({})
   const [camera, setCamera] = useState<Camera>(WORLD)
   const [panning, setPanning] = useState(false)
@@ -93,19 +100,30 @@ export function QuizMap({
     [scoped, region],
   )
 
+  const historyMode = Boolean(includeEraStates && eraYear && !waterMode && !useModernWorldMap(eraYear))
+
   useEffect(() => {
     let live = true
+    if (historyMode && eraYear) {
+      loadHistoryMap(eraYear).then((data) => {
+        if (live) setHistoryMap(data)
+      })
+      return () => {
+        live = false
+      }
+    }
+    setHistoryMap(null)
     worldPromise.then((mod) => {
       if (live) setWorld(mod.default)
     })
     return () => {
       live = false
     }
-  }, [])
+  }, [eraYear, historyMode])
 
   useLayoutEffect(() => {
     const svg = svgRef.current
-    if (!svg || !world) return
+    if (!svg || (!world && !historyMap)) return
     const next: Record<string, { x: number; y: number; width: number; height: number }> = {}
     svg.querySelectorAll<SVGGraphicsElement>('path[data-iso]').forEach((path) => {
       const iso = path.dataset.iso
@@ -114,7 +132,7 @@ export function QuizMap({
       next[iso] = { x: box.x, y: box.y, width: box.width, height: box.height }
     })
     setBoxes(next)
-  }, [world])
+  }, [world, historyMap])
 
   const bounds = useMemo<Camera>(() => {
     if (!scoped) return WORLD
@@ -130,13 +148,16 @@ export function QuizMap({
   boundsRef.current = bounds
 
   const mapLocations = useMemo(() => {
+    if (historyMap) {
+      return historyMap.features.map((feature) => ({ id: feature.id, path: feature.d, name: feature.name }))
+    }
     if (!world) return []
     return [...world.locations].sort((a, b) => {
       const askA = quizIsoFromMapId(a.id, includeExtras) === focusIso ? 1 : 0
       const askB = quizIsoFromMapId(b.id, includeExtras) === focusIso ? 1 : 0
       return askA - askB
     })
-  }, [focusIso, includeExtras, world])
+  }, [focusIso, includeExtras, world, historyMap])
   const markers = useMemo(() => (world ? markersFor(world.locations) : []), [world])
 
   const focusBox = useMemo(() => {
@@ -253,9 +274,9 @@ export function QuizMap({
 
   function pickIso(id: string | null) {
     if (revealed || disabled || !id) return
-    const iso = quizIsoFromMapId(id, includeExtras)
+    const iso = quizIsoFromMapId(id, includeExtras) ?? (historyMode ? id : null)
     if (!iso) return
-    if (scoped && !countryInRegion(iso, regions as Region[])) return
+    if (scoped && !historyMode && !countryInRegion(iso, regions as Region[])) return
     onPick?.(iso)
   }
 
@@ -414,7 +435,7 @@ export function QuizMap({
           </div>
         </>
       ) : null}
-      {world ? (
+      {world || historyMap ? (
         <svg
           ref={svgRef}
           className="world-map"
@@ -425,10 +446,10 @@ export function QuizMap({
         >
           {waterUnderLand ? overlay : null}
           {mapLocations.map((location) => {
-            const quizIso = quizIsoFromMapId(location.id, includeExtras)
-            const inScope = !scoped || regionIsos.has(location.id)
-            const clickable = Boolean(quizIso) && inScope && isClickableIso(location.id) && !HOLDOUT_BY_ISO.has(location.id)
-            const isCoast = waterMode && quizIso !== null && coastalIsos.has(quizIso)
+            const quizIso = historyMode ? location.id : quizIsoFromMapId(location.id, includeExtras)
+            const inScope = historyMode || !scoped || regionIsos.has(location.id)
+            const clickable = Boolean(quizIso) && inScope && (historyMode || (isClickableIso(location.id) && !HOLDOUT_BY_ISO.has(location.id)))
+            const isCoast = waterMode && !waterLine && quizIso !== null && coastalIsos.has(quizIso)
             const isAsk = !waterMode && variant === 'identify' && !revealed && quizIso === focusIso
             const isCorrect = !waterMode && revealed && quizIso === focusIso
             const isWrong = !waterMode && revealed && selectedIso !== null && selectedIso !== focusIso && quizIso === selectedIso
@@ -447,7 +468,7 @@ export function QuizMap({
             )
           })}
           {waterOverLand || waterLine ? overlay : null}
-          {waterMode ? null : markers.map((marker) => {
+          {waterMode || historyMode ? null : markers.map((marker) => {
             const quizIso = quizIsoFromMapId(marker.iso, includeExtras)
             const inScope = !scoped || regionIsos.has(marker.iso)
             if (!quizIso || !inScope || HOLDOUT_BY_ISO.has(marker.iso)) return null
@@ -500,6 +521,8 @@ function WaterOverlay({
 }) {
   const line = kind === 'river'
   const cls = `map-water${line ? ' is-line' : ''}${revealed ? ' is-revealed' : ''}`
+  const shape = waterId ? waterShapePath(waterId) : ''
+  if (shape) return <path className={cls} d={shape} />
   if (line && boxes.length > 0) {
     const points = [...boxes]
       .map((box) => ({ x: box.x + box.width / 2, y: box.y + box.height / 2 }))
@@ -508,15 +531,13 @@ function WaterOverlay({
       .join(' ')
     return <polyline className={cls} points={points} fill="none" />
   }
-  const shape = waterId ? waterShapePath(waterId) : ''
   const fallback =
-    !shape && boxes.length > 0
+    boxes.length > 0
       ? (() => {
           const view = viewBoxFromBoxes(boxes)
           return `M ${view.x} ${view.y} h ${view.w} v ${view.h} h ${-view.w} Z`
         })()
       : ''
-  const d = shape || fallback
-  if (!d) return null
-  return <path className={cls} d={d} />
+  if (!fallback) return null
+  return <path className={cls} d={fallback} />
 }

@@ -38,6 +38,7 @@ export type CompanyState = {
   buffUntil: number
   spark: CompanySpark | null
   nextSparkAt: number
+  updatedAt: number
 }
 
 type Listener = () => void
@@ -64,6 +65,7 @@ function emptyState(now = Date.now()): CompanyState {
     buffUntil: 0,
     spark: null,
     nextSparkAt: now + 50_000 + Math.random() * 40_000,
+    updatedAt: 0,
   }
 }
 
@@ -89,6 +91,7 @@ function parseState(raw: unknown): CompanyState | null {
     buffUntil: Math.max(0, Number(row.buffUntil) || 0),
     spark: null,
     nextSparkAt: Math.max(now, Number(row.nextSparkAt) || now + sparkIntervalMs(Number(row.claimed) || 0)),
+    updatedAt: Math.max(0, Number(row.updatedAt) || 0),
   }
 }
 
@@ -117,14 +120,15 @@ function emit() {
 }
 
 function commit(next: CompanyState, save = true) {
-  memory = next
   const now = Date.now()
-  if (save || now - lastWrite > 10_000) {
-    persist(next)
+  const shouldSave = save || now - lastWrite > 10_000
+  memory = shouldSave ? { ...next, updatedAt: now } : next
+  if (shouldSave) {
+    persist(memory)
     lastWrite = now
   }
   emit()
-  return next
+  return memory
 }
 
 const SERVER_SNAPSHOT = emptyState(0)
@@ -141,8 +145,10 @@ export function getCompanyClientSnapshot(): CompanyState {
 
 export function loadCompany(): CompanyState {
   if (typeof window === 'undefined') return SERVER_SNAPSHOT
+  const stored = readStored()
+  if (memory && stored && stored.updatedAt > memory.updatedAt) memory = stored
   if (memory) return memory
-  memory = readStored() ?? emptyState()
+  memory = stored ?? emptyState()
   return memory
 }
 
@@ -230,6 +236,21 @@ export function catchCompanySpark(now = Date.now()): CompanyState {
   })
 }
 
+export function grantCompanyKnowledge(amount: number): CompanyState {
+  const n = Math.max(0, Number(amount) || 0)
+  const prev = loadCompany()
+  if (n <= 0) return prev
+  return commit({ ...prev, knowledge: prev.knowledge + n })
+}
+
+export function spendCompanyKnowledge(amount: number): boolean {
+  const n = Math.max(0, Number(amount) || 0)
+  const prev = loadCompany()
+  if (n <= 0 || prev.knowledge < n) return false
+  commit({ ...prev, knowledge: prev.knowledge - n })
+  return true
+}
+
 export function companyOnRound(world: QuizWorld, complete: boolean): CompanyState {
   const prev = loadCompany()
   const pack = COMPANY_ROUND_KNOWLEDGE * (complete ? 1.5 : 1)
@@ -309,6 +330,18 @@ function onCompanyVisibility() {
   companyTick()
 }
 
+function onCompanyStorage(event: StorageEvent) {
+  if (event.key !== COMPANY_KEY || !event.newValue) return
+  try {
+    const next = parseState(JSON.parse(event.newValue) as unknown)
+    if (!next || (memory && next.updatedAt <= memory.updatedAt)) return
+    memory = next
+    emit()
+  } catch {
+    /* ignore malformed external write */
+  }
+}
+
 export function startCompanyLoop() {
   if (typeof window === 'undefined') return
   clientReady = true
@@ -319,6 +352,7 @@ export function startCompanyLoop() {
   onCompanyVisibility()
   loop = window.setInterval(onCompanyVisibility, 1000)
   document.addEventListener('visibilitychange', onCompanyVisibility)
+  window.addEventListener('storage', onCompanyStorage)
   emit()
 }
 
@@ -327,4 +361,5 @@ export function stopCompanyLoop() {
   window.clearInterval(loop)
   loop = null
   document.removeEventListener('visibilitychange', onCompanyVisibility)
+  window.removeEventListener('storage', onCompanyStorage)
 }

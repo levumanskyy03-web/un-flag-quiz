@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "history-maps": "node scripts/history-maps.cjs",
     "postinstall": "node scripts/copy-pdfjs-assets.cjs"
   },
   "dependencies": {

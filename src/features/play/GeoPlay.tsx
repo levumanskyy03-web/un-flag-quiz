@@ -135,6 +135,8 @@ export function GeoPlay({ play }: { play: PlaySession }) {
           practice={play.isPractice}
           mix={Boolean(play.quizSettings.mix && play.quizSettings.path === "pool")}
           includeExtras={play.quizSettings.includeExtras}
+          includeEraStates={play.quizSettings.includeEraStates}
+          eraYear={play.quizSettings.eraYear}
           power={play.quizPower}
           onSelect={play.selectAnswer}
           onNext={play.isPractice ? play.handlePracticeNext : undefined}

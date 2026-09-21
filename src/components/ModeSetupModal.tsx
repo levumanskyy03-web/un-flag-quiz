@@ -23,6 +23,7 @@ import {
   footballPoolSize,
   getPool,
   getRegionPool,
+  eraFitsMode,
   isFactsToName,
   isLeadersMode,
   isMathMode,
@@ -76,7 +77,9 @@ import { ThemeModeGrids } from './ThemeModeGrids'
 import { CodesModeGrid, GeoModeGrids, RankingModeGrid } from './GeoModeGrids'
 import { FitText } from './FitText'
 import { ModeChoice } from './ModeChoice'
+import { modeCatalogNo, modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
 import { DifficultyPicker } from './DifficultyPicker'
+import { ExtrasToggle, geoOpts } from './ExtrasToggle'
 import type { QuizSettings } from './HomeScreen'
 
 export type SetupFamily =
@@ -234,6 +237,12 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
         : family.world === 'leaders'
           ? []
           : modesOfThemeFamily(family.id)
+  const catalogNo =
+    family.id === 'mix'
+      ? worldCatalogNo(family.world)
+      : family.world === 'leaders'
+        ? modeCatalogNo(leadersModeOf(family.id, leadersAskOf(settings.mode)))
+        : modesCatalogNo(variants)
 
   return (
     <div className="passport-overlay mode-setup-overlay" onClick={onClose} role="presentation">
@@ -248,7 +257,7 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
           {t.close}
         </button>
         <h2 id="mode-setup-title" className="passport-title">
-          {title}
+          {catalogNo != null ? `${catalogNo} · ${title}` : title}
         </h2>
         <p className="duel-setup-hint">{rankingsInfo ? t.rankingSetup : t.modeSetup}</p>
 
@@ -370,6 +379,7 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
               <ModeChoice
                 key={mode}
                 label={modeLabel(mode, settings.lang)}
+                mode={mode}
                 active={!settings.mix && settings.mode === mode}
                 onClick={() => pickMode(mode)}
               />
@@ -386,6 +396,7 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
                 <ModeChoice
                   key={item}
                   label={label}
+                  mode={askMode}
                   active={leadersAskOf(settings.mode) === item}
                   onClick={() => pickMode(askMode)}
                 />
@@ -413,18 +424,15 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
                 </button>
               ))}
             </div>
-            <div className="choice-wrap extras-toggle-row">
-              <button
-                type="button"
-                className={`extras-toggle ${settings.includeExtras ? 'is-active' : ''}`}
-                aria-pressed={settings.includeExtras}
-                onClick={() => update({ includeExtras: !settings.includeExtras })}
-              >
-                <span className="region-dot" aria-hidden />
-                {t.includeExtras}
-              </button>
-            </div>
-            <p className="setting-hint extras-hint">{t.includeExtrasHint}</p>
+            <ExtrasToggle
+              settings={settings}
+              onChange={(includeExtras) => update({ includeExtras })}
+              onEraChange={
+                settings.mix || eraFitsMode(settings.mode)
+                  ? (includeEraStates) => update({ includeEraStates })
+                  : undefined
+              }
+            />
           </>
         ) : null}
 
@@ -480,8 +488,6 @@ function themeMixNote(world: ThemeWorld, kind: 'easy' | 'hard', t: (typeof STRIN
   if (world === 'biology') return kind === 'easy' ? t.bioEasyMixNote : t.bioHardMixNote
   if (world === 'olympics') return kind === 'easy' ? t.olyEasyMixNote : t.olyHardMixNote
   if (world === 'cs') return kind === 'easy' ? t.csEasyMixNote : t.csHardMixNote
-  if (world === 'music') return kind === 'easy' ? t.musicEasyMixNote : t.musicHardMixNote
-  if (world === 'melody') return kind === 'easy' ? t.melodyEasyMixNote : t.melodyHardMixNote
   return kind === 'easy' ? t.foodEasyMixNote : t.foodHardMixNote
 }
 
@@ -543,6 +549,6 @@ function poolOf(family: SetupFamily, settings: QuizSettings): number {
   }
   if (settings.mix === 'custom' && settings.mixModes.length === 0) return 0
   return settings.mix
-    ? getRegionPool(settings.region, settings.includeExtras).length
-    : getPool(settings.region, settings.difficulty, settings.mode, settings.includeExtras).length
+    ? getRegionPool(settings.region, geoOpts(settings)).length
+    : getPool(settings.region, settings.difficulty, settings.mode, geoOpts(settings)).length
 }

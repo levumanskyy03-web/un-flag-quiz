@@ -3,13 +3,11 @@
 import { useEffect, useId, useMemo, useState } from 'react'
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import { fetchAccount } from '../lib/account'
-import { unlockedAchievementIds } from '../lib/achievements'
 import type { RoundRecord } from '../lib/history'
 import {
   RATING_PERIODS,
   fetchRating,
   loadPlayer,
-  submitRatings,
   type LeaderboardEntry,
   type RatingBoard,
   type RatingPeriod,
@@ -103,13 +101,6 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
       .then(async (user) => {
         if (cancelled) return
         setSignedIn(Boolean(user))
-        if (user) {
-          await submitRatings(
-            levelClears,
-            xp,
-            unlockedAchievementIds(history, bests, levelClears, user.createdAt),
-          )
-        }
         if (!cancelled) setPosted(true)
       })
       .catch(() => {
@@ -118,7 +109,7 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
     return () => {
       cancelled = true
     }
-  }, [levelClears, xp, history, bests])
+  }, [])
 
   useEffect(() => {
     if (!posted || tab === 'duel') return
@@ -234,10 +225,6 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
                           ? 'code'
                         : item === 'food'
                           ? 'bowl'
-                        : item === 'music'
-                          ? 'speaker'
-                        : item === 'melody'
-                          ? 'notes'
                         : 'laurel'
                 }
               />
@@ -418,8 +405,6 @@ function scopeLabel(scope: RatingWorld, lang: Lang): string {
   if (scope === 'olympics') return t.olympics
   if (scope === 'cs') return t.cs
   if (scope === 'food') return t.food
-  if (scope === 'music') return t.musicWorld
-  if (scope === 'melody') return t.melodyWorld
   return t.leaders
 }
 

@@ -1,6 +1,18 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import { COUNTRIES, REGIONS, type Region } from '../data/countries'
 import {
+  eraPolities,
+  HISTORY_YEAR_MIN,
+  historyYearMax,
+  mapIndependence,
+  nearestHistorySnapshot,
+  polityById,
+  resolveHistoryId,
+  searchPolities,
+  useModernWorldMap,
+} from '../data/history'
+import { loadHistoryMap, type HistoryMapData } from '../lib/historyMap'
+import {
   HOLDOUTS,
   HOLDOUT_BY_ISO,
   disputeNote,
@@ -13,6 +25,8 @@ import {
   territoryNote,
 } from '../data/territories'
 import { isClickableIso, markersFor, type WorldMapData } from '../data/worldMap'
+import { findCountry } from '../data/extras'
+import { getPassport } from '../data/passports'
 import { STRINGS, regionLabel } from '../i18n/strings'
 import {
   cameraFromPinch,
@@ -34,6 +48,7 @@ import { countryName } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
 import { HubNav, type HubTab } from './HubNav'
 import { HoldoutModal } from './HoldoutModal'
+import { HistoryCard } from './HistoryCard'
 import { PassportModal } from './PassportModal'
 import { WorldsBack } from './WorldsBack'
 
@@ -54,19 +69,29 @@ function isoFromTarget(target: EventTarget | null) {
   return target.closest('[data-iso]')?.getAttribute('data-iso') ?? null
 }
 
-function clickableIsoFromTarget(target: EventTarget | null) {
+function clickableIsoFromTarget(target: EventTarget | null, allowAll = false) {
   const iso = isoFromTarget(target)
-  return iso && isClickableIso(iso) ? iso : null
+  if (!iso) return null
+  if (allowAll) return iso
+  return isClickableIso(iso) ? iso : null
 }
 
-function locationLabel(id: string, lang: QuizSettings['lang']) {
-  const resolved = resolveMapLocation(id)
-  if (!resolved) return ''
+function locationLabel(id: string, lang: QuizSettings['lang'], year: number, mapName?: string) {
+  const historyId = resolveHistoryId(id, year)
+  const hist = polityById(historyId)
+  if (hist) {
+    return countryName(
+      { iso: hist.id, nameEn: hist.names.en, nameRu: hist.names.ru, region: hist.region, difficulty: hist.difficulty },
+      lang,
+    )
+  }
+  const resolved = resolveMapLocation(historyId)
+  if (!resolved) return mapName ?? ''
   if (resolved.holdout) return holdoutName(resolved.holdout, lang)
   if (resolved.territory && resolved.country) {
     return `${territoryName(resolved.territory, lang)} · ${countryName(resolved.country, lang)}`
   }
-  return resolved.country ? countryName(resolved.country, lang) : ''
+  return resolved.country ? countryName(resolved.country, lang) : mapName ?? ''
 }
 
 export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProps) {
@@ -83,8 +108,12 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
   } | null>(null)
   const cameraRef = useRef<Camera>(WORLD)
   const [world, setWorld] = useState<WorldMapData | null>(null)
+  const [historyMap, setHistoryMap] = useState<HistoryMapData | null>(null)
+  const eraYear = settings.eraYear ?? historyYearMax()
+  const modern = useModernWorldMap(eraYear)
   const [boxes, setBoxes] = useState<Record<string, { x: number; y: number; width: number; height: number }>>({})
   const [openId, setOpenId] = useState<string | null>(null)
+  const [openAsModern, setOpenAsModern] = useState(false)
   const [hoverId, setHoverId] = useState<string | null>(null)
   const [query, setQuery] = useState('')
   const [camera, setCamera] = useState<Camera>(WORLD)
@@ -95,17 +124,27 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
 
   useEffect(() => {
     let live = true
-    import('@svg-maps/world').then((mod) => {
-      if (live) setWorld(mod.default)
+    if (modern) {
+      setHistoryMap(null)
+      import('@svg-maps/world').then((mod) => {
+        if (live) setWorld(mod.default)
+      })
+      return () => {
+        live = false
+      }
+    }
+    setWorld(null)
+    loadHistoryMap(eraYear).then((data) => {
+      if (live) setHistoryMap(data)
     })
     return () => {
       live = false
     }
-  }, [])
+  }, [eraYear, modern])
 
   useLayoutEffect(() => {
     const svg = svgRef.current
-    if (!svg || !world) return
+    if (!svg || (!world && !historyMap)) return
     const next: Record<string, { x: number; y: number; width: number; height: number }> = {}
     svg.querySelectorAll<SVGGraphicsElement>('path[data-iso]').forEach((path) => {
       const iso = path.dataset.iso
@@ -114,7 +153,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
       next[iso] = { x: box.x, y: box.y, width: box.width, height: box.height }
     })
     setBoxes(next)
-  }, [world])
+  }, [world, historyMap])
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -168,26 +207,62 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
       frame.removeEventListener('wheel', onWheel)
       frame.removeEventListener('touchmove', onTouchMove)
     }
-  }, [world])
+  }, [world, historyMap])
 
-  const markers = useMemo(() => (world ? markersFor(world.locations) : []), [world])
+  const markers = useMemo(() => {
+    if (world && modern) return markersFor(world.locations)
+    if (!historyMap) return []
+    const have = new Set(historyMap.features.map((item) => resolveHistoryId(item.id, eraYear)))
+    return eraPolities(eraYear).flatMap((item) => {
+      if (!item.marker || have.has(item.id)) return []
+      if (mapRegion !== 'all' && item.region !== mapRegion) return []
+      return [{ iso: item.id, x: item.marker.x, y: item.marker.y }]
+    })
+  }, [world, modern, historyMap, eraYear, mapRegion])
   const baseViewBox = useMemo(() => {
+    if (historyMap) return historyMap.viewBox ?? WORLD_VIEWBOX
     if (!world || mapRegion === 'all') return world?.viewBox ?? WORLD_VIEWBOX
     const fit = fitIsosForRegion(mapRegion)
     const selected = [...fit].map((iso) => boxes[iso]).filter(Boolean)
     if (selected.length === 0) return world.viewBox
     return cameraToViewBox(insetCamera(viewBoxFromBoxes(selected), REGION_START_ZOOM))
-  }, [world, mapRegion, boxes])
+  }, [world, mapRegion, boxes, historyMap])
 
   useEffect(() => {
     setCamera(clampCamera(parseViewBox(baseViewBox)))
   }, [baseViewBox])
 
-  const resolvedOpen = openId ? resolveMapLocation(openId) : null
+  const historyIndependence = openId && !modern ? mapIndependence(openId, eraYear, { preferModern: openAsModern }) : null
+  const historyCardId = historyIndependence && historyIndependence.status !== 'modern' ? historyIndependence.id : openId
+  const historyFeature = openId && historyMap ? historyMap.features.find((item) => item.id === openId) : undefined
+  const resolvedOpen = openId ? resolveMapLocation(historyIndependence?.id ?? openId) : null
+  const passportIso = modern
+    ? openId
+    : historyIndependence?.status === 'modern'
+      ? historyIndependence.id
+      : undefined
+  const passportCountry = passportIso
+    ? findCountry(passportIso) ?? COUNTRY_BY_ISO.get(passportIso)
+    : undefined
+  const showPassport = Boolean(passportCountry && getPassport(passportCountry.iso))
+  const showHistory = Boolean(!modern && openId && historyIndependence && historyIndependence.status !== 'modern')
   const activeId = openId ?? hoverId
   const needle = query.trim().toLowerCase()
   const suggestions = useMemo(() => {
     if (needle.length === 0) return []
+    if (!modern) {
+      const fromCatalog = searchPolities(needle, settings.lang, eraYear, mapRegion)
+      const fromMap = (historyMap?.features ?? [])
+        .filter((item) => item.name.toLowerCase().includes(needle) || item.id.includes(needle))
+        .map((item) => ({ id: item.id, label: locationLabel(item.id, settings.lang, eraYear, item.name) }))
+      const merged = [...fromCatalog, ...fromMap]
+      const seen = new Set<string>()
+      return merged.filter((item) => {
+        if (seen.has(item.id)) return false
+        seen.add(item.id)
+        return true
+      }).slice(0, 8)
+    }
     const countries = COUNTRIES.filter((country) => {
       return (
         country.nameRu.toLowerCase().includes(needle) || country.nameEn.toLowerCase().includes(needle)
@@ -220,7 +295,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
     return [...countries, ...territories, ...holdouts]
       .sort((a, b) => a.label.localeCompare(b.label, settings.lang))
       .slice(0, 8)
-  }, [needle, settings.lang])
+  }, [needle, settings.lang, modern, eraYear, mapRegion, historyMap])
 
   function zoomBy(direction: 1 | -1) {
     const factor = direction > 0 ? 1 / 1.28 : 1.28
@@ -238,8 +313,8 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
     setRegionOpen(false)
   }
 
-  function openLocation(id: string) {
-    if (!resolveMapLocation(id)) return
+  function openLocation(id: string, asModern = false) {
+    setOpenAsModern(asModern)
     setOpenId(id)
     setQuery('')
   }
@@ -273,7 +348,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
       x: event.clientX,
       y: event.clientY,
       moved: false,
-      iso: isoFromTarget(event.target),
+      iso: clickableIsoFromTarget(event.target, !modern),
     }
   }
 
@@ -346,14 +421,14 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
   }
 
   function onMapHover(event: { target: EventTarget | null }) {
-    const iso = clickableIsoFromTarget(event.target)
+    const iso = clickableIsoFromTarget(event.target, !modern)
     setHoverId((current) => (current === iso ? current : iso))
   }
 
   function onMapUnhover(event: { currentTarget: SVGSVGElement; relatedTarget: EventTarget | null }) {
     const related = event.relatedTarget
     if (related instanceof Node && event.currentTarget.contains(related)) {
-      const iso = clickableIsoFromTarget(related)
+      const iso = clickableIsoFromTarget(related, !modern)
       setHoverId((current) => (current === iso ? current : iso))
       return
     }
@@ -397,6 +472,17 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
             </ul>
           )}
         </label>
+        <label className="map-year">
+          <span>{t.mapYear}</span>
+          <input
+            type="range"
+            min={HISTORY_YEAR_MIN}
+            max={historyYearMax()}
+            value={eraYear}
+            onChange={(event) => onChange({ ...settings, eraYear: Number(event.target.value) })}
+          />
+          <strong>{eraYear}</strong>
+        </label>
         <button type="button" className="choice map-region-btn" onClick={() => setRegionOpen(true)}>
           {regionLabel(mapRegion, settings.lang)}
         </button>
@@ -433,7 +519,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
               ↓
             </button>
           </div>
-          {world ? (
+          {world || historyMap ? (
             <svg
               ref={svgRef}
               className="world-map"
@@ -444,7 +530,20 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
               onMouseOver={onMapHover}
               onMouseOut={onMapUnhover}
             >
-              {world.locations.map((location) => {
+              {historyMap
+                ? historyMap.features.map((feature) => {
+                    const isOpen = feature.id === openId
+                    const isHover = feature.id === hoverId
+                    return (
+                      <path
+                        key={feature.id}
+                        data-iso={feature.id}
+                        d={feature.d}
+                        className={`map-country${isOpen ? ' is-open' : ''}${isHover ? ' is-hover' : ''}`}
+                      />
+                    )
+                  })
+                : world?.locations.map((location) => {
                 const clickable = isClickableIso(location.id)
                 const holdout = HOLDOUT_BY_ISO.has(location.id)
                 const isOpen = location.id === openId
@@ -479,28 +578,57 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
             <p className="learn-copy">{t.mapLoading}</p>
           )}
         </div>
-        <p className="map-active-name">{activeId ? locationLabel(activeId, settings.lang) : '\u00a0'}</p>
+        <p className="map-active-name">
+          {activeId
+            ? locationLabel(
+                activeId,
+                settings.lang,
+                eraYear,
+                historyMap?.features.find((item) => item.id === activeId)?.name,
+              )
+            : '\u00a0'}
+        </p>
+        {!modern ? <p className="map-snapshot">{t.mapSnapshot(nearestHistorySnapshot(eraYear))}</p> : null}
       </section>
 
-      <p className="map-source">{t.mapCredit}</p>
-      <p className="map-source">{t.mapHoldoutHint}</p>
+      <p className="map-source">{modern ? t.mapCredit : t.mapHistoryCredit}</p>
+      {modern ? <p className="map-source">{t.mapHoldoutHint}</p> : null}
 
-      {resolvedOpen?.country ? (
+      {showPassport && passportCountry ? (
         <PassportModal
-          key={resolvedOpen.country.iso}
-          country={resolvedOpen.country}
+          key={passportCountry.iso}
+          country={passportCountry}
           lang={settings.lang}
-          territoryNote={resolvedOpen.territory ? territoryNote(resolvedOpen.territory, settings.lang) : undefined}
-          disputeNote={resolvedOpen.territory ? disputeNote(resolvedOpen.territory, settings.lang) : undefined}
-          onClose={() => setOpenId(null)}
-          onOpenCountry={(iso) => setOpenId(iso)}
+          territoryNote={resolvedOpen?.territory ? territoryNote(resolvedOpen.territory, settings.lang) : undefined}
+          disputeNote={resolvedOpen?.territory ? disputeNote(resolvedOpen.territory, settings.lang) : undefined}
+          onClose={() => {
+            setOpenAsModern(false)
+            setOpenId(null)
+          }}
+          onOpenCountry={(iso) => openLocation(iso, true)}
         />
       ) : null}
-      {resolvedOpen?.holdout ? (
+      {showHistory && historyCardId ? (
+        <HistoryCard
+          key={historyCardId}
+          id={historyCardId}
+          lang={settings.lang}
+          mapName={historyFeature?.name}
+          onClose={() => {
+            setOpenAsModern(false)
+            setOpenId(null)
+          }}
+          onOpen={(id) => openLocation(id, true)}
+        />
+      ) : null}
+      {resolvedOpen?.holdout && !showPassport && !showHistory ? (
         <HoldoutModal
           holdout={resolvedOpen.holdout}
           lang={settings.lang}
-          onClose={() => setOpenId(null)}
+          onClose={() => {
+            setOpenAsModern(false)
+            setOpenId(null)
+          }}
         />
       ) : null}
 

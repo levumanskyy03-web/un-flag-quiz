@@ -1,5 +1,6 @@
 "use client";
 
+import { WorldAlbumScreen } from "@/components/WorldAlbumScreen";
 import { ASTRO_HUB_TABS } from "@/components/HubNav";
 import { defaultAstroMode, AstroScreen } from "@/components/AstroScreen";
 import { LearnScreen } from "@/components/LearnScreen";
@@ -72,6 +73,15 @@ export function AstroPlay({ play }: { play: PlaySession }) {
           onWorlds={play.goToWorlds}
           onPractice={play.startMistakesPractice}
           onClear={() => play.setMistakeList(clearMistakes((item) => !isAstroMode(item.mode)))}
+        />
+      )}
+      {play.screen === "album" && (
+        <WorldAlbumScreen
+          settings={play.quizSettings}
+          world="astronomy"
+          tabs={ASTRO_HUB_TABS}
+          onHub={play.goHub}
+          onWorlds={play.goToWorlds}
         />
       )}
       {play.screen === "quiz" && play.questions[play.index] && (

@@ -1,4 +1,6 @@
+import { LIST_COPY, type ListCopy } from "./listCopy";
 import type { Lang } from "./lang";
+import type { ListId } from "../data/lists";
 
 export type PageCopy = {
   catalogTitle: string;
@@ -18,9 +20,7 @@ export type PageCopy = {
   nationalShort: string;
   listsTitle: string;
   listsLead: string;
-  listsMicroTitle: string;
-  listsMicroLead: string;
-  listsMicroNote: string;
+  listsCopy: Record<ListId, ListCopy>;
   aboutTitle: string;
   about: string[];
   privacyTitle: string;
@@ -35,6 +35,9 @@ export type PageCopy = {
   privacyWhy: string;
   privacyDeleteTitle: string;
   privacyDelete: string;
+  cookiesTitle: string;
+  cookiesLead: string;
+  cookiesAds: string;
   contactsTitle: string;
   contactsLead: string;
   contactsAuthor: string;
@@ -66,9 +69,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     nationalShort: "нац.",
     listsTitle: "Подборки",
     listsLead: "Короткие списки стран по одному признаку — с паспортами и викториной.",
-    listsMicroTitle: "Микрогосударства",
-    listsMicroLead: "Члены ООН, чья территория меньше 1 000 км². Город-государства, острова и карликовые страны Европы.",
-    listsMicroNote: "Площадь по данным справочников ООН / CIA World Factbook. Ватикан в список не входит: не член ООН.",
+    listsCopy: LIST_COPY.ru,
     aboutTitle: "О проекте",
     about: [
       "Паспорт страны — бесплатная викторина Льва Уманского по 193 государствам ООН. Регистрация не обязательна: играйте сразу. Аккаунт с именем и паролем нужен только чтобы попасть в общий рейтинг.",
@@ -92,16 +93,22 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     privacyCookies: [
       "Cookie входа pq-session ставится только после входа, живёт до 30 дней, недоступна скриптам страницы (HttpOnly) и нужна, чтобы узнать ваш аккаунт. Гость без регистрации эту cookie не получает.",
       "Cookie языка un-flag-quiz-lang ставится, когда вы выбираете язык. Живёт до года, читается скриптом, чтобы страницы и превью ссылок открывались на этом языке.",
-      "Рекламных cookies нет. Счётчик просмотров cookies не ставит.",
+      "Рекламные cookies ставятся только после «Принять все». Пока рекламная сеть не подключена: её скрипты не грузятся. Счётчик просмотров cookies не ставит.",
+      "Cookie un-flag-quiz-cookies хранит ваш выбор (только нужные или все). Живёт до года. Можно сменить на этой странице или в настройках.",
     ],
     privacyBrowserTitle: "Память браузера",
     privacyBrowser:
       "Прогресс игры (язык, история раундов, рекорды, уровни, опыт, ник и аватар на устройстве) пишется в localStorage. Это остаётся у вас в браузере, чтобы игра не сбрасывалась после обновления страницы. В дуэли во вкладке хранится временный id игрока (sessionStorage).",
     privacyWhyTitle: "Зачем это нужно",
-    privacyWhy: "Чтобы работали аккаунт, рейтинг, дуэль, язык страницы и сохранение прогресса на устройстве. Счётчик показывает, заходят ли на сайт. Рекламы пока нет.",
+    privacyWhy: "Чтобы работали аккаунт, рейтинг, дуэль, язык страницы и сохранение прогресса на устройстве. Счётчик показывает, заходят ли на сайт. Рекламная сеть пока не подключена; её скрипты появятся только после согласия на рекламные cookie.",
     privacyDeleteTitle: "Как удалить",
     privacyDelete:
       "Выйдите из аккаунта в настройках. Данные на устройстве можно стереть, очистив данные сайта в браузере. Копию можно скачать в настройках. Серверный аккаунт удаляется в настройках: «Удалить аккаунт» и пароль.",
+    cookiesTitle: "Файлы cookie",
+    cookiesLead:
+      "Нужные файлы cookie — язык страницы и вход. Рекламные — только если нажмёте «Принять все».",
+    cookiesAds:
+      "Рекламная сеть ещё не подключена. Когда подключим, её скрипты и cookie включатся только при выборе «Принять все». Пока можно выбрать заранее; выбор меняется здесь и в настройках.",
     contactsTitle: "Контакты",
     contactsLead: "По вопросам сайта, ошибок и персональных данных:",
     contactsAuthor: "Автор: Лев Уманский.",
@@ -138,9 +145,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     nationalShort: "nat.",
     listsTitle: "Lists",
     listsLead: "Short country roundups by one trait — with passports and the quiz.",
-    listsMicroTitle: "Microstates",
-    listsMicroLead: "UN members whose land area is under 1,000 km². City-states, islands, and Europe’s smallest countries.",
-    listsMicroNote: "Area from UN / CIA World Factbook references. Vatican City is omitted: not a UN member.",
+    listsCopy: LIST_COPY.en,
     aboutTitle: "About",
     about: [
       "Country Passport is Lev Umansky’s free quiz of all 193 UN members. You can play at once; an account is only needed to appear on the public ratings.",
@@ -164,16 +169,22 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     privacyCookies: [
       "The sign-in cookie pq-session is set only after sign-in, lasts up to 30 days, is HttpOnly, and identifies your account. Guests without an account do not get it.",
       "The language cookie un-flag-quiz-lang is set when you pick a language. It lasts up to a year and is readable by the page so titles and link previews match that language.",
-      "There are no ad cookies. The page-view counter does not set cookies.",
+      "Ad cookies are set only after “Accept all”. No ad network is connected yet, so those scripts do not load. The page-view counter does not set cookies.",
+      "The un-flag-quiz-cookies cookie stores your choice (necessary only or all). It lasts up to a year. You can change it on this page or in settings.",
     ],
     privacyBrowserTitle: "Browser storage",
     privacyBrowser:
       "Game progress (language, round history, records, levels, XP, nickname and device avatar) is saved in localStorage so a refresh does not wipe the game. A duel tab keeps a temporary player id in sessionStorage.",
     privacyWhyTitle: "Why",
-    privacyWhy: "So accounts, ratings, duels, page language and on-device progress work. The counter shows whether people visit. There is no advertising yet.",
+    privacyWhy: "So accounts, ratings, duels, page language and on-device progress work. The counter shows whether people visit. No ad network is connected yet; those scripts will load only after you allow ad cookies.",
     privacyDeleteTitle: "How to delete",
     privacyDelete:
       "Sign out in settings. You can wipe on-device data by clearing this site’s data in the browser. You can download a copy in settings. Delete the server account in settings: “Delete account” and your password.",
+    cookiesTitle: "Cookie files",
+    cookiesLead:
+      "Necessary cookie files are page language and sign-in. Ad cookies only if you press “Accept all”.",
+    cookiesAds:
+      "No ad network is connected yet. When we add one, its scripts and cookies turn on only after “Accept all”. You can choose now; change it here or in settings.",
     contactsTitle: "Contact",
     contactsLead: "For the site, bugs and personal data:",
     contactsAuthor: "Author: Lev Umansky.",
@@ -210,9 +221,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     nationalShort: "nat.",
     listsTitle: "Listen",
     listsLead: "Kurze Länderlisten nach einem Merkmal — mit Pässen und Quiz.",
-    listsMicroTitle: "Mikrostaaten",
-    listsMicroLead: "UN-Mitglieder mit weniger als 1 000 km² Fläche. Stadtstaaten, Inseln und Europas Zwergstaaten.",
-    listsMicroNote: "Fläche nach UN- / CIA-World-Factbook-Angaben. Der Vatikan fehlt: kein UN-Mitglied.",
+    listsCopy: LIST_COPY.de,
     aboutTitle: "Über uns",
     about: [
       "Länderpass ist Lev Umanskys kostenloses Quiz zu allen 193 UN-Mitgliedern. Du kannst sofort spielen; ein Konto brauchst du nur für die öffentliche Rangliste.",
@@ -236,16 +245,22 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     privacyCookies: [
       "Das Anmelde-Cookie pq-session wird nur nach der Anmeldung gesetzt, gilt bis 30 Tage, ist HttpOnly und erkennt Ihr Konto. Gäste ohne Konto bekommen es nicht.",
       "Das Sprach-Cookie un-flag-quiz-lang wird gesetzt, wenn Sie eine Sprache wählen. Es gilt bis zu einem Jahr und ist für die Seite lesbar, damit Titel und Vorschauen stimmen.",
-      "Es gibt keine Werbe-Cookies. Der Aufrufzähler setzt keine Cookies.",
+      "Werbe-Cookies nur nach „Alle akzeptieren“. Es ist noch kein Werbenetz angeschlossen, diese Skripte laden nicht. Der Aufrufzähler setzt keine Cookies.",
+      "Das Cookie un-flag-quiz-cookies speichert Ihre Wahl (nur nötige oder alle), bis zu einem Jahr. Ändern können Sie sie hier oder in den Einstellungen.",
     ],
     privacyBrowserTitle: "Browserspeicher",
     privacyBrowser:
       "Spielfortschritt (Sprache, Runden, Rekorde, Level, XP, Spitzname und Avatar) liegt in localStorage, damit ein Reload nichts löscht. Im Duell speichert der Tab eine temporäre Spieler-ID in sessionStorage.",
     privacyWhyTitle: "Wozu",
-    privacyWhy: "Damit Konto, Rangliste, Duell, Seitensprache und lokaler Fortschritt funktionieren. Der Zähler zeigt, ob jemand kommt. Noch keine Werbung.",
+    privacyWhy: "Damit Konto, Rangliste, Duell, Seitensprache und lokaler Fortschritt funktionieren. Der Zähler zeigt, ob jemand kommt. Noch kein Werbenetz; diese Skripte laden erst nach Einwilligung in Werbe-Cookies.",
     privacyDeleteTitle: "Löschen",
     privacyDelete:
       "Melden Sie sich in den Einstellungen ab. Gerätedaten löschen Sie über die Website-Daten im Browser. Eine Kopie laden Sie in den Einstellungen herunter. Das Serverkonto löschen Sie in den Einstellungen unter „Konto löschen“ mit dem Passwort.",
+    cookiesTitle: "Cookie-Dateien",
+    cookiesLead:
+      "Nötige Cookie-Dateien sind Sprache und Anmeldung. Werbe-Cookies nur nach „Alle akzeptieren“.",
+    cookiesAds:
+      "Es ist noch kein Werbenetz angeschlossen. Wenn es kommt, laden Skripte und Cookies nur nach „Alle akzeptieren“. Die Wahl können Sie hier oder in den Einstellungen ändern.",
     contactsTitle: "Kontakt",
     contactsLead: "Zu Website, Fehlern und personenbezogenen Daten:",
     contactsAuthor: "Autor: Lev Umansky.",
@@ -280,9 +295,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     nationalShort: "官方",
     listsTitle: "专题",
     listsLead: "按一个特点整理的短名单，可看护照并去答题。",
-    listsMicroTitle: "微型国家",
-    listsMicroLead: "陆地面积不足 1 000 平方公里的联合国会员国：城邦、岛屿和欧洲小国。",
-    listsMicroNote: "面积依据联合国 / CIA 世界概况。梵蒂冈不在列：不是联合国会员。",
+    listsCopy: LIST_COPY.zh,
     aboutTitle: "关于",
     about: [
       "《国家护照》是 Lev Umansky 制作的免费问答游戏，覆盖全部 193 个联合国会员国。可以直接玩；只有上公开排行榜才需要账号。",
@@ -306,15 +319,19 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     privacyCookies: [
       "登录凭证 pq-session 仅在登录后设置，最长 30 天，HttpOnly，用于识别账号。未注册访客不会获得。",
       "语言偏好 un-flag-quiz-lang 在您选择语言时设置，最长一年，页面可读取，以便标题和链接预览使用该语言。",
-      "没有广告跟踪。浏览计数不写入 Cookie。",
+      "仅在点击「接受全部」后才写入广告 Cookie。目前未接入广告网络，不会加载那些脚本。浏览计数不写入 Cookie。",
+      "un-flag-quiz-cookies 保存您的选择（仅必要或全部），最长一年。可在本页或设置中更改。",
     ],
     privacyBrowserTitle: "浏览器存储",
     privacyBrowser:
       "游戏进度（语言、对局历史、纪录、关卡、经验、昵称与本机头像）写入 localStorage，刷新页面不会丢失。对决标签页在 sessionStorage 中保存临时玩家 id。",
     privacyWhyTitle: "用途",
-    privacyWhy: "用于账号、排行榜、对决、页面语言和本机进度。计数用于了解是否有人访问。目前没有广告。",
+    privacyWhy: "用于账号、排行榜、对决、页面语言和本机进度。计数用于了解是否有人访问。目前未接入广告网络；那些脚本仅在您允许广告 Cookie 后加载。",
     privacyDeleteTitle: "如何删除",
     privacyDelete: "在设置中退出。可在浏览器中清除本站数据。可在设置中下载副本。服务器账号在设置中删除：点「删除账户」并输入密码。",
+    cookiesTitle: "Cookie 文件",
+    cookiesLead: "必要 Cookie 文件：页面语言和登录。广告 Cookie 仅在「接受全部」之后。",
+    cookiesAds: "目前未接入广告网络。接入后，其脚本和 Cookie 仅在「接受全部」后启用。可在本页或设置中更改选择。",
     contactsTitle: "联系",
     contactsLead: "网站、错误与个人数据相关问题：",
     contactsAuthor: "作者：Lev Umansky。",
@@ -351,9 +368,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     nationalShort: "nac.",
     listsTitle: "Listas",
     listsLead: "Listas cortas de países por un rasgo — con pasaportes y el quiz.",
-    listsMicroTitle: "Microestados",
-    listsMicroLead: "Miembros de la ONU con menos de 1 000 km². Ciudades-Estado, islas y los países más pequeños de Europa.",
-    listsMicroNote: "Superficie según ONU / CIA World Factbook. El Vaticano no entra: no es miembro de la ONU.",
+    listsCopy: LIST_COPY.es,
     aboutTitle: "Acerca de",
     about: [
       "Pasaporte del país es el quiz gratuito de Lev Umansky sobre los 193 Estados de la ONU. Se puede jugar al instante; la cuenta solo hace falta para el ranking público.",
@@ -377,16 +392,22 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     privacyCookies: [
       "La cookie de sesión pq-session se pone solo tras iniciar sesión, dura hasta 30 días, es HttpOnly e identifica la cuenta. Los invitados sin cuenta no la reciben.",
       "La cookie de idioma un-flag-quiz-lang se pone al elegir idioma. Dura hasta un año y la página la lee para títulos y vistas previas.",
-      "No hay cookies de anuncios. El contador de visitas no pone cookies.",
+      "Las cookies de anuncios solo tras «Aceptar todo». Aún no hay red publicitaria, esos scripts no cargan. El contador de visitas no pone cookies.",
+      "La cookie un-flag-quiz-cookies guarda su elección (solo necesarias o todas), hasta un año. Puede cambiarla aquí o en ajustes.",
     ],
     privacyBrowserTitle: "Almacenamiento del navegador",
     privacyBrowser:
       "El progreso (idioma, historial, récords, niveles, XP, apodo y avatar del dispositivo) va en localStorage para que recargar no borre el juego. En el duelo la pestaña guarda un id temporal en sessionStorage.",
     privacyWhyTitle: "Para qué",
-    privacyWhy: "Para que funcionen cuenta, ranking, duelo, el idioma de la página y el progreso en el dispositivo. El contador muestra si hay visitas. Aún no hay publicidad.",
+    privacyWhy: "Para que funcionen cuenta, ranking, duelo, el idioma de la página y el progreso en el dispositivo. El contador muestra si hay visitas. Aún no hay red publicitaria; esos scripts cargan solo si permite cookies de anuncios.",
     privacyDeleteTitle: "Cómo borrar",
     privacyDelete:
       "Cierra sesión en ajustes. Puedes borrar los datos del dispositivo limpiando los datos del sitio. Puedes descargar una copia en ajustes. La cuenta del servidor se borra en ajustes: «Eliminar cuenta» y la contraseña.",
+    cookiesTitle: "Archivos cookie",
+    cookiesLead:
+      "Los archivos cookie necesarios son idioma y acceso. Los de anuncios solo si pulsa «Aceptar todo».",
+    cookiesAds:
+      "Aún no hay red publicitaria. Cuando la haya, scripts y cookies se activan solo tras «Aceptar todo». Puede cambiar la elección aquí o en ajustes.",
     contactsTitle: "Contacto",
     contactsLead: "Sobre el sitio, errores y datos personales:",
     contactsAuthor: "Autor: Lev Umansky.",
@@ -423,9 +444,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     nationalShort: "राष्ट्री.",
     listsTitle: "सूचियाँ",
     listsLead: "एक गुण के हिसाब से छोटे देश-सूची — पासपोर्ट और क्विज़ के साथ।",
-    listsMicroTitle: "सूक्ष्म राज्य",
-    listsMicroLead: "संयुक्त राष्ट्र के सदस्य जिनका क्षेत्रफल 1 000 वर्ग किमी से कम है।",
-    listsMicroNote: "क्षेत्रफल UN / CIA World Factbook के अनुसार। वेटिकन नहीं है: UN सदस्य नहीं।",
+    listsCopy: LIST_COPY.hi,
     aboutTitle: "परिचय",
     about: [
       "देश पासपोर्ट Lev Umansky की मुफ़्त क्विज़ है — 193 संयुक्त राष्ट्र सदस्य। तुरंत खेल सकते हैं; सार्वजनिक रैंकिंग के लिए ही खाता चाहिए।",
@@ -449,16 +468,22 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     privacyCookies: [
       "लॉगिन कुकी pq-session लॉगिन के बाद लगती है, 30 दिन तक, HttpOnly, खाता पहचानती है। बिना खाते अतिथि को नहीं मिलती।",
       "भाषा कुकी un-flag-quiz-lang भाषा चुनने पर लगती है, एक वर्ष तक, पृष्ठ पढ़ता है ताकि शीर्षक और पूर्वावलोकन उसी भाषा में हों।",
-      "विज्ञापन कुकी नहीं। काउंटर कुकी नहीं लगाता।",
+      "विज्ञापन कुकी «सब स्वीकारें» के बाद ही। अभी कोई नेटवर्क नहीं, वे स्क्रिप्ट नहीं चलतीं। काउंटर कुकी नहीं लगाता।",
+      "un-flag-quiz-cookies आपका चुनाव रखती है (केवल ज़रूरी या सब), एक वर्ष तक। यहाँ या सेटिंग में बदलें।",
     ],
     privacyBrowserTitle: "ब्राउज़र संग्रह",
     privacyBrowser:
       "खेल प्रगति (भाषा, इतिहास, रिकॉर्ड, स्तर, XP, उपनाम और डिवाइस अवतार) localStorage में है ताकि रीफ़्रेश से मिटे नहीं। द्वंद्व टैब sessionStorage में अस्थायी खिलाड़ी id रखता है।",
     privacyWhyTitle: "क्यों",
-    privacyWhy: "खाता, रैंकिंग, द्वंद्व, पृष्ठ की भाषा और डिवाइस प्रगति के लिए। काउंटर बताता है कि कोई आता है या नहीं। अभी विज्ञापन नहीं।",
+    privacyWhy: "खाता, रैंकिंग, द्वंद्व, पृष्ठ की भाषा और डिवाइस प्रगति के लिए। काउंटर बताता है कि कोई आता है या नहीं। अभी विज्ञापन नेटवर्क नहीं; वे स्क्रिप्ट विज्ञापन कुकी की सहमति के बाद ही चलेंगी।",
     privacyDeleteTitle: "कैसे मिटाएँ",
     privacyDelete:
       "सेटिंग में लॉग आउट करें। ब्राउज़र में साइट डेटा साफ़ करें। सेटिंग में कॉपी डाउनलोड करें। सर्वर खाता सेटिंग में मिटेगा: «खाता मिटाएँ» और पासवर्ड।",
+    cookiesTitle: "कुकी फ़ाइलें",
+    cookiesLead:
+      "ज़रूरी कुकी फ़ाइलें: भाषा और लॉगिन। विज्ञापन कुकी तभी जब «सब स्वीकारें» दबें।",
+    cookiesAds:
+      "अभी कोई विज्ञापन नेटवर्क नहीं। जुड़ने पर स्क्रिप्ट और कुकी «सब स्वीकारें» के बाद ही। चुनाव यहाँ या सेटिंग में बदलें।",
     contactsTitle: "संपर्क",
     contactsLead: "साइट, त्रुटियों और व्यक्तिगत डेटा के लिए:",
     contactsAuthor: "लेखक: Lev Umansky।",
@@ -494,9 +519,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     nationalShort: "رسمي",
     listsTitle: "قوائم",
     listsLead: "قوائم قصيرة لدول بصفة واحدة — مع الجوازات والاختبار.",
-    listsMicroTitle: "دول مصغّرة",
-    listsMicroLead: "أعضاء الأمم المتحدة بمساحة أقل من 1 000 كم². مدن-دول وجزر وأصغر دول أوروبا.",
-    listsMicroNote: "المساحة وفق مراجع الأمم المتحدة / كتاب حقائق العالم. الفاتيكان غير مدرج: ليس عضواً في الأمم المتحدة.",
+    listsCopy: LIST_COPY.ar,
     aboutTitle: "حول الموقع",
     about: [
       "جواز الدولة اختبار مجاني من Lev Umansky لـ193 عضوًا في الأمم المتحدة. يمكن اللعب فورًا؛ الحساب لازم فقط للترتيب العام.",
@@ -520,16 +543,22 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     privacyCookies: [
       "ملف الدخول pq-session يُوضع بعد تسجيل الدخول حتى 30 يومًا، HttpOnly، ويعرّف حسابك. الضيف بلا حساب لا يحصل عليه.",
       "ملف اللغة un-flag-quiz-lang يُوضع عند اختيار اللغة حتى سنة، وتقرأه الصفحة لعناوين المعاينة.",
-      "لا ملفات إعلان. العدّاد لا يضع ملفات تعريف.",
+      "ملفات الإعلان فقط بعد «قبول الكل». لا شبكة إعلانات بعد، لن تُحمَّل تلك النصوص. العدّاد لا يضع ملفات تعريف.",
+      "ملف un-flag-quiz-cookies يحفظ اختيارك (اللازمة فقط أو الكل) حتى سنة. يمكن تغييره هنا أو في الإعدادات.",
     ],
     privacyBrowserTitle: "تخزين المتصفح",
     privacyBrowser:
       "تقدّم اللعبة (اللغة والسجل والأرقام والمستويات والنقاط والاسم والصورة على الجهاز) في localStorage حتى لا يمسح التحديث اللعبة. في المبارزة تحفظ العلامة معرفًا مؤقتًا في sessionStorage.",
     privacyWhyTitle: "لماذا",
-    privacyWhy: "للحساب والتصنيف والمبارزة ولغة الصفحة والتقدّم على الجهاز. العدّاد يبيّن إن زار أحد. لا إعلانات بعد.",
+    privacyWhy: "للحساب والتصنيف والمبارزة ولغة الصفحة والتقدّم على الجهاز. العدّاد يبيّن إن زار أحد. لا شبكة إعلانات بعد؛ تلك النصوص تُحمَّل فقط بعد الموافقة على ملفات الإعلان.",
     privacyDeleteTitle: "كيف تحذف",
     privacyDelete:
       "اخرج من الإعدادات. امسح بيانات الموقع في المتصفح. يمكن تنزيل نسخة من الإعدادات. حذف حساب الخادم من الإعدادات: «حذف الحساب» وكلمة المرور.",
+    cookiesTitle: "ملفات تعريف الارتباط",
+    cookiesLead:
+      "الملفات اللازمة للغة الصفحة وتسجيل الدخول. ملفات الإعلان فقط إن ضغطت «قبول الكل».",
+    cookiesAds:
+      "لا شبكة إعلانات بعد. عند الربط تُفعَّل النصوص والملفات بعد «قبول الكل» فقط. غيّر الاختيار هنا أو في الإعدادات.",
     contactsTitle: "تواصل",
     contactsLead: "عن الموقع والأخطاء والبيانات الشخصية:",
     contactsAuthor: "المؤلف: Lev Umansky.",
@@ -565,9 +594,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     nationalShort: "জাতী.",
     listsTitle: "তালিকা",
     listsLead: "একটি বৈশিষ্ট্যে দেশের ছোট তালিকা — পাসপোর্ট ও কুইজসহ।",
-    listsMicroTitle: "ক্ষুদ্র রাষ্ট্র",
-    listsMicroLead: "জাতিসংঘের সদস্য যাদের স্থলভাগ ১ ০০০ বর্গ কিমির কম।",
-    listsMicroNote: "আয়তন UN / CIA World Factbook অনুসারে। ভ্যাটিকান নেই: জাতিসংঘের সদস্য নয়।",
+    listsCopy: LIST_COPY.bn,
     aboutTitle: "সম্পর্কে",
     about: [
       "দেশের পাসপোর্ট Lev Umansky-এর বিনামূল্যে কুইজ — জাতিসংঘের ১৯৩ সদস্য। সঙ্গে সঙ্গে খেলা যায়; পাবলিক র‍্যাঙ্কিংয়ের জন্যই অ্যাকাউন্ট লাগে।",
@@ -591,16 +618,22 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     privacyCookies: [
       "লগইন কুকি pq-session লগইনের পর বসে, ৩০ দিন, HttpOnly, অ্যাকাউন্ট চেনে। অতিথি পায় না।",
       "ভাষার কুকি un-flag-quiz-lang ভাষা বেছে নিলে বসে, এক বছর, পাতা পড়ে যাতে শিরোনাম ও প্রিভিউ মিলে।",
-      "বিজ্ঞাপন কুকি নেই। কাউন্টার কুকি বসায় না।",
+      "বিজ্ঞাপন কুকি «সব গ্রহণ»-এর পরই। এখন নেটওয়ার্ক নেই, সেই স্ক্রিপ্ট চলে না। কাউন্টার কুকি বসায় না।",
+      "un-flag-quiz-cookies আপনার পছন্দ রাখে (শুধু প্রয়োজনীয় বা সব), এক বছর। এখানে বা সেটিংসে বদলান।",
     ],
     privacyBrowserTitle: "ব্রাউজার সংরক্ষণ",
     privacyBrowser:
       "খেলার অগ্রগতি (ভাষা, ইতিহাস, রেকর্ড, স্তর, XP, ডাকনাম ও ডিভাইস অবতার) localStorage-এ, রিফ্রেশে মুছে যায় না। দ্বন্দ্ব ট্যাব sessionStorage-এ অস্থায়ী খেলোয়াড় id রাখে।",
     privacyWhyTitle: "কেন",
-    privacyWhy: "অ্যাকাউন্ট, র‍্যাঙ্কিং, দ্বন্দ্ব, পাতার ভাষা ও ডিভাইস অগ্রগতির জন্য। কাউন্টার দেখায় কেউ আসে কি না। এখন বিজ্ঞাপন নেই।",
+    privacyWhy: "অ্যাকাউন্ট, র‍্যাঙ্কিং, দ্বন্দ্ব, পাতার ভাষা ও ডিভাইস অগ্রগতির জন্য। কাউন্টার দেখায় কেউ আসে কি না। এখন বিজ্ঞাপন নেটওয়ার্ক নেই; সেই স্ক্রিপ্ট বিজ্ঞাপন কুকির সম্মতির পরেই চলবে।",
     privacyDeleteTitle: "কীভাবে মুছবেন",
     privacyDelete:
       "সেটিংসে লগ আউট করুন। ব্রাউজারে সাইট ডেটা মুছুন। সেটিংসে কপি ডাউনলোড করুন। সার্ভার অ্যাকাউন্ট সেটিংসে মুছুন: «অ্যাকাউন্ট মুছুন» ও পাসওয়ার্ড।",
+    cookiesTitle: "কুকি ফাইল",
+    cookiesLead:
+      "প্রয়োজনীয় কুকি ফাইল: ভাষা ও লগইন। বিজ্ঞাপন কুকি কেবল «সব গ্রহণ» চাপলে।",
+    cookiesAds:
+      "এখন কোনো বিজ্ঞাপন নেটওয়ার্ক নেই। যুক্ত হলে স্ক্রিপ্ট ও কুকি «সব গ্রহণ»-এর পরেই। পছন্দ এখানে বা সেটিংসে বদলান।",
     contactsTitle: "যোগাযোগ",
     contactsLead: "সাইট, ত্রুটি ও ব্যক্তিগত তথ্যের জন্য:",
     contactsAuthor: "লেখক: Lev Umansky।",
@@ -637,9 +670,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     nationalShort: "nac.",
     listsTitle: "Listas",
     listsLead: "Listas curtas de países por um traço — com passaportes e o quiz.",
-    listsMicroTitle: "Microestados",
-    listsMicroLead: "Membros da ONU com menos de 1 000 km². Cidades-Estado, ilhas e os países mais pequenos da Europa.",
-    listsMicroNote: "Área segundo ONU / CIA World Factbook. O Vaticano não entra: não é membro da ONU.",
+    listsCopy: LIST_COPY.pt,
     aboutTitle: "Sobre",
     about: [
       "Passaporte do país é o quiz grátis de Lev Umansky sobre os 193 Estados da ONU. Joga já; a conta só serve para o ranking público.",
@@ -663,16 +694,22 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     privacyCookies: [
       "O cookie de sessão pq-session só depois do início de sessão, até 30 dias, HttpOnly, identifica a conta. Convidados sem conta não o recebem.",
       "O cookie de língua un-flag-quiz-lang é definido ao escolher a língua, até um ano, e a página lê-o para títulos e pré-visualizações.",
-      "Não há cookies de anúncios. O contador não define cookies.",
+      "Cookies de anúncios só após «Aceitar tudo». Ainda não há rede, esses scripts não carregam. O contador não define cookies.",
+      "O cookie un-flag-quiz-cookies guarda a escolha (só as necessárias ou todas), até um ano. Pode mudá-la aqui ou nas definições.",
     ],
     privacyBrowserTitle: "Armazenamento do browser",
     privacyBrowser:
       "O progresso (língua, histórico, recordes, níveis, XP, alcunha e avatar do aparelho) fica no localStorage para um recarregar não apagar o jogo. No duelo o separador guarda um id temporário no sessionStorage.",
     privacyWhyTitle: "Para quê",
-    privacyWhy: "Para conta, ranking, duelo, língua da página e progresso no aparelho. O contador mostra se há visitas. Ainda não há publicidade.",
+    privacyWhy: "Para conta, ranking, duelo, língua da página e progresso no aparelho. O contador mostra se há visitas. Ainda não há rede de anúncios; esses scripts só após consentimento às cookies de anúncios.",
     privacyDeleteTitle: "Como apagar",
     privacyDelete:
       "Termine sessão nas definições. Pode apagar dados do aparelho ao limpar os dados do site. Pode descarregar uma cópia nas definições. A conta no servidor apaga-se nas definições: «Apagar conta» e a palavra-passe.",
+    cookiesTitle: "Ficheiros cookie",
+    cookiesLead:
+      "Os ficheiros necessários são a língua e o início de sessão. Os de anúncios só se premir «Aceitar tudo».",
+    cookiesAds:
+      "Ainda não há rede de anúncios. Quando houver, scripts e cookies só após «Aceitar tudo». Mude a escolha aqui ou nas definições.",
     contactsTitle: "Contacto",
     contactsLead: "Sobre o site, erros e dados pessoais:",
     contactsAuthor: "Autor: Lev Umansky.",
@@ -708,9 +745,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     nationalShort: "公用語",
     listsTitle: "特集",
     listsLead: "一つの特徴でまとめた国の短いリスト。パスポートとクイズへ行けます。",
-    listsMicroTitle: "ミニ国家",
-    listsMicroLead: "国土が 1 000 km² 未満の国連加盟国。都市国家、島、ヨーロッパの小国。",
-    listsMicroNote: "面積は国連 / CIA World Factbook に基づく。バチカンは非加盟のため含みません。",
+    listsCopy: LIST_COPY.ja,
     aboutTitle: "このサイト",
     about: [
       "国のパスポートは Lev Umansky 作の無料クイズで、国連加盟193か国が対象です。すぐ遊べます。公開ランキングに出るときだけアカウントが必要です。",
@@ -734,15 +769,19 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     privacyCookies: [
       "ログイン Cookie の pq-session はログイン後に付き、最大30日、HttpOnly でアカウントを識別します。未登録の客には付きません。",
       "言語 Cookie の un-flag-quiz-lang は言語を選ぶと付き、最大1年、ページが読んでタイトルとプレビューを合わせます。",
-      "広告 Cookie はありません。カウンターは Cookie を置きません。",
+      "広告 Cookie は「すべて許可」の後だけ。広告ネットワークは未接続で、そのスクリプトは読みません。カウンターは Cookie を置きません。",
+      "un-flag-quiz-cookies は選択（必要なものだけ／すべて）を最大1年保存します。このページか設定で変えられます。",
     ],
     privacyBrowserTitle: "ブラウザ保存",
     privacyBrowser:
       "進捗（言語、履歴、記録、レベル、XP、ニックネーム、端末のアバター）は localStorage にあり、再読み込みで消えません。対戦タブは sessionStorage に一時プレイヤー id を置きます。",
     privacyWhyTitle: "目的",
-    privacyWhy: "アカウント、ランキング、対戦、ページ言語、端末上の進捗のため。カウンターは訪問の有無を見ます。広告はまだありません。",
+    privacyWhy: "アカウント、ランキング、対戦、ページ言語、端末上の進捗のため。カウンターは訪問の有無を見ます。広告ネットワークは未接続で、広告 Cookie の同意後にだけそれらのスクリプトを読みます。",
     privacyDeleteTitle: "削除方法",
     privacyDelete: "設定でログアウト。ブラウザでこのサイトのデータを消去。設定でコピーをダウンロードできます。サーバー上のアカウントは設定の「アカウントを削除」とパスワードで消します。",
+    cookiesTitle: "Cookie ファイル",
+    cookiesLead: "必要な Cookie ファイルは言語とログインです。広告 Cookie は「すべて許可」の後だけです。",
+    cookiesAds: "広告ネットワークは未接続です。接続後もスクリプトと Cookie は「すべて許可」の後だけ。ここか設定で選べます。",
     contactsTitle: "連絡先",
     contactsLead: "サイト、不具合、個人データについて：",
     contactsAuthor: "作者：Lev Umansky。",
@@ -778,9 +817,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     nationalShort: "לאומ.",
     listsTitle: "רשימות",
     listsLead: "רשימות קצרות של מדינות לפי תכונה אחת — עם דרכונים והחידון.",
-    listsMicroTitle: "מיקרו־מדינות",
-    listsMicroLead: "חברות האו״ם ששטחן פחות מ־1 000 קמ״ר. ערי־מדינה, איים והמדינות הקטנות באירופה.",
-    listsMicroNote: "השטח לפי מקורות האו״ם / CIA World Factbook. הוותיקן לא ברשימה: אינו חבר באו״ם.",
+    listsCopy: LIST_COPY.he,
     aboutTitle: "אודות",
     about: [
       "דרכון המדינה הוא חידון חינמי של Lev Umansky על 193 חברות האו״ם. אפשר לשחק מיד; חשבון נחוץ רק לדירוג הציבורי.",
@@ -804,15 +841,21 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     privacyCookies: [
       "עוגיית הכניסה pq-session רק אחרי כניסה, עד 30 יום, HttpOnly, מזהה את החשבון. אורח בלי חשבון לא מקבל אותה.",
       "עוגיית השפה un-flag-quiz-lang נשמרת כשבוחרים שפה, עד שנה, והדף קורא אותה לכותרות ותצוגות מקדימות.",
-      "אין עוגיות פרסום. המונה לא שם עוגיות.",
+      "עוגיות פרסום רק אחרי «אישור הכל». אין עדיין רשת מודעות, הסקריפטים האלה לא נטענים. המונה לא שם עוגיות.",
+      "עוגיית un-flag-quiz-cookies שומרת את הבחירה (רק נחוצות או הכל) עד שנה. אפשר לשנות כאן או בהגדרות.",
     ],
     privacyBrowserTitle: "אחסון בדפדפן",
     privacyBrowser:
       "התקדמות המשחק (שפה, היסטוריה, שיאים, שלבים, XP, כינוי ואווטאר במכשיר) ב־localStorage כדי שרענון לא ימחק. בדו־קרב הלשונית שומרת מזהה זמני ב־sessionStorage.",
     privacyWhyTitle: "למה",
-    privacyWhy: "לחשבון, דירוג, דו־קרב, שפת הדף והתקדמות במכשיר. המונה מראה אם מגיעים. אין עדיין פרסומות.",
+    privacyWhy: "לחשבון, דירוג, דו־קרב, שפת הדף והתקדמות במכשיר. המונה מראה אם מגיעים. אין עדיין רשת מודעות; הסקריפטים האלה ייטענו רק אחרי אישור עוגיות פרסום.",
     privacyDeleteTitle: "איך למחוק",
     privacyDelete: "התנתקו בהגדרות. אפשר למחוק נתוני מכשיר בניקוי נתוני האתר. אפשר להוריד עותק בהגדרות. חשבון בשרת נמחק בהגדרות: «מחיקת חשבון» והסיסמה.",
+    cookiesTitle: "קובצי עוגיות",
+    cookiesLead:
+      "קובצי עוגיות נחוצים: שפת הדף וכניסה. עוגיות פרסום רק אחרי «אישור הכל».",
+    cookiesAds:
+      "אין עדיין רשת מודעות. כשתחובר, סקריפטים ועוגיות רק אחרי «אישור הכל». אפשר לשנות כאן או בהגדרות.",
     contactsTitle: "יצירת קשר",
     contactsLead: "על האתר, תקלות ונתונים אישיים:",
     contactsAuthor: "יוצר: Lev Umansky.",

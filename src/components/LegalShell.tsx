@@ -44,6 +44,7 @@ function LegalShellInner({ title, children, catalogBack = false }: LegalShellPro
         <nav className="legal-links">
           <a href="/about">{t.legalAbout}</a>
           <a href="/privacy">{t.legalPrivacy}</a>
+          <a href="/cookies">{t.legalCookies}</a>
           <a href="/terms">{t.legalTerms}</a>
           <a href="/contacts">{t.legalContacts}</a>
         </nav>

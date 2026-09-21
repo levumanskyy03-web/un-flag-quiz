@@ -20,7 +20,7 @@ import { GeoIcon } from './GeoIcon'
 import { tokenKnowledgeBoostActive, useTokens } from '../lib/tokenStore'
 import { WorldsBack } from './WorldsBack'
 
-function worldTitle(world: QuizWorld, lang: Lang) {
+export function worldTitle(world: QuizWorld, lang: Lang) {
   const t = STRINGS[lang]
   if (world === 'geo') return t.geography
   if (world === 'leaders') return t.leaders
@@ -30,8 +30,6 @@ function worldTitle(world: QuizWorld, lang: Lang) {
   if (world === 'math') return t.math
   if (world === 'astronomy') return t.astronomy
   if (world === 'cs') return t.cs
-  if (world === 'music') return t.musicWorld
-  if (world === 'melody') return t.melodyWorld
   return t.food
 }
 

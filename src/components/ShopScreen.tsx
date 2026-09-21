@@ -1,6 +1,25 @@
+import { findCountry } from '../data/extras'
+import {
+  EXCHANGE_TOKEN_PACK,
+  KNOWLEDGE_DAY_FROM_TOKENS,
+  KNOWLEDGE_TO_TOKEN,
+  TOKEN_TO_KNOWLEDGE,
+  TOKENS_DAY_FROM_KNOWLEDGE,
+  weekMarketLots,
+  type EconomyContract,
+  type MarketLot,
+} from '../data/economy'
 import { SHOP_ITEMS, TOKEN_COST, TOKEN_DAY_CAP, type ShopItem, type ShopItemId } from '../data/tokens'
 import { STRINGS, type Lang } from '../i18n/strings'
-import { useCompany } from './CompanyScreen'
+import { countryName } from '../lib/quiz'
+import {
+  buyMarketLot,
+  buyTokenFromKnowledge,
+  sellTokenPack,
+  takeContract,
+  useEconomy,
+} from '../lib/economyStore'
+import { useCompany, worldTitle } from './CompanyScreen'
 import { buyShopItem, tokenKnowledgeBoostActive, tokenXpBoostActive, useTokens, type TokenState } from '../lib/tokenStore'
 import { GeoIcon } from './GeoIcon'
 import { WorldsBack } from './WorldsBack'
@@ -32,13 +51,36 @@ function equipped(state: TokenState, item: ShopItem) {
   return false
 }
 
-export function ShopScreen({ lang, onWorlds }: { lang: Lang; onWorlds: () => void }) {
+function lotLabel(lot: MarketLot, lang: Lang) {
+  const t = STRINGS[lang]
+  if (lot.kind === 'knowledge') return t.shopLotKnowledge(lot.knowledge ?? 0)
+  if (lot.kind === 'worldGrant') return t.shopLotWorld(worldTitle(lot.world ?? 'geo', lang), lot.knowledge ?? 0)
+  return t.shopLotBoost
+}
+
+function contractLabel(item: EconomyContract, lang: Lang) {
+  const t = STRINGS[lang]
+  const world = worldTitle(item.world, lang)
+  if (item.kind === 'worldRounds') return t.shopContractWorldRounds(item.goal, world)
+  if (item.kind === 'worldComplete') return t.shopContractWorldComplete(item.goal, world)
+  if (item.kind === 'perfect') return t.shopContractPerfect(world)
+  return t.shopContractStampGeo(item.goal)
+}
+
+export function ShopScreen({ lang, onWorlds, onState }: { lang: Lang; onWorlds: () => void; onState: () => void }) {
   const t = STRINGS[lang]
   const state = useTokens()
   const company = useCompany()
-  const now = Date.now()
-  const knowledgeOn = tokenKnowledgeBoostActive(now)
-  const xpOn = tokenXpBoostActive(now)
+  const economy = useEconomy()
+  const knowledgeOn = tokenKnowledgeBoostActive()
+  const xpOn = tokenXpBoostActive()
+  const knowledgeLeft = Math.max(0, KNOWLEDGE_DAY_FROM_TOKENS - economy.knowledgeFromTokensToday)
+  const tokensLeft = Math.max(0, TOKENS_DAY_FROM_KNOWLEDGE - economy.tokensFromKnowledgeToday)
+  const packKnowledge = EXCHANGE_TOKEN_PACK * TOKEN_TO_KNOWLEDGE
+  const canSell = state.balance >= EXCHANGE_TOKEN_PACK && knowledgeLeft >= packKnowledge
+  const canBuy = company.knowledge >= KNOWLEDGE_TO_TOKEN && tokensLeft >= 1
+  const vaultCountry = economy.vaultIso ? findCountry(economy.vaultIso) : undefined
+  const lots = weekMarketLots(economy.weekStamp)
 
   function buy(id: ShopItemId) {
     buyShopItem(id, company.claimed)
@@ -59,6 +101,101 @@ export function ShopScreen({ lang, onWorlds }: { lang: Lang; onWorlds: () => voi
         </p>
         <p className="setting-hint">{t.tokensDayCap(state.earnedToday, TOKEN_DAY_CAP)}</p>
         {knowledgeOn || xpOn ? <p className="setting-hint">{t.shopBoostActive}</p> : null}
+      </section>
+
+      <section className="card settings-card">
+        <h2>{t.shopDesk}</h2>
+        <p className="setting-hint">{t.shopDeskHint}</p>
+        <p className="setting-hint">{t.shopExchangeLeft(knowledgeLeft, tokensLeft)}</p>
+        <div className="shop-grid">
+          <button type="button" className="choice shop-item" disabled={!canSell} onClick={() => sellTokenPack()}>
+            <span>{t.shopSellTokens(EXCHANGE_TOKEN_PACK, packKnowledge)}</span>
+            <span className="choice-note">{t.shopBuy}</span>
+          </button>
+          <button type="button" className="choice shop-item" disabled={!canBuy} onClick={() => buyTokenFromKnowledge()}>
+            <span>{t.shopBuyTokens(KNOWLEDGE_TO_TOKEN, 1)}</span>
+            <span className="choice-note">{t.shopBuy}</span>
+          </button>
+        </div>
+      </section>
+
+      <section className="card settings-card">
+        <h2>{t.shopMarket}</h2>
+        <p className="setting-hint">{t.shopMarketHint}</p>
+        <div className="shop-grid">
+          {lots.map((lot) => {
+            const claimed = economy.claimedLots.includes(lot.id)
+            const worldNeed = lot.worldNeed ?? 0
+            const earned = lot.world ? (economy.worldEarned[lot.world] ?? 0) : worldNeed
+            const locked = Boolean(lot.world && earned < worldNeed)
+            const can = !claimed && !locked && state.balance >= lot.cost
+            return (
+              <button
+                key={lot.id}
+                type="button"
+                className="choice shop-item"
+                disabled={!can}
+                onClick={() => buyMarketLot(lot.id)}
+              >
+                <span>{lotLabel(lot, lang)}</span>
+                <span className="choice-note">
+                  {claimed
+                    ? t.shopMarketSold
+                    : locked && lot.world
+                      ? t.shopMarketNeedWorld(worldNeed, worldTitle(lot.world, lang))
+                      : `${t.shopBuy} · ${lot.cost}`}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="card settings-card">
+        <h2>{t.shopContracts}</h2>
+        <p className="setting-hint">{t.shopContractsHint}</p>
+        <div className="shop-grid">
+          {economy.contracts.map((item) => {
+            const open = item.status === 'open'
+            const canTake = open && (item.stamp ? Boolean(economy.vaultIso) : state.balance >= item.stake)
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={`choice shop-item${item.status === 'active' ? ' is-active' : ''}`}
+                disabled={!canTake}
+                onClick={() => takeContract(item.id)}
+              >
+                <span>{contractLabel(item, lang)}</span>
+                <span className="choice-note">
+                  {item.status === 'won'
+                    ? t.shopContractWon
+                    : item.status === 'lost'
+                      ? t.shopContractLost
+                      : item.status === 'active'
+                        ? `${t.shopContractActive} · ${t.shopContractProgress(item.progress, item.goal)}`
+                        : t.shopContractTake}
+                </span>
+                <span className="choice-note">
+                  {item.stamp ? t.shopContractStampStake : t.shopContractStake(item.stake)} · {t.shopContractPayout(item.payout)}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="card settings-card">
+        <h2>{t.shopVault}</h2>
+        <p className="setting-hint">{t.stateShopVaultHint}</p>
+        {vaultCountry ? (
+          <p className="setting-hint">{t.shopVaultOn(countryName(vaultCountry, lang))}</p>
+        ) : (
+          <p className="setting-hint">{t.stateNeedCountry}</p>
+        )}
+        <button type="button" className="btn-secondary" onClick={onState}>
+          {t.stateShopOpen}
+        </button>
       </section>
 
       <section className="card settings-card">

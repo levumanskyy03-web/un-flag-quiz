@@ -21,6 +21,7 @@ type GeoIconName =
   | 'bowl'
   | 'hq'
   | 'notes'
+  | 'notesOff'
 
 const BOX_24: ReadonlySet<GeoIconName> = new Set([
   'ball',
@@ -33,6 +34,7 @@ const BOX_24: ReadonlySet<GeoIconName> = new Set([
   'bowl',
   'hq',
   'notes',
+  'notesOff',
 ])
 
 interface GeoIconProps {
@@ -50,6 +52,7 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
       height={size}
       viewBox={name === 'trophy' ? '0 0 20 20' : BOX_24.has(name) ? '0 0 24 24' : '0 0 16 16'}
       fill="none"
+      overflow="visible"
       aria-hidden="true"
     >
       {name === 'ball' ? (
@@ -144,7 +147,7 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
       ) : null}
       {name === 'stamp' ? (
         <>
-          <rect x="2.4" y="2.6" width="11.2" height="10.8" rx="0.6" stroke="currentColor" strokeWidth="1.2" />
+          <rect x="2.4" y="2.6" width="11.2" height="10.8" rx="2.2" stroke="currentColor" strokeWidth="1.2" />
           <path
             d="M2.4 4.4h11.2M2.4 11.6h11.2"
             stroke="currentColor"
@@ -277,13 +280,16 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
           <path d="M8.4 11.2h.1M12 11.2h.1M15.6 11.2h.1" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
         </>
       ) : null}
-      {name === 'notes' ? (
+      {name === 'notes' || name === 'notesOff' ? (
         <>
           <path d="M9.2 5.2v10.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
           <ellipse cx="7.1" cy="15.4" rx="2.3" ry="1.7" fill="currentColor" />
           <path d="M15.4 3.8v10.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
           <ellipse cx="13.3" cy="14" rx="2.3" ry="1.7" fill="currentColor" />
           <path d="M9.2 5.2h6.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          {name === 'notesOff' ? (
+            <path d="M4.2 4.2 19.8 19.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          ) : null}
         </>
       ) : null}
       {name === 'speaker' || name === 'speakerOff' ? (

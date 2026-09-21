@@ -113,8 +113,6 @@ function queueWorldLabel(queue: MatchQueue, lang: Lang): string {
   if (world === 'olympics') return t.olympics
   if (world === 'cs') return t.cs
   if (world === 'food') return t.food
-  if (world === 'music') return t.musicWorld
-  if (world === 'melody') return t.melodyWorld
   return t.geography
 }
 
@@ -145,8 +143,6 @@ export function matchQueueNote(queue: MatchQueue, lang: Lang): string {
     if (world === 'olympics') return t.olyEasyMixNote
     if (world === 'cs') return t.csEasyMixNote
     if (world === 'food') return t.foodEasyMixNote
-    if (world === 'music') return t.musicEasyMixNote
-    if (world === 'melody') return t.melodyEasyMixNote
   }
   if (queue.modes.length === 1) return ''
   return queue.modes.map((mode) => modeLabel(mode, lang)).join(' · ')

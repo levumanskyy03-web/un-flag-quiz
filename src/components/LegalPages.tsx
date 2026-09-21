@@ -2,6 +2,7 @@
 
 import { PAGE_COPY } from "../i18n/pages";
 import { useSiteLang } from "../i18n/siteLang";
+import { CookieConsentControls } from "./CookieConsentControls";
 import { LegalShell } from "./LegalShell";
 
 export function AboutView() {
@@ -100,6 +101,30 @@ export function TermsPageView() {
   return (
     <LegalShell>
       <TermsView />
+    </LegalShell>
+  );
+}
+
+export function CookiesView() {
+  const { lang } = useSiteLang();
+  const copy = PAGE_COPY[lang];
+  return (
+    <>
+      <h1>{copy.cookiesTitle}</h1>
+      <p>{copy.cookiesLead}</p>
+      <p>{copy.cookiesAds}</p>
+      <CookieConsentControls lang={lang} />
+      {copy.privacyCookies.map((item) => (
+        <p key={item.slice(0, 32)}>{item}</p>
+      ))}
+    </>
+  );
+}
+
+export function CookiesPageView() {
+  return (
+    <LegalShell>
+      <CookiesView />
     </LegalShell>
   );
 }

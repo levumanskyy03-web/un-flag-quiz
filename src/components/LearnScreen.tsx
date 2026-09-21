@@ -61,14 +61,15 @@ import { leaderBio, leaderFeat } from '../data/leaderBios'
 import { getPassport } from '../data/passports'
 import { formatRankingValue, rankingCount, rankingPlaceOf } from '../data/rankings'
 import type { QuizSettings } from './HomeScreen'
-import { ExtrasToggle } from './HomeScreen'
+import { ExtrasToggle } from './ExtrasToggle'
 import { HubNav, WORLD_HUB_TABS, MATH_HUB_TABS, ASTRO_HUB_TABS, type HubTab } from './HubNav'
 import { GeoModeGrids } from './GeoModeGrids'
 import { Flag, TeamFlag } from './Flag'
 import { QuizSilhouette } from './QuizSilhouette'
 import { FootballLearnTable } from './FootballLearnTable'
 import { FootballModeGrids, FootballSetup } from './FootballModeGrids'
-import { FitText, ChoiceLabel } from './FitText'
+import { FitText } from './FitText'
+import { ModeChoice } from './ModeChoice'
 import { LeaderPortrait } from './LeaderPortrait'
 import { LeaderBioModal } from './LeaderBioModal'
 import { LeaderNoteMark } from './LeaderNoteMark'
@@ -412,15 +413,13 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
       ) : settings.learnFrom === 'level' ? (
         <div className="choice-grid is-modes">
           {modes.map((mode) => (
-            <button
+            <ModeChoice
               key={mode}
-              type="button"
-              className={`choice ${settings.mode === mode ? 'is-active' : ''}`}
-              aria-pressed={settings.mode === mode}
+              label={modeLabel(mode, settings.lang)}
+              mode={mode}
+              active={settings.mode === mode}
               onClick={() => onChange({ ...settings, mode })}
-            >
-              <ChoiceLabel>{modeLabel(mode, settings.lang)}</ChoiceLabel>
-            </button>
+            />
           ))}
         </div>
       ) : math ? (

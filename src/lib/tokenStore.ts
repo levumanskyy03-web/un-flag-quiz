@@ -33,12 +33,14 @@ export type TokenState = {
   hqSkin: boolean
   knowledgeBoostUntil: number
   xpBoostUntil: number
+  updatedAt: number
 }
 
 type Listener = () => void
 
 let memory: TokenState | null = null
 const listeners = new Set<Listener>()
+let storageReady = false
 
 function localDayStamp(now = Date.now()) {
   const date = new Date(now)
@@ -61,6 +63,7 @@ function emptyState(now = Date.now()): TokenState {
     hqSkin: false,
     knowledgeBoostUntil: 0,
     xpBoostUntil: 0,
+    updatedAt: 0,
   }
 }
 
@@ -97,6 +100,7 @@ function parseState(raw: unknown): TokenState | null {
     hqSkin: Boolean(row.hqSkin),
     knowledgeBoostUntil: Math.max(0, Number(row.knowledgeBoostUntil) || 0),
     xpBoostUntil: Math.max(0, Number(row.xpBoostUntil) || 0),
+    updatedAt: Math.max(0, Number(row.updatedAt) || 0),
   }
 }
 
@@ -114,10 +118,10 @@ function emit() {
 }
 
 function commit(next: TokenState) {
-  memory = next
-  persist(next)
+  memory = { ...next, updatedAt: Date.now() }
+  persist(memory)
   emit()
-  return next
+  return memory
 }
 
 const SERVER_SNAPSHOT = emptyState(0)
@@ -146,9 +150,28 @@ export function getTokenClientSnapshot(): TokenState {
 export function loadTokens(): TokenState {
   if (typeof window === 'undefined') return SERVER_SNAPSHOT
   clientReady = true
+  ensureStorageSync()
+  const stored = readStored()
+  if (memory && stored && stored.updatedAt > memory.updatedAt) memory = stored
   if (memory) return rollDay(memory)
-  memory = rollDay(readStored() ?? emptyState())
+  memory = rollDay(stored ?? emptyState())
   return memory
+}
+
+function ensureStorageSync() {
+  if (storageReady || typeof window === 'undefined') return
+  storageReady = true
+  window.addEventListener('storage', (event) => {
+    if (event.key !== TOKENS_KEY || !event.newValue) return
+    try {
+      const next = parseState(JSON.parse(event.newValue) as unknown)
+      if (!next || (memory && next.updatedAt <= memory.updatedAt)) return
+      memory = next
+      emit()
+    } catch {
+      /* ignore malformed external write */
+    }
+  })
 }
 
 export function subscribeTokens(listener: Listener) {
@@ -161,7 +184,7 @@ export function subscribeTokens(listener: Listener) {
 function rollDay(state: TokenState, now = Date.now()): TokenState {
   const stamp = localDayStamp(now)
   if (state.dayStamp === stamp) return state
-  const next = { ...state, dayStamp: stamp, earnedToday: 0 }
+  const next = { ...state, dayStamp: stamp, earnedToday: 0, updatedAt: Date.now() }
   memory = next
   persist(next)
   return next
@@ -224,6 +247,27 @@ export function spendTokens(amount: number): boolean {
   if (cost <= 0 || prev.balance < cost) return false
   commit({ ...prev, balance: prev.balance - cost })
   return true
+}
+
+export function creditTokens(amount: number, towardCap: boolean): number {
+  const n = Math.max(0, Math.floor(amount))
+  if (n <= 0) return 0
+  const prev = loadTokens()
+  if (towardCap) {
+    const { state, granted } = addCapped(prev, n)
+    commit(state)
+    return granted
+  }
+  commit({ ...prev, balance: prev.balance + n, lastGain: n })
+  return n
+}
+
+export function extendKnowledgeBoost(ms: number, now = Date.now()) {
+  const extra = Math.max(0, Math.floor(ms))
+  if (extra <= 0) return
+  const prev = loadTokens()
+  const start = Math.max(now, prev.knowledgeBoostUntil)
+  commit({ ...prev, knowledgeBoostUntil: start + extra })
 }
 
 export function tokenKnowledgeBoostActive(now = Date.now()) {

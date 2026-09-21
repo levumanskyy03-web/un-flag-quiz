@@ -1,14 +1,17 @@
 import { COUNTRIES, type Country } from '../../data/countries'
 import { COUNTRY_CODES } from '../../data/countryCodes'
-import { countriesForPool, isExtraIso } from '../../data/extras'
+import { isExtraIso } from '../../data/extras'
 import { foundedYear } from '../../data/founded'
+import { countriesForEraPool, isHistoryId, type GeoPoolOptions, normalizePoolOptions } from '../../data/history'
 import { getPassport } from '../../data/passports'
 import { HOLDOUT_BY_ISO, TERRITORY_BY_ISO } from '../../data/territories'
 import { LEVEL_ISOS, isFinalLevel, isLevelNumber } from '../../data/levels'
 import { isEasyForMode } from '../../data/modeDifficulty'
 import { canAskNeighbors } from '../../data/neighbors'
 import {
+  blockedWaterOptionIds,
   canAskWater,
+  countryFitsWater,
   countryForWater,
   isEasyWaterBody,
   isosForWater,
@@ -58,6 +61,12 @@ function extraHasMap(iso: string): boolean {
 }
 
 export function extraFitsMode(country: Country, mode: QuizMode): boolean {
+  if (isHistoryId(country.iso)) {
+    if (mode === 'flagToName' || mode === 'nameToFlag') return true
+    if (mode === 'nameToCapital' || mode === 'nameToFounded' || mode === 'factsToName') return true
+    if (mode === 'nameToMap' || mode === 'mapToName' || isSilhouetteMode(mode)) return true
+    return false
+  }
   if (!isExtraIso(country.iso)) return true
   if (isWaterMode(mode) || isRankingMode(mode) || isLanguageMode(mode) || isDrivingMode(mode) || isNameToGov(mode)) return false
   if (mode === 'neighborsToName') return canAskNeighbors(country.iso)
@@ -75,12 +84,26 @@ export function extraFitsMode(country: Country, mode: QuizMode): boolean {
   return true
 }
 
+export function eraFitsMode(mode: QuizMode): boolean {
+  return (
+    mode === 'flagToName' ||
+    mode === 'nameToFlag' ||
+    mode === 'nameToCapital' ||
+    mode === 'nameToFounded' ||
+    mode === 'factsToName' ||
+    mode === 'nameToMap' ||
+    mode === 'mapToName' ||
+    isSilhouetteMode(mode)
+  )
+}
+
 export function getPool(
   region: RegionFilter,
   difficulty: QuizDifficulty,
   mode: QuizMode,
-  includeExtras = false,
+  extrasOrOpts: boolean | GeoPoolOptions = false,
 ): Country[] {
+  const opts = normalizePoolOptions(extrasOrOpts)
   const regions = parseRegions(region)
   if (isWaterMapMode(mode)) {
     const ids = waterIdsForMode(mode).filter((id) => {
@@ -101,7 +124,7 @@ export function getPool(
       .map((id) => countryForWater(id, mode))
       .filter((country): country is Country => Boolean(country))
   }
-  return countriesForPool(includeExtras).filter((country) => {
+  return countriesForEraPool(opts).filter((country) => {
     if (!regions.includes(country.region)) return false
     if (!extraFitsMode(country, mode)) return false
     if (mode === 'neighborsToName' && !canAskNeighbors(country.iso)) return false
@@ -111,9 +134,10 @@ export function getPool(
   })
 }
 
-export function getRegionPool(region: RegionFilter, includeExtras = false): Country[] {
+export function getRegionPool(region: RegionFilter, extrasOrOpts: boolean | GeoPoolOptions = false): Country[] {
+  const opts = normalizePoolOptions(extrasOrOpts)
   const regions = parseRegions(region)
-  return countriesForPool(includeExtras).filter((country) => regions.includes(country.region))
+  return countriesForEraPool(opts).filter((country) => regions.includes(country.region))
 }
 
 const FAME_INDEX = new Map(LEVEL_ISOS.flat().map((iso, index) => [iso, index]))
@@ -260,17 +284,11 @@ export function createWaterRound(
     if (!waterId) continue
     if (uniqueWaters && used.has(waterId)) continue
     used.add(waterId)
-    const others = eligible.filter(
-      (item) => item.iso !== country.iso && !watersFor(item.iso, mode).includes(waterId),
-    )
     questions.push({
       country,
       mode,
       waterId,
-      options: shuffle([
-        country,
-        ...pickDistractors(country, others.length >= 3 ? others : eligible, 3, (item) => item.iso, avoidKeys),
-      ]),
+      options: shuffle([country, ...pickWaterCountryDistractors(country, waterId, mode, eligible, avoidKeys)]),
     })
     avoidKeys.push(country.iso)
     if (questions.length >= count) break
@@ -279,17 +297,47 @@ export function createWaterRound(
 }
 
 function pickWaterMapOptions(correctId: string, mode: WaterMode, avoidIds: readonly string[] = []): string[] {
+  const blocked = new Set([correctId, ...blockedWaterOptionIds(correctId)])
   const distractors = pickFirstFit(3, avoidIds, (banned) => {
-    const adjacent = shuffle(neighboringWaters(correctId, mode)).filter((id) => !banned.has(id))
+    const skip = (id: string) => banned.has(id) || blocked.has(id)
+    const adjacent = shuffle(neighboringWaters(correctId, mode)).filter((id) => !skip(id))
     const neighborTake = adjacent.length >= 2 ? (Math.random() < 0.55 ? 2 : 1) : adjacent.length
     const neighbors = adjacent.slice(0, neighborTake)
     const taken = new Set([correctId, ...neighbors])
     const filler = shuffle(
-      waterIdsForMode(mode).filter((id) => !taken.has(id) && !banned.has(id)),
+      waterIdsForMode(mode).filter((id) => !taken.has(id) && !skip(id)),
     ).slice(0, Math.max(0, 3 - neighbors.length))
     return [...neighbors, ...filler]
   })
   return shuffle([correctId, ...distractors])
+}
+
+function pickWaterCountryDistractors(
+  correct: Country,
+  waterId: string,
+  mode: WaterMode,
+  pool: Country[],
+  avoidKeys: readonly string[] = [],
+): Country[] {
+  return pickFirstFit(3, avoidKeys, (banned) => {
+    const pickedIso = new Set([correct.iso])
+    const distractors: Country[] = []
+    const addFrom = (list: Country[]) => {
+      for (const country of shuffle(list)) {
+        if (distractors.length >= 3) return
+        if (pickedIso.has(country.iso) || banned.has(country.iso)) continue
+        if (countryFitsWater(country.iso, waterId, mode)) continue
+        pickedIso.add(country.iso)
+        distractors.push(country)
+      }
+    }
+    addFrom(pool.filter((country) => country.region === correct.region))
+    addFrom(COUNTRIES.filter((country) => country.region === correct.region))
+    addFrom(pool)
+    addFrom(COUNTRIES.filter((country) => canAskWater(country.iso, mode)))
+    addFrom(COUNTRIES)
+    return distractors
+  })
 }
 
 export function createWaterMapRound(pool: Country[], count: number, mode: WaterMapMode): Question[] {
@@ -347,6 +395,14 @@ export function createMixedRound(
 
   return questions
 }
+
+export const STATE_GRAPHIC_MODES: QuizMode[] = [
+  'nameToMap',
+  'mapToName',
+  'silhouetteToName',
+  'nameToSilhouette',
+  'neighborsToName',
+]
 
 function questionForMode(
   mode: QuizMode,
@@ -418,15 +474,11 @@ function questionForMode(
   if (isWaterMode(mode)) {
     const waterId = watersFor(country.iso, mode)[0]
     if (!waterId) return null
-    const others = modePool.filter((item) => item.iso !== country.iso && !watersFor(item.iso, mode).includes(waterId))
     return {
       country,
       mode,
       waterId,
-      options: shuffle([
-        country,
-        ...pickDistractors(country, others.length >= 3 ? others : modePool, 3, (item) => item.iso, avoid.keys),
-      ]),
+      options: shuffle([country, ...pickWaterCountryDistractors(country, waterId, mode, modePool, avoid.keys)]),
     }
   }
   return withPriorBan(

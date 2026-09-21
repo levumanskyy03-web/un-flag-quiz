@@ -37,7 +37,11 @@ import { ASTRO_MODE_COPY } from './astroCopy'
 import { THEME_MODE_COPY } from './themeCopy'
 import { PACK_MODE_COPY } from './packCopy'
 import { COMPANY_COPY } from './companyCopy'
+import { STATE_COPY } from './stateCopy'
 import { TOKEN_COPY } from './tokenCopy'
+import { ALBUM_COPY } from './albumCopy'
+import { TOUR_COPY } from './tourCopy'
+import { intellectRankOf } from './intellectRank'
 import { isRtl, rtlModeArrows, type Lang } from './lang'
 
 export { REGIONS }
@@ -153,25 +157,6 @@ export type Strings = {
   olyCountPrompt: string
   olySportPrompt: string
   olyNocPrompt: string
-  musicWorld: string
-  musicSubtitle: string
-  musicFamilyInstruments: string
-  musicFamilyWorks: string
-  musicFamilyPeople: string
-  musicEasyMixNote: string
-  musicHardMixNote: string
-  instrumentToFamily: string
-  composerToWork: string
-  workToComposer: string
-  musicPhotoToName: string
-  musicInstrPrompt: string
-  musicWorkPrompt: string
-  musicComposerPrompt: string
-  musicPhotoPrompt: string
-  melodyWorld: string
-  melodySubtitle: string
-  melodyEasyMixNote: string
-  melodyHardMixNote: string
   cs: string
   csSubtitle: string
   csFamilyCode: string
@@ -424,6 +409,16 @@ export type Strings = {
   albumHint: string
   albumCount: (copies: number, countries: number, countryTotal: number) => string
   albumEmpty: string
+  albumHintWorld: string
+  albumCountWorld: (copies: number, items: number, total: number) => string
+  albumLootTitle: string
+  albumLoot1: string
+  albumLoot2: string
+  albumLoot3: string
+  albumLoot4: string
+  albumLoot5: string
+  albumLootNote: string
+  albumLootNoteWorld: string
   stampNew: string
   mistakesTrain: string
   mistakesHint: string
@@ -548,6 +543,17 @@ export type Strings = {
   oceania: string
   includeExtras: string
   includeExtrasHint: string
+  includeEraStates: string
+  includeEraStatesHint: string
+  mapYear: string
+  mapSnapshot: (year: number) => string
+  mapHistoryCredit: string
+  historyYears: string
+  historyStatus: string
+  historyIndependent: string
+  historyDeFacto: string
+  historySuccessors: string
+  historyNotIndependent: string
   difficulty: string
   easy: string
   medium: string
@@ -657,6 +663,11 @@ export type Strings = {
   legalPrivacy: string
   legalContacts: string
   legalTerms: string
+  legalCookies: string
+  cookieNotice: string
+  cookieNoticeEssential: string
+  cookieNoticeReject: string
+  cookieNoticeAll: string
   legalCountries: string
   legalToday: string
   legalLanguages: string
@@ -670,6 +681,19 @@ export type Strings = {
   settings: string
   settingsAccount: string
   settingsAbout: string
+  tourSkip: string
+  tourNext: string
+  tourBack: string
+  tourDone: string
+  tourReplay: string
+  tourStepWorldsTitle: string
+  tourStepWorldsBody: string
+  tourStepGeoTitle: string
+  tourStepGeoBody: string
+  tourStepStateTitle: string
+  tourStepStateBody: string
+  tourStepDockTitle: string
+  tourStepDockBody: string
   sounds: string
   soundsOn: string
   soundsOff: string
@@ -714,6 +738,7 @@ export type Strings = {
   xpGained: (amount: string) => string
   accountLevel: (n: number) => string
   accountLevelNext: (amount: string) => string
+  intellectRank: (n: number) => string
   modeStats: string
   modeStatsEmpty: string
   modeStatsRounds: (n: number) => string
@@ -808,6 +833,42 @@ export type Strings = {
   companyFinished: string
   shop: string
   shopHint: string
+  state: string
+  stateHint: string
+  stateClaim: string
+  stateClaimCost: (n: number) => string
+  stateSwitch: string
+  statePlay: string
+  stateTreasury: string
+  stateCadres: string
+  stateEducation: string
+  stateEducationHint: string
+  stateInfra: string
+  stateInfraHint: string
+  stateForeign: string
+  stateForeignHint: string
+  stateEconomy: string
+  stateEconomyHint: string
+  stateTrade: string
+  stateTradeHint: string
+  stateAdministration: string
+  stateAdministrationHint: string
+  stateMinistryLevel: (n: number) => string
+  stateUpgrade: string
+  stateMaxLevel: string
+  stateServants: (n: number) => string
+  stateServantRate: (n: string) => string
+  stateHire: string
+  stateSellStamp: string
+  stateStampNeed: string
+  stateStampHow: string
+  stateConvertLeft: (used: number, cap: number) => string
+  stateIdleCap: (n: number, cap: number) => string
+  stateNeedCountry: string
+  statePickCountry: string
+  stateMaxServants: string
+  stateShopOpen: string
+  stateShopVaultHint: string
   tokens: string
   tokensBalance: (n: number) => string
   tokensGained: (n: number) => string
@@ -831,6 +892,38 @@ export type Strings = {
   shopBoostKnowledge: string
   shopBoostXp: string
   shopBoostActive: string
+  shopDesk: string
+  shopDeskHint: string
+  shopSellTokens: (tokens: number, knowledge: number) => string
+  shopBuyTokens: (knowledge: number, tokens: number) => string
+  shopExchangeLeft: (knowledge: number, tokens: number) => string
+  shopMarket: string
+  shopMarketHint: string
+  shopMarketNeedWorld: (n: number, world: string) => string
+  shopMarketSold: string
+  shopLotKnowledge: (n: number) => string
+  shopLotWorld: (world: string, n: number) => string
+  shopLotBoost: string
+  shopContracts: string
+  shopContractsHint: string
+  shopContractTake: string
+  shopContractActive: string
+  shopContractWon: string
+  shopContractLost: string
+  shopContractStake: (n: number) => string
+  shopContractStampStake: string
+  shopContractPayout: (n: number) => string
+  shopContractProgress: (current: number, goal: number) => string
+  shopContractWorldRounds: (n: number, world: string) => string
+  shopContractWorldComplete: (n: number, world: string) => string
+  shopContractPerfect: (world: string) => string
+  shopContractStampGeo: (n: number) => string
+  shopVault: string
+  shopVaultHint: string
+  shopVaultPledge: string
+  shopVaultRecall: string
+  shopVaultOn: (name: string) => string
+  shopVaultNeed: string
   quizHint: string
   quizSkip: string
   quizExtraLife: string
@@ -1092,7 +1185,10 @@ export const STRINGS: Record<Lang, Strings> = {
     ...ASTRO_MODE_COPY.ru,
     ...PACK_MODE_COPY.ru,
     ...COMPANY_COPY.ru,
+    ...STATE_COPY.ru,
     ...TOKEN_COPY.ru,
+    ...ALBUM_COPY.ru,
+    ...TOUR_COPY.ru,
     ...THEME_MODE_COPY.ru,
     wcWinners: 'Победители ЧМ',
     wcWinnerPrompt: (year) => `Кто выиграл ЧМ ${year}?`,
@@ -1313,6 +1409,8 @@ export const STRINGS: Record<Lang, Strings> = {
     albumHint: 'До 5 марок на страну. Первая — верный ответ в зачётном раунде. Дальше: другой режим, сложно или хардкор, идеальный раунд, хардкор до конца.',
     albumCount: (copies, countries, total) => `${copies} марок · ${countries} из ${total} стран`,
     albumEmpty: 'Пока пусто. Ответьте верно в свободной игре или кампании.',
+    albumHintWorld: 'До 5 копий на карточку. Первая — верный ответ в зачётном раунде. Дальше: другой режим, сложно или хардкор, идеальный раунд, хардкор до конца.',
+    albumCountWorld: (copies, items, total) => `${copies} копий · ${items} из ${total}`,
     stampNew: 'Новая марка',
     mistakesTrain: 'Ошибки',
     mistakesHint: 'Только страны, где вы ошиблись. Без таймера.',
@@ -1439,6 +1537,17 @@ export const STRINGS: Record<Lang, Strings> = {
     oceania: 'Океания',
     includeExtras: 'Все государства и территории',
     includeExtrasHint: 'Включая зависимые и не члены ООН.',
+    includeEraStates: 'Все государства выбранной эпохи',
+    includeEraStatesHint: 'Независимые и де-факто государства года на карте.',
+    mapYear: 'Год',
+    mapSnapshot: (year) => `Границы: срез ${year}`,
+    mapHistoryCredit: 'Исторические границы: historical-basemaps · CC BY',
+    historyYears: 'Годы',
+    historyStatus: 'Статус',
+    historyIndependent: 'Независимое государство',
+    historyDeFacto: 'Де-факто независимое',
+    historySuccessors: 'Преемники',
+    historyNotIndependent: 'Не независимое государство',
     difficulty: 'Сложность',
     easy: 'Легкая',
     medium: 'Средняя',
@@ -1591,6 +1700,7 @@ export const STRINGS: Record<Lang, Strings> = {
     xpGained: (amount) => `+${amount} опыта`,
     accountLevel: (n) => `Уровень ${n}`,
     accountLevelNext: (amount) => `до следующего: ${amount}`,
+    intellectRank: (n) => intellectRankOf(n, 'ru'),
     modeStats: 'Успехи по режимам',
     modeStatsEmpty: 'Пока нет игр',
     modeStatsRounds: (n) => {
@@ -1658,6 +1768,12 @@ export const STRINGS: Record<Lang, Strings> = {
     legalPrivacy: 'Политика',
     legalContacts: 'Контакты',
     legalTerms: 'Условия',
+    legalCookies: 'Cookie',
+    cookieNotice:
+      'Нужные файлы cookie — язык страницы и вход. Рекламные ставятся только если разрешите. Сеть рекламы пока не подключена: скрипты не грузятся, пока нет согласия.',
+    cookieNoticeEssential: 'Только нужные',
+    cookieNoticeReject: 'Отклонить все',
+    cookieNoticeAll: 'Принять все',
     legalCountries: 'Страны',
     legalToday: 'Страна дня',
     legalLanguages: 'Языки',
@@ -1799,7 +1915,10 @@ export const STRINGS: Record<Lang, Strings> = {
     ...ASTRO_MODE_COPY.en,
     ...PACK_MODE_COPY.en,
     ...COMPANY_COPY.en,
+    ...STATE_COPY.en,
     ...TOKEN_COPY.en,
+    ...ALBUM_COPY.en,
+    ...TOUR_COPY.en,
     ...THEME_MODE_COPY.en,
     wcWinners: 'World Cup winners',
     wcWinnerPrompt: (year) => `Who won the ${year} World Cup?`,
@@ -2020,6 +2139,8 @@ export const STRINGS: Record<Lang, Strings> = {
     albumHint: 'Up to 5 stamps per country. The first is a correct answer in scored play. Then: a new mode, Hard or Hardcore, a perfect round, and a finished Hardcore round.',
     albumCount: (copies, countries, total) => `${copies} stamps · ${countries} of ${total} countries`,
     albumEmpty: 'Empty so far. Answer correctly in free play or the campaign.',
+    albumHintWorld: 'Up to 5 copies per card. The first is a correct answer in scored play. Then: a new mode, Hard or Hardcore, a perfect round, and a finished Hardcore round.',
+    albumCountWorld: (copies, items, total) => `${copies} copies · ${items} of ${total}`,
     stampNew: 'New stamp',
     mistakesTrain: 'Mistakes',
     mistakesHint: 'Only countries you missed. No timer.',
@@ -2146,6 +2267,17 @@ export const STRINGS: Record<Lang, Strings> = {
     oceania: 'Oceania',
     includeExtras: 'All states and territories',
     includeExtrasHint: 'Including dependencies and non-UN members.',
+    includeEraStates: 'All states of the selected era',
+    includeEraStatesHint: 'Independent and de facto states of the map year.',
+    mapYear: 'Year',
+    mapSnapshot: (year) => `Borders: ${year} snapshot`,
+    mapHistoryCredit: 'Historical borders: historical-basemaps · CC BY',
+    historyYears: 'Years',
+    historyStatus: 'Status',
+    historyIndependent: 'Independent state',
+    historyDeFacto: 'De facto independent',
+    historySuccessors: 'Successors',
+    historyNotIndependent: 'Not an independent state',
     difficulty: 'Difficulty',
     easy: 'Easier',
     medium: 'Medium',
@@ -2298,6 +2430,7 @@ export const STRINGS: Record<Lang, Strings> = {
     xpGained: (amount) => `+${amount} XP`,
     accountLevel: (n) => `Level ${n}`,
     accountLevelNext: (amount) => `to next: ${amount}`,
+    intellectRank: (n) => intellectRankOf(n, 'en'),
     modeStats: 'Progress by mode',
     modeStatsEmpty: 'No games yet',
     modeStatsRounds: (n) => (n === 1 ? '1 round' : `${n} rounds`),
@@ -2359,6 +2492,12 @@ export const STRINGS: Record<Lang, Strings> = {
     legalPrivacy: 'Privacy',
     legalContacts: 'Contact',
     legalTerms: 'Terms',
+    legalCookies: 'Cookies',
+    cookieNotice:
+      'Necessary cookie files are page language and sign-in. Ad cookies are set only if you allow them. No ad network is connected yet: those scripts stay off until you consent.',
+    cookieNoticeEssential: 'Necessary only',
+    cookieNoticeReject: 'Reject all',
+    cookieNoticeAll: 'Accept all',
     legalCountries: 'Countries',
     legalToday: 'Country of the day',
     legalLanguages: 'Languages',
@@ -2589,14 +2728,6 @@ export function themeQuestionPrompt(mode: QuizMode, lang: Lang): string | null {
       return t.csBinPrompt
     case 'csPhotoToName':
       return t.csPhotoPrompt
-    case 'instrumentToFamily':
-      return t.musicInstrPrompt
-    case 'composerToWork':
-      return t.musicWorkPrompt
-    case 'workToComposer':
-      return t.musicComposerPrompt
-    case 'musicPhotoToName':
-      return t.musicPhotoPrompt
     case 'dishToCuisine':
       return t.foodDishPrompt
     case 'cuisineToDish':

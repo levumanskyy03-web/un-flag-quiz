@@ -15,6 +15,13 @@ import {
 import { countryByIso } from './countryCatalog'
 import { isNameAllowed } from './nameFilter'
 import { isNameCooldown } from './nameRules'
+import {
+  applyScoredRound,
+  emptyXpByWorld,
+  type ScoredRound,
+  type ServerRating,
+} from './ratingRound'
+import type { QuizWorld } from './quiz'
 import { accountLevel } from './xp'
 
 export const SESSION_COOKIE = 'pq-session'
@@ -48,6 +55,10 @@ interface AccountRecord extends PublicAccount {
   createdAt: number
   xp?: number
   level?: number
+  xpByWorld?: Record<QuizWorld, number>
+  levelBestXp?: Record<string, number>
+  clears?: string[]
+  ratingDay?: { stamp: string; xp: number }
   achievementIds?: AchievementId[]
 }
 
@@ -262,25 +273,54 @@ export async function publicProfileById(id: string): Promise<PublicPlayerProfile
 
 export async function publishPlayerStats(
   userId: string,
-  stats: { xp?: number; level?: number; achievementIds?: AchievementId[] },
+  stats: { achievementIds?: AchievementId[] },
 ): Promise<void> {
-  if (!isPlayerId(userId)) return
-  const store = await loadStore()
-  if (store === null) return
-  const user = Object.values(store.users).find((item) => item.id === userId)
-  if (!user) return
-  if (typeof stats.xp === 'number' && Number.isFinite(stats.xp) && stats.xp >= 0) {
-    user.xp = Math.min(RATING_XP_MAX, Math.max(0, Math.floor(stats.xp)))
-  }
-  if (typeof stats.level === 'number' && Number.isFinite(stats.level) && stats.level >= 1) {
-    user.level = Math.min(RATING_LEVEL_MAX, Math.floor(stats.level))
-  } else if (typeof user.xp === 'number') {
-    user.level = accountLevel(user.xp)
-  }
-  if (stats.achievementIds) {
-    user.achievementIds = stats.achievementIds.filter(isAchievementId)
-  }
-  await saveStore(store)
+  const achievementIds = stats.achievementIds
+  if (!isPlayerId(userId) || !achievementIds) return
+  await enqueue(async () => {
+    const store = await loadStore()
+    if (store === null) return
+    const user = Object.values(store.users).find((item) => item.id === userId)
+    if (!user) return
+    user.achievementIds = achievementIds.filter(isAchievementId)
+    if (typeof user.xp === 'number') user.level = accountLevel(user.xp)
+    await saveStore(store)
+  })
+}
+
+export async function applyRatedRound(
+  userId: string,
+  scored: ScoredRound,
+  wrBonus = 0,
+): Promise<ServerRating | null> {
+  if (!isPlayerId(userId)) return null
+  return enqueue(async () => {
+    const store = await loadStore()
+    if (store === null) return null
+    const user = Object.values(store.users).find((item) => item.id === userId)
+    if (!user) return null
+    const next = applyScoredRound(
+      {
+        xp: clampXp(user.xp),
+        xpByWorld: { ...emptyXpByWorld(), ...user.xpByWorld },
+        levelBestXp: { ...(user.levelBestXp ?? {}) },
+        clears: Array.isArray(user.clears) ? user.clears : [],
+        ratingDay: user.ratingDay,
+      },
+      scored,
+      wrBonus,
+    )
+    const xp = Math.min(RATING_XP_MAX, next.xp)
+    const level = Math.min(RATING_LEVEL_MAX, accountLevel(xp))
+    user.xp = xp
+    user.level = level
+    user.xpByWorld = next.xpByWorld
+    user.levelBestXp = next.levelBestXp
+    user.clears = next.clears
+    user.ratingDay = next.ratingDay
+    await saveStore(store)
+    return { xp, level, xpByWorld: next.xpByWorld, clears: next.clears, xpGain: next.xpGain }
+  })
 }
 
 export async function accountFromRequest(request: Request): Promise<PublicAccount | null> {
@@ -431,6 +471,22 @@ async function pbkdf2(password: string, salt: Buffer | Uint8Array, iterations = 
     256,
   )
   return new Uint8Array(bits)
+}
+
+let writeChain: Promise<void> = Promise.resolve()
+
+function enqueue<T>(job: () => Promise<T>): Promise<T> {
+  const run = writeChain.then(job, job)
+  writeChain = run.then(
+    () => undefined,
+    () => undefined,
+  )
+  return run
+}
+
+function clampXp(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return 0
+  return Math.min(RATING_XP_MAX, Math.max(0, Math.floor(value)))
 }
 
 function redisConfig() {

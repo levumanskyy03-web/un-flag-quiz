@@ -1,25 +1,15 @@
 import type { AchievementId } from '../data/achievements'
 import { LEVEL_COUNT } from '../data/levels'
 import type { LevelClear } from './levelProgress'
-import { loadLifetime } from './lifetime'
+import type { RatedRoundInput } from './ratingRound'
 import {
-  FOOTBALL_MODES,
-  LEADERS_MODES,
   LEVEL_MODES,
-  MATH_MODES,
-  ASTRO_MODES,
-  THEME_MODES,
-  QUIZ_WORLDS,
-  campaignLevelCount,
-  campaignMaxForWorld,
-  campaignModesForWorld,
   hasLevels,
   isQuizMode,
   isQuizWorld,
   type QuizMode,
   type QuizWorld,
 } from './quiz'
-import { accountLevel } from './xp'
 
 export const PLAYER_KEY = 'un-flag-quiz-player'
 export const LEADERBOARD_LIMIT = 20
@@ -229,69 +219,41 @@ export async function fetchRating(
   return { entries, configured: record.configured !== false }
 }
 
-export async function submitCampaign(clears: LevelClear[], mode: QuizMode): Promise<void> {
-  const stats = campaignStats(clears, mode, false)
-  if (stats.levelsCleared <= 0) return
-  await submitRatings(clears, 0)
-}
-
-export async function submitRatings(
-  clears: LevelClear[],
-  xp: number,
-  achievements?: AchievementId[],
-): Promise<void> {
+export async function submitAchievements(achievements: AchievementId[]): Promise<void> {
   const player = loadPlayer()
   if (player.name.length < NAME_MIN) return
-  const items: unknown[] = []
-  const safeXp = Math.max(0, Math.floor(xp))
-  if (safeXp > 0) {
-    items.push({ board: 'xp', xp: safeXp, level: accountLevel(safeXp) })
-  }
-  const xpByWorld = loadLifetime().xpByWorld
-  for (const world of QUIZ_WORLDS) {
-    const amount = Math.max(0, Math.floor(xpByWorld[world] ?? 0))
-    if (amount <= 0) continue
-    items.push({ board: 'xp', world, xp: amount, level: accountLevel(amount) })
-  }
-  for (const hardcore of [false, true]) {
-    const geoCleared = uniqueLevelsCleared(clears, hardcore, LEVEL_MODES)
-    if (geoCleared > 0 && geoCleared <= RATING_CLEARS_MAX) {
-      items.push({ board: 'clears', hardcore, levelsCleared: geoCleared })
-    }
-    for (const world of QUIZ_WORLDS) {
-      if (world === 'geo') continue
-      const cleared = uniqueLevelsCleared(clears, hardcore, campaignModesForWorld(world))
-      const max = Math.max(1, campaignMaxForWorld(world))
-      if (cleared <= 0 || cleared > Math.max(max, RATING_CLEARS_MAX)) continue
-      items.push({ board: 'clears', world, hardcore, levelsCleared: cleared })
-    }
-  }
-  const campaignModes = [...LEVEL_MODES, ...FOOTBALL_MODES, ...LEADERS_MODES, ...MATH_MODES, ...ASTRO_MODES, ...THEME_MODES]
-  for (const mode of campaignModes) {
-    for (const hardcore of [false, true]) {
-      const stats = campaignStats(clears, mode, hardcore)
-      const max = Math.max(campaignLevelCount(mode), 1)
-      if (stats.levelsCleared <= 0 || stats.levelsCleared > max) continue
-      items.push({
-        board: 'mode',
-        mode,
-        hardcore,
-        levelsCleared: stats.levelsCleared,
-        totalMs: 0,
-      })
-    }
-  }
-  if (items.length === 0 && achievements === undefined) return
   await fetch('/api/leaderboard', {
     method: 'POST',
     credentials: 'include',
     cache: 'no-store',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      items,
-      ...(achievements !== undefined ? { achievements } : {}),
-    }),
+    body: JSON.stringify({ achievements }),
   })
+}
+
+export async function submitRound(
+  input: RatedRoundInput,
+): Promise<{ beat: boolean; previousName: string | null; xpGain: number }> {
+  try {
+    const response = await fetch('/api/leaderboard', {
+      method: 'POST',
+      credentials: 'include',
+      cache: 'no-store',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind: 'round', ...input }),
+    })
+    if (!response.ok) return { beat: false, previousName: null, xpGain: 0 }
+    const body: unknown = await response.json()
+    if (!body || typeof body !== 'object') return { beat: false, previousName: null, xpGain: 0 }
+    const record = body as Record<string, unknown>
+    return {
+      beat: record.beat === true,
+      previousName: typeof record.previousName === 'string' ? record.previousName : null,
+      xpGain: typeof record.xpGain === 'number' && Number.isFinite(record.xpGain) ? record.xpGain : 0,
+    }
+  } catch {
+    return { beat: false, previousName: null, xpGain: 0 }
+  }
 }
 
 export interface LevelBest {
@@ -335,41 +297,6 @@ export async function fetchLevelBests(
     return records
   } catch {
     return {}
-  }
-}
-
-export async function submitLevelBest(input: {
-  mode: QuizMode
-  level: number
-  hardcore: boolean
-  roundMs: number
-  livesLeft: number
-}): Promise<{ beat: boolean; previousName: string | null }> {
-  try {
-    const response = await fetch('/api/leaderboard', {
-      method: 'POST',
-      credentials: 'include',
-      cache: 'no-store',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        board: 'levelBest',
-        mode: input.mode,
-        level: input.level,
-        hardcore: input.hardcore,
-        roundMs: input.roundMs,
-        livesLeft: input.livesLeft,
-      }),
-    })
-    if (!response.ok) return { beat: false, previousName: null }
-    const body: unknown = await response.json()
-    if (!body || typeof body !== 'object') return { beat: false, previousName: null }
-    const record = body as Record<string, unknown>
-    return {
-      beat: record.beat === true,
-      previousName: typeof record.previousName === 'string' ? record.previousName : null,
-    }
-  } catch {
-    return { beat: false, previousName: null }
   }
 }
 

@@ -1,5 +1,5 @@
 import { useId, type CSSProperties } from 'react'
-import { STRINGS, type Lang } from '../i18n/strings'
+import { STRINGS } from '../i18n/strings'
 import { accountLevelMark, accountProgress, formatXp } from '../lib/xp'
 import { RatingsButton } from './RatingsButton'
 import { SettingsButton, type SettingsButtonProps } from './SettingsButton'
@@ -27,7 +27,7 @@ export function PlayerHud({ xp, xpReady = false, ...settings }: PlayerHudProps) 
         {xpReady ? (
           <span
             className={`coc-level is-${mark.metal}`}
-            aria-label={t.accountLevel(rank.level)}
+            aria-label={`${t.accountLevel(rank.level)} · ${t.intellectRank(rank.level)}`}
             style={{
               '--level-scale': String(mark.scale),
               '--level-ink': mark.ink,
@@ -68,16 +68,18 @@ export function PlayerHud({ xp, xpReady = false, ...settings }: PlayerHudProps) 
         ) : null}
       </div>
       {xpReady ? (
-        <div
-          className="coc-xp"
-          role="meter"
-          aria-label={t.xpTotal(formatXp(rank.xp, settings.lang))}
-          aria-valuemin={0}
-          aria-valuemax={rank.span}
-          aria-valuenow={rank.into}
-        >
-          <span className="coc-xp-fill" style={{ width: `${Math.round(rank.ratio * 100)}%` }} />
-          <span className="coc-xp-label">{formatXp(rank.xp, settings.lang)}</span>
+        <div className="player-hud-xp">
+          <div
+            className="coc-xp"
+            role="meter"
+            aria-label={t.xpTotal(formatXp(rank.xp, settings.lang))}
+            aria-valuemin={0}
+            aria-valuemax={rank.span}
+            aria-valuenow={rank.into}
+          >
+            <span className="coc-xp-fill" style={{ width: `${Math.round(rank.ratio * 100)}%` }} />
+            <span className="coc-xp-label">{formatXp(rank.xp, settings.lang)}</span>
+          </div>
         </div>
       ) : null}
       <RatingsButton

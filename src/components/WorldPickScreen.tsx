@@ -1,9 +1,12 @@
 import { STRINGS, type Lang } from '../i18n/strings'
-import { GeoIcon } from './GeoIcon'
-import { FitText } from './FitText'
-import type { QuizSettings } from './HomeScreen'
-
+import { worldCatalogNo } from '../lib/modeCatalog'
 import { QUIZ_WORLDS, type QuizWorld } from '../lib/quiz'
+import { useRealm } from '../lib/stateStore'
+import type { QuizSettings } from './HomeScreen'
+import { GeoIcon } from './GeoIcon'
+import { FitGroup, FitText } from './FitText'
+import { SiteTour } from './SiteTour'
+import { useSiteTourOpen } from '../lib/siteTour'
 
 export type World = QuizWorld
 
@@ -14,6 +17,7 @@ interface WorldPickScreenProps {
   onStudio: () => void
   onCompany: () => void
   onShop: () => void
+  onState: () => void
 }
 
 const WORLD_ICON = {
@@ -26,8 +30,6 @@ const WORLD_ICON = {
   astronomy: 'orbit',
   cs: 'code',
   food: 'bowl',
-  music: 'speaker',
-  melody: 'notes',
 } as const
 
 function worldTitle(world: QuizWorld, t: (typeof STRINGS)[Lang]) {
@@ -39,8 +41,6 @@ function worldTitle(world: QuizWorld, t: (typeof STRINGS)[Lang]) {
   if (world === 'math') return t.math
   if (world === 'astronomy') return t.astronomy
   if (world === 'cs') return t.cs
-  if (world === 'music') return t.musicWorld
-  if (world === 'melody') return t.melodyWorld
   return t.food
 }
 
@@ -60,70 +60,71 @@ function WorldArt({ world }: { world: QuizWorld }) {
       </span>
     )
   }
-  if (world === 'leaders') {
-    return (
-      <span className="wp-decree">
-        <GeoIcon name="laurel" size={28} />
-      </span>
-    )
-  }
-  if (world === 'math') {
-    return (
-      <span className="wp-board">
-        <GeoIcon name="sigma" size={28} />
-      </span>
-    )
-  }
-  if (world === 'astronomy') {
-    return (
-      <span className="wp-orbit">
-        <GeoIcon name="orbit" size={28} />
-      </span>
-    )
-  }
-  return (
-    <span className={`wp-theme is-${world}`}>
-      <GeoIcon name={WORLD_ICON[world]} size={28} />
-    </span>
-  )
+  return <GeoIcon name={WORLD_ICON[world]} size={30} />
 }
 
-export function WorldPickScreen({ settings, onPick, onMultiplayer, onStudio, onCompany, onShop }: WorldPickScreenProps) {
+export function WorldPickScreen({ settings, onPick, onMultiplayer, onStudio, onCompany, onShop, onState }: WorldPickScreenProps) {
   const t = STRINGS[settings.lang]
+  const realm = useRealm()
+  const stateLabel = realm.name || t.state
+  const showTour = useSiteTourOpen()
 
   return (
     <div className="screen world-pick-screen">
-      <div className="world-pick-grid">
-        {QUIZ_WORLDS.map((world) => (
-          <button key={world} type="button" className={`world-pick is-${world}`} onClick={() => onPick(world)}>
-            <span className="world-pick-art" aria-hidden="true">
-              <WorldArt world={world} />
-            </span>
-            <span className="world-pick-copy">
-              <FitText minPx={8}>{worldTitle(world, t)}</FitText>
-            </span>
-          </button>
-        ))}
-      </div>
+      <FitGroup wrap minPx={8}>
+        <div className="world-pick-grid" data-tour="worlds">
+          {QUIZ_WORLDS.map((world) => (
+            <button
+              key={world}
+              type="button"
+              className={`world-pick is-${world}`}
+              data-tour={world === 'geo' ? 'geo' : undefined}
+              onClick={() => onPick(world)}
+            >
+              <span className="world-pick-no" aria-hidden="true">
+                {worldCatalogNo(world)}
+              </span>
+              <span className="world-pick-art" aria-hidden="true">
+                <WorldArt world={world} />
+              </span>
+              <span className="world-pick-copy">
+                <FitText>{worldTitle(world, t)}</FitText>
+              </span>
+            </button>
+          ))}
+        </div>
+      </FitGroup>
 
-      <nav className="world-pick-dock" aria-label={t.explore}>
-        <button type="button" className="world-dock-tab" onClick={onCompany}>
-          <GeoIcon name="hq" size={22} />
-          <FitText minPx={8}>{t.company}</FitText>
-        </button>
-        <button type="button" className="world-dock-tab" onClick={onShop}>
-          <GeoIcon name="pin" size={22} />
-          <FitText minPx={8}>{t.shop}</FitText>
-        </button>
-        <button type="button" className="world-dock-tab" onClick={onStudio}>
-          <GeoIcon name="stamp" size={22} />
-          <FitText minPx={8}>{t.studio}</FitText>
-        </button>
-        <button type="button" className="world-dock-tab" onClick={onMultiplayer}>
-          <GeoIcon name="trophy" size={22} />
-          <FitText minPx={8}>{t.multiplayer}</FitText>
-        </button>
+      <button type="button" className="world-pick is-state" data-tour="state" onClick={onState}>
+        <span className="world-pick-art" aria-hidden="true">
+          <GeoIcon name="map" size={28} />
+        </span>
+        <span className="world-pick-copy">
+          <FitText>{stateLabel}</FitText>
+        </span>
+      </button>
+
+      <nav className="world-pick-dock" aria-label={t.explore} data-tour="dock">
+        <FitGroup wrap={false} minPx={7}>
+          <button type="button" className="world-dock-tab" onClick={onCompany}>
+            <GeoIcon name="hq" size={22} />
+            <FitText>{t.company}</FitText>
+          </button>
+          <button type="button" className="world-dock-tab" onClick={onShop}>
+            <GeoIcon name="pin" size={22} />
+            <FitText>{t.shop}</FitText>
+          </button>
+          <button type="button" className="world-dock-tab" onClick={onStudio}>
+            <GeoIcon name="stamp" size={22} />
+            <FitText>{t.studio}</FitText>
+          </button>
+          <button type="button" className="world-dock-tab" onClick={onMultiplayer}>
+            <GeoIcon name="trophy" size={22} />
+            <FitText>{t.multiplayer}</FitText>
+          </button>
+        </FitGroup>
       </nav>
+      {showTour ? <SiteTour lang={settings.lang} /> : null}
     </div>
   )
 }

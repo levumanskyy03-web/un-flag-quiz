@@ -1,11 +1,11 @@
 import { STRINGS, astroQuestionPrompt, themeQuestionPrompt, drivingLabel, footballQuestionPrompt, mathQuestionPrompt, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
+import { QuizClocks } from './QuizClocks'
 import { type Country } from '../data/countries'
 import { findCountry } from '../data/extras'
 import { landNeighbors } from '../data/neighbors'
 import {
   codePromptLabel,
   countryName,
-  formatClock,
   isClubCrestMode,
   isCodeOptionMode,
   isCodePromptMode,
@@ -52,7 +52,7 @@ import { Lives } from './Lives'
 import { QuizMap } from './QuizMap'
 import { QuizSilhouette } from './QuizSilhouette'
 import { RankingFootnote } from './GeoModeGrids'
-import { TOKEN_COST } from '../data/tokens'
+import { powerTokenCost } from '../lib/economyStore'
 import { useTokens } from '../lib/tokenStore'
 import { ChoiceLabel, FitText } from './FitText'
 import { WorldsBack } from './WorldsBack'
@@ -74,6 +74,8 @@ interface QuizScreenProps {
   practice?: boolean
   mix?: boolean
   includeExtras?: boolean
+  includeEraStates?: boolean
+  eraYear?: number
   duel?: {
     opponentName: string
     opponentReady: boolean
@@ -107,13 +109,15 @@ export function QuizScreen({
   total,
   selectedIso,
   timedOut,
-  remainingMs,
-  roundMs,
+  remainingMs: _remainingMs,
+  roundMs: _roundMs,
   livesLeft,
   maxLives,
   practice = false,
   mix = false,
   includeExtras = false,
+  includeEraStates = false,
+  eraYear,
   duel,
   onSelect,
   onNext,
@@ -127,10 +131,7 @@ export function QuizScreen({
   const activeMode = question.mode ?? mode
   const answered = selectedIso !== null || timedOut
   const correctName = countryName(question.country, lang)
-  const secondsLeft = Math.ceil(remainingMs / 1000)
-  const urgent = !answered && remainingMs <= 3000
   const limitMs = questionLimitMs(activeMode, { region, path })
-  const timerWidth = `${Math.max(0, (remainingMs / limitMs) * 100)}%`
   const mapRegion = quizMapRegion(path, region)
   const mixHint = mix ? mixAskHint(activeMode, lang) : null
   const leaderTerm = termById(question.country.iso)
@@ -208,21 +209,15 @@ export function QuizScreen({
       ) : null}
 
       {!practice && (
-        <>
-          <div className="quiz-timers">
-            <div className={`question-clock ${urgent || timedOut ? 'is-urgent' : ''}`}>
-              {timedOut ? t.timedOut : secondsLeft}
-            </div>
-            <div className="round-clock">{t.totalTime(formatClock(roundMs))}</div>
-          </div>
-
-          <div className="progress-track timer-track" aria-hidden="true">
-            <div
-              className={`progress-bar timer-bar ${urgent ? 'is-urgent' : ''}`}
-              style={{ width: timerWidth }}
-            />
-          </div>
-        </>
+        <QuizClocks
+          questionKey={`${index}-${question.country.iso}-${question.waterId ?? ''}`}
+          limitMs={limitMs}
+          paused={answered}
+          timedOut={timedOut}
+          timedOutLabel={t.timedOut}
+          totalTime={t.totalTime}
+          roundIndex={index}
+        />
       )}
 
       {activeMode === 'mapToName' || isWaterMapMode(activeMode) ? (
@@ -245,6 +240,8 @@ export function QuizScreen({
             selectedIso={selectedIso}
             revealed={answered}
             includeExtras={includeExtras}
+            includeEraStates={includeEraStates}
+            eraYear={eraYear}
           />
         </section>
       ) : (
@@ -310,7 +307,7 @@ export function QuizScreen({
           ) : themeItem ? (
             <div className="code-prompt-block">
               {themeAsk ? <p className="neighbors-prompt-label">{themeAsk}</p> : null}
-              {activeMode === 'csPhotoToName' || activeMode === 'musicPhotoToName' ? (
+              {activeMode === 'csPhotoToName' ? (
                 <div className="leader-prompt">
                   <LeaderPortrait
                     name={correctName}
@@ -442,7 +439,7 @@ export function QuizScreen({
           ) : activeMode === 'silhouetteToName' ? (
             <div className="code-prompt-block">
               {mixHint ? null : <p className="neighbors-prompt-label">{t.silhouettePrompt}</p>}
-              <QuizSilhouette iso={question.country.iso} size="hero" />
+              <QuizSilhouette iso={question.country.iso} size="hero" eraYear={eraYear} />
             </div>
           ) : activeMode === 'languageToName' ? (
             <div className="code-prompt-block">
@@ -486,6 +483,8 @@ export function QuizScreen({
           selectedIso={selectedIso}
           revealed={answered}
           includeExtras={includeExtras}
+          includeEraStates={includeEraStates}
+          eraYear={eraYear}
           onPick={onSelect}
         />
       ) : (
@@ -567,7 +566,7 @@ export function QuizScreen({
                   </>
                 ) : activeMode === 'nameToSilhouette' ? (
                   <>
-                    <QuizSilhouette iso={option.iso} size="option" />
+                    <QuizSilhouette iso={option.iso} size="option" eraYear={eraYear} />
                     {answered && <span className="option-caption">{name}</span>}
                   </>
                 ) : activeMode === 'nameToShape' ? (
@@ -596,26 +595,26 @@ export function QuizScreen({
           <button
             type="button"
             className="btn-ghost"
-            disabled={answered || !power.hintReady || tokens.balance < TOKEN_COST.hint}
+            disabled={answered || !power.hintReady || tokens.balance < powerTokenCost('hint')}
             onClick={power.onHint}
           >
-            {t.quizHint} · {TOKEN_COST.hint}
+            {t.quizHint} · {powerTokenCost('hint')}
           </button>
           <button
             type="button"
             className="btn-ghost"
-            disabled={answered || tokens.balance < TOKEN_COST.skip}
+            disabled={answered || tokens.balance < powerTokenCost('skip')}
             onClick={power.onSkip}
           >
-            {t.quizSkip} · {TOKEN_COST.skip}
+            {t.quizSkip} · {powerTokenCost('skip')}
           </button>
           <button
             type="button"
             className="btn-ghost"
-            disabled={answered || power.extraLifeUsed || tokens.balance < TOKEN_COST.life}
+            disabled={answered || power.extraLifeUsed || tokens.balance < powerTokenCost('life')}
             onClick={power.onLife}
           >
-            {t.quizExtraLife} · {TOKEN_COST.life}
+            {t.quizExtraLife} · {powerTokenCost('life')}
           </button>
         </div>
       ) : null}

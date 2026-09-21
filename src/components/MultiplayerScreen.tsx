@@ -11,6 +11,8 @@ import {
   type MatchQueue,
 } from '../lib/duelMatch'
 import { sameModes, type QuizMode } from '../lib/quiz'
+import { modesCatalogNo } from '../lib/modeCatalog'
+import { CatalogNo } from './ModeChoice'
 
 interface MultiplayerScreenProps {
   settings: QuizSettings
@@ -61,10 +63,11 @@ export function MultiplayerScreen({
             <button
               key={queue.id}
               type="button"
-              className={`choice ${sameModes(selected, queue.modes) ? 'is-active' : ''}`}
+              className={`choice has-mode-no ${sameModes(selected, queue.modes) ? 'is-active' : ''}`}
               aria-pressed={sameModes(selected, queue.modes)}
               onClick={() => setSelected([...queue.modes])}
             >
+              <CatalogNo n={modesCatalogNo(queue.modes)} />
               <FitText minPx={9}>{matchQueueTitle(queue, settings.lang)}</FitText>
             </button>
           ))}
@@ -121,10 +124,11 @@ function MatchQueueButton({
   return (
     <button
       type="button"
-      className={`choice has-note is-wide ${active ? 'is-active' : ''}`}
+      className={`choice has-note has-mode-no is-wide ${active ? 'is-active' : ''}`}
       aria-pressed={active}
       onClick={onPick}
     >
+      <CatalogNo n={modesCatalogNo(queue.modes)} />
       <FitText minPx={9}>{matchQueueTitle(queue, lang)}</FitText>
       {note ? (
         <FitText className="choice-note" wrap minPx={7}>

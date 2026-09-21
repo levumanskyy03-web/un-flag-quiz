@@ -32,6 +32,7 @@ import { tokensForDuel } from "@/data/tokens";
 import { loadBests, loadHistory } from "@/lib/history";
 import { loadLevelClears } from "@/lib/levelProgress";
 import { awardAchievementTokens, awardPlayTokens } from "@/lib/tokenStore";
+import { noteWorldTokenGain } from "@/lib/economyStore";
 import { duelPlayWorld, duelWorldHref, normalizeDuelCode } from "./paths";
 
 const POLL_MS = 700;
@@ -246,6 +247,7 @@ export function DuelApp({ code: rawCode }: { code: string }) {
         trackFunnel("duel_end", { world: duelPlayWorld(next) });
         if (next.total > 0) {
           const playGain = awardPlayTokens(tokensForDuel(next.youWon));
+          if (playGain > 0) noteWorldTokenGain(duelPlayWorld(next), playGain);
           const achGain = awardAchievementTokens(loadHistory(), loadBests(), loadLevelClears());
           setEarnedTokens(playGain + achGain);
         } else {
@@ -436,6 +438,7 @@ export function DuelApp({ code: rawCode }: { code: string }) {
         <nav className="legal-links">
           <a href="/about">{t.legalAbout}</a>
           <a href="/privacy">{t.legalPrivacy}</a>
+          <a href="/cookies">{t.legalCookies}</a>
           <a href="/terms">{t.legalTerms}</a>
           <a href="/contacts">{t.legalContacts}</a>
         </nav>

@@ -114,7 +114,7 @@ export function ResultsScreen({
             {totalXp !== undefined ? (
               <span>
                 {' '}
-                · {t.accountLevel(accountProgress(totalXp).level)} · {t.xpTotal(formatXp(totalXp, lang))}
+                · {t.accountLevel(accountProgress(totalXp).level)} · {t.intellectRank(accountProgress(totalXp).level)} · {t.xpTotal(formatXp(totalXp, lang))}
               </span>
             ) : null}
           </p>

@@ -1,6 +1,7 @@
 'use client'
 
-import { MICROSTATE_ISOS, SITE_LISTS } from '../data/lists'
+import type { ListId } from '../data/lists'
+import { SITE_LISTS, listById } from '../data/lists'
 import { PAGE_COPY } from '../i18n/pages'
 import { STRINGS } from '../i18n/strings'
 import { useSiteLang } from '../i18n/siteLang'
@@ -22,7 +23,7 @@ export function ListsIndex() {
         {SITE_LISTS.map((list) => (
           <li key={list.id}>
             <a href={`/lists/${list.id}`}>
-              <span>{copy.listsMicroTitle}</span>
+              <span>{copy.listsCopy[list.id].title}</span>
               <span className="lang-index-count">{list.isos.length}</span>
             </a>
           </li>
@@ -44,21 +45,24 @@ export function ListsPageView() {
   )
 }
 
-export function MicrostatesList() {
+export function SiteList({ id }: { id: ListId }) {
   const { lang } = useSiteLang()
   const copy = PAGE_COPY[lang]
-  const countries = MICROSTATE_ISOS.map((iso) => countryByIso(iso)).filter(
-    (country): country is NonNullable<typeof country> => Boolean(country),
-  )
+  const item = copy.listsCopy[id]
+  const list = listById(id)
+  const countries = (list?.isos ?? [])
+    .map((iso) => countryByIso(iso))
+    .filter((country): country is NonNullable<typeof country> => Boolean(country))
+    .sort((a, b) => countryName(a, lang).localeCompare(countryName(b, lang), lang))
 
   return (
     <>
       <p className="lists-kicker">
         <a href="/lists">{copy.listsTitle}</a>
       </p>
-      <h1>{copy.listsMicroTitle}</h1>
-      <p>{copy.listsMicroLead}</p>
-      <p>{copy.listsMicroNote}</p>
+      <h1>{item.title}</h1>
+      <p>{item.lead}</p>
+      <p>{item.note}</p>
       <div className="country-index">
         {countries.map((country) => {
           const name = countryName(country, lang)
@@ -79,10 +83,10 @@ export function MicrostatesList() {
   )
 }
 
-export function MicrostatesPageView() {
+export function SiteListPageView({ id }: { id: ListId }) {
   return (
     <LegalShell>
-      <MicrostatesList />
+      <SiteList id={id} />
     </LegalShell>
   )
 }

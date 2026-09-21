@@ -15,7 +15,9 @@ import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
-import { FitText } from './FitText'
+import { modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
+import { FitGroup, FitText } from './FitText'
+import { CatalogNo } from './ModeChoice'
 import { setupDifficultyText } from './DifficultyPicker'
 import { footballPlayerPool } from '../data/footballPlayers'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
@@ -24,6 +26,7 @@ import {
   difficultyForMode,
   footballFamilyLabel,
   footballFamilyOf,
+  modesOfFootballFamily,
   settingsForFootballFamily,
 } from '../lib/modeFamilies'
 
@@ -107,32 +110,36 @@ export function FootballScreen({
       <section className="card settings-card">
         <h2>{t.mode}</h2>
         <div className="choice-grid is-modes">
-          {FOOTBALL_PLAY_FAMILIES.map((id) => (
-            <button
-              key={id}
-              type="button"
-              className={`choice ${activeFamily === id ? 'is-active' : ''}`}
-              aria-pressed={activeFamily === id}
-              onClick={() => {
-                applyFootballSettings({ ...settings, ...settingsForFootballFamily(settings, id) })
-                setSetupFamily({ world: 'football', id })
-              }}
-            >
-              <FitText minPx={9}>{footballFamilyLabel(id, settings.lang)}</FitText>
-            </button>
-          ))}
+          <FitGroup wrap minPx={8}>
+            {FOOTBALL_PLAY_FAMILIES.map((id) => (
+              <button
+                key={id}
+                type="button"
+                className={`choice has-mode-no ${activeFamily === id ? 'is-active' : ''}`}
+                aria-pressed={activeFamily === id}
+                onClick={() => {
+                  applyFootballSettings({ ...settings, ...settingsForFootballFamily(settings, id) })
+                  setSetupFamily({ world: 'football', id })
+                }}
+              >
+                <CatalogNo n={modesCatalogNo(modesOfFootballFamily(id))} />
+                <FitText>{footballFamilyLabel(id, settings.lang)}</FitText>
+              </button>
+            ))}
+          </FitGroup>
         </div>
         <div className="mode-aside">
           <h2>{t.familyMix}</h2>
           <button
             type="button"
-            className={`choice has-note is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
+            className={`choice has-note has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
             aria-pressed={activeFamily === 'mix'}
             onClick={() => {
               applyFootballSettings({ ...settings, ...settingsForFootballFamily(settings, 'mix') })
               setSetupFamily({ world: 'football', id: 'mix' })
             }}
           >
+            <CatalogNo n={worldCatalogNo('football')} />
             <FitText minPx={9}>{mix ? mixLabel(mix, settings.lang) : t.familyMix}</FitText>
             <FitText className="choice-note" wrap minPx={7}>
               {t.customMixNote}

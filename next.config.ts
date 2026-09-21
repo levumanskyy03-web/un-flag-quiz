@@ -2,6 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1", "localhost"],
+  async redirects() {
+    return [
+      { source: "/music", destination: "/", permanent: true },
+      { source: "/music/:path*", destination: "/", permanent: true },
+      { source: "/melody", destination: "/", permanent: true },
+      { source: "/melody/:path*", destination: "/", permanent: true },
+    ];
+  },
   experimental: {
     // Persistent Turbopack cache under `.next/dev` was getting deleted mid-run
     // (EMFILE + multiple `next dev`), which restart-looped the server.

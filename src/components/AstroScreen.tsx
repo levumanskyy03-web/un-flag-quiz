@@ -13,7 +13,9 @@ import { HubNav, ASTRO_HUB_TABS, type HubTab } from './HubNav'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
-import { FitText } from './FitText'
+import { modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
+import { FitGroup, FitText } from './FitText'
+import { CatalogNo } from './ModeChoice'
 import { setupDifficultyText } from './DifficultyPicker'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
 import { ASTRO_PEOPLE } from '../data/astro'
@@ -22,6 +24,7 @@ import {
   astroFamilyLabel,
   astroFamilyOf,
   difficultyForMode,
+  modesOfAstroFamily,
   settingsForAstroFamily,
 } from '../lib/modeFamilies'
 
@@ -112,32 +115,36 @@ export function AstroScreen({
       <section className="card settings-card">
         <h2>{t.mode}</h2>
         <div className="choice-grid is-modes">
-          {ASTRO_PLAY_FAMILIES.map((id) => (
-            <button
-              key={id}
-              type="button"
-              className={`choice ${activeFamily === id ? 'is-active' : ''}`}
-              aria-pressed={activeFamily === id}
-              onClick={() => {
-                applyAstroSettings({ ...settings, ...settingsForAstroFamily(settings, id) })
-                setSetupFamily({ world: 'astronomy', id })
-              }}
-            >
-              <FitText minPx={9}>{astroFamilyLabel(id, settings.lang)}</FitText>
-            </button>
-          ))}
+          <FitGroup wrap minPx={8}>
+            {ASTRO_PLAY_FAMILIES.map((id) => (
+              <button
+                key={id}
+                type="button"
+                className={`choice has-mode-no ${activeFamily === id ? 'is-active' : ''}`}
+                aria-pressed={activeFamily === id}
+                onClick={() => {
+                  applyAstroSettings({ ...settings, ...settingsForAstroFamily(settings, id) })
+                  setSetupFamily({ world: 'astronomy', id })
+                }}
+              >
+                <CatalogNo n={modesCatalogNo(modesOfAstroFamily(id))} />
+                <FitText>{astroFamilyLabel(id, settings.lang)}</FitText>
+              </button>
+            ))}
+          </FitGroup>
         </div>
         <div className="mode-aside">
           <h2>{t.familyMix}</h2>
           <button
             type="button"
-            className={`choice has-note is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
+            className={`choice has-note has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
             aria-pressed={activeFamily === 'mix'}
             onClick={() => {
               applyAstroSettings({ ...settings, ...settingsForAstroFamily(settings, 'mix') })
               setSetupFamily({ world: 'astronomy', id: 'mix' })
             }}
           >
+            <CatalogNo n={worldCatalogNo('astronomy')} />
             <FitText minPx={9}>{mix ? mixLabel(mix, settings.lang) : t.familyMix}</FitText>
             <FitText className="choice-note" wrap minPx={7}>
               {t.customMixNote}
