@@ -53,7 +53,7 @@ export function answerKey(country: Country, mode: QuizMode): string {
   if (mode === 'nameToFounded') return `founded:${foundingYearOf(country.iso) ?? country.iso}`
   if (mode === 'nameToCapital') {
     const historical = polityById(country.iso)
-    if (historical) return `capital:${historical.capital.en}`
+    if (historical?.capital?.en) return `capital:${historical.capital.en}`
   }
   if (mode === 'nameToGov') return `gov:${govKindOf(country.iso) ?? country.iso}`
   if (mode === 'nameToDriving') return `drive:${drivingSide(country.iso)}`
