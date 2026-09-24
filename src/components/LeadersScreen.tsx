@@ -163,11 +163,13 @@ export function LeadersSetup({
   onChange,
   showDifficulty = false,
   campaignPercent,
+  onPickMode,
 }: {
   settings: QuizSettings
   onChange: (settings: QuizSettings) => void
   showDifficulty?: boolean
   campaignPercent?: (mode: QuizMode) => number | null
+  onPickMode?: (mode: QuizMode) => void
 }) {
   const t = STRINGS[settings.lang]
   const mode = defaultLeadersMode(settings.mode)
@@ -179,7 +181,9 @@ export function LeadersSetup({
   }
 
   function setAsk(next: LeaderAsk) {
-    onChange({ ...settings, mix: null, mode: leadersModeOf(topic, next) })
+    const nextMode = leadersModeOf(topic, next)
+    onChange({ ...settings, mix: null, mode: nextMode })
+    onPickMode?.(nextMode)
   }
 
   return (

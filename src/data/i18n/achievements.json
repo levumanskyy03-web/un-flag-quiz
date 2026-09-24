@@ -2230,5 +2230,125 @@
       "ja": "ハードコアの数学10問以上を終える",
       "he": "סיימו סיבוב הארדקור במתמטיקה של 10+"
     }
+  },
+  "roundsTenK": {
+    "title": {
+      "de": "Zehntausend Runden",
+      "zh": "一万轮",
+      "es": "Diez mil rondas",
+      "hi": "दस हज़ार राउंड",
+      "ar": "عشرة آلاف جولة",
+      "bn": "দশ হাজার রাউন্ড",
+      "pt": "Dez mil rodadas",
+      "ja": "一万ラウンド",
+      "he": "עשרת אלפים סבבים"
+    },
+    "hint": {
+      "de": "Vermächtnis. Beenden Sie 10 000 Runden",
+      "zh": "传承。完成 10 000 轮",
+      "es": "Legado. Termina 10 000 rondas",
+      "hi": "विरासत। 10 000 राउंड पूरे करें",
+      "ar": "الإرث. أنهِ 10 000 جولة",
+      "bn": "উত্তরাধিকার। ১০ ০০০ রাউন্ড শেষ করুন",
+      "pt": "Legado. Termine 10 000 rodadas",
+      "ja": "レガシー。10 000ラウンドを完了",
+      "he": "מורשת. סיימו 10 000 סבבים"
+    }
+  },
+  "allStampsFive": {
+    "title": {
+      "de": "Volles Album",
+      "zh": "集邮完整",
+      "es": "Álbum completo",
+      "hi": "पूरा एल्बम",
+      "ar": "الألبوم الكامل",
+      "bn": "পূর্ণ অ্যালবাম",
+      "pt": "Álbum completo",
+      "ja": "コンプリートアルバム",
+      "he": "אלבום מלא"
+    },
+    "hint": {
+      "de": "Vermächtnis. 5 Marken für jedes UN-Land",
+      "zh": "传承。每个联合国国家集齐 5 枚邮票",
+      "es": "Legado. 5 sellos por cada país de la ONU",
+      "hi": "विरासत। हर संयुक्त राष्ट्र देश के 5 डाक टिकट",
+      "ar": "الإرث. 5 طوابع لكل دولة في الأمم المتحدة",
+      "bn": "উত্তরাধিকার। প্রতিটি জাতিসংঘ দেশের ৫টি স্ট্যাম্প",
+      "pt": "Legado. 5 selos de cada país da ONU",
+      "ja": "レガシー。全国連加盟国のスタンプを5枚ずつ",
+      "he": "מורשת. 5 בולים לכל מדינת או״ם"
+    }
+  },
+  "dailyYear": {
+    "title": {
+      "de": "Ein Jahr täglich",
+      "zh": "每日一年",
+      "es": "Un año diario",
+      "hi": "रोज़ का साल",
+      "ar": "سنة يومية",
+      "bn": "দৈনিক এক বছর",
+      "pt": "Um ano diário",
+      "ja": "毎日一年",
+      "he": "שנה יומית"
+    },
+    "hint": {
+      "de": "Vermächtnis. 365 Tagesherausforderungen in Folge",
+      "zh": "传承。连续 365 天完成每日挑战",
+      "es": "Legado. 365 retos diarios seguidos",
+      "hi": "विरासत। लगातार 365 दैनिक चुनौतियाँ",
+      "ar": "الإرث. 365 تحدياً يومياً متتالياً",
+      "bn": "উত্তরাধিকার। একটানা ৩৬৫ দৈনিক চ্যালেঞ্জ",
+      "pt": "Legado. 365 desafios diários seguidos",
+      "ja": "レガシー。デイリーチャレンジ365日連続",
+      "he": "מורשת. 365 אתגרים יומיים ברצף"
+    }
+  },
+  "duelThousand": {
+    "title": {
+      "de": "Tausend Duelle",
+      "zh": "千场对决",
+      "es": "Mil duelos",
+      "hi": "हज़ार द्वंद्व",
+      "ar": "ألف مبارزة",
+      "bn": "হাজার দ্বৈরথ",
+      "pt": "Mil duelos",
+      "ja": "千のデュエル",
+      "he": "אלף דו־קרבות"
+    },
+    "hint": {
+      "de": "Vermächtnis. Gewinnen Sie 1000 Duelle",
+      "zh": "传承。赢得 1000 场对决",
+      "es": "Legado. Gana 1000 duelos",
+      "hi": "विरासत। 1000 द्वंद्व जीतें",
+      "ar": "الإرث. اربح 1000 مبارزة",
+      "bn": "উত্তরাধিকার। ১০০০ দ্বৈরথ জিতুন",
+      "pt": "Legado. Vença 1000 duelos",
+      "ja": "レガシー。デュエルで1000勝",
+      "he": "מורשת. נצחו ב־1000 דו־קרבות"
+    }
+  },
+  "allWorldsStamps": {
+    "title": {
+      "de": "Jede Marke",
+      "zh": "所有邮票",
+      "es": "Todos los sellos",
+      "hi": "सभी डाक टिकट",
+      "ar": "كل الطوابع",
+      "bn": "সব স্ট্যাম্প",
+      "pt": "Todos os selos",
+      "ja": "すべてのスタンプ",
+      "he": "כל הבולים"
+    },
+    "hint": {
+      "de": "Vermächtnis. Mindestens eine Marke jeder Welt",
+      "zh": "传承。每个世界的每枚邮票至少一枚",
+      "es": "Legado. Al menos un sello de cada mundo",
+      "hi": "विरासत। हर दुनिया का कम से कम एक डाक टिकट",
+      "ar": "الإرث. طابع واحد على الأقل من كل عالم",
+      "bn": "উত্তরাধিকার। প্রতিটি জগতের অন্তত একটি স্ট্যাম্প",
+      "pt": "Legado. Pelo menos um selo de cada mundo",
+      "ja": "レガシー。全ワールドのスタンプを各1枚以上",
+      "he": "מורשת. לפחות בול אחד מכל עולם"
+    }
   }
 }

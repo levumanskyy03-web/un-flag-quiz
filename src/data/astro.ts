@@ -3,6 +3,7 @@ import type { Lang } from '../i18n/lang'
 import { pickL, t11, type L11 } from './math'
 import type { AstroMode } from '../lib/quiz/astroModes'
 import { ASTRO_LEVEL_QUESTIONS } from '../lib/quiz/astroModes'
+import { DEEP_SKY_OBJECTS, SPACE_MISSIONS, SPACE_TELESCOPES } from './astroExploration'
 
 export type AstroTier = 'easy' | 'medium' | 'hard'
 
@@ -84,8 +85,8 @@ const PLANET_META: { id: AstroBodyId; order: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8; kind
   { id: 'venus', order: 2, kind: 'rock', tier: 'easy' },
   { id: 'earth', order: 3, kind: 'rock', tier: 'easy' },
   { id: 'mars', order: 4, kind: 'rock', tier: 'easy' },
-  { id: 'jupiter', order: 5, kind: 'gas', tier: 'easy' },
-  { id: 'saturn', order: 6, kind: 'gas', tier: 'easy' },
+  { id: 'jupiter', order: 5, kind: 'gas', tier: 'medium' },
+  { id: 'saturn', order: 6, kind: 'gas', tier: 'medium' },
   { id: 'uranus', order: 7, kind: 'ice', tier: 'medium' },
   { id: 'neptune', order: 8, kind: 'ice', tier: 'medium' },
 ]
@@ -100,8 +101,33 @@ const MOONS: { id: string; name: L11; planet: AstroBodyId; tier: AstroTier }[] =
   { id: 'callisto', name: t11('Каллисто', 'Callisto', 'Kallisto', '木卫四', 'Calisto', 'कैलिस्टो', 'كاليستو', 'ক্যালিস্টো', 'Calisto', 'カリスト', 'קליסטו'), planet: 'jupiter', tier: 'medium' },
   { id: 'titan', name: t11('Титан', 'Titan', 'Titan', '土卫六', 'Titán', 'टाइटन', 'تيتان', 'টাইটান', 'Titã', 'タイタン', 'טיטאן'), planet: 'saturn', tier: 'easy' },
   { id: 'enceladus', name: t11('Энцелад', 'Enceladus', 'Enceladus', '土卫二', 'Encélado', 'एन्सेलैडस', 'إنسيلادوس', 'এনসেলাডাস', 'Encélado', 'エンケラドゥス', 'אנקלדוס'), planet: 'saturn', tier: 'hard' },
+  { id: 'mimas', name: t11('Мимас', 'Mimas', 'Mimas', '土卫一', 'Mimas', 'मीमास', 'ميماس', 'মিমাস', 'Mimas', 'ミマス', 'מימס'), planet: 'saturn', tier: 'medium' },
+  { id: 'rhea', name: t11('Рея', 'Rhea', 'Rhea', '土卫五', 'Rea', 'रिया', 'ريا', 'রিয়া', 'Reia', 'レア', 'ריאה'), planet: 'saturn', tier: 'medium' },
+  { id: 'iapetus', name: t11('Япет', 'Iapetus', 'Iapetus', '土卫八', 'Jápeto', 'आइपेटस', 'إيابيتوس', 'ইয়াপেটাস', 'Jápeto', 'イアペトゥス', 'יאפטוס'), planet: 'saturn', tier: 'hard' },
+  { id: 'titania', name: t11('Титания', 'Titania', 'Titania', '天卫三', 'Titania', 'टाइटेनिया', 'تيتانيا', 'টাইটানিয়া', 'Titânia', 'チタニア', 'טיטניה'), planet: 'uranus', tier: 'medium' },
+  { id: 'oberon', name: t11('Оберон', 'Oberon', 'Oberon', '天卫四', 'Oberón', 'ओबेरॉन', 'أوبيرون', 'ওবেরন', 'Oberon', 'オベロン', 'אוברון'), planet: 'uranus', tier: 'hard' },
   { id: 'triton', name: t11('Тритон', 'Triton', 'Triton', '海卫一', 'Tritón', 'ट्राइटन', 'ترايتون', 'ট্রাইটন', 'Tritão', 'トリトン', 'טריטון'), planet: 'neptune', tier: 'medium' },
+  { id: 'nereid', name: t11('Нереида', 'Nereid', 'Nereid', '海卫二', 'Nereida', 'नेरीड', 'نيريد', 'নেরেইড', 'Nereida', 'ネレイド', 'נראיד'), planet: 'neptune', tier: 'hard' },
 ]
+
+const MOON_FACTS: Record<string, L11[]> = {
+  moon: [t11('Единственный естественный спутник Земли; на нём были люди.', 'Earth’s only natural satellite; visited by humans.', 'Einziger natürlicher Erdmond; von Menschen besucht.', '地球唯一的天然卫星；人类曾登临。', 'Único satélite natural de la Tierra; visitado por humanos.', 'पृथ्वी का एकमात्र प्राकृतिक उपग्रह; मानव वहाँ गए।', 'القمر الطبيعي الوحيد للأرض؛ زاره البشر.', 'পৃথিবীর একমাত্র প্রাকৃতিক উপগ্রহ; মানুষ সেখানে গেছে।', 'Único satélite natural da Terra; visitado por humanos.', '地球唯一の天然衛星。人類が訪問。', 'הלוויין הטבעי היחיד של כדור הארץ; בני אדם ביקרו בו.')],
+  phobos: [t11('Крупнейший спутник Марса; медленно приближается к планете.', 'Larger moon of Mars; slowly spiraling inward.', 'Größerer Marsmond; nähert sich langsam dem Planeten.', '火星较大的卫星；正缓慢接近火星。', 'La mayor luna de Marte; se acerca lentamente.', 'मंगल का बड़ा चंद्रमा; धीरे-धीरे पास आ रहा है।', 'قمر المريخ الأكبر؛ يقترب ببطء من الكوكب.', 'মঙ্গলের বড় চাঁদ; ধীরে ধীরে কাছে আসছে।', 'Maior lua de Marte; aproxima-se lentamente.', '火星の大きい方の衛星。徐々に接近中。', 'הירח הגדול של מאדים; מתקרב אליו לאט.')],
+  deimos: [t11('Меньший и внешний спутник Марса.', 'Smaller, outer moon of Mars.', 'Kleinerer äußerer Marsmond.', '火星较小、较外侧的卫星。', 'La luna menor y exterior de Marte.', 'मंगल का छोटा बाहरी चंद्रमा।', 'قمر المريخ الأصغر والأبعد.', 'মঙ্গলের ছোট বাইরের চাঁদ।', 'Lua menor e exterior de Marte.', '火星の小さく外側の衛星。', 'הירח הקטן והחיצוני של מאדים.')],
+  io: [t11('Самый вулканически активный мир Солнечной системы.', 'Most volcanically active world in the Solar System.', 'Vulkanisch aktivste Welt im Sonnensystem.', '太阳系火山活动最活跃的天体。', 'El mundo con más actividad volcánica del Sistema Solar.', 'सौर मंडल की सबसे ज्वालामुखीय दुनिया।', 'أكثر عوالم النظام الشمسي نشاطاً بركانياً.', 'সৌরজগতের সবচেয়ে আগ্নেয় সক্রিয় জগৎ।', 'Mundo mais vulcanicamente ativo do Sistema Solar.', '太陽系で最も火山活動が活発。', 'העולם הפעיל ביותר געשית במערכת השמש.')],
+  europa: [t11('Под ледяной корой скрыт глобальный океан.', 'A global ocean lies beneath its icy crust.', 'Unter der Eiskruste liegt ein globaler Ozean.', '冰壳下存在全球性海洋。', 'Oculta un océano global bajo su corteza helada.', 'बर्फीली पपड़ी के नीचे वैश्विक महासागर।', 'محيط عالمي تحت قشرته الجليدية.', 'বরফের খোলসের নিচে বৈশ্বিক মহাসাগর।', 'Tem um oceano global sob a crosta gelada.', '氷の地殻下に全球規模の海。', 'אוקיינוס עולמי מסתתר מתחת לקרום הקרח.')],
+  ganymede: [t11('Крупнейший спутник Солнечной системы; больше Меркурия.', 'Largest moon in the Solar System; bigger than Mercury.', 'Größter Mond; größer als Merkur.', '太阳系最大卫星；比水星还大。', 'La mayor luna del Sistema Solar; mayor que Mercurio.', 'सौर मंडल का सबसे बड़ा चंद्रमा; बुध से बड़ा।', 'أكبر قمر في النظام الشمسي؛ أكبر من عطارد.', 'সৌরজগতের বৃহত্তম চাঁদ; বুধের চেয়েও বড়।', 'Maior lua do Sistema Solar; maior que Mercúrio.', '太陽系最大の衛星。水星より大きい。', 'הירח הגדול במערכת השמש; גדול מכוכב חמה.')],
+  callisto: [t11('Древняя поверхность покрыта множеством кратеров.', 'Ancient surface densely covered with craters.', 'Alte, dicht mit Kratern bedeckte Oberfläche.', '古老表面密布撞击坑。', 'Superficie antigua cubierta de cráteres.', 'प्राचीन सतह घने गड्ढों से ढकी है।', 'سطح قديم مغطى بكثافة بالفوهات.', 'প্রাচীন পৃষ্ঠ ঘন গহ্বরে ঢাকা।', 'Superfície antiga coberta de crateras.', '古い表面はクレーターだらけ。', 'פני שטח עתיקים ומכוסים במכתשים.')],
+  titan: [t11('Плотная азотная атмосфера и озёра жидкого метана.', 'Thick nitrogen atmosphere and liquid-methane lakes.', 'Dichte Stickstoffatmosphäre und Methanseen.', '浓厚氮气大气与液态甲烷湖。', 'Atmósfera densa de nitrógeno y lagos de metano.', 'घना नाइट्रोजन वायुमंडल और मीथेन झीलें।', 'غلاف نيتروجيني كثيف وبحيرات ميثان سائل.', 'ঘন নাইট্রোজেন বায়ুমণ্ডল ও তরল মিথেন হ্রদ।', 'Atmosfera densa de azoto e lagos de metano.', '濃い窒素大気と液体メタンの湖。', 'אטמוספרת חנקן סמיכה ואגמי מתאן נוזלי.')],
+  enceladus: [t11('Ледяные гейзеры выбрасываются из подповерхностного океана.', 'Icy geysers erupt from a subsurface ocean.', 'Eisgeysire speisen sich aus einem unterirdischen Ozean.', '冰喷泉来自地下海洋。', 'Géiseres helados brotan de un océano subterráneo.', 'भूमिगत महासागर से बर्फीले फव्वारे निकलते हैं।', 'نوافير جليدية تنبع من محيط تحت السطح.', 'ভূগর্ভস্থ মহাসাগর থেকে বরফের গিজার বের হয়।', 'Géiseres gelados vêm de um oceano subterrâneo.', '地下海から氷の間欠泉が噴出。', 'גייזרי קרח פורצים מאוקיינוס תת־קרקעי.')],
+  mimas: [t11('Огромный кратер Гершель делает его похожим на «Звезду смерти».', 'Huge Herschel crater makes it resemble the Death Star.', 'Der große Herschel-Krater erinnert an den Todesstern.', '巨大的赫歇尔陨石坑使其酷似“死星”。', 'El enorme cráter Herschel recuerda a la Estrella de la Muerte.', 'विशाल हर्शेल गड्ढा इसे डेथ स्टार जैसा बनाता है।', 'تجعله فوهة هيرشل الضخمة شبيهاً بنجمة الموت.', 'বিশাল হার্শেল গহ্বর একে ডেথ স্টারের মতো করে।', 'A enorme cratera Herschel lembra a Estrela da Morte.', '巨大なハーシェル・クレーターでデス・スターに似る。', 'מכתש הרשל הענק גורם לו להיראות כמו כוכב המוות.')],
+  rhea: [t11('Второй по величине спутник Сатурна.', 'Second-largest moon of Saturn.', 'Zweitgrößter Saturnmond.', '土星第二大卫星。', 'Segunda luna más grande de Saturno.', 'शनि का दूसरा सबसे बड़ा चंद्रमा।', 'ثاني أكبر أقمار زحل.', 'শনির দ্বিতীয় বৃহত্তম চাঁদ।', 'Segunda maior lua de Saturno.', '土星で2番目に大きい衛星。', 'הירח השני בגודלו של שבתאי.')],
+  iapetus: [t11('Одно полушарие намного темнее другого; на экваторе есть хребет.', 'One hemisphere is far darker; an equatorial ridge circles it.', 'Eine Hälfte ist viel dunkler; ein Äquatorwall umgibt ihn.', '一侧远暗于另一侧；赤道有高脊。', 'Un hemisferio es mucho más oscuro; tiene una cresta ecuatorial.', 'एक गोलार्ध बहुत गहरा; भूमध्यरेखा पर पर्वत-रीढ़।', 'نصفه أغمق كثيراً وله سلسلة على خط الاستواء.', 'এক গোলার্ধ অনেক গাঢ়; বিষুবীয় পর্বতশ্রেণি আছে।', 'Um hemisfério é muito mais escuro; tem uma crista equatorial.', '片側が非常に暗く、赤道に尾根がある。', 'חצי אחד כהה בהרבה; רכס מקיף את קו המשווה.')],
+  titania: [t11('Крупнейший спутник Урана.', 'Largest moon of Uranus.', 'Größter Mond des Uranus.', '天王星最大卫星。', 'La mayor luna de Urano.', 'यूरेनस का सबसे बड़ा चंद्रमा।', 'أكبر أقمار أورانوس.', 'ইউরেনাসের বৃহত্তম চাঁদ।', 'Maior lua de Urano.', '天王星最大の衛星。', 'הירח הגדול ביותר של אורנוס.')],
+  oberon: [t11('Второй по величине спутник Урана, покрытый кратерами.', 'Second-largest moon of Uranus, heavily cratered.', 'Zweitgrößter Uranusmond, stark verkratert.', '天王星第二大、布满撞击坑的卫星。', 'Segunda luna de Urano, muy craterizada.', 'यूरेनस का दूसरा बड़ा, गड्ढों वाला चंद्रमा।', 'ثاني أكبر أقمار أورانوس ومليء بالفوهات.', 'ইউরেনাসের দ্বিতীয় বৃহত্তম, গহ্বরময় চাঁদ।', 'Segunda maior lua de Urano, cheia de crateras.', '天王星で2番目に大きくクレーターが多い。', 'הירח השני בגודלו של אורנוס, מלא מכתשים.')],
+  triton: [t11('Движется по ретроградной орбите и имеет азотные гейзеры.', 'Has a retrograde orbit and nitrogen geysers.', 'Retrograde Bahn und Stickstoffgeysire.', '逆行轨道，并有氮喷泉。', 'Órbita retrógrada y géiseres de nitrógeno.', 'प्रतिगामी कक्षा और नाइट्रोजन गीजर।', 'مدار رجعي ونوافير نيتروجين.', 'বিপরীতমুখী কক্ষপথ ও নাইট্রোজেন গিজার।', 'Órbita retrógrada e géiseres de azoto.', '逆行軌道と窒素の間欠泉。', 'מסלול נסוג וגייזרי חנקן.')],
+  nereid: [t11('Один из самых вытянутых спутниковых орбит в Солнечной системе.', 'One of the most eccentric moon orbits in the Solar System.', 'Eine der exzentrischsten Mondbahnen im Sonnensystem.', '拥有太阳系最偏心的卫星轨道之一。', 'Una de las órbitas lunares más excéntricas del Sistema Solar.', 'सौर मंडल की सबसे दीर्घवृत्तीय चंद्र कक्षाओं में एक।', 'له أحد أكثر مدارات الأقمار استطالة في النظام الشمسي.', 'সৌরজগতের অন্যতম উপবৃত্তাকার চাঁদের কক্ষপথ।', 'Uma das órbitas lunares mais excêntricas do Sistema Solar.', '太陽系でも特に離心率が大きい衛星軌道。', 'אחד ממסלולי הירחים האליפטיים ביותר במערכת השמש.')],
+}
 
 const STARS: { id: string; name: L11; klass: L11; tier: AstroTier }[] = [
   {
@@ -138,6 +164,42 @@ const STARS: { id: string; name: L11; klass: L11; tier: AstroTier }[] = [
     id: 'proxima',
     name: t11('Проксима Центавра', 'Proxima Centauri', 'Proxima Centauri', '比邻星', 'Próxima Centauri', 'प्रॉक्सिमा सेंटॉरी', 'قنطورस الأقرب', 'প্রক্সিমা সেন্টাউরি', 'Proxima Centauri', 'プロキシマ・ケンタウリ', 'פרוקסימה קנטאורי'),
     klass: t11('M5.5V, ближайшая после Солнца', 'M5.5V, nearest after the Sun', 'M5.5V, nächster Stern nach der Sonne', 'M5.5V，太阳后最近', 'M5.5V, la más cercana tras el Sol', 'M5.5V, सूर्य के बाद निकटतम', 'M5.5V الأقرب بعد الشمس', 'M5.5V সূর্যের পর নিকটতম', 'M5.5V, a mais próxima após o Sol', 'M5.5V、太陽の次に近い', 'M5.5V, הקרובה אחרי השמש'),
+    tier: 'hard',
+  },
+  {
+    id: 'rigel',
+    name: t11('Ригель', 'Rigel', 'Rigel', '参宿七', 'Rigel', 'रिगेल', 'رجل الجبار', 'রাইজেল', 'Rigel', 'リゲル', 'ריג׳ל'),
+    klass: t11('B8Ia, голубой сверхгигант Ориона', 'B8Ia blue supergiant in Orion', 'B8Ia blauer Überriese im Orion', 'B8Ia，猎户座蓝超巨星', 'Supergigante azul B8Ia de Orión', 'B8Ia, ओरायन का नीला महादानव', 'عملاق أزرق فائق B8Ia في الجبار', 'B8Ia, ওরায়নের নীল অতিদানব', 'Supergigante azul B8Ia em Órion', 'B8Ia、オリオン座の青色超巨星', 'B8Ia, על־ענק כחול באוריון'),
+    tier: 'easy',
+  },
+  {
+    id: 'alpha-centauri',
+    name: t11('Альфа Центавра', 'Alpha Centauri', 'Alpha Centauri', '南门二', 'Alfa Centauri', 'अल्फा सेंटॉरी', 'ألفا قنطورس', 'আলফা সেন্টরি', 'Alpha Centauri', 'アルファ・ケンタウリ', 'אלפא קנטאורי'),
+    klass: t11('Тройная система, ближайшая к Солнцу', 'Nearest star system to the Sun; triple system', 'Nächstes Sternsystem; Dreifachsystem', '距太阳最近的三星系统', 'Sistema triple más cercano al Sol', 'सूर्य के निकटतम तीन तारों का तंत्र', 'أقرب نظام نجمي إلى الشمس؛ ثلاثي', 'সূর্যের নিকটতম ত্রৈত তারকা ব্যবস্থা', 'Sistema triplo mais próximo do Sol', '太陽に最も近い三重星系', 'מערכת משולשת הקרובה ביותר לשמש'),
+    tier: 'easy',
+  },
+  {
+    id: 'arcturus',
+    name: t11('Арктур', 'Arcturus', 'Arktur', '大角星', 'Arturo', 'स्वाति', 'السماك الرامح', 'স্বাতী', 'Arcturus', 'アークトゥルス', 'ארקטורוס'),
+    klass: t11('K1.5III, яркий оранжевый гигант', 'K1.5III bright orange giant', 'K1.5III heller oranger Riese', 'K1.5III，明亮橙巨星', 'Gigante naranja brillante K1.5III', 'K1.5III, चमकीला नारंगी दानव', 'عملاق برتقالي ساطع K1.5III', 'K1.5III, উজ্জ্বল কমলা দানব', 'Gigante laranja brilhante K1.5III', 'K1.5III、明るい橙色巨星', 'K1.5III, ענק כתום בהיר'),
+    tier: 'medium',
+  },
+  {
+    id: 'antares',
+    name: t11('Антарес', 'Antares', 'Antares', '心宿二', 'Antares', 'ज्येष्ठा', 'قلب العقرب', 'জ্যেষ্ঠা', 'Antares', 'アンタレス', 'אנטארס'),
+    klass: t11('M1.5Iab, красный сверхгигант Скорпиона', 'M1.5Iab red supergiant in Scorpius', 'M1.5Iab roter Überriese im Skorpion', 'M1.5Iab，天蝎座红超巨星', 'Supergigante roja M1.5Iab de Escorpio', 'M1.5Iab, वृश्चिक का लाल महादानव', 'عملاق أحمر فائق M1.5Iab في العقرب', 'M1.5Iab, বৃশ্চিকের লাল অতিদানব', 'Supergigante vermelha M1.5Iab em Escorpião', 'M1.5Iab、さそり座の赤色超巨星', 'M1.5Iab, על־ענק אדום בעקרב'),
+    tier: 'medium',
+  },
+  {
+    id: 'deneb',
+    name: t11('Денеб', 'Deneb', 'Deneb', '天津四', 'Deneb', 'देनेब', 'ذنب الدجاجة', 'ডেনেব', 'Deneb', 'デネブ', 'דנב'),
+    klass: t11('A2Ia, белый сверхгигант в Лебеде', 'A2Ia white supergiant in Cygnus', 'A2Ia weißer Überriese im Schwan', 'A2Ia，天鹅座白超巨星', 'Supergigante blanca A2Ia del Cisne', 'A2Ia, हंस का श्वेत महादानव', 'عملاق أبيض فائق A2Ia في الدجاجة', 'A2Ia, রাজহাঁসের সাদা অতিদানব', 'Supergigante branca A2Ia no Cisne', 'A2Ia、はくちょう座の白色超巨星', 'A2Ia, על־ענק לבן בברבור'),
+    tier: 'hard',
+  },
+  {
+    id: 'altair',
+    name: t11('Альтаир', 'Altair', 'Altair', '牛郎星', 'Altair', 'श्रवण', 'النسر الطائر', 'শ্রবণা', 'Altair', 'アルタイル', 'אלטאיר'),
+    klass: t11('A7V, быстро вращается; вершина Летнего треугольника', 'A7V fast rotator; Summer Triangle star', 'A7V schnell rotierend; Sommerdreieck', 'A7V，快速自转；夏季大三角之一', 'A7V, rotación rápida; Triángulo de Verano', 'A7V, तेज घूर्णन; ग्रीष्म त्रिकोण', 'A7V سريع الدوران؛ من مثلث الصيف', 'A7V, দ্রুত ঘূর্ণন; গ্রীষ্ম ত্রিভুজ', 'A7V, rotação rápida; Triângulo de Verão', 'A7V、高速自転。夏の大三角', 'A7V, מסתובב במהירות; משולש הקיץ'),
     tier: 'hard',
   },
 ]
@@ -178,6 +240,42 @@ const CONSTELS: { id: string; clue: L11; name: L11; tier: AstroTier }[] = [
     clue: t11('Галактика M31 «висит» в этом созвездии', 'Galaxy M31 sits in this constellation', 'Galaxie M31 in diesem Sternbild', 'M31 星系在此星座', 'La galaxia M31 está aquí', 'M31 यहीं है', 'مجرة M31 هنا', 'M31 এখানে', 'A galáxia M31 fica aqui', 'M31はこの星座', 'גלקסיית M31 כאן'),
     name: t11('Андромеда', 'Andromeda', 'Andromeda', '仙女座', 'Andrómeda', 'अंड्रोमेडा', 'المرأة المسلسلة', 'অ্যান্ড্রোমিডা', 'Andrómeda', 'アンドロメダ座', 'אנדרומדה'),
     tier: 'medium',
+  },
+  {
+    id: 'leo',
+    clue: t11('Лев с ярким Регулом', 'Lion with bright Regulus', 'Löwe mit dem hellen Regulus', '拥有明亮轩辕十四的狮子', 'León con la brillante Régulo', 'चमकीले रेगुलस वाला सिंह', 'الأسد مع النجم اللامع قلب الأسد', 'উজ্জ্বল রেগুলাসসহ সিংহ', 'Leão com o brilhante Régulo', 'レグルスを持つ獅子', 'אריה עם רגולוס הבהיר'),
+    name: t11('Лев', 'Leo', 'Löwe', '狮子座', 'Leo', 'सिंह', 'الأسد', 'সিংহ', 'Leão', 'しし座', 'אריה'),
+    tier: 'easy',
+  },
+  {
+    id: 'cyg',
+    clue: t11('Северный Крест с ярким Денебом', 'Northern Cross with bright Deneb', 'Nordkreuz mit dem hellen Deneb', '拥有明亮天津四的北十字', 'Cruz del Norte con la brillante Deneb', 'चमकीले डेनेब वाला उत्तरी क्रॉस', 'الصليب الشمالي مع ذنب الدجاجة', 'উজ্জ্বল ডেনেবসহ উত্তর ক্রুশ', 'Cruz do Norte com o brilhante Deneb', 'デネブを持つ北十字', 'הצלב הצפוני עם דנב'),
+    name: t11('Лебедь', 'Cygnus', 'Schwan', '天鹅座', 'Cisne', 'हंस', 'الدجاجة', 'রাজহাঁস', 'Cisne', 'はくちょう座', 'ברבור'),
+    tier: 'easy',
+  },
+  {
+    id: 'lyr',
+    clue: t11('Небольшое созвездие с Вегой', 'Small constellation containing Vega', 'Kleines Sternbild mit Wega', '包含织女星的小星座', 'Pequeña constelación con Vega', 'वेगा वाला छोटा तारामंडल', 'كوكبة صغيرة تضم النسر الواقع', 'ভেগাসহ ছোট তারামণ্ডল', 'Pequena constelação com Vega', 'ベガを含む小さな星座', 'קבוצה קטנה ובה וגה'),
+    name: t11('Лира', 'Lyra', 'Leier', '天琴座', 'Lira', 'वीणा', 'القيثارة', 'বীণা', 'Lira', 'こと座', 'נבל'),
+    tier: 'medium',
+  },
+  {
+    id: 'tau',
+    clue: t11('Бык с Альдебараном и Плеядами', 'Bull with Aldebaran and the Pleiades', 'Stier mit Aldebaran und Plejaden', '拥有毕宿五和昴星团的公牛', 'Toro con Aldebarán y las Pléyades', 'अल्देबारन और कृत्तिका वाला वृषभ', 'الثور مع الدبران والثريا', 'অ্যালডেবারান ও কৃত্তিকাসহ বৃষ', 'Touro com Aldebarã e as Plêiades', 'アルデバランとプレアデスの牡牛', 'שור עם אלדברן והפליאדות'),
+    name: t11('Телец', 'Taurus', 'Stier', '金牛座', 'Tauro', 'वृषभ', 'الثور', 'বৃষ', 'Touro', 'おうし座', 'שור'),
+    tier: 'medium',
+  },
+  {
+    id: 'gem',
+    clue: t11('Близнецы Кастор и Поллукс', 'Twins Castor and Pollux', 'Zwillinge Kastor und Pollux', '北河二与北河三双子', 'Gemelos Cástor y Pólux', 'कैस्टर और पोलक्स जुड़वाँ', 'التوأمان كاستور وبولوكس', 'ক্যাস্টর ও পোলাক্স যমজ', 'Gémeos Castor e Pólux', 'カストルとポルックスの双子', 'התאומים קסטור ופולוקס'),
+    name: t11('Близнецы', 'Gemini', 'Zwillinge', '双子座', 'Géminis', 'मिथुन', 'التوأمان', 'মিথুন', 'Gémeos', 'ふたご座', 'תאומים'),
+    tier: 'hard',
+  },
+  {
+    id: 'sgr',
+    clue: t11('«Чайник» у центра Млечного Пути', 'Teapot shape toward the Milky Way’s center', 'Teekanne Richtung Zentrum der Milchstraße', '朝向银河系中心的“茶壶”', 'La Tetera hacia el centro de la Vía Láctea', 'आकाशगंगा केंद्र की ओर चायदानी आकृति', 'شكل إبريق الشاي نحو مركز درب التبانة', 'আকাশগঙ্গার কেন্দ্রের দিকে চায়ের পাত্র', 'Bule voltado ao centro da Via Láctea', '天の川中心方向の「ティーポット」', 'צורת קומקום לכיוון מרכז שביל החלב'),
+    name: t11('Стрелец', 'Sagittarius', 'Schütze', '人马座', 'Sagitario', 'धनु', 'القوس', 'ধনু', 'Sagitário', 'いて座', 'קשת'),
+    tier: 'hard',
   },
 ]
 
@@ -270,6 +368,50 @@ export const ASTRO_PEOPLE: AstroPerson[] = [
       t11('Гарвард, каталог Генри Дрейпера.', 'Harvard, Henry Draper Catalogue.', 'Harvard, Henry-Draper-Katalog.', '哈佛，亨利·德雷珀星表。', 'Harvard, catálogo Henry Draper.', 'हार्वर्ड, ड्रेपर सूची।', 'هارفارد وفهرس دريبر.', 'হার্ভার্ড, ড্রেপার ক্যাটালগ।', 'Harvard, catálogo Draper.', 'ハーバード、ドレイパーカタログ。', 'הרווארד, קטלוג דרייפר.'),
     ],
   },
+  {
+    id: 'newton',
+    name: t11('Исаак Ньютон', 'Isaac Newton', 'Isaac Newton', '艾萨克·牛顿', 'Isaac Newton', 'आइज़ैक न्यूटन', 'إسحاق نيوتن', 'আইজ্যাক নিউটন', 'Isaac Newton', 'アイザック・ニュートン', 'אייזק ניוטון'),
+    tier: 'easy',
+    wiki: 'Isaac Newton',
+    wikiFile: 'GodfreyKneller-IsaacNewton-1689.jpg',
+    facts: [
+      t11('Закон всемирного тяготения объяснил орбиты небесных тел.', 'Universal gravitation explained the orbits of celestial bodies.', 'Die Gravitation erklärte die Bahnen der Himmelskörper.', '万有引力解释了天体轨道。', 'La gravitación universal explicó las órbitas celestes.', 'सार्वत्रिक गुरुत्व ने खगोलीय कक्षाएँ समझाईं।', 'فسر قانون الجاذبية مدارات الأجرام السماوية.', 'মহাকর্ষ সূত্র আকাশীয় কক্ষপথ ব্যাখ্যা করেছে।', 'A gravitação universal explicou as órbitas celestes.', '万有引力で天体の軌道を説明。', 'הכבידה האוניברסלית הסבירה מסלולי גרמי שמיים.'),
+      t11('Построил первый практичный телескоп-рефлектор.', 'Built the first practical reflecting telescope.', 'Baute das erste praktische Spiegelteleskop.', '制造首台实用反射望远镜。', 'Construyó el primer telescopio reflector práctico.', 'पहला व्यावहारिक परावर्ती दूरबीन बनाया।', 'بنى أول تلسكوب عاكس عملي.', 'প্রথম ব্যবহারিক প্রতিফলক দূরবীন তৈরি করেন।', 'Construiu o primeiro telescópio refletor prático.', '初の実用的な反射望遠鏡を製作。', 'בנה את טלסקופ המראות המעשי הראשון.'),
+    ],
+  },
+  {
+    id: 'leavitt',
+    name: t11('Генриетта Ливитт', 'Henrietta Swan Leavitt', 'Henrietta Swan Leavitt', '亨丽爱塔·勒维特', 'Henrietta Leavitt', 'हेनरिएटा लेविट', 'هنريتا ليفيت', 'হেনরিয়েটা লিভিট', 'Henrietta Leavitt', 'ヘンリエッタ・リービット', 'הנרייטה ליוויט'),
+    tier: 'medium',
+    wiki: 'Henrietta Swan Leavitt',
+    wikiFile: 'Henrietta Swan Leavitt.jpg',
+    facts: [
+      t11('Открыла связь периода и светимости цефеид.', 'Discovered the period–luminosity relation of Cepheids.', 'Entdeckte die Perioden-Leuchtkraft-Beziehung der Cepheiden.', '发现造父变星的周光关系。', 'Descubrió la relación período-luminosidad de las cefeidas.', 'सेफिड तारों का अवधि-दीप्ति संबंध खोजा।', 'اكتشفت علاقة الفترة باللمعان للنجوم القيفاوية.', 'সেফিডের পর্যায়-উজ্জ্বলতা সম্পর্ক আবিষ্কার করেন।', 'Descobriu a relação período-luminosidade das Cefeidas.', 'セファイドの周期光度関係を発見。', 'גילתה את קשר המחזור־בהירות של קפאידים.'),
+      t11('Её работа позволила измерять расстояния до галактик.', 'Her work enabled measurements of galactic distances.', 'Ihre Arbeit ermöglichte Entfernungen zu Galaxien.', '她的工作使测量星系距离成为可能。', 'Su trabajo permitió medir distancias galácticas.', 'उनके काम से आकाशगंगाओं की दूरी मापी गई।', 'أتاح عملها قياس المسافات إلى المجرات.', 'তাঁর কাজ ছায়াপথের দূরত্ব মাপা সম্ভব করে।', 'O seu trabalho permitiu medir distâncias galácticas.', '銀河までの距離測定を可能にした。', 'עבודתה אפשרה למדוד מרחקים לגלקסיות.'),
+    ],
+  },
+  {
+    id: 'payne',
+    name: t11('Сесилия Пейн-Гапошкина', 'Cecilia Payne-Gaposchkin', 'Cecilia Payne-Gaposchkin', '塞西莉亚·佩恩-加波施金', 'Cecilia Payne-Gaposchkin', 'सेसिलिया पेन-गापोश्किन', 'سيسيليا باين غابوشكين', 'সিসিলিয়া পেইন-গ্যাপোশকিন', 'Cecilia Payne-Gaposchkin', 'セシリア・ペイン＝ガポーシュキン', 'ססיליה פיין־גפושקין'),
+    tier: 'hard',
+    wiki: 'Cecilia Payne-Gaposchkin',
+    wikiFile: 'Cecilia Payne-Gaposchkin.jpg',
+    facts: [
+      t11('Доказала, что звёзды состоят в основном из водорода и гелия.', 'Showed that stars are mostly hydrogen and helium.', 'Zeigte, dass Sterne vor allem aus Wasserstoff und Helium bestehen.', '证明恒星主要由氢和氦组成。', 'Demostró que las estrellas son sobre todo hidrógeno y helio.', 'दिखाया कि तारे मुख्यतः हाइड्रोजन और हीलियम हैं।', 'أثبتت أن النجوم تتكون أساساً من الهيدروجين والهيليوم.', 'প্রমাণ করেন তারা মূলত হাইড্রোজেন ও হিলিয়াম।', 'Mostrou que as estrelas são sobretudo hidrogénio e hélio.', '恒星が主に水素とヘリウムでできると示した。', 'הראתה שכוכבים מורכבים בעיקר ממימן והליום.'),
+      t11('Её диссертация изменила звёздную астрофизику.', 'Her thesis transformed stellar astrophysics.', 'Ihre Dissertation veränderte die stellare Astrophysik.', '她的论文改变了恒星天体物理学。', 'Su tesis transformó la astrofísica estelar.', 'उनकी थीसिस ने तारकीय खगोलभौतिकी बदल दी।', 'غيّرت أطروحتها الفيزياء الفلكية النجمية.', 'তাঁর থিসিস নাক্ষত্রিক জ্যোতির্পদার্থবিদ্যা বদলে দেয়।', 'A sua tese transformou a astrofísica estelar.', '博士論文が恒星天体物理学を変えた。', 'עבודת הדוקטור שלה שינתה את האסטרופיזיקה הכוכבית.'),
+    ],
+  },
+  {
+    id: 'hawking',
+    name: t11('Стивен Хокинг', 'Stephen Hawking', 'Stephen Hawking', '斯蒂芬·霍金', 'Stephen Hawking', 'स्टीफन हॉकिंग', 'ستيفن هوكينغ', 'স্টিফেন হকিং', 'Stephen Hawking', 'スティーヴン・ホーキング', 'סטיבן הוקינג'),
+    tier: 'medium',
+    wiki: 'Stephen Hawking',
+    wikiFile: 'Stephen Hawking.StarChild.jpg',
+    facts: [
+      t11('Предсказал квантовое излучение чёрных дыр.', 'Predicted quantum radiation from black holes.', 'Sagte Quantenstrahlung Schwarzer Löcher voraus.', '预言黑洞的量子辐射。', 'Predijo la radiación cuántica de los agujeros negros.', 'ब्लैक होल से क्वांटम विकिरण की भविष्यवाणी की।', 'تنبأ بالإشعاع الكمي من الثقوب السوداء.', 'কৃষ্ণগহ্বরের কোয়ান্টাম বিকিরণের পূর্বাভাস দেন।', 'Previu radiação quântica dos buracos negros.', 'ブラックホールの量子放射を予言。', 'חזה קרינה קוונטית מחורים שחורים.'),
+      t11('Автор «Краткой истории времени».', 'Author of A Brief History of Time.', 'Autor von Eine kurze Geschichte der Zeit.', '《时间简史》作者。', 'Autor de Breve historia del tiempo.', 'ए ब्रीफ हिस्ट्री ऑफ टाइम के लेखक।', 'مؤلف «تاريخ موجز للزمن».', 'এ ব্রিফ হিস্ট্রি অব টাইম-এর লেখক।', 'Autor de Uma Breve História do Tempo.', '『ホーキング、宇宙を語る』の著者。', 'מחבר ״קיצור תולדות הזמן״.'),
+    ],
+  },
 ]
 
 function personById(id: string): AstroPerson | undefined {
@@ -290,6 +432,11 @@ export const ASTRO_ITEMS: AstroItem[] = [
       body: planet.id,
       key: `k:${planet.kind}`,
     }),
+    row(`p-fact-${planet.id}`, 'planetFactsToName', planet.tier, PLANET[planet.id], PLANET[planet.id], {
+      body: planet.id,
+      facts: [ORDER[planet.order], KIND[planet.kind]],
+      key: `pl:${planet.id}`,
+    }),
   ]),
   ...MOONS.flatMap((moon) => [
     row(`m-${moon.id}`, 'moonToPlanet', moon.tier, moon.name, PLANET[moon.planet], {
@@ -300,12 +447,38 @@ export const ASTRO_ITEMS: AstroItem[] = [
       body: moon.planet,
       key: `mo:${moon.id}`,
     }),
+    row(`moonf-${moon.id}`, 'moonFactsToName', moon.tier, moon.name, moon.name, {
+      body: moon.planet,
+      facts: MOON_FACTS[moon.id],
+      key: `mo:${moon.id}`,
+    }),
   ]),
   ...STARS.map((star) =>
     row(`s-${star.id}`, 'starToClass', star.tier, star.name, star.klass, { key: `st:${star.id}` }),
   ),
   ...CONSTELS.map((item) =>
     row(`c-${item.id}`, 'constelToName', item.tier, item.clue, item.name, { key: `cs:${item.id}` }),
+  ),
+  ...DEEP_SKY_OBJECTS.map((item) =>
+    row(`ds-${item.id}`, 'deepSkyFactsToName', item.tier, item.name, item.name, {
+      facts: item.facts,
+      key: `ds:${item.id}`,
+    }),
+  ),
+  ...SPACE_MISSIONS.flatMap((item) => [
+    row(`mt-${item.id}`, 'missionToTarget', item.tier, item.name, item.target ?? item.name, {
+      key: `target:${item.id}`,
+    }),
+    row(`mf-${item.id}`, 'missionFactsToName', item.tier, item.name, item.name, {
+      facts: item.facts,
+      key: `mission:${item.id}`,
+    }),
+  ]),
+  ...SPACE_TELESCOPES.map((item) =>
+    row(`tf-${item.id}`, 'telescopeFactsToName', item.tier, item.name, item.name, {
+      facts: item.facts,
+      key: `telescope:${item.id}`,
+    }),
   ),
   ...ASTRO_PEOPLE.filter((person) => person.wikiFile).map((person) =>
     row(`ph-${person.id}`, 'astroPhotoToName', person.tier, person.name, person.name, {
@@ -366,7 +539,7 @@ export function astroDisplayName(item: AstroItem, lang: Lang): string {
 }
 
 export function astroPromptOf(item: AstroItem, lang: Lang): string {
-  if (item.mode === 'astroFactsToName' && item.facts?.length) {
+  if (item.facts?.length) {
     return item.facts.map((fact) => pickL(fact, lang)).join('\n')
   }
   return pickL(item.prompt, lang)

@@ -1,9 +1,12 @@
 import { createDuelRoom, parseCreateBody, viewFor } from '../../../../lib/duelStore'
+import { requireGate } from '../../../../lib/empire/serverGate'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
 export async function POST(request: Request) {
+  const gate = await requireGate(request, { kind: 'duelRoom' })
+  if (gate) return gate
   let body: unknown
   try {
     body = await request.json()

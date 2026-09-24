@@ -122,10 +122,14 @@ export function subscribeStamps(listener: Listener) {
 }
 
 const EMPTY_ALBUM: StampAlbum = {}
+const EMPTY_WORLD_ALBUMS: WorldStampAlbums = { geo: EMPTY_ALBUM }
 let geoCache: StampAlbum = EMPTY_ALBUM
 let geoRaw: string | null = null
 let worldCache: WorldStampAlbums = {}
 let worldRaw: string | null = null
+let albumsCache: WorldStampAlbums = EMPTY_WORLD_ALBUMS
+let albumsGeoRaw: string | null = null
+let albumsWorldRaw: string | null = null
 
 export function useStamps() {
   return useSyncExternalStore(subscribeStamps, loadStamps, () => EMPTY_ALBUM)
@@ -198,11 +202,56 @@ export function loadWorldStamps(world: QuizWorld): StampAlbum {
 }
 
 export function loadWorldStampAlbums(): WorldStampAlbums {
-  return { geo: loadStamps(), ...loadWorldMap() }
+  const geo = loadStamps()
+  const worlds = loadWorldMap()
+  if (albumsCache !== EMPTY_WORLD_ALBUMS && albumsGeoRaw === geoRaw && albumsWorldRaw === worldRaw) {
+    return albumsCache
+  }
+  albumsGeoRaw = geoRaw
+  albumsWorldRaw = worldRaw
+  albumsCache = { geo, ...worlds }
+  return albumsCache
+}
+
+export function useStampAlbums() {
+  return useSyncExternalStore(subscribeStamps, loadWorldStampAlbums, () => EMPTY_WORLD_ALBUMS)
 }
 
 export function stampCopies(album: StampAlbum, iso: string): number {
   return album[iso]?.n ?? 0
+}
+
+export function albumSpareCount(album: StampAlbum): number {
+  let n = 0
+  for (const entry of Object.values(album)) n += Math.max(0, entry.n - 1)
+  return n
+}
+
+export type SpareStampLot = { world: QuizWorld; id: string; extra: number }
+
+export function spareStampCount(world?: QuizWorld): number {
+  const albums = loadWorldStampAlbums()
+  if (world) return albumSpareCount(albums[world] ?? {})
+  let n = 0
+  for (const album of Object.values(albums)) {
+    if (album) n += albumSpareCount(album)
+  }
+  return n
+}
+
+export function spareStampLots(limit = 12): SpareStampLot[] {
+  const albums = loadWorldStampAlbums()
+  const lots: SpareStampLot[] = []
+  for (const [world, album] of Object.entries(albums) as [QuizWorld, StampAlbum | undefined][]) {
+    if (!album) continue
+    for (const [id, entry] of Object.entries(album)) {
+      const extra = Math.max(0, entry.n - 1)
+      if (extra <= 0) continue
+      lots.push({ world, id, extra })
+    }
+  }
+  lots.sort((a, b) => b.extra - a.extra || a.id.localeCompare(b.id))
+  return lots.slice(0, Math.max(0, limit))
 }
 
 export function hasStamp(album: StampAlbum, iso: string): boolean {
@@ -265,6 +314,11 @@ function stampKey(answer: RoundAnswer, modeFallback: QuizMode): { world: QuizWor
     if (item.personId) return { world, id: `person:${item.personId}` }
     if (item.key.startsWith('mo:')) return { world, id: item.key }
     if (item.body) return { world, id: `body:${item.body}` }
+    if (item.mode === 'deepSkyFactsToName') return { world, id: `deep-sky:${item.id.slice(3)}` }
+    if (item.mode === 'missionToTarget' || item.mode === 'missionFactsToName') {
+      return { world, id: `mission:${item.id.slice(3)}` }
+    }
+    if (item.mode === 'telescopeFactsToName') return { world, id: `telescope:${item.id.slice(3)}` }
     return { world, id: item.id }
   }
   const item = themeById(iso)
@@ -326,22 +380,64 @@ export function awardRoundStamps(answers: readonly RoundAnswer[], ctx: StampAwar
   return cloneAlbum(geo)
 }
 
-export function takeStampCopy(iso: string): boolean {
-  if (!isStampIso(iso)) return false
-  const album = loadStamps()
-  const entry = album[iso]
+function takeFromAlbum(album: StampAlbum, id: string): boolean {
+  const entry = album[id]
   if (!entry || entry.n < 2) return false
   const n = entry.n - 1
-  if (n <= 0) delete album[iso]
-  else album[iso] = { ...entry, n }
-  saveGeoAlbum(album)
+  if (n <= 0) delete album[id]
+  else album[id] = { ...entry, n }
   return true
 }
 
-export function returnStampCopy(iso: string) {
-  if (!isStampIso(iso)) return
-  const album = loadStamps()
-  const entry = album[iso] ?? { n: 0, modes: [] }
-  album[iso] = { ...entry, n: Math.min(STAMP_MAX, entry.n + 1) }
-  saveGeoAlbum(album)
+export function takeSpareStamps(count: number, world?: QuizWorld): boolean {
+  const need = Math.max(0, Math.floor(count))
+  if (need <= 0) return true
+  const lots = spareStampLots(10_000).filter((lot) => !world || lot.world === world)
+  const have = lots.reduce((sum, lot) => sum + lot.extra, 0)
+  if (have < need) return false
+  let left = need
+  for (const lot of lots) {
+    const take = Math.min(left, lot.extra)
+    for (let i = 0; i < take; i += 1) {
+      if (!takeStampCopy(lot.id, lot.world)) return false
+    }
+    left -= take
+    if (left <= 0) return true
+  }
+  return left <= 0
+}
+
+export function takeStampCopy(id: string, world: QuizWorld = 'geo'): boolean {
+  if (world === 'geo') {
+    if (!isStampIso(id)) return false
+    const album = loadStamps()
+    if (!takeFromAlbum(album, id)) return false
+    saveGeoAlbum(album)
+    return true
+  }
+  if (!isCollectId(id)) return false
+  const map = loadWorldMap()
+  const album = { ...(map[world] ?? {}) }
+  if (!takeFromAlbum(album, id)) return false
+  map[world] = album
+  saveWorldMap(map)
+  return true
+}
+
+export function returnStampCopy(id: string, world: QuizWorld = 'geo') {
+  if (world === 'geo') {
+    if (!isStampIso(id)) return
+    const album = loadStamps()
+    const entry = album[id] ?? { n: 0, modes: [] }
+    album[id] = { ...entry, n: Math.min(STAMP_MAX, entry.n + 1) }
+    saveGeoAlbum(album)
+    return
+  }
+  if (!isCollectId(id)) return
+  const map = loadWorldMap()
+  const album = { ...(map[world] ?? {}) }
+  const entry = album[id] ?? { n: 0, modes: [] }
+  album[id] = { ...entry, n: Math.min(STAMP_MAX, entry.n + 1) }
+  map[world] = album
+  saveWorldMap(map)
 }

@@ -21,6 +21,9 @@ import { deletePack, getPack, listPacks, savePack } from "@/lib/packStore";
 import { createPackRound, isPackCorrect, packLevelGroups, type PackQuestion } from "@/lib/quiz/pack";
 import { QUESTION_TIME_MS, ROUND_SIZES, type RoundSize } from "@/lib/quiz";
 import { playSfx } from "@/lib/sfx";
+import { EmpireLock } from "@/components/EmpireLock";
+import { useEmpire } from "@/lib/empireStore";
+import { access } from "@/lib/empire/gates";
 import type { PlaySession } from "./session";
 
 type View = "list" | "edit" | "home" | "learn" | "mistakes" | "levels" | "quiz" | "results";
@@ -29,6 +32,7 @@ type MixKind = "easy" | "hard" | "custom";
 export function StudioPlay({ play }: { play: PlaySession }) {
   const lang = play.quizSettings.lang;
   const t = STRINGS[lang];
+  const studioLocked = access(useEmpire(), { kind: "studio" }) === "locked";
   const [view, setView] = useState<View>("list");
   const [packs, setPacks] = useState<Pack[]>([]);
   const [pack, setPack] = useState<Pack | null>(null);
@@ -141,17 +145,21 @@ export function StudioPlay({ play }: { play: PlaySession }) {
           <p className="subtitle">{t.studioSubtitle}</p>
           <StudioHelpButton lang={lang} onClick={() => setHelp(true)} />
         </header>
-        <button
-          type="button"
-          className="btn-primary"
-          onClick={() => {
-            setPack(emptyPack());
-            setView("edit");
-          }}
-        >
-          {t.studioNew}
-        </button>
-        {packs.length === 0 ? <p className="setting-hint">{t.studioEmpty}</p> : null}
+        {studioLocked ? (
+          <EmpireLock lang={lang} feature={{ kind: "studio" }} title={t.gateStudio} note={t.gateStudioWhy} />
+        ) : (
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => {
+              setPack(emptyPack());
+              setView("edit");
+            }}
+          >
+            {t.studioNew}
+          </button>
+        )}
+        {packs.length === 0 && !studioLocked ? <p className="setting-hint">{t.studioEmpty}</p> : null}
         <ul className="pack-list">
           {packs.map((row) => (
             <li key={row.id} className="pack-list-row">
@@ -162,7 +170,7 @@ export function StudioPlay({ play }: { play: PlaySession }) {
                   void getPack(row.id).then((loaded) => {
                     if (!loaded) return;
                     setPack(loaded);
-                    setView(loaded.accepted ? "home" : "edit");
+                    setView(loaded.accepted || studioLocked ? "home" : "edit");
                   });
                 }}
               >
@@ -388,9 +396,11 @@ export function StudioPlay({ play }: { play: PlaySession }) {
             {t.mistakes}
           </button>
         </div>
-        <button type="button" className="btn-ghost" onClick={() => setView("edit")}>
-          {t.studioDraft}
-        </button>
+        {studioLocked ? null : (
+          <button type="button" className="btn-ghost" onClick={() => setView("edit")}>
+            {t.studioDraft}
+          </button>
+        )}
         <button type="button" className="btn-ghost pack-delete-quiz" onClick={() => dropPack(pack.id)}>
           {t.studioDelete}
         </button>

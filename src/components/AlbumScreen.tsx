@@ -13,6 +13,7 @@ import {
   type StampAlbum,
 } from '../lib/stamps'
 import type { QuizSettings } from './HomeScreen'
+import { stampRarity } from '../lib/empire/album'
 import { AlbumLootHow } from './AlbumLootHow'
 import { Flag } from './Flag'
 import { FitText } from './FitText'
@@ -54,11 +55,13 @@ export function AlbumScreen({ settings, stamps, onHub, onWorlds }: AlbumScreenPr
           const owned = hasStamp(stamps, country.iso)
           const count = stampCopies(stamps, country.iso)
           const name = countryName(country, settings.lang)
+          const rarity = stampRarity('geo', country.iso)
           return (
             <button
               key={country.iso}
               type="button"
-              className={`stamp-card${owned ? '' : ' is-locked'}${count >= STAMP_MAX ? ' is-max' : ''}`}
+              className={`stamp-card is-${rarity}${owned ? '' : ' is-locked'}${count >= STAMP_MAX ? ' is-max' : ''}`}
+              title={`${name} · ${t[`stampRarity_${rarity}`]}`}
               disabled={!owned}
               onClick={() => {
                 if (owned) setOpenIso(country.iso)

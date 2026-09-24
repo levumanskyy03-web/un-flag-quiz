@@ -1,23 +1,26 @@
+import { useEffect, useState } from 'react'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { worldCatalogNo } from '../lib/modeCatalog'
 import { QUIZ_WORLDS, type QuizWorld } from '../lib/quiz'
-import { useRealm } from '../lib/stateStore'
+import { useEmpire } from '../lib/empireStore'
+import { eraTitle } from './EmpireScreen'
 import type { QuizSettings } from './HomeScreen'
 import { GeoIcon } from './GeoIcon'
 import { FitGroup, FitText } from './FitText'
 import { SiteTour } from './SiteTour'
 import { useSiteTourOpen } from '../lib/siteTour'
+import { dailyCollection, loadDailyRecord, utcDayStamp } from '../lib/dailyChallenge'
+import { collectionCopyOf } from '../i18n/collectionCopy'
 
 export type World = QuizWorld
 
 interface WorldPickScreenProps {
   settings: QuizSettings
   onPick: (world: World) => void
+  onDaily: () => void
   onMultiplayer: () => void
   onStudio: () => void
-  onCompany: () => void
-  onShop: () => void
-  onState: () => void
+  onEmpire: () => void
 }
 
 const WORLD_ICON = {
@@ -63,14 +66,39 @@ function WorldArt({ world }: { world: QuizWorld }) {
   return <GeoIcon name={WORLD_ICON[world]} size={30} />
 }
 
-export function WorldPickScreen({ settings, onPick, onMultiplayer, onStudio, onCompany, onShop, onState }: WorldPickScreenProps) {
+export function WorldPickScreen({
+  settings,
+  onPick,
+  onDaily,
+  onMultiplayer,
+  onStudio,
+  onEmpire,
+}: WorldPickScreenProps) {
   const t = STRINGS[settings.lang]
-  const realm = useRealm()
-  const stateLabel = realm.name || t.state
+  const empire = useEmpire()
+  const empireLabel = empire.name || t.empire
   const showTour = useSiteTourOpen()
+  const daily = dailyCollection()
+  const dailyCopy = collectionCopyOf(daily.id, settings.lang)
+  const [record, setRecord] = useState<ReturnType<typeof loadDailyRecord>>(null)
+  useEffect(() => {
+    setRecord(loadDailyRecord())
+  }, [])
+  const done = Boolean(record && record.day === utcDayStamp() && record.id === daily.id && record.world === daily.world)
 
   return (
     <div className="screen world-pick-screen">
+      <button type="button" className="world-pick is-daily" onClick={onDaily}>
+        <span className="world-pick-copy">
+          <FitText>{t.dailyChallenge}</FitText>
+        </span>
+        <span className="daily-world">{worldTitle(daily.world, t)}</span>
+        <span className="daily-title">{dailyCopy.title}</span>
+        <span className="daily-meta">
+          {done && record ? t.dailyDone(record.correct, record.total) : t.dailyPlay}
+          {record && record.streak > 1 && record.day === utcDayStamp() ? ` · ${t.dailyStreak(record.streak)}` : ''}
+        </span>
+      </button>
       <FitGroup wrap minPx={8}>
         <div className="world-pick-grid" data-tour="worlds">
           {QUIZ_WORLDS.map((world) => (
@@ -95,25 +123,20 @@ export function WorldPickScreen({ settings, onPick, onMultiplayer, onStudio, onC
         </div>
       </FitGroup>
 
-      <button type="button" className="world-pick is-state" data-tour="state" onClick={onState}>
+      <button type="button" className="world-pick is-state is-empire" onClick={onEmpire} data-tour="empire">
         <span className="world-pick-art" aria-hidden="true">
-          <GeoIcon name="map" size={28} />
+          <GeoIcon name="hq" size={28} />
         </span>
         <span className="world-pick-copy">
-          <FitText>{stateLabel}</FitText>
+          <FitText>{empireLabel}</FitText>
+          <small className="world-pick-sub">
+            {t.empireEraOf(empire.era)} · {eraTitle(empire.era, t)}
+          </small>
         </span>
       </button>
 
       <nav className="world-pick-dock" aria-label={t.explore} data-tour="dock">
         <FitGroup wrap={false} minPx={7}>
-          <button type="button" className="world-dock-tab" onClick={onCompany}>
-            <GeoIcon name="hq" size={22} />
-            <FitText>{t.company}</FitText>
-          </button>
-          <button type="button" className="world-dock-tab" onClick={onShop}>
-            <GeoIcon name="pin" size={22} />
-            <FitText>{t.shop}</FitText>
-          </button>
           <button type="button" className="world-dock-tab" onClick={onStudio}>
             <GeoIcon name="stamp" size={22} />
             <FitText>{t.studio}</FitText>

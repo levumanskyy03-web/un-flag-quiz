@@ -42,6 +42,7 @@ export function themeTopicLabel(topic: ThemeTopic, lang: Lang): string {
   if (topic === 'hosts') return t.olyFamilyHosts
   if (topic === 'sports') return t.olyFamilySports
   if (topic === 'noc') return t.olyFamilyNoc
+  if (topic === 'stars') return t.olyFamilyStars
   if (topic === 'code') return t.csFamilyCode
   if (topic === 'binary') return t.csFamilyBinary
   if (topic === 'hackers') return t.csFamilyPeople
@@ -54,11 +55,13 @@ export function ThemeSetup({
   settings,
   onChange,
   hideModes,
+  onPickMode,
 }: {
   world: ThemeWorld
   settings: QuizSettings
   onChange: (settings: QuizSettings) => void
   hideModes?: readonly QuizMode[]
+  onPickMode?: (mode: QuizMode) => void
 }) {
   const t = STRINGS[settings.lang]
   const hidden = new Set(hideModes ?? [])
@@ -93,7 +96,10 @@ export function ThemeSetup({
         world={world}
         lang={settings.lang}
         activeMode={settings.mode}
-        onPick={(mode) => onChange({ ...settings, mix: null, mode })}
+        onPick={(mode) => {
+          onChange({ ...settings, mix: null, mode })
+          onPickMode?.(mode)
+        }}
         hideModes={hideModes}
       />
     </>

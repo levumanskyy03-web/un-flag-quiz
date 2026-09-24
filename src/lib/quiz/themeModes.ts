@@ -2,14 +2,37 @@ export const THEME_WORLDS = ['biology', 'olympics', 'cs', 'food'] as const
 export type ThemeWorld = (typeof THEME_WORLDS)[number]
 
 export const BIO_CELL_MODES = ['organelleToRole', 'roleToOrganelle'] as const
-export const BIO_BODY_MODES = ['organToSystem', 'photoStepToName'] as const
-export const BIO_LIFE_MODES = ['kingdomToExample'] as const
+export const BIO_BODY_MODES = ['organToSystem', 'systemToOrgan', 'photoStepToName', 'nameToProcess'] as const
+export const BIO_LIFE_MODES = ['kingdomToExample', 'exampleToKingdom', 'animalToClass', 'classToAnimal'] as const
 export const BIO_MODES = [...BIO_CELL_MODES, ...BIO_BODY_MODES, ...BIO_LIFE_MODES] as const
 
-export const OLY_HOST_MODES = ['olyYearToHost', 'olyHostToYear', 'olyHostCount'] as const
-export const OLY_SPORT_MODES = ['sportToCategory'] as const
-export const OLY_NOC_MODES = ['nocToName'] as const
-export const OLY_MODES = [...OLY_HOST_MODES, ...OLY_SPORT_MODES, ...OLY_NOC_MODES] as const
+export const OLY_HOST_MODES = [
+  'olyYearToHost',
+  'olyHostToYear',
+  'olyHostCount',
+  'hostToCountry',
+  'olyYearToCountry',
+  'winterYearToHost',
+] as const
+export const OLY_SPORT_MODES = [
+  'sportToCategory',
+  'categoryToSport',
+  'sportToDebut',
+  'eventToSport',
+  'equipmentToSport',
+  'sportToEquipment',
+  'athleteToSport',
+  'debutToSport',
+  'sportToFederation',
+  'federationToSport',
+  'venueToSport',
+  'sportToVenue',
+  'countryToOlySport',
+  'seasonToSport',
+] as const
+export const OLY_NOC_MODES = ['nocToName', 'nameToNoc', 'countryToGolds'] as const
+export const OLY_STAR_MODES = ['athleteToNoc', 'olyPhotoToName'] as const
+export const OLY_MODES = [...OLY_HOST_MODES, ...OLY_SPORT_MODES, ...OLY_NOC_MODES, ...OLY_STAR_MODES] as const
 
 export const CS_CODE_MODES = ['csTermToMeaning', 'meaningToCsTerm'] as const
 export const CS_BIN_MODES = ['decToBinary', 'binaryToDec'] as const
@@ -30,6 +53,7 @@ export const THEME_TOPICS = [
   'hosts',
   'sports',
   'noc',
+  'stars',
   'code',
   'binary',
   'hackers',
@@ -62,7 +86,7 @@ export function themeModesOfWorld(world: ThemeWorld): readonly ThemeMode[] {
 
 export function themeTopicsOf(world: ThemeWorld): readonly ThemeTopic[] {
   if (world === 'biology') return ['cell', 'body', 'life']
-  if (world === 'olympics') return ['hosts', 'sports', 'noc']
+  if (world === 'olympics') return ['hosts', 'sports', 'noc', 'stars']
   if (world === 'cs') return ['code', 'binary', 'hackers']
   return ['dishes', 'origin']
 }
@@ -74,6 +98,7 @@ export function themeModesOfTopic(topic: ThemeTopic): readonly ThemeMode[] {
   if (topic === 'hosts') return OLY_HOST_MODES
   if (topic === 'sports') return OLY_SPORT_MODES
   if (topic === 'noc') return OLY_NOC_MODES
+  if (topic === 'stars') return OLY_STAR_MODES
   if (topic === 'code') return CS_CODE_MODES
   if (topic === 'binary') return CS_BIN_MODES
   if (topic === 'hackers') return CS_PEOPLE_MODES
@@ -89,22 +114,22 @@ export function themeTopicOf(mode: ThemeMode): ThemeTopic {
 }
 
 export const EASY_THEME_MIX: Record<ThemeWorld, ThemeMode[]> = {
-  biology: ['organelleToRole', 'organToSystem', 'kingdomToExample'],
-  olympics: ['olyYearToHost', 'sportToCategory', 'nocToName'],
+  biology: ['organelleToRole', 'organToSystem', 'kingdomToExample', 'animalToClass'],
+  olympics: ['olyYearToHost', 'hostToCountry', 'sportToCategory', 'equipmentToSport', 'athleteToSport', 'nocToName', 'nameToNoc'],
   cs: ['csTermToMeaning', 'decToBinary'],
   food: ['dishToCuisine', 'foodToOrigin'],
 }
 
 export const HARD_THEME_MIX: Record<ThemeWorld, ThemeMode[]> = {
   biology: [...BIO_MODES],
-  olympics: [...OLY_MODES],
+  olympics: OLY_MODES.filter((mode) => mode !== 'olyPhotoToName'),
   cs: CS_MODES.filter((mode) => mode !== 'csPhotoToName'),
   food: [...FOOD_MODES],
 }
 
 export const MATCH_THEME_MODES: Record<ThemeWorld, ThemeMode[]> = {
-  biology: ['organelleToRole'],
-  olympics: ['olyYearToHost', 'nocToName'],
+  biology: ['organelleToRole', 'organToSystem', 'animalToClass'],
+  olympics: ['olyYearToHost', 'hostToCountry', 'nocToName', 'nameToNoc'],
   cs: ['csTermToMeaning', 'csPhotoToName'],
   food: ['dishToCuisine'],
 }
@@ -112,8 +137,8 @@ export const MATCH_THEME_MODES: Record<ThemeWorld, ThemeMode[]> = {
 export const THEME_MATCH_MIX: Record<ThemeWorld, ThemeMode[]> = EASY_THEME_MIX
 
 export const THEME_CAMPAIGN_MODES: Record<ThemeWorld, ThemeMode[]> = {
-  biology: ['organelleToRole', 'organToSystem'],
-  olympics: ['olyYearToHost', 'nocToName'],
+  biology: [...BIO_MODES],
+  olympics: [...OLY_MODES],
   cs: ['csTermToMeaning', 'decToBinary'],
   food: ['dishToCuisine', 'foodToOrigin'],
 }
@@ -133,8 +158,12 @@ export function themeHasCampaign(mode: string): boolean {
   return THEME_CAMPAIGN_MODES[themeWorldOf(mode)].includes(mode)
 }
 
-export function themeFactsMode(mode: string): boolean {
-  return mode === 'csPhotoToName'
+export const THEME_PHOTO_MODES = ['csPhotoToName', 'olyPhotoToName'] as const
+
+export function isThemePhotoMode(value: string): boolean {
+  return (THEME_PHOTO_MODES as readonly string[]).includes(value)
 }
 
-export const THEME_PHOTO_MODES = ['csPhotoToName'] as const
+export function themeFactsMode(mode: string): boolean {
+  return isThemePhotoMode(mode)
+}

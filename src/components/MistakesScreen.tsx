@@ -19,6 +19,9 @@ import { LeaderPortrait } from './LeaderPortrait'
 import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
 import { LeadersSetup } from './LeadersScreen'
 import { WorldsBack } from './WorldsBack'
+import { EmpireLock } from './EmpireLock'
+import { useEmpire } from '../lib/empireStore'
+import { access } from '../lib/empire/gates'
 
 interface MistakesScreenProps {
   settings: QuizSettings
@@ -43,6 +46,7 @@ export function MistakesScreen({
   onClear,
 }: MistakesScreenProps) {
   const t = STRINGS[settings.lang]
+  const mistakesLocked = access(useEmpire(), { kind: 'mistakes' }) === 'locked'
   const football = isFootballMode(settings.mode)
   const leaders = isLeadersMode(settings.mode)
   const math = isMathMode(settings.mode)
@@ -175,7 +179,8 @@ export function MistakesScreen({
         </>
       )}
 
-      <button type="button" className="btn-primary" disabled={empty} onClick={onPractice}>
+      {mistakesLocked && !empty ? <EmpireLock lang={settings.lang} feature={{ kind: 'mistakes' }} title={t.gateMistakes} compact /> : null}
+      <button type="button" className="btn-primary" disabled={empty || mistakesLocked} onClick={onPractice}>
         {t.checkYourself}
       </button>
       {!empty ? (

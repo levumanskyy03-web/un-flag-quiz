@@ -15,6 +15,7 @@ import {
   countryName,
   mathIsGenerated,
   themeWorldOf,
+  isThemePhotoMode,
   type QuizMode,
   type QuizWorld,
 } from './quiz'
@@ -45,6 +46,7 @@ export type StampGroupId =
   | 'planets'
   | 'moons'
   | 'stars'
+  | 'exploration'
   | 'people'
   | 'cards'
 
@@ -187,12 +189,21 @@ function astroCatalog(): StampCard[] {
     } else if (item.key.startsWith('mo:')) {
       id = item.key
       group = 'moons'
-    } else if (item.body && (item.mode === 'planetToOrder' || item.mode === 'orderToPlanet' || item.mode === 'planetToKind')) {
+    } else if (item.body && (item.mode === 'planetToOrder' || item.mode === 'orderToPlanet' || item.mode === 'planetToKind' || item.mode === 'planetFactsToName')) {
       id = `body:${item.body}`
       group = 'planets'
     } else if (item.mode === 'starToClass' || item.mode === 'constelToName') {
       id = item.id
       group = 'stars'
+    } else if (item.mode === 'deepSkyFactsToName') {
+      id = `deep-sky:${item.id.slice(3)}`
+      group = 'stars'
+    } else if (item.mode === 'missionToTarget' || item.mode === 'missionFactsToName') {
+      id = `mission:${item.id.slice(3)}`
+      group = 'exploration'
+    } else if (item.mode === 'telescopeFactsToName') {
+      id = `telescope:${item.id.slice(3)}`
+      group = 'exploration'
     } else {
       continue
     }
@@ -206,7 +217,7 @@ function astroCatalog(): StampCard[] {
 function themeCatalog(world: QuizWorld): StampCard[] {
   return THEME_ITEMS.filter((item) => themeWorldOf(item.mode) === world).map((item) => ({
     id: item.id,
-    group: item.mode === 'csPhotoToName' ? 'people' : 'cards',
+    group: isThemePhotoMode(item.mode) ? 'people' : 'cards',
     visual: item.wikiFile ? 'portrait' : 'text',
     wiki: item.wiki,
     wikiFile: item.wikiFile,
@@ -235,6 +246,13 @@ export function stampCatalog(world: QuizWorld): StampCard[] {
 
 export function stampCatalogTotal(world: QuizWorld): number {
   return stampCatalog(world).length
+}
+
+export function stampCardFor(world: QuizWorld, id: string): StampCard {
+  if (world === 'geo') {
+    return { id, group: 'nations', visual: 'flag', flagIso: id }
+  }
+  return stampCatalog(world).find((card) => card.id === id) ?? fallbackCard(world, id)
 }
 
 function fallbackCard(world: QuizWorld, id: string): StampCard {
@@ -293,6 +311,18 @@ export function stampCardName(card: StampCard, lang: Lang): string {
   }
   if (card.id.startsWith('mo:')) {
     const item = ASTRO_ITEMS.find((row) => row.key === card.id && row.mode === 'planetToMoon')
+    if (item) return astroDisplayName(item, lang)
+  }
+  if (card.id.startsWith('deep-sky:')) {
+    const item = astroById(`ds-${card.id.slice(9)}`)
+    if (item) return astroDisplayName(item, lang)
+  }
+  if (card.id.startsWith('mission:')) {
+    const item = astroById(`mf-${card.id.slice(8)}`)
+    if (item) return astroDisplayName(item, lang)
+  }
+  if (card.id.startsWith('telescope:')) {
+    const item = astroById(`tf-${card.id.slice(10)}`)
     if (item) return astroDisplayName(item, lang)
   }
   const math = mathById(card.id)

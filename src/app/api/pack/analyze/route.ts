@@ -1,4 +1,5 @@
 import { PACK_MODEL_TEXT_CHARS, PACK_VISION_BATCH, PACK_VISION_CARDS, PACK_VISION_IMAGE_DATA_CHARS } from '@/data/pack'
+import { requireGate } from '../../../../lib/empire/serverGate'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -31,6 +32,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const gate = await requireGate(request, { kind: 'studio' })
+  if (gate) return gate
   const key = modelKey()
   if (!key) return Response.json({ error: 'no_key' }, { status: 503 })
   let body: Body

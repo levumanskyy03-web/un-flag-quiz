@@ -1,6 +1,7 @@
 "use client";
 
 import { WorldAlbumScreen } from "@/components/WorldAlbumScreen";
+import { CollectionsScreen } from "@/components/CollectionsScreen";
 import { MATH_HUB_TABS } from "@/components/HubNav";
 import { defaultMathMode, MathScreen } from "@/components/MathScreen";
 import { LearnScreen } from "@/components/LearnScreen";
@@ -84,6 +85,16 @@ export function MathPlay({ play }: { play: PlaySession }) {
           onWorlds={play.goToWorlds}
         />
       )}
+      {play.screen === "lists" && (
+        <CollectionsScreen
+          world="math"
+          settings={play.quizSettings}
+          tabs={MATH_HUB_TABS}
+          onHub={play.goHub}
+          onWorlds={play.goToWorlds}
+          onPlay={(collection, path) => play.startCollectionRound(collection, path)}
+        />
+      )}
       {play.screen === "quiz" && play.questions[play.index] && (
         <QuizScreen
           lang={play.quizSettings.lang}
@@ -119,7 +130,7 @@ export function MathPlay({ play }: { play: PlaySession }) {
           endedBy={play.endedBy}
           isNewBest={play.isNewBest}
           earnedXp={play.earnedXp}
-          earnedTokens={play.earnedTokens}
+          empireReward={play.empireReward}
           totalXp={play.xp}
           saveNote={!play.isPractice}
           menuLabel={play.isPractice ? STRINGS[play.quizSettings.lang].backToCards : undefined}

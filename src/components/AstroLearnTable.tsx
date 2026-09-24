@@ -1,4 +1,4 @@
-import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
+import { STRINGS, astroQuestionPrompt, modeLabel, type Lang } from '../i18n/strings'
 import { astroById, astroLearnLine } from '../lib/quiz'
 import { LeaderPortrait } from './LeaderPortrait'
 
@@ -12,13 +12,15 @@ export function AstroLearnTable({
   hideAnswers?: boolean
 }) {
   const t = STRINGS[lang]
+  const first = isos[0] ? astroById(isos[0]) : undefined
+  const promptLabel = first ? astroQuestionPrompt(first.mode, lang) : null
   return (
     <div className="football-learn-table-wrap">
       <table className="football-learn-table">
         <thead>
           <tr>
             <th>{t.mode}</th>
-            <th>{t.astroPlanetPrompt}</th>
+            <th>{promptLabel ?? t.astroPlanetPrompt}</th>
             <th>{hideAnswers ? t.leaderHiddenName : t.start}</th>
           </tr>
         </thead>

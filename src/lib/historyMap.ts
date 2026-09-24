@@ -4,6 +4,18 @@ export interface HistoryMapFeature {
   id: string
   name: string
   d: string
+  /** 'd' dependent territory, 'x' people without a state, 'u' unmapped; absent = state. */
+  k?: 'd' | 'x' | 'u'
+  /** Palette slot; dependents share their suzerain's. */
+  c?: number
+  /** Suzerain map id for dependents and detached territories. */
+  p?: string
+  /** Modern ISO where a detached territory lies. */
+  m?: string
+  /** Area on this snapshot, km². */
+  a?: number
+  /** Label anchor: x, y and free radius in SVG units. */
+  l?: [number, number, number]
 }
 
 export interface HistoryMapData {

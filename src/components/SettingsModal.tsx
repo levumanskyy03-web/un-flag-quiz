@@ -35,9 +35,7 @@ import {
 } from '../lib/quiz'
 import { formatXp, accountProgress } from '../lib/xp'
 import { countLifetimeSeed, loadLifetime } from '../lib/lifetime'
-import { TOKEN_DAY_CAP } from '../data/tokens'
-import { useTokens } from '../lib/tokenStore'
-import { renameRealm, useRealm } from '../lib/stateStore'
+import { useEmpire } from '../lib/empireStore'
 import { AchievementGallery } from './AchievementGallery'
 import { CookieConsentControls } from './CookieConsentControls'
 import { AvatarMark } from './AvatarMark'
@@ -81,8 +79,7 @@ export function SettingsModal({
 }: SettingsModalProps) {
   const t = STRINGS[lang]
   const router = useRouter()
-  const tokens = useTokens()
-  const realm = useRealm()
+  const empire = useEmpire()
   const titleId = useId()
   const [tab, setTab] = useState<Tab>('account')
   const [authTab, setAuthTab] = useState<AuthTab>('login')
@@ -90,9 +87,6 @@ export function SettingsModal({
   const [authReady, setAuthReady] = useState(false)
   const [profile, setProfile] = useState(loadProfile)
   const [name, setName] = useState(loadProfile().name)
-  const [realmName, setRealmName] = useState('')
-  const [realmNameError, setRealmNameError] = useState(false)
-  const [realmNameSaved, setRealmNameSaved] = useState(false)
   const [loginName, setLoginName] = useState(loadProfile().name)
   const [password, setPassword] = useState('')
   const [repeat, setRepeat] = useState('')
@@ -285,19 +279,6 @@ export function SettingsModal({
     setNameFree(null)
   }
 
-  function saveRealmName() {
-    const next = realmName.trim()
-    if (next.length < NAME_MIN) {
-      setRealmNameError(true)
-      setRealmNameSaved(false)
-      return
-    }
-    renameRealm(next)
-    setRealmName(next)
-    setRealmNameError(false)
-    setRealmNameSaved(true)
-  }
-
   async function submitAuth() {
     if (busy) return
     const trimmed = loginName.trim()
@@ -420,7 +401,7 @@ export function SettingsModal({
             <div className="settings-profile-row">
               <button
                 type="button"
-                className={`avatar-open${tokens.frame ? ` avatar-frame is-${tokens.frame}` : ''}`}
+                className={`avatar-open${empire.cosmetics.frame ? ` avatar-frame is-${empire.cosmetics.frame}` : ''}`}
                 onClick={() => setPickerOpen(true)}
                 aria-label={t.avatarChange}
               >
@@ -445,7 +426,7 @@ export function SettingsModal({
                   {t.xpTotal(formatXp(xp, lang))} · {t.accountLevelNext(formatXp(rank.remain, lang))}
                 </p>
                 <p className="profile-xp">
-                  {t.tokensBalance(tokens.balance)} · {t.tokensDayCap(tokens.earnedToday, TOKEN_DAY_CAP)}
+                  {t.empireWallet(empire.coins, empire.gems)}
                 </p>
                 <button type="button" className="btn-ghost avatar-change-btn" onClick={() => setPickerOpen(true)}>
                   {t.avatarChange}
@@ -701,44 +682,6 @@ export function SettingsModal({
             ) : (
               <p className="setting-hint">{t.modeStatsEmpty}</p>
             )}
-
-            <details
-              className="settings-state-name"
-              onToggle={(event) => {
-                if (!event.currentTarget.open) return
-                setRealmName(realm.name)
-                setRealmNameError(false)
-                setRealmNameSaved(false)
-              }}
-            >
-              <summary>{t.state}</summary>
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault()
-                  saveRealmName()
-                }}
-              >
-                <label className="player-name">
-                  <span>{t.state}</span>
-                  <input
-                    type="text"
-                    maxLength={32}
-                    value={realmName}
-                    placeholder={t.state}
-                    onChange={(event) => {
-                      setRealmName(event.target.value)
-                      setRealmNameError(false)
-                      setRealmNameSaved(false)
-                    }}
-                  />
-                </label>
-                {realmNameError ? <p className="account-error">{t.playerNameShort}</p> : null}
-                <button type="submit" className="btn-secondary">
-                  {t.saveProfile}
-                </button>
-                {realmNameSaved ? <p className="settings-ok">{t.profileSaved}</p> : null}
-              </form>
-            </details>
           </div>
         ) : null}
 
@@ -759,11 +702,8 @@ export function SettingsModal({
             <p>{t.xpHowLevels}</p>
             <p>{t.xpHowRecord}</p>
             <p>{t.xpHowRank}</p>
-            <h3 className="settings-sub">{t.tokens}</h3>
-            <p>{t.tokenHowLead}</p>
-            <p>{t.tokenHowEarn}</p>
-            <p>{t.tokenHowSpend}</p>
-            <p>{t.tokenHowCap}</p>
+            <h3 className="settings-sub">{t.empire}</h3>
+            <p>{t.empireHowToEarn}</p>
           </div>
         ) : null}
 

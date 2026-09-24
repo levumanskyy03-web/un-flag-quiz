@@ -22,6 +22,7 @@ type GeoIconName =
   | 'hq'
   | 'notes'
   | 'notesOff'
+  | 'deck'
 
 const BOX_24: ReadonlySet<GeoIconName> = new Set([
   'ball',
@@ -35,6 +36,7 @@ const BOX_24: ReadonlySet<GeoIconName> = new Set([
   'hq',
   'notes',
   'notesOff',
+  'deck',
 ])
 
 interface GeoIconProps {
@@ -278,6 +280,14 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
           />
           <path d="M9.2 19.2v-5.2h5.6v5.2" stroke="currentColor" strokeWidth="1.55" strokeLinejoin="round" />
           <path d="M8.4 11.2h.1M12 11.2h.1M15.6 11.2h.1" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </>
+      ) : null}
+      {name === 'deck' ? (
+        <>
+          <rect x="8.2" y="4.4" width="11.2" height="13.4" rx="1.8" stroke="currentColor" strokeWidth="1.55" />
+          <rect x="6.1" y="6.2" width="11.2" height="13.4" rx="1.8" stroke="currentColor" strokeWidth="1.55" fill="none" />
+          <rect x="4" y="8" width="11.2" height="13.4" rx="1.8" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M6.4 12.4h6.4M6.4 15.2h4.6" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" />
         </>
       ) : null}
       {name === 'notes' || name === 'notesOff' ? (

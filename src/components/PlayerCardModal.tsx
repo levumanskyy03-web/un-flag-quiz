@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { footballClub } from '../data/footballClubs'
+import { greatClub } from '../data/footballGreatClubs'
 import { playerClubName, playerCurrentClubId, playerDisplayName, type FootballPlayer } from '../data/footballPlayers'
 import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS, type Lang } from '../i18n/strings'
@@ -11,13 +12,14 @@ interface PlayerCardModalProps {
   player: FootballPlayer
   lang: Lang
   onClose: () => void
+  onOpenClub?: (clubId: string) => void
 }
 
 function unique(ids: string[]): string[] {
   return [...new Set(ids.filter(Boolean))]
 }
 
-export function PlayerCardModal({ player, lang, onClose }: PlayerCardModalProps) {
+export function PlayerCardModal({ player, lang, onClose, onOpenClub }: PlayerCardModalProps) {
   const t = STRINGS[lang]
   const name = playerDisplayName(player, lang)
   const lived = player.died ? `${player.born}–${player.died}` : `${player.born}–${t.present}`
@@ -25,7 +27,6 @@ export function PlayerCardModal({ player, lang, onClose }: PlayerCardModalProps)
   const bornNation = countryName(footballTeamCountry(player.bornNation), lang)
   const currentClubId = playerCurrentClubId(player)
   const pastClubIds = unique(player.clubs.filter((id) => id !== currentClubId))
-  const pastClubs = pastClubIds.map((id) => playerClubName(id, lang)).filter(Boolean)
   const currentClub = currentClubId ? playerClubName(currentClubId, lang) : ''
   const clubCountries = unique(player.clubs.map((id) => footballClub(id)?.nation ?? '').filter(Boolean)).map((iso) =>
     countryName(footballTeamCountry(iso), lang),
@@ -56,6 +57,15 @@ export function PlayerCardModal({ player, lang, onClose }: PlayerCardModalProps)
           : t.playerPositionFw
   const foot =
     player.foot === 'left' || player.leftFoot ? t.playerFootLeft : player.foot === 'both' ? t.playerFootBoth : player.foot === 'right' ? t.playerFootRight : null
+  const clubName = (id: string) => playerClubName(id, lang)
+  const clubLink = (id: string) =>
+    onOpenClub && greatClub(id) ? (
+      <button type="button" className="player-card-club-link" onClick={() => onOpenClub(id)}>
+        {clubName(id)}
+      </button>
+    ) : (
+      <span>{clubName(id)}</span>
+    )
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -137,15 +147,24 @@ export function PlayerCardModal({ player, lang, onClose }: PlayerCardModalProps)
               </dd>
             </div>
           ) : null}
-          {currentClub || pastClubs.length > 0 ? (
+          {currentClub || pastClubIds.length > 0 ? (
             <div className="is-wide">
               <dt>{t.playerCardClubs}</dt>
               <dd>
                 <div className="player-card-clubs">
-                  {pastClubs.length > 0 ? <p className="player-card-clubs-past">{pastClubs.join(' · ')}</p> : null}
+                  {pastClubIds.length > 0 ? (
+                    <p className="player-card-clubs-past">
+                      {pastClubIds.map((id, index) => (
+                        <span key={id}>
+                          {index > 0 ? ' · ' : null}
+                          {clubLink(id)}
+                        </span>
+                      ))}
+                    </p>
+                  ) : null}
                   {currentClub ? (
                     <p className="player-card-club-now">
-                      <span>{currentClub}</span>
+                      {clubLink(currentClubId!)}
                       <span className="player-card-club-badge">
                         {player.era === 'legend' ? t.playerClubBadgeLast : t.playerClubBadgeNow}
                       </span>

@@ -3,6 +3,8 @@ import type { Lang } from '../i18n/lang'
 import { pickL, t11, type L11 } from './math'
 import { isThemeMode, type ThemeMode } from '../lib/quiz/themeModes'
 import { THEME_LEVEL_QUESTIONS } from '../lib/quiz/themeModes'
+import { olyGeneratedRows } from './olympics/rows'
+import { olyPortrait } from './olympics/portraits'
 
 export type ThemeTier = 'easy' | 'medium' | 'hard'
 
@@ -28,6 +30,17 @@ function row(
   if (!isThemeMode(mode)) return null
   const key = extra.key ?? (typeof answer === 'string' ? answer : answer.en)
   return { id, mode, tier, prompt, answer, key, ...extra }
+}
+
+function star(
+  id: string,
+  mode: string,
+  tier: ThemeTier,
+  prompt: L11,
+  answer: L11,
+  extra: Partial<Omit<ThemeItem, 'id' | 'mode' | 'tier' | 'prompt' | 'answer'>> = {},
+): ThemeItem | null {
+  return row(id, mode, tier, prompt, answer, { ...olyPortrait(pickL(prompt, 'en')), ...extra })
 }
 
 const NUCLEUS = t11('ядро', 'nucleus', 'Zellkern', '细胞核', 'núcleo', 'केंद्रक', 'النواة', 'নিউক্লিয়াস', 'núcleo', '核', 'גרעין')
@@ -66,6 +79,71 @@ const LION = t11('лев, рыба, человек', 'lion, fish, human', 'Löwe
 const TREE = t11('дуб, водоросль, мох', 'oak, alga, moss', 'Eiche, Alge, Moos', '橡树、藻、苔', 'roble, alga, musgo', 'ओक, शैवाल, काई', 'بلوط وطحلب', 'ওক, শৈবাল, শ্যাওলা', 'carvalho, alga, musgo', 'オーク、藻、苔', 'אלון, אצה, טחב')
 const MUSH = t11('шампиньон, дрожжи', 'mushroom, yeast', 'Champignon, Hefe', '蘑菇、酵母', 'champiñón, levadura', 'मशरूम, खमीर', 'فطر وخميرة', 'মাশরুম, ইস্ট', 'cogumelo, levedura', 'キノコ、酵母', 'פטרייה, שמר')
 const ECOLI = t11('кишечная палочка', 'E. coli', 'E. coli', '大肠杆菌', 'E. coli', 'ई. कोलाई', 'الإشريكية', 'ই. কোলাই', 'E. coli', '大腸菌', 'אי. קולי')
+const LYSOS = t11('лизосома', 'lysosome', 'Lysosom', '溶酶体', 'lisosoma', 'लाइसोसोम', 'الليسوسوم', 'লাইসোসোম', 'lisossomo', 'リソソーム', 'ליזוזום')
+const GOLGI = t11('аппарат Гольджи', 'Golgi apparatus', 'Golgi-Apparat', '高尔基体', 'aparato de Golgi', 'गॉल्जी काय', 'جهاز غولجي', 'গলজি যন্ত্র', 'complexo de Golgi', 'ゴルジ体', 'מערכת גולג׳י')
+const ER = t11('эндоплазматическая сеть', 'endoplasmic reticulum', 'endoplasmatisches Retikulum', '内质网', 'retículo endoplasmático', 'अंतर्द्रव्यी जालिका', 'الشبكة الإندوبلازمية', 'এন্ডোপ্লাজমিক রেটিকুলাম', 'retículo endoplasmático', '小胞体', 'רשתית אנדופלזמית')
+const VAC = t11('вакуоль', 'vacuole', 'Vakuole', '液泡', 'vacuola', 'रिक्तिका', 'الفجوة', 'ভ্যাকুওল', 'vacúolo', '液胞', 'חלולית')
+const WALL = t11('клеточная стенка', 'cell wall', 'Zellwand', '细胞壁', 'pared celular', 'कोशिका भित्ति', 'الجدار الخلوي', 'কোষপ্রাচীর', 'parede celular', '細胞壁', 'דופן התא')
+const WASTE = t11('переваривает отходы', 'digests waste', 'verdaut Abfall', '分解废物', 'digiere residuos', 'कचरा पचाता है', 'يهضم الفضلات', 'বর্জ্য হজম করে', 'digere resíduos', '廃棄物を分解', 'מפרק פסולת')
+const PACK = t11('упаковывает белки', 'packages proteins', 'packt Proteine', '包装蛋白质', 'empaqueta proteínas', 'प्रोटीन पैक करता है', 'يغلف البروتينات', 'প্রোটিন মোড়ায়', 'empacota proteínas', 'タンパク質を梱包', 'ארוז חלבונים')
+const TRANS = t11('транспорт веществ', 'transports materials', 'transportiert Stoffe', '运输物质', 'transporta materiales', 'पदार्थ पहुँचाता है', 'ينقل المواد', 'পদার্থ পরিবহন', 'transporta materiais', '物質を運ぶ', 'מעביר חומרים')
+const STORE = t11('запас воды', 'stores water', 'speichert Wasser', '储存水分', 'almacena agua', 'पानी जमा करता है', 'يخزن الماء', 'জল সঞ্চয়', 'armazena água', '水を蓄える', 'אוגר מים')
+const SUPPORT = t11('опора клетки', 'cell support', 'Zellstütze', '细胞支撑', 'soporte celular', 'कोशिका सहारा', 'دعم الخلية', 'কোষের সাপোর্ট', 'suporte da célula', '細胞の支え', 'תמיכת התא')
+
+const SKIN = t11('кожа', 'skin', 'Haut', '皮肤', 'piel', 'त्वचा', 'الجلد', 'ত্বক', 'pele', '皮膚', 'עור')
+const BONE = t11('кость', 'bone', 'Knochen', '骨', 'hueso', 'हड्डी', 'العظم', 'হাড়', 'osso', '骨', 'עצם')
+const SPLEEN = t11('селезёнка', 'spleen', 'Milz', '脾', 'bazo', 'प्लीहा', 'الطحال', 'প্লীহা', 'baço', '脾臓', 'טחול')
+const THYR = t11('щитовидная железа', 'thyroid', 'Schilddrüse', '甲状腺', 'tiroides', 'थायरॉइड', 'الغدة الدرقية', 'থাইরয়েড', 'tiroide', '甲状腺', 'בלוטת התריס')
+const OVARY = t11('яичник', 'ovary', 'Eierstock', '卵巢', 'ovario', 'अंडाशय', 'المبيض', 'ডিম্বাশয়', 'ovário', '卵巣', 'שחלה')
+const INTEG = t11('покровная система', 'integumentary', 'Hautsystem', '皮肤系统', 'tegumentario', 'अधिचर्म', 'غلافي', 'ত্বকতন্ত্র', 'tegumentar', '皮膚系', 'כיסוי')
+const MUSC = t11('опорно-двигательная', 'musculoskeletal', 'Bewegungsapparat', '运动系统', 'musculoesquelético', 'कंकाल-पेशी', 'عضلي هيكلي', 'পেশি-কঙ্কাল', 'musculoesquelético', '運動器系', 'שלד-שריר')
+const IMM = t11('иммунная система', 'immune system', 'Immunsystem', '免疫', 'inmunitario', 'प्रतिरक्षा', 'المناعة', 'রোগপ্রতিরোধ', 'imunitário', '免疫系', 'חיסון')
+const ENDO = t11('эндокринная система', 'endocrine', 'endokrin', '内分泌', 'endocrino', 'अंतःस्रावी', 'الغدد الصماء', 'অন্তঃক্ষরা', 'endócrino', '内分泌系', 'אנדוקרינית')
+const REPRO = t11('половая система', 'reproductive', 'Fortpflanzung', '生殖', 'reproductor', 'प्रजनन', 'التكاثر', 'প্রজনন', 'reprodutor', '生殖系', 'רבייה')
+
+const MITOS = t11('митоз', 'mitosis', 'Mitose', '有丝分裂', 'mitosis', 'समसूत्री विभाजन', 'الانقسام المتساوي', 'মাইটোসিস', 'mitose', '有糸分裂', 'מיטוזה')
+const MEIOS = t11('мейоз', 'meiosis', 'Meiose', '减数分裂', 'meiosis', 'अर्धसूत्री विभाजन', 'الانقسام الاختزالي', 'মিয়োসিস', 'meiose', '減数分裂', 'מיוזה')
+const FERM = t11('брожение', 'fermentation', 'Gärung', '发酵', 'fermentación', 'किण्वन', 'التخمير', 'গাঁজন', 'fermentação', '発酵', 'תסיסה')
+const TRANSP = t11('транспирация', 'transpiration', 'Transpiration', '蒸腾', 'transpiración', 'वाष्पोत्सर्जन', 'النتح', 'প্রস্বেদন', 'transpiração', '蒸散', 'דיות')
+const OSMO = t11('осмос', 'osmosis', 'Osmose', '渗透', 'ósmosis', 'परासरण', 'التناضح', 'অসমোসিস', 'osmose', '浸透', 'אוסמוזה')
+const DIFF = t11('диффузия', 'diffusion', 'Diffusion', '扩散', 'difusión', 'विसरण', 'الانتشار', 'ব্যাপন', 'difusão', '拡散', 'דיפוזיה')
+const REPL = t11('репликация ДНК', 'DNA replication', 'DNA-Replikation', 'DNA 复制', 'replicación del ADN', 'डीएनए प्रतिकृति', 'استنساخ الحمض النووي', 'ডিএনএ প্রতিলিপি', 'replicação do ADN', 'DNA複製', 'שכפול DNA')
+const TRANSL = t11('синтез белка', 'protein synthesis', 'Proteinsynthese', '蛋白质合成', 'síntesis de proteínas', 'प्रोटीन संश्लेषण', 'تصنيع البروتين', 'প্রোটিন সংশ্লেষণ', 'síntese de proteínas', 'タンパク質合成', 'סינתזת חלבון')
+const MITOSD = t11('одна клетка → две одинаковые', 'one cell → two identical', 'eine Zelle → zwei gleiche', '一细胞→两个相同', 'una célula → dos iguales', 'एक कोशिका → दो समान', 'خلية → خليتان متماثلتان', 'এক কোষ → দুই অনুরূপ', 'uma célula → duas iguais', '1細胞→同じ2つ', 'תא אחד → שני זהים')
+const MEIOSD = t11('деление для половых клеток', 'division for gametes', 'Teilung für Keimzellen', '形成配子', 'división para gametos', 'युग्मकों के लिए विभाजन', 'انقسام للأمشاج', 'গ্যামেটের জন্য বিভাজন', 'divisão para gâmetas', '生殖細胞のための分裂', 'חלוקה לתאי מין')
+const FERMD = t11('сахар → энергия без O₂', 'sugar → energy without O₂', 'Zucker → Energie ohne O₂', '糖→能量（无氧）', 'azúcar → energía sin O₂', 'शर्करा → ऊर्जा बिना O₂', 'سكر → طاقة بلا أكسجين', 'চিনি → শক্তি O₂ ছাড়া', 'açúcar → energia sem O₂', '糖→酸素なしでエネルギー', 'סוכר → אנרגיה בלי O₂')
+const TRANSPD = t11('вода испаряется из листьев', 'water evaporates from leaves', 'Wasser verdunstet aus Blättern', '水分从叶面蒸发', 'el agua se evapora de las hojas', 'पत्तियों से जल भाप बनता है', 'الماء يتبخر من الأوراق', 'পাতা থেকে জল বাষ্প হয়', 'água evapora das folhas', '葉から水が蒸発', 'מים מתאדים מהעלים')
+const OSMOD = t11('вода через мембрану', 'water through a membrane', 'Wasser durch eine Membran', '水穿过膜', 'agua a través de una membrana', 'झिल्ली से होकर जल', 'ماء عبر غشاء', 'ঝিল্লি দিয়ে জল', 'água através de uma membrana', '膜を通る水', 'מים דרך קרום')
+const DIFFD = t11('частицы растекаются', 'particles spread out', 'Teilchen verteilen sich', '粒子扩散开', 'las partículas se dispersan', 'कण फैल जाते हैं', 'الجسيمات تنتشر', 'কণা ছড়িয়ে পড়ে', 'as partículas espalham-se', '粒子が広がる', 'חלקיקים מתפזרים')
+const REPLD = t11('ДНК копирует себя', 'DNA copies itself', 'DNA kopiert sich', 'DNA 自我复制', 'el ADN se copia', 'डीएनए अपनी प्रति बनाता है', 'الحمض النووي ينسخ نفسه', 'ডিএনএ নিজের কপি করে', 'o ADN copia-se', 'DNAが自分を複製', 'DNA מעתיק את עצמו')
+const TRANSLD = t11('с мРНК собирается белок', 'protein is built from mRNA', 'Protein entsteht aus mRNA', '由 mRNA 合成蛋白质', 'se arma proteína desde ARNm', 'mRNA से प्रोटीन बनता है', 'بروتين يُبنى من mRNA', 'mRNA থেকে প্রোটিন তৈরি', 'proteína a partir do ARNm', 'mRNAからタンパク質', 'חלבון נבנה מ-mRNA')
+
+const PROTIST = t11('протисты', 'protists', 'Protisten', '原生生物', 'protistas', 'प्रोटिस्ट', 'الطلائعيات', 'প্রোটিস্ট', 'protistas', '原生生物', 'פרוטיסטים')
+const AMOEBA = t11('амёба, инфузория', 'amoeba, paramecium', 'Amöbe, Pantoffeltierchen', '变形虫、草履虫', 'ameba, paramecio', 'अमीबा, पैरामिशियम', 'أميبا وباراميسيوم', 'অ্যামিবা, প্যারামেসিয়াম', 'ameba, paramécio', 'アメーバ、ゾウリムシ', 'אמבה, סנדלית')
+const OAK = t11('дуб', 'oak', 'Eiche', '橡树', 'roble', 'ओक', 'بلوط', 'ওক', 'carvalho', 'オーク', 'אלון')
+const MUSH1 = t11('шампиньон', 'mushroom', 'Champignon', '蘑菇', 'champiñón', 'मशरूम', 'فطر', 'মাশরুম', 'cogumelo', 'キノコ', 'פטרייה')
+const AMOEBA1 = t11('амёба', 'amoeba', 'Amöbe', '变形虫', 'ameba', 'अमीबा', 'أميبا', 'অ্যামিবা', 'ameba', 'アメーバ', 'אמבה')
+const LION1 = t11('лев', 'lion', 'Löwe', '狮', 'león', 'शेर', 'أسد', 'সিংহ', 'leão', 'ライオン', 'אריה')
+
+const EAGLE = t11('орёл', 'eagle', 'Adler', '鹰', 'águila', 'ईगल', 'نسر', 'ঈগল', 'águia', 'ワシ', 'עיט')
+const SHARK = t11('акула', 'shark', 'Hai', '鲨', 'tiburón', 'शार्क', 'قرش', 'হাঙ্গর', 'tubarão', 'サメ', 'כריש')
+const FROG = t11('лягушка', 'frog', 'Frosch', '蛙', 'rana', 'मेंढक', 'ضفدع', 'ব্যাঙ', 'rã', 'カエル', 'צפרדע')
+const SNAKE = t11('змея', 'snake', 'Schlange', '蛇', 'serpiente', 'साँप', 'ثعبان', 'সাপ', 'cobra', 'ヘビ', 'נחש')
+const BEE = t11('пчела', 'bee', 'Biene', '蜂', 'abeja', 'मधुमक्खी', 'نحلة', 'মৌমাছি', 'abelha', 'ミツバチ', 'דבורה')
+const SPIDER = t11('паук', 'spider', 'Spinne', '蜘蛛', 'araña', 'मकड़ी', 'عنكبوت', 'মাকড়সা', 'aranha', 'クモ', 'עכביש')
+const SNAIL = t11('улитка', 'snail', 'Schnecke', '蜗牛', 'caracol', 'घोंघा', 'حلزون', 'শামুক', 'caracol', 'カタツムリ', 'חילזון')
+const CRAB = t11('краб', 'crab', 'Krabbe', '蟹', 'cangrejo', 'केकड़ा', 'سلطعون', 'কাঁকড়া', 'caranguejo', 'カニ', 'סרטן')
+const WORM = t11('дождевой червь', 'earthworm', 'Regenwurm', '蚯蚓', 'lombriz', 'केंचुआ', 'دودة الأرض', 'কেঁচো', 'minhoca', 'ミミズ', 'תולעת אדמה')
+const MAMMAL = t11('млекопитающие', 'mammals', 'Säugetiere', '哺乳动物', 'mamíferos', 'स्तनधारी', 'ثدييات', 'স্তন্যপায়ী', 'mamíferos', '哺乳類', 'יונקים')
+const BIRD = t11('птицы', 'birds', 'Vögel', '鸟类', 'aves', 'पक्षी', 'طيور', 'পাখি', 'aves', '鳥類', 'עופות')
+const FISH = t11('рыбы', 'fish', 'Fische', '鱼类', 'peces', 'मछलियाँ', 'أسماك', 'মাছ', 'peixes', '魚類', 'דגים')
+const AMPH = t11('земноводные', 'amphibians', 'Amphibien', '两栖动物', 'anfibios', 'उभयचर', 'برمائيات', 'উভচর', 'anfíbios', '両生類', 'דו־חיים')
+const REPT = t11('пресмыкающиеся', 'reptiles', 'Reptilien', '爬行动物', 'reptiles', 'सरीसृप', 'زواحف', 'সরীসৃপ', 'répteis', '爬虫類', 'זוחלים')
+const INSECT = t11('насекомые', 'insects', 'Insekten', '昆虫', 'insectos', 'कीट', 'حشرات', 'পোকা', 'insetos', '昆虫', 'חרקים')
+const ARACH = t11('паукообразные', 'arachnids', 'Spinnentiere', '蛛形纲', 'arácnidos', 'अरैक्निड', 'عنكبيات', 'আরাকনিড', 'aracnídeos', 'クモ綱', 'עכבישניים')
+const MOLL = t11('моллюски', 'molluscs', 'Weichtiere', '软体动物', 'moluscos', 'मोलस्क', 'رخويات', 'মলাস্ক', 'moluscos', '軟体動物', 'רכיכות')
+const CRUST = t11('ракообразные', 'crustaceans', 'Krebstiere', '甲壳动物', 'crustáceos', 'क्रस्टेशियन', 'قشريات', 'ক্রাস্টেশিয়ান', 'crustáceos', '甲殻類', 'סרטנאים')
+const ANNEL = t11('кольчатые черви', 'annelids', 'Ringelwürmer', '环节动物', 'anélidos', 'एनेलिड', 'حلقيات', 'অ্যানেলিড', 'anelídeos', '環形動物', 'תולעים טבעתיות')
 
 const ATHENS = t11('Афины', 'Athens', 'Athen', '雅典', 'Atenas', 'एथेंस', 'أثينا', 'এথেন্স', 'Atenas', 'アテネ', 'אתונה')
 const PARIS = t11('Париж', 'Paris', 'Paris', '巴黎', 'París', 'पेरिस', 'باريس', 'প্যারিস', 'Paris', 'パリ', 'פריז')
@@ -84,18 +162,6 @@ const Y2016 = t11('2016, лето', '2016 Summer', 'Sommer 2016', '2016 夏奥',
 const Y2000 = t11('2000, лето', '2000 Summer', 'Sommer 2000', '2000 夏奥', 'Verano 2000', '2000 ग्रीष्म', 'صيف 2000', '২০০০ গ্রীষ্ম', 'Verão 2000', '2000夏', 'קיץ 2000')
 const Y1992 = t11('1992, лето', '1992 Summer', 'Sommer 1992', '1992 夏奥', 'Verano 1992', '1992 ग्रीष्म', 'صيف 1992', '১৯৯২ গ্রীষ্ম', 'Verão 1992', '1992夏', 'קיץ 1992')
 
-const TRACK = t11('лёгкая атлетика', 'athletics', 'Leichtathletik', '田径', 'atletismo', 'एथलेटिक्स', 'ألعاب القوى', 'অ্যাথলেটিক্স', 'atletismo', '陸上', 'אתלטיקה')
-const SWIM = t11('плавание', 'swimming', 'Schwimmen', '游泳', 'natación', 'तैराकी', 'السباحة', 'সাঁতার', 'natação', '競泳', 'שחייה')
-const GYM = t11('спортивная гимнастика', 'artistic gymnastics', 'Gerätturnen', '体操', 'gimnasia artística', 'जिम्नास्टिक', 'الجمباز', 'জিমন্যাস্টিকস', 'ginástica artística', '体操', 'התעמלות')
-const JUDO = t11('дзюдо', 'judo', 'Judo', '柔道', 'judo', 'जूडो', 'الجودو', 'জুডো', 'judo', '柔道', 'ג׳ודו')
-const BASK = t11('баскетбол', 'basketball', 'Basketball', '篮球', 'baloncesto', 'बास्केटबॉल', 'كرة السلة', 'বাস্কেটবল', 'basquetebol', 'バスケ', 'כדורסל')
-const ARCH = t11('стрельба из лука', 'archery', 'Bogenschießen', '射箭', 'tiro con arco', 'तीरंदाजी', 'الرماية بالقوس', 'তীরন্দাজি', 'arco', 'アーチェリー', 'קשתות')
-const AQUA = t11('водные виды', 'aquatic', 'Wassersport', '水上', 'acuático', 'जलीय', 'مائي', 'জলক্রীড়া', 'aquático', '水泳系', 'ימי')
-const COMB = t11('единоборства', 'combat', 'Kampfsport', '格斗', 'combate', 'युद्ध कला', 'قتالي', 'যুদ্ধকলা', 'combate', '格闘', 'לחימה')
-const BALL = t11('игровые', 'ball sports', 'Ballsport', '球类', 'pelota', 'गेंद खेल', 'كرة', 'বল খেলা', 'bola', '球技', 'כדור')
-const PREC = t11('точностные', 'precision', 'Präzision', '精准', 'precisión', 'सटीकता', 'دقة', 'নিখুঁত', 'precisão', '的中', 'דיוק')
-const MULTI = t11('многоборье / дорожка', 'track & field', 'Leichtathletik', '田径场', 'pista', 'ट्रैक', 'مضمار', 'ট্র্যাক', 'pista', 'トラック', 'מסלול')
-
 const USA = t11('США', 'United States', 'USA', '美国', 'Estados Unidos', 'संयुक्त राज्य', 'الولايات المتحدة', 'মার্কিন যুক্তরাষ্ট্র', 'Estados Unidos', 'アメリカ', 'ארה״ב')
 const GBR = t11('Великобритания', 'Great Britain', 'Großbritannien', '英国', 'Gran Bretaña', 'ब्रिटेन', 'بريطانيا', 'গ্রেট ব্রিটেন', 'Grã-Bretanha', 'イギリス', 'בריטניה')
 const JPN = t11('Япония', 'Japan', 'Japan', '日本', 'Japón', 'जापान', 'اليابان', 'জাপান', 'Japão', '日本', 'יפן')
@@ -108,6 +174,73 @@ const COUNT4 = t11('4 летних Игр', '4 Summer Games', '4 Sommerspiele', 
 const COUNT3 = t11('3 летних Игр', '3 Summer Games', '3 Sommerspiele', '3 届夏奥', '3 Juegos de verano', '3 ग्रीष्म खेल', '3 دورات صيفية', '৩ গ্রীষ্মকালীন', '3 Jogos de verão', '夏季3回', '3 משחקי קיץ')
 const COUNT2 = t11('2 летние Игры', '2 Summer Games', '2 Sommerspiele', '2 届夏奥', '2 Juegos de verano', '2 ग्रीष्म खेल', 'دورتان صيفيتان', '২ গ্রীষ্মকালীন', '2 Jogos de verão', '夏季2回', '2 משחקי קיץ')
 const COUNT1 = t11('1 летние Игры', '1 Summer Games', '1 Sommerspiele', '1 届夏奥', '1 Juegos de verano', '1 ग्रीष्म खेल', 'دورة صيفية واحدة', '১ গ্রীষ্মকালীন', '1 Jogos de verão', '夏季1回', 'משחקי קיץ אחד')
+
+function code(s: string) {
+  return t11(s, s, s, s, s, s, s, s, s, s, s)
+}
+
+function winterY(n: string) {
+  return t11(`${n}, зима`, `${n} Winter`, `Winter ${n}`, `${n} 冬奥`, `Invierno ${n}`, `${n} शीत`, `شتاء ${n}`, `${n} শীত`, `Inverno ${n}`, `${n}冬`, `חורף ${n}`)
+}
+
+const ESP = t11('Испания', 'Spain', 'Spanien', '西班牙', 'España', 'स्पेन', 'إسبانيا', 'স্পেন', 'Espanha', 'スペイン', 'ספרד')
+const ITA = t11('Италия', 'Italy', 'Italien', '意大利', 'Italia', 'इटली', 'إيطاليا', 'ইতালি', 'Itália', 'イタリア', 'איטליה')
+const GER = t11('Германия', 'Germany', 'Deutschland', '德国', 'Alemania', 'जर्मनी', 'ألمانيا', 'জার্মানি', 'Alemanha', 'ドイツ', 'גרמניה')
+const CAN = t11('Канада', 'Canada', 'Kanada', '加拿大', 'Canadá', 'कनाडा', 'كندا', 'কানাডা', 'Canadá', 'カナダ', 'קנדה')
+const KOR = t11('Южная Корея', 'South Korea', 'Südkorea', '韩国', 'Corea del Sur', 'दक्षिण कोरिया', 'كوريا الجنوبية', 'দক্ষিণ কোরিয়া', 'Coreia do Sul', '韓国', 'דרום קוריאה')
+const NOR = t11('Норвегия', 'Norway', 'Norwegen', '挪威', 'Noruega', 'नॉर्वे', 'النرويج', 'নরওয়ে', 'Noruega', 'ノルウェー', 'נורווגיה')
+const AUT = t11('Австрия', 'Austria', 'Österreich', '奥地利', 'Austria', 'ऑस्ट्रिया', 'النمسا', 'অস্ট্রিয়া', 'Áustria', 'オーストリア', 'אוסטריה')
+const JAM = t11('Ямайка', 'Jamaica', 'Jamaika', '牙买加', 'Jamaica', 'जमैका', 'جامايكا', 'জামাইকা', 'Jamaica', 'ジャマイカ', 'ג׳מייקה')
+const KEN = t11('Кения', 'Kenya', 'Kenia', '肯尼亚', 'Kenia', 'केन्या', 'كينيا', 'কেনিয়া', 'Quénia', 'ケニア', 'קניה')
+const ETH = t11('Эфиопия', 'Ethiopia', 'Äthiopien', '埃塞俄比亚', 'Etiopía', 'इथियोपिया', 'إثيوبيا', 'ইথিওপিয়া', 'Etiópia', 'エチオピア', 'אתיופיה')
+const CUB = t11('Куба', 'Cuba', 'Kuba', '古巴', 'Cuba', 'क्यूबा', 'كوبا', 'কিউবা', 'Cuba', 'キューバ', 'קובה')
+const ROU = t11('Румыния', 'Romania', 'Rumänien', '罗马尼亚', 'Rumanía', 'रोमानिया', 'رومانيا', 'রোমানিয়া', 'Roménia', 'ルーマニア', 'רומניה')
+const FIN = t11('Финляндия', 'Finland', 'Finnland', '芬兰', 'Finlandia', 'फ़िनलैंड', 'فنلندا', 'ফিনল্যান্ড', 'Finlândia', 'フィンランド', 'פינלנד')
+const HUN = t11('Венгрия', 'Hungary', 'Ungarn', '匈牙利', 'Hungría', 'हंगरी', 'المجر', 'হাঙ্গেরি', 'Hungria', 'ハンガリー', 'הונגריה')
+const SWE = t11('Швеция', 'Sweden', 'Schweden', '瑞典', 'Suecia', 'स्वीडन', 'السويد', 'সুইডেন', 'Suécia', 'スウェーデン', 'שוודיה')
+const NED = t11('Нидерланды', 'Netherlands', 'Niederlande', '荷兰', 'Países Bajos', 'नीदरलैंड', 'هولندا', 'নেদারল্যান্ডস', 'Países Baixos', 'オランダ', 'הולנד')
+const RUS = t11('Россия', 'Russia', 'Russland', '俄罗斯', 'Rusia', 'रूस', 'روسيا', 'রাশিয়া', 'Rússia', 'ロシア', 'רוסיה')
+
+const CHAMONIX = t11('Шамони', 'Chamonix', 'Chamonix', '霞慕尼', 'Chamonix', 'शामोनी', 'شاموني', 'শামোনি', 'Chamonix', 'シャモニー', 'שאמוני')
+const PLACID = t11('Лейк-Плэсид', 'Lake Placid', 'Lake Placid', '普莱西德湖', 'Lake Placid', 'लेक प्लैसिड', 'ليك بلاسيد', 'লেক প্লাসিড', 'Lake Placid', 'レークプラシッド', 'לייק פלאסיד')
+const INNSBRUCK = t11('Инсбрук', 'Innsbruck', 'Innsbruck', '因斯布鲁克', 'Innsbruck', 'इन्सब्रुक', 'إنسبروك', 'ইন্সবরুক', 'Innsbruck', 'インスブルック', 'אינסברוק')
+const SAPPORO = t11('Саппоро', 'Sapporo', 'Sapporo', '札幌', 'Sapporo', 'सप्पोरो', 'سابورو', 'সাপ্পোরো', 'Sapporo', '札幌', 'סאפורו')
+const CALGARY = t11('Калгари', 'Calgary', 'Calgary', '卡尔加里', 'Calgary', 'कैलगरी', 'كالغاري', 'ক্যালগারি', 'Calgary', 'カルガリー', 'קלגרי')
+const LILLEH = t11('Лиллехаммер', 'Lillehammer', 'Lillehammer', '利勒哈默尔', 'Lillehammer', 'लिल्लेहैमर', 'ليلهامر', 'লিলহামার', 'Lillehammer', 'リレハンメル', 'לילהאמר')
+const NAGANO = t11('Нагано', 'Nagano', 'Nagano', '长野', 'Nagano', 'नागानो', 'ناغانو', 'নাগানো', 'Nagano', '長野', 'נגנו')
+const SALT = t11('Солт-Лейк-Сити', 'Salt Lake City', 'Salt Lake City', '盐湖城', 'Salt Lake City', 'सॉल्ट लेक सिटी', 'سولت ليك', 'সল্ট লেক সিটি', 'Salt Lake City', 'ソルトレイク', 'סולט לייק סיטי')
+const TURIN = t11('Турин', 'Turin', 'Turin', '都灵', 'Turín', 'ट्यूरिन', 'تورينو', 'তুরিন', 'Turim', 'トリノ', 'טורינו')
+const VANC = t11('Ванкувер', 'Vancouver', 'Vancouver', '温哥华', 'Vancouver', 'वैंकूवर', 'فانكوفر', 'ভ্যাঙ্কুভার', 'Vancouver', 'バンクーバー', 'ונקובר')
+const SOCHI = t11('Сочи', 'Sochi', 'Sotschi', '索契', 'Sochi', 'सोची', 'سوتشي', 'সোচি', 'Sochi', 'ソチ', 'סוצ׳י')
+const PYEONG = t11('Пхёнчхан', 'Pyeongchang', 'Pyeongchang', '平昌', 'Pyeongchang', 'प्योंगचांग', 'بيونغتشانغ', 'পিয়ংচাং', 'Pyeongchang', '平昌', 'פיונגצ׳אנג')
+const MILAN = t11('Милан — Кортина', 'Milan–Cortina', 'Mailand–Cortina', '米兰–科尔蒂纳', 'Milán–Cortina', 'मिलान–कोर्तिना', 'ميلانو–كورتينا', 'মিলান–কোর্তিনা', 'Milão–Cortina', 'ミラノ–コルティナ', 'מילאנו–קורטינה')
+
+const GOLD1000 = t11('больше 1000', 'more than 1000', 'über 1000', '超过1000', 'más de 1000', '1000 से अधिक', 'أكثر من 1000', '১০০০-এর বেশি', 'mais de 1000', '1000超', 'יותר מ-1000')
+const GOLD200 = t11('200–500', '200–500', '200–500', '200–500', '200–500', '200–500', '200–500', '200–500', '200–500', '200–500', '200–500')
+const GOLD50 = t11('50–200', '50–200', '50–200', '50–200', '50–200', '50–200', '50–200', '50–200', '50–200', '50–200', '50–200')
+const GOLD1 = t11('меньше 50', 'fewer than 50', 'unter 50', '少于50', 'menos de 50', '50 से कम', 'أقل من 50', '৫০-এর কম', 'menos de 50', '50未満', 'פחות מ-50')
+
+const BOLT = t11('Усэйн Болт', 'Usain Bolt', 'Usain Bolt', '尤塞恩·博尔特', 'Usain Bolt', 'यूसेन बोल्ट', 'يوسين بولت', 'উসাইন বোল্ট', 'Usain Bolt', 'ウサイン・ボルト', 'יוסיין בולט')
+const PHELPS = t11('Майкл Фелпс', 'Michael Phelps', 'Michael Phelps', '迈克尔·菲尔普斯', 'Michael Phelps', 'माइकल फेल्प्स', 'مايكل فيلبس', 'মাইকেল ফেলপস', 'Michael Phelps', 'マイケル・フェルプス', 'מייקל פלפס')
+const OWENS = t11('Джесси Оуэнс', 'Jesse Owens', 'Jesse Owens', '杰西·欧文斯', 'Jesse Owens', 'जेसी ओवेन्स', 'جيسي أوينز', 'জেসি ওয়েন্স', 'Jesse Owens', 'ジェシー・オーエンス', 'ג׳סי אוונס')
+const NADIA = t11('Надя Команечи', 'Nadia Comăneci', 'Nadia Comăneci', '纳迪娅·科马内奇', 'Nadia Comăneci', 'नादिया कोमनेची', 'ناديا كومانتشي', 'নাদিয়া কোমানেচি', 'Nadia Comăneci', 'ナディア・コマネチ', 'נדיה קומנץ׳')
+const NURMI = t11('Пааво Нурми', 'Paavo Nurmi', 'Paavo Nurmi', '帕沃·努尔米', 'Paavo Nurmi', 'पावो नूर्मी', 'بافو نورمي', 'পাভো নুরমি', 'Paavo Nurmi', 'パーヴォ・ヌルミ', 'פאבו נורמי')
+const BIKILA = t11('Абебе Бикила', 'Abebe Bikila', 'Abebe Bikila', '阿贝贝·比基拉', 'Abebe Bikila', 'अबेबे बिकिला', 'أبيبي بيكيلا', 'আবেবে বিকিলার', 'Abebe Bikila', 'アベベ・ビキラ', 'אבבה ביקילה')
+const FREEMAN = t11('Кэти Фримен', 'Cathy Freeman', 'Cathy Freeman', '凯茜·弗里曼', 'Cathy Freeman', 'कैथी फ़्रीमैन', 'كاثي فريمان', 'ক্যাথি ফ্রিম্যান', 'Cathy Freeman', 'キャシー・フリーマン', 'קתי פרימן')
+const FARAH = t11('Мо Фарах', 'Mo Farah', 'Mo Farah', '莫·法拉', 'Mo Farah', 'मो फराह', 'مو فرح', 'মো ফারাহ', 'Mo Farah', 'モ・ファラー', 'מו פארח')
+const LEWIS = t11('Карл Льюис', 'Carl Lewis', 'Carl Lewis', '卡尔·刘易斯', 'Carl Lewis', 'कार्ल लुईस', 'كارل لويس', 'কার্ল লুইস', 'Carl Lewis', 'カール・ルイス', 'קארל לואיס')
+const SPITZ = t11('Марк Спитц', 'Mark Spitz', 'Mark Spitz', '马克·施皮茨', 'Mark Spitz', 'मार्क स्पिट्ज़', 'مارك سبيتز', 'মার্ক স্পিটজ', 'Mark Spitz', 'マーク・スピッツ', 'מארק שפיץ')
+const UCHI = t11('Кохэй Утимура', 'Kōhei Uchimura', 'Kōhei Uchimura', '内村航平', 'Kōhei Uchimura', 'कोहेई उचिमुरा', 'كوهي أوتشيمورا', 'কোহেই উচিমুরা', 'Kōhei Uchimura', '内村航平', 'קוהיי אוצ׳ימורה')
+const RINER = t11('Тедди Ринер', 'Teddy Riner', 'Teddy Riner', '特迪·里内', 'Teddy Riner', 'टेडी रिनर', 'تيدي رينر', 'টেডি রিনার', 'Teddy Riner', 'テディ・リネール', 'טדי רינר')
+const STEVE = t11('Теофило Стивенсон', 'Teófilo Stevenson', 'Teófilo Stevenson', '特奥菲洛·史蒂文森', 'Teófilo Stevenson', 'तेओफिलो स्टीवेन्सन', 'تيوفيلو ستيفنسون', 'তেওফিলো স্টিভেনসন', 'Teófilo Stevenson', 'テオフィロ・ステベンソン', 'תאופילו סטיבנסון')
+const KIPCH = t11('Элиуд Кипчоге', 'Eliud Kipchoge', 'Eliud Kipchoge', '埃利乌德·基普乔格', 'Eliud Kipchoge', 'एलियुड किपचोगे', 'إليود كيبتشوغي', 'এলিউড কিপচোগে', 'Eliud Kipchoge', 'エリウド・キプチョゲ', 'אליוד קיפצ׳וגה')
+const FISCH = t11('Биргит Фишер', 'Birgit Fischer', 'Birgit Fischer', '比吉特·菲舍尔', 'Birgit Fischer', 'बिर्गिट फिशर', 'بيرغيت فيشر', 'বির্গিট ফিশার', 'Birgit Fischer', 'ビルギット・フィッシャー', 'בירגיט פישר')
+const PELL = t11('Федерика Пеллегрини', 'Federica Pellegrini', 'Federica Pellegrini', '费代丽卡·佩莱格里尼', 'Federica Pellegrini', 'फेडरिका पेलेग्रीनी', 'فيديريكا بيليغريني', 'ফেডেরিকা পেলেগ্রিনি', 'Federica Pellegrini', 'フェデリカ・ペレグリニ', 'פדריקה פלגריני')
+const KRISZ = t11('Кристина Эгерсеги', 'Krisztina Egerszegi', 'Krisztina Egerszegi', '克里斯蒂娜·埃格尔塞吉', 'Krisztina Egerszegi', 'क्रिस्टिना एगेर्सेगी', 'كريستينا إجيرسيغي', 'ক্রিস্টিনা এগেরসেগি', 'Krisztina Egerszegi', 'クリスティナ・エゲルセギ', 'קריסטינה אגרסגי')
+const THORPE = t11('Иан Торп', 'Ian Thorpe', 'Ian Thorpe', '伊恩·索普', 'Ian Thorpe', 'इयान थॉर्प', 'إيان ثورب', 'ইয়ান থর্প', 'Ian Thorpe', 'イアン・ソープ', 'איאן תורפ')
+const FRASER = t11('Шэлли-Энн Фрейзер-Прайс', 'Shelly-Ann Fraser-Pryce', 'Shelly-Ann Fraser-Pryce', '谢莉-安·弗雷泽-普赖斯', 'Shelly-Ann Fraser-Pryce', 'शेली-एन फ़्रेज़र-प्राइस', 'شيلي آن فريزر برايس', 'শেলি-অ্যান ফ্রেজার-প্রাইস', 'Shelly-Ann Fraser-Pryce', 'シェリーアン・フレーザープライス', 'שלי-אן פרייזר-פרייס')
+const FELIX = t11('Эллисон Феликс', 'Allyson Felix', 'Allyson Felix', '阿莉森·费利克斯', 'Allyson Felix', 'एलीसन फेलिक्स', 'أليسون فيليكس', 'অ্যালিসন ফেলিক্স', 'Allyson Felix', 'アリソン・フェリックス', 'אליסון פליקס')
+const BLANK = t11('Фанни Бланкерс-Кун', 'Fanny Blankers-Koen', 'Fanny Blankers-Koen', '范妮·布兰克尔斯-科恩', 'Fanny Blankers-Koen', 'फ़ैनी ब्लैंकर्स-कोएन', 'فاني بلانكرز كوين', 'ফ্যানি ব্ল্যাঙ্কার্স-কোয়েন', 'Fanny Blankers-Koen', 'ファニー・ブランカーズ・クーン', 'פני בלנקרס-קון')
 
 const ALGO = t11('алгоритм', 'algorithm', 'Algorithmus', '算法', 'algoritmo', 'एल्गोरिदम', 'خوارزمية', 'অ্যালগরিদম', 'algoritmo', 'アルゴリズム', 'אלגוריתם')
 const VARB = t11('переменная', 'variable', 'Variable', '变量', 'variable', 'चर', 'متغير', 'ভেরিয়েবল', 'variável', '変数', 'משתנה')
@@ -176,23 +309,92 @@ export const THEME_ITEMS: ThemeItem[] = [
   row('c-role', 'organelleToRole', 'medium', CHLORO, SUGAR, { key: 'sugar' }),
   row('r-role', 'organelleToRole', 'medium', RIBO, PROT, { key: 'prot' }),
   row('b-role', 'organelleToRole', 'easy', MEMB, BORDER, { key: 'border' }),
+  row('ly-role', 'organelleToRole', 'medium', LYSOS, WASTE, { key: 'waste' }),
+  row('go-role', 'organelleToRole', 'hard', GOLGI, PACK, { key: 'pack' }),
+  row('er-role', 'organelleToRole', 'hard', ER, TRANS, { key: 'trans' }),
+  row('va-role', 'organelleToRole', 'medium', VAC, STORE, { key: 'store' }),
+  row('wa-role', 'organelleToRole', 'easy', WALL, SUPPORT, { key: 'support' }),
   row('n-from', 'roleToOrganelle', 'easy', DNA, NUCLEUS, { key: 'nuc' }),
   row('m-from', 'roleToOrganelle', 'easy', ATP, MITO, { key: 'mito' }),
   row('c-from', 'roleToOrganelle', 'medium', SUGAR, CHLORO, { key: 'chl' }),
   row('r-from', 'roleToOrganelle', 'medium', PROT, RIBO, { key: 'ribo' }),
   row('b-from', 'roleToOrganelle', 'easy', BORDER, MEMB, { key: 'mem' }),
+  row('ly-from', 'roleToOrganelle', 'medium', WASTE, LYSOS, { key: 'lyso' }),
+  row('go-from', 'roleToOrganelle', 'hard', PACK, GOLGI, { key: 'golgi' }),
+  row('er-from', 'roleToOrganelle', 'hard', TRANS, ER, { key: 'er' }),
+  row('va-from', 'roleToOrganelle', 'medium', STORE, VAC, { key: 'vac' }),
+  row('wa-from', 'roleToOrganelle', 'easy', SUPPORT, WALL, { key: 'wall' }),
   row('h-sys', 'organToSystem', 'easy', HEART, CIRC, { key: 'circ' }),
   row('l-sys', 'organToSystem', 'easy', LUNGS, RESP, { key: 'resp' }),
   row('br-sys', 'organToSystem', 'easy', BRAIN, NERV, { key: 'nerv' }),
   row('s-sys', 'organToSystem', 'medium', STOM, DIG, { key: 'dig' }),
   row('k-sys', 'organToSystem', 'medium', KID, EXCR, { key: 'exc' }),
   row('li-sys', 'organToSystem', 'hard', LIVER, DIG, { key: 'dig' }),
+  row('sk-sys', 'organToSystem', 'easy', SKIN, INTEG, { key: 'integ' }),
+  row('bo-sys', 'organToSystem', 'easy', BONE, MUSC, { key: 'musc' }),
+  row('sp-sys', 'organToSystem', 'medium', SPLEEN, IMM, { key: 'imm' }),
+  row('th-sys', 'organToSystem', 'hard', THYR, ENDO, { key: 'endo' }),
+  row('ov-sys', 'organToSystem', 'medium', OVARY, REPRO, { key: 'repro' }),
+  row('circ-org', 'systemToOrgan', 'easy', CIRC, HEART, { key: 'heart' }),
+  row('resp-org', 'systemToOrgan', 'easy', RESP, LUNGS, { key: 'lungs' }),
+  row('nerv-org', 'systemToOrgan', 'easy', NERV, BRAIN, { key: 'brain' }),
+  row('dig-org', 'systemToOrgan', 'easy', DIG, STOM, { key: 'stom' }),
+  row('exc-org', 'systemToOrgan', 'medium', EXCR, KID, { key: 'kid' }),
+  row('integ-org', 'systemToOrgan', 'easy', INTEG, SKIN, { key: 'skin' }),
+  row('musc-org', 'systemToOrgan', 'easy', MUSC, BONE, { key: 'bone' }),
+  row('imm-org', 'systemToOrgan', 'medium', IMM, SPLEEN, { key: 'spleen' }),
+  row('endo-org', 'systemToOrgan', 'hard', ENDO, THYR, { key: 'thyr' }),
+  row('repro-org', 'systemToOrgan', 'medium', REPRO, OVARY, { key: 'ovary' }),
   row('ph-name', 'photoStepToName', 'easy', LIGHT, PHOTO, { key: 'photo' }),
   row('cr-name', 'photoStepToName', 'medium', SUGAR2, CELLR, { key: 'cellr' }),
+  row('mi-name', 'photoStepToName', 'easy', MITOSD, MITOS, { key: 'mitos' }),
+  row('me-name', 'photoStepToName', 'medium', MEIOSD, MEIOS, { key: 'meios' }),
+  row('fe-name', 'photoStepToName', 'medium', FERMD, FERM, { key: 'ferm' }),
+  row('tr-name', 'photoStepToName', 'easy', TRANSPD, TRANSP, { key: 'transp' }),
+  row('os-name', 'photoStepToName', 'medium', OSMOD, OSMO, { key: 'osmo' }),
+  row('di-name', 'photoStepToName', 'easy', DIFFD, DIFF, { key: 'diff' }),
+  row('rp-name', 'photoStepToName', 'hard', REPLD, REPL, { key: 'repl' }),
+  row('ps-name', 'photoStepToName', 'hard', TRANSLD, TRANSL, { key: 'transl' }),
+  row('ph-from', 'nameToProcess', 'easy', PHOTO, LIGHT, { key: 'light' }),
+  row('cr-from', 'nameToProcess', 'medium', CELLR, SUGAR2, { key: 'sugar2' }),
+  row('mi-from', 'nameToProcess', 'easy', MITOS, MITOSD, { key: 'mitosd' }),
+  row('me-from', 'nameToProcess', 'medium', MEIOS, MEIOSD, { key: 'meiosd' }),
+  row('fe-from', 'nameToProcess', 'medium', FERM, FERMD, { key: 'fermd' }),
+  row('tr-from', 'nameToProcess', 'easy', TRANSP, TRANSPD, { key: 'transpd' }),
+  row('os-from', 'nameToProcess', 'medium', OSMO, OSMOD, { key: 'osmod' }),
+  row('di-from', 'nameToProcess', 'easy', DIFF, DIFFD, { key: 'diffd' }),
+  row('rp-from', 'nameToProcess', 'hard', REPL, REPLD, { key: 'repld' }),
+  row('ps-from', 'nameToProcess', 'hard', TRANSL, TRANSLD, { key: 'transld' }),
   row('an-ex', 'kingdomToExample', 'easy', ANIMAL, LION, { key: 'lion' }),
   row('pl-ex', 'kingdomToExample', 'easy', PLANT, TREE, { key: 'tree' }),
   row('fu-ex', 'kingdomToExample', 'medium', FUNGI, MUSH, { key: 'mush' }),
   row('ba-ex', 'kingdomToExample', 'medium', BACT, ECOLI, { key: 'coli' }),
+  row('pr-ex', 'kingdomToExample', 'hard', PROTIST, AMOEBA, { key: 'amoeba' }),
+  row('an-king', 'exampleToKingdom', 'easy', LION1, ANIMAL, { key: 'animal' }),
+  row('pl-king', 'exampleToKingdom', 'easy', OAK, PLANT, { key: 'plant' }),
+  row('fu-king', 'exampleToKingdom', 'medium', MUSH1, FUNGI, { key: 'fungi' }),
+  row('ba-king', 'exampleToKingdom', 'medium', ECOLI, BACT, { key: 'bact' }),
+  row('pr-king', 'exampleToKingdom', 'hard', AMOEBA1, PROTIST, { key: 'protist' }),
+  row('lion-cl', 'animalToClass', 'easy', LION1, MAMMAL, { key: 'mammal' }),
+  row('eagle-cl', 'animalToClass', 'easy', EAGLE, BIRD, { key: 'bird' }),
+  row('shark-cl', 'animalToClass', 'easy', SHARK, FISH, { key: 'fish' }),
+  row('frog-cl', 'animalToClass', 'easy', FROG, AMPH, { key: 'amph' }),
+  row('snake-cl', 'animalToClass', 'easy', SNAKE, REPT, { key: 'rept' }),
+  row('bee-cl', 'animalToClass', 'easy', BEE, INSECT, { key: 'insect' }),
+  row('spider-cl', 'animalToClass', 'medium', SPIDER, ARACH, { key: 'arach' }),
+  row('snail-cl', 'animalToClass', 'medium', SNAIL, MOLL, { key: 'moll' }),
+  row('crab-cl', 'animalToClass', 'medium', CRAB, CRUST, { key: 'crust' }),
+  row('worm-cl', 'animalToClass', 'hard', WORM, ANNEL, { key: 'annel' }),
+  row('mam-an', 'classToAnimal', 'easy', MAMMAL, LION1, { key: 'lion1' }),
+  row('bird-an', 'classToAnimal', 'easy', BIRD, EAGLE, { key: 'eagle' }),
+  row('fish-an', 'classToAnimal', 'easy', FISH, SHARK, { key: 'shark' }),
+  row('amph-an', 'classToAnimal', 'easy', AMPH, FROG, { key: 'frog' }),
+  row('rept-an', 'classToAnimal', 'easy', REPT, SNAKE, { key: 'snake' }),
+  row('ins-an', 'classToAnimal', 'easy', INSECT, BEE, { key: 'bee' }),
+  row('ara-an', 'classToAnimal', 'medium', ARACH, SPIDER, { key: 'spider' }),
+  row('mol-an', 'classToAnimal', 'medium', MOLL, SNAIL, { key: 'snail' }),
+  row('cru-an', 'classToAnimal', 'medium', CRUST, CRAB, { key: 'crab' }),
+  row('ann-an', 'classToAnimal', 'hard', ANNEL, WORM, { key: 'worm' }),
 
   row('y-1896', 'olyYearToHost', 'easy', Y1896, ATHENS, { key: 'athens' }),
   row('y-2024', 'olyYearToHost', 'easy', Y2024, PARIS, { key: 'paris' }),
@@ -218,12 +420,6 @@ export const THEME_ITEMS: ThemeItem[] = [
   row('hc-chn', 'olyHostCount', 'easy', CHN, COUNT1, { key: 'c1' }),
   row('hc-aus', 'olyHostCount', 'easy', AUS, COUNT2, { key: 'c2' }),
   row('hc-bra', 'olyHostCount', 'easy', BRA, COUNT1, { key: 'c1' }),
-  row('sp-ath', 'sportToCategory', 'easy', TRACK, MULTI, { key: 'multi' }),
-  row('sp-sw', 'sportToCategory', 'easy', SWIM, AQUA, { key: 'aqua' }),
-  row('sp-gy', 'sportToCategory', 'medium', GYM, MULTI, { key: 'multi' }),
-  row('sp-ju', 'sportToCategory', 'easy', JUDO, COMB, { key: 'comb' }),
-  row('sp-ba', 'sportToCategory', 'easy', BASK, BALL, { key: 'ball' }),
-  row('sp-ar', 'sportToCategory', 'medium', ARCH, PREC, { key: 'prec' }),
   row('noc-usa', 'nocToName', 'easy', t11('USA', 'USA', 'USA', 'USA', 'USA', 'USA', 'USA', 'USA', 'USA', 'USA', 'USA'), USA, { key: 'usa' }),
   row('noc-gbr', 'nocToName', 'easy', t11('GBR', 'GBR', 'GBR', 'GBR', 'GBR', 'GBR', 'GBR', 'GBR', 'GBR', 'GBR', 'GBR'), GBR, { key: 'gbr' }),
   row('noc-jpn', 'nocToName', 'easy', t11('JPN', 'JPN', 'JPN', 'JPN', 'JPN', 'JPN', 'JPN', 'JPN', 'JPN', 'JPN', 'JPN'), JPN, { key: 'jpn' }),
@@ -232,6 +428,119 @@ export const THEME_ITEMS: ThemeItem[] = [
   row('noc-aus', 'nocToName', 'medium', t11('AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS', 'AUS'), AUS, { key: 'aus' }),
   row('noc-bra', 'nocToName', 'medium', t11('BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA', 'BRA'), BRA, { key: 'bra' }),
   row('noc-gre', 'nocToName', 'medium', t11('GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE', 'GRE'), GRE, { key: 'gre' }),
+  row('noc-ger', 'nocToName', 'easy', code('GER'), GER, { key: 'ger' }),
+  row('noc-ita', 'nocToName', 'easy', code('ITA'), ITA, { key: 'ita' }),
+  row('noc-esp', 'nocToName', 'medium', code('ESP'), ESP, { key: 'esp' }),
+  row('noc-can', 'nocToName', 'medium', code('CAN'), CAN, { key: 'can' }),
+  row('noc-kor', 'nocToName', 'medium', code('KOR'), KOR, { key: 'kor' }),
+  row('noc-nor', 'nocToName', 'medium', code('NOR'), NOR, { key: 'nor' }),
+  row('noc-aut', 'nocToName', 'hard', code('AUT'), AUT, { key: 'aut' }),
+  row('noc-jam', 'nocToName', 'easy', code('JAM'), JAM, { key: 'jam' }),
+  row('noc-ken', 'nocToName', 'medium', code('KEN'), KEN, { key: 'ken' }),
+  row('noc-eth', 'nocToName', 'medium', code('ETH'), ETH, { key: 'eth' }),
+  row('noc-cub', 'nocToName', 'hard', code('CUB'), CUB, { key: 'cub' }),
+  row('noc-rou', 'nocToName', 'hard', code('ROU'), ROU, { key: 'rou' }),
+  row('noc-fin', 'nocToName', 'medium', code('FIN'), FIN, { key: 'fin' }),
+  row('noc-hun', 'nocToName', 'hard', code('HUN'), HUN, { key: 'hun' }),
+  row('noc-swe', 'nocToName', 'hard', code('SWE'), SWE, { key: 'swe' }),
+  row('noc-ned', 'nocToName', 'medium', code('NED'), NED, { key: 'ned' }),
+
+  row('hc2-ath', 'hostToCountry', 'easy', ATHENS, GRE, { key: 'gre' }),
+  row('hc2-par', 'hostToCountry', 'easy', PARIS, FRA, { key: 'fra' }),
+  row('hc2-tok', 'hostToCountry', 'easy', TOKYO, JPN, { key: 'jpn' }),
+  row('hc2-lon', 'hostToCountry', 'easy', LONDON, GBR, { key: 'gbr' }),
+  row('hc2-bei', 'hostToCountry', 'medium', BEIJING, CHN, { key: 'chn' }),
+  row('hc2-rio', 'hostToCountry', 'easy', RIO, BRA, { key: 'bra' }),
+  row('hc2-syd', 'hostToCountry', 'medium', SYDNEY, AUS, { key: 'aus' }),
+  row('hc2-bar', 'hostToCountry', 'medium', BARC, ESP, { key: 'esp' }),
+  row('hc2-soc', 'hostToCountry', 'hard', SOCHI, RUS, { key: 'rus' }),
+  row('hc2-pye', 'hostToCountry', 'medium', PYEONG, KOR, { key: 'kor' }),
+  row('hc2-cal', 'hostToCountry', 'medium', CALGARY, CAN, { key: 'can' }),
+  row('hc2-lil', 'hostToCountry', 'hard', LILLEH, NOR, { key: 'nor' }),
+
+  row('yc-1896', 'olyYearToCountry', 'easy', Y1896, GRE, { key: 'gre' }),
+  row('yc-2024', 'olyYearToCountry', 'easy', Y2024, FRA, { key: 'fra' }),
+  row('yc-2020', 'olyYearToCountry', 'easy', Y2020, JPN, { key: 'jpn' }),
+  row('yc-2012', 'olyYearToCountry', 'easy', Y2012, GBR, { key: 'gbr' }),
+  row('yc-2008', 'olyYearToCountry', 'medium', Y2008, CHN, { key: 'chn' }),
+  row('yc-2016', 'olyYearToCountry', 'easy', Y2016, BRA, { key: 'bra' }),
+  row('yc-2000', 'olyYearToCountry', 'medium', Y2000, AUS, { key: 'aus' }),
+  row('yc-1992', 'olyYearToCountry', 'medium', Y1992, ESP, { key: 'esp' }),
+
+  row('wy-1924', 'winterYearToHost', 'medium', winterY('1924'), CHAMONIX, { key: 'chamonix' }),
+  row('wy-1980', 'winterYearToHost', 'medium', winterY('1980'), PLACID, { key: 'placid' }),
+  row('wy-1964', 'winterYearToHost', 'hard', winterY('1964'), INNSBRUCK, { key: 'innsbruck' }),
+  row('wy-1972', 'winterYearToHost', 'easy', winterY('1972'), SAPPORO, { key: 'sapporo' }),
+  row('wy-1988', 'winterYearToHost', 'easy', winterY('1988'), CALGARY, { key: 'calgary' }),
+  row('wy-1994', 'winterYearToHost', 'easy', winterY('1994'), LILLEH, { key: 'lillehammer' }),
+  row('wy-1998', 'winterYearToHost', 'medium', winterY('1998'), NAGANO, { key: 'nagano' }),
+  row('wy-2002', 'winterYearToHost', 'medium', winterY('2002'), SALT, { key: 'salt' }),
+  row('wy-2006', 'winterYearToHost', 'easy', winterY('2006'), TURIN, { key: 'turin' }),
+  row('wy-2010', 'winterYearToHost', 'medium', winterY('2010'), VANC, { key: 'vancouver' }),
+  row('wy-2014', 'winterYearToHost', 'easy', winterY('2014'), SOCHI, { key: 'sochi' }),
+  row('wy-2018', 'winterYearToHost', 'easy', winterY('2018'), PYEONG, { key: 'pyeong' }),
+  row('wy-2022', 'winterYearToHost', 'easy', winterY('2022'), BEIJING, { key: 'beijing' }),
+  row('wy-2026', 'winterYearToHost', 'medium', winterY('2026'), MILAN, { key: 'milan' }),
+
+  row('nn-usa', 'nameToNoc', 'easy', USA, code('USA'), { key: 'usa' }),
+  row('nn-gbr', 'nameToNoc', 'easy', GBR, code('GBR'), { key: 'gbr' }),
+  row('nn-jpn', 'nameToNoc', 'easy', JPN, code('JPN'), { key: 'jpn' }),
+  row('nn-fra', 'nameToNoc', 'easy', FRA, code('FRA'), { key: 'fra' }),
+  row('nn-chn', 'nameToNoc', 'easy', CHN, code('CHN'), { key: 'chn' }),
+  row('nn-aus', 'nameToNoc', 'medium', AUS, code('AUS'), { key: 'aus' }),
+  row('nn-bra', 'nameToNoc', 'medium', BRA, code('BRA'), { key: 'bra' }),
+  row('nn-gre', 'nameToNoc', 'medium', GRE, code('GRE'), { key: 'gre' }),
+  row('nn-ger', 'nameToNoc', 'easy', GER, code('GER'), { key: 'ger' }),
+  row('nn-ita', 'nameToNoc', 'easy', ITA, code('ITA'), { key: 'ita' }),
+  row('nn-esp', 'nameToNoc', 'medium', ESP, code('ESP'), { key: 'esp' }),
+  row('nn-can', 'nameToNoc', 'medium', CAN, code('CAN'), { key: 'can' }),
+  row('nn-kor', 'nameToNoc', 'medium', KOR, code('KOR'), { key: 'kor' }),
+  row('nn-jam', 'nameToNoc', 'easy', JAM, code('JAM'), { key: 'jam' }),
+  row('nn-ken', 'nameToNoc', 'medium', KEN, code('KEN'), { key: 'ken' }),
+  row('nn-ned', 'nameToNoc', 'hard', NED, code('NED'), { key: 'ned' }),
+
+  row('gg-usa', 'countryToGolds', 'easy', USA, GOLD1000, { key: 'g1000' }),
+  row('gg-chn', 'countryToGolds', 'medium', CHN, GOLD200, { key: 'g200' }),
+  row('gg-gbr', 'countryToGolds', 'medium', GBR, GOLD200, { key: 'g200' }),
+  row('gg-fra', 'countryToGolds', 'hard', FRA, GOLD200, { key: 'g200' }),
+  row('gg-jpn', 'countryToGolds', 'easy', JPN, GOLD50, { key: 'g50' }),
+  row('gg-aus', 'countryToGolds', 'easy', AUS, GOLD50, { key: 'g50' }),
+  row('gg-bra', 'countryToGolds', 'easy', BRA, GOLD1, { key: 'g1' }),
+  row('gg-gre', 'countryToGolds', 'easy', GRE, GOLD1, { key: 'g1' }),
+
+  star('at-bolt', 'athleteToNoc', 'easy', BOLT, JAM, { key: 'jam' }),
+  star('at-phelps', 'athleteToNoc', 'easy', PHELPS, USA, { key: 'usa' }),
+  star('at-owens', 'athleteToNoc', 'easy', OWENS, USA, { key: 'usa' }),
+  star('at-nadia', 'athleteToNoc', 'easy', NADIA, ROU, { key: 'rou' }),
+  star('at-nurmi', 'athleteToNoc', 'medium', NURMI, FIN, { key: 'fin' }),
+  star('at-bikila', 'athleteToNoc', 'medium', BIKILA, ETH, { key: 'eth' }),
+  star('at-free', 'athleteToNoc', 'medium', FREEMAN, AUS, { key: 'aus' }),
+  star('at-farah', 'athleteToNoc', 'easy', FARAH, GBR, { key: 'gbr' }),
+  star('at-lewis', 'athleteToNoc', 'easy', LEWIS, USA, { key: 'usa' }),
+  star('at-spitz', 'athleteToNoc', 'medium', SPITZ, USA, { key: 'usa' }),
+  star('at-uchi', 'athleteToNoc', 'medium', UCHI, JPN, { key: 'jpn' }),
+  star('at-riner', 'athleteToNoc', 'easy', RINER, FRA, { key: 'fra' }),
+  star('at-steve', 'athleteToNoc', 'hard', STEVE, CUB, { key: 'cub' }),
+  star('at-kip', 'athleteToNoc', 'easy', KIPCH, KEN, { key: 'ken' }),
+  star('at-fisch', 'athleteToNoc', 'hard', FISCH, GER, { key: 'ger' }),
+  star('at-pell', 'athleteToNoc', 'medium', PELL, ITA, { key: 'ita' }),
+  star('at-krisz', 'athleteToNoc', 'hard', KRISZ, HUN, { key: 'hun' }),
+  star('at-thorpe', 'athleteToNoc', 'medium', THORPE, AUS, { key: 'aus' }),
+  star('at-fraser', 'athleteToNoc', 'medium', FRASER, JAM, { key: 'jam' }),
+  star('at-felix', 'athleteToNoc', 'easy', FELIX, USA, { key: 'usa' }),
+  star('at-blank', 'athleteToNoc', 'hard', BLANK, NED, { key: 'ned' }),
+
+  star('oph-nurmi', 'olyPhotoToName', 'medium', NURMI, NURMI, { key: 'nurmi' }),
+  star('oph-bikila', 'olyPhotoToName', 'medium', BIKILA, BIKILA, { key: 'bikila' }),
+  star('oph-free', 'olyPhotoToName', 'medium', FREEMAN, FREEMAN, { key: 'free' }),
+  star('oph-farah', 'olyPhotoToName', 'easy', FARAH, FARAH, { key: 'farah' }),
+  star('oph-lewis', 'olyPhotoToName', 'easy', LEWIS, LEWIS, { key: 'lewis' }),
+  star('oph-spitz', 'olyPhotoToName', 'medium', SPITZ, SPITZ, { key: 'spitz' }),
+  star('oph-kip', 'olyPhotoToName', 'easy', KIPCH, KIPCH, { key: 'kip' }),
+  star('oph-pell', 'olyPhotoToName', 'medium', PELL, PELL, { key: 'pell' }),
+  star('oph-krisz', 'olyPhotoToName', 'hard', KRISZ, KRISZ, { key: 'krisz' }),
+  star('oph-fraser', 'olyPhotoToName', 'medium', FRASER, FRASER, { key: 'fraser' }),
+  star('oph-blank', 'olyPhotoToName', 'hard', BLANK, BLANK, { key: 'blank' }),
 
   row('t-al', 'csTermToMeaning', 'easy', ALGO, ALGOA, { key: 'algoa' }),
   row('t-va', 'csTermToMeaning', 'easy', VARB, VARA, { key: 'vara' }),
@@ -291,6 +600,7 @@ export const THEME_ITEMS: ThemeItem[] = [
   row('inv-be', 'inventorToVehicle', 'easy', BENZ, CAR, { key: 'car' }),
   row('inv-wr', 'inventorToVehicle', 'easy', WRIGHT, PLANE, { key: 'plane' }),
   row('inv-st', 'inventorToVehicle', 'medium', STEPH, TRAIN, { key: 'train' }),
+  ...olyGeneratedRows(),
 ].filter((item): item is ThemeItem => item !== null)
 
 const BY_ID = new Map(THEME_ITEMS.map((item) => [item.id, item]))

@@ -70,7 +70,7 @@ export function ThemeScreen({
 
   useEffect(() => {
     prefetchWikiPortraits(
-      THEME_ITEMS.filter((item) => item.wikiFile && item.mode === 'csPhotoToName')
+      THEME_ITEMS.filter((item) => item.wiki)
         .map((item) => ({ title: item.wiki ?? '', file: item.wikiFile }))
         .slice(0, 24),
     )

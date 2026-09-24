@@ -13,6 +13,7 @@ import {
   countryName,
   footballLearnCountries,
   footballLearnYears,
+  footballTopicOf,
   getLearnPool,
   hasGeoFinale,
   isCodesMode,
@@ -21,6 +22,7 @@ import {
   isMathMode,
   isAstroMode,
   isThemeMode,
+  themeById,
   themeWorldOf,
   MATH_MODES,
   ASTRO_MODES,
@@ -48,6 +50,7 @@ import {
   waterName,
 } from '../lib/quiz'
 import { footballLevelYears } from '../data/footballLevels'
+import { greatClub } from '../data/footballGreatClubs'
 import { playerById } from '../data/footballPlayers'
 import { PlayerCardModal } from './PlayerCardModal'
 import { PlayerCatalogNo } from './PlayerCatalogNo'
@@ -68,6 +71,7 @@ import { Flag, TeamFlag } from './Flag'
 import { QuizSilhouette } from './QuizSilhouette'
 import { FootballLearnTable } from './FootballLearnTable'
 import { FootballModeGrids, FootballSetup } from './FootballModeGrids'
+import { ClubCardModal, GreatClubsAtlas } from './GreatClubsAtlas'
 import { FitText } from './FitText'
 import { ModeChoice } from './ModeChoice'
 import { LeaderPortrait } from './LeaderPortrait'
@@ -83,6 +87,10 @@ import { AstroSetup } from './AstroModeGrids'
 import { ThemeSetup } from './ThemeModeGrids'
 import { PassportModal } from './PassportModal'
 import { WorldsBack } from './WorldsBack'
+import { EmpireLock } from './EmpireLock'
+import { useEmpire } from '../lib/empireStore'
+import { LEARN_FREE_ROWS, access } from '../lib/empire/gates'
+import { worldOfMode } from '../lib/quiz'
 import { prefetchWikiPortraits, type PortraitRequest } from '../lib/wikiThumb'
 import { portraitFileForTerm } from '../data/leaderPortraitFiles'
 import { erasForKind, leaderEraOf, type LeaderEraId } from '../data/leaderEras'
@@ -127,6 +135,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   const [openIso, setOpenIso] = useState<string | null>(null)
   const [openTermId, setOpenTermId] = useState<string | null>(null)
   const [openPlayerId, setOpenPlayerId] = useState<string | null>(null)
+  const [openClubId, setOpenClubId] = useState<string | null>(null)
   const [playerEra, setPlayerEra] = useState<'all' | 'active' | 'legend'>('all')
   const [leaderEra, setLeaderEra] = useState<'all' | LeaderEraId>('all')
   const [leaderTier, setLeaderTier] = useState<'all' | (typeof LEADERS_DIFFICULTIES)[number]>('all')
@@ -134,7 +143,11 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   const [revealed, setRevealed] = useState<Set<string>>(() => new Set())
   const leaderKind = leaders ? leaderKindOf(settings.mode) : null
   const rosterLearn = isFootballRosterMode(settings.mode) && !mixModes
-  const countries = (settings.learnFrom === 'level' || football || leaders || math || astro || theme
+  const empire = useEmpire()
+  const learnWorld = worldOfMode(settings.mode)
+  // Learn закрыт выше первых строк (docs/economy.md 4.8); уровни кампании (learnFrom === 'level') не режем.
+  const learnLocked = settings.learnFrom !== 'level' && access(empire, { kind: 'learn', world: learnWorld }) === 'locked'
+  const allCountries = (settings.learnFrom === 'level' || football || leaders || math || astro || theme
     ? pool
     : sortCountriesByName(pool, settings.lang)
   ).filter((country) => {
@@ -146,6 +159,8 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
     if (leaderTier !== 'all' && term.tier !== leaderTier) return false
     return true
   })
+  const learnClamped = learnLocked && allCountries.length > LEARN_FREE_ROWS
+  const countries = learnClamped ? allCountries.slice(0, LEARN_FREE_ROWS) : allCountries
   const rosterActive = rosterLearn
     ? pool.filter((country) => playerById(country.iso)?.era === 'active').length
     : 0
@@ -155,6 +170,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   const openCountry = openIso ? findCountry(openIso) : undefined
   const openTerm = openTermId ? termById(openTermId) : undefined
   const openPlayer = openPlayerId ? playerById(openPlayerId) : undefined
+  const openClub = openClubId ? greatClub(openClubId) : undefined
   const geoFinale = settings.learnFrom === 'level' && isFinalLevel(settings.level) && hasGeoFinale(settings.mode)
   const title = settings.learnFrom === 'level' ? (geoFinale ? t.finalLevel : t.levelLabel(settings.level)) : t.learn
   const subtitle =
@@ -205,6 +221,12 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
       for (const country of pool) {
         const player = playerById(country.iso)
         if (player?.wiki) titles.push({ title: player.wiki, file: player.wikiFile })
+      }
+    }
+    if (isThemeMode(settings.mode)) {
+      for (const country of pool) {
+        const item = themeById(country.iso)
+        if (item?.wiki) titles.push({ title: item.wiki, file: item.wikiFile })
       }
     }
     prefetchWikiPortraits(titles.slice(0, 24))
@@ -409,6 +431,9 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           {isPlayerFootballMode(settings.mode) && !mixModes ? (
             <p className="setting-hint">{t.playerClubNote}</p>
           ) : null}
+          {football && !mixModes && footballTopicOf(settings.mode) === 'clubs' ? (
+            <GreatClubsAtlas lang={settings.lang} />
+          ) : null}
         </>
       ) : settings.learnFrom === 'level' ? (
         <div className="choice-grid is-modes">
@@ -513,6 +538,9 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         <ThemeLearnTable isos={countries.map((country) => country.iso)} lang={settings.lang} hideAnswers={hideAnswers} />
       ) : null}
 
+      {learnClamped ? (
+        <EmpireLock lang={settings.lang} feature={{ kind: 'learn', world: learnWorld }} title={t.gateLearn(LEARN_FREE_ROWS)} compact />
+      ) : null}
       {mixModes ? null : leaders && !isLeaderPhotoMode(settings.mode) ? (
         <LeadersLearnTable
           countries={countries}
@@ -672,7 +700,26 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         />
       )}
       {openPlayer && (
-        <PlayerCardModal key={openPlayer.id} player={openPlayer} lang={settings.lang} onClose={() => setOpenPlayerId(null)} />
+        <PlayerCardModal
+          key={openPlayer.id}
+          player={openPlayer}
+          lang={settings.lang}
+          onClose={() => setOpenPlayerId(null)}
+          onOpenClub={(clubId) => {
+            setOpenPlayerId(null)
+            setOpenClubId(clubId)
+          }}
+        />
+      )}
+      {openClub && (
+        <ClubCardModal
+          key={openClub.id}
+          clubId={openClub.id}
+          founded={openClub.founded}
+          lang={settings.lang}
+          onClose={() => setOpenClubId(null)}
+          onOpenClub={setOpenClubId}
+        />
       )}
     </div>
   )

@@ -2,7 +2,7 @@
 
 import { STRINGS, type Lang } from '../i18n/strings'
 import { shareResultFile } from '../lib/shareCard'
-import { useTokens } from '../lib/tokenStore'
+import { useEmpire } from '../lib/empireStore'
 import { ShareButton } from './ShareButton'
 
 interface ResultsShareShotProps {
@@ -27,12 +27,13 @@ export function ResultsShareShot({
   success,
 }: ResultsShareShotProps) {
   const t = STRINGS[lang]
-  const tokens = useTokens()
+  const empire = useEmpire()
+  const share = empire.cosmetics.share
   const message = `${t.shareBetter}\n${url}`
   return (
     <ShareButton
       lang={lang}
-      className={`results-shot ${success ? 'is-success' : 'is-fail'}${tokens.shareTheme ? ` share-theme-${tokens.shareTheme}` : ''}`}
+      className={`results-shot ${success ? 'is-success' : 'is-fail'}${share ? ` share-theme-${share}` : ''}`}
       text={message}
       url={url}
       file={() =>
@@ -55,6 +56,7 @@ export function ResultsShareShot({
               {percent ? <span className="score-percent">{percent}</span> : null}
               {time ? <span className="score-time">{time}</span> : null}
               <span className="score-headline">{headline}</span>
+              {empire.title ? <span className="results-shot-title">{t[`empireTitle_${empire.title}`]}</span> : null}
             </span>
             <span className="results-shot-prompt">{copied ? t.shareCopied : t.shareTap}</span>
           </span>

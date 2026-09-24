@@ -12,8 +12,8 @@ export type TourCopy = Pick<
   | 'tourStepWorldsBody'
   | 'tourStepGeoTitle'
   | 'tourStepGeoBody'
-  | 'tourStepStateTitle'
-  | 'tourStepStateBody'
+  | 'tourStepEmpireTitle'
+  | 'tourStepEmpireBody'
   | 'tourStepDockTitle'
   | 'tourStepDockBody'
 >
@@ -33,14 +33,11 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepWorldsBody:
       'Это хаб. Выберите предмет — флаги, футбол, лидеры, математика и другие. В каждом мире есть свободная игра, кампания и альбом марок.',
     tourStepGeoTitle: 'География',
-    tourStepGeoBody:
-      'Флаги, столицы, карты и коды. За верные ответы в зачёте падают марки стран — до пяти копий. Лишние копии кормят Государство.',
-    tourStepStateTitle: 'Государство',
-    tourStepStateBody:
-      'Ваша страна. Лишние гео-марки меняют на жетоны казны или служащих. Министерства усиливают раунд правления.',
+    tourStepGeoBody: 'Флаги, столицы, карты и коды. За верные ответы в зачёте падают марки стран — до пяти копий, а Империя получает специалистов и монеты.',
+    tourStepEmpireTitle: 'Империя',
+    tourStepEmpireBody: 'Ваша страна. Девять зданий по темам растут от зачётных раундов, монеты и ресурсы капают сами, эпохи открывают сложность, уровни и подборки.',
     tourStepDockTitle: 'Ещё',
-    tourStepDockBody:
-      'Штаб копит знание, магазин тратит жетоны, студия собирает свои колоды, мультиплеер — живые дуэли.',
+    tourStepDockBody: 'Студия собирает свои колоды, мультиплеер — живые дуэли. Казна Империи — рамки, темы и ускорения.',
   }),
   en: row({
     tourSkip: 'Skip',
@@ -52,14 +49,11 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepWorldsBody:
       'This is the hub. Pick a subject — flags, football, leaders, math and more. Each world has free play, a campaign, and a stamp album.',
     tourStepGeoTitle: 'Geography',
-    tourStepGeoBody:
-      'Flags, capitals, maps and codes. Scored correct answers drop country stamps — up to five copies. Spare copies feed State.',
-    tourStepStateTitle: 'State',
-    tourStepStateBody:
-      'Your country. Spare geography stamps become treasury tokens or clerks. Ministries power up the governing round.',
+    tourStepGeoBody: 'Flags, capitals, maps and codes. Scored correct answers drop country stamps — up to five copies — and the Empire gains specialists and coins.',
+    tourStepEmpireTitle: 'Empire',
+    tourStepEmpireBody: 'Your country. Nine buildings by subject grow from scored rounds, coins and resources trickle in on their own, eras unlock difficulty, levels and collections.',
     tourStepDockTitle: 'More',
-    tourStepDockBody:
-      'HQ stores knowledge, the shop spends tokens, Studio builds your own decks, and multiplayer is live duels.',
+    tourStepDockBody: 'Studio builds your own decks, multiplayer is live duels. The Empire treasury sells frames, themes and boosts.',
   }),
   de: row({
     tourSkip: 'Überspringen',
@@ -71,14 +65,11 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepWorldsBody:
       'Das ist die Zentrale. Wähle ein Fach — Flaggen, Fußball, Herrscher, Mathe und mehr. Jede Welt hat Freispiel, Kampagne und Markenalbum.',
     tourStepGeoTitle: 'Geografie',
-    tourStepGeoBody:
-      'Flaggen, Hauptstädte, Karten und Codes. Richtige Antworten in Wertungsrunden geben Ländermarken — bis zu fünf Kopien. Extra-Kopien füttern den Staat.',
-    tourStepStateTitle: 'Staat',
-    tourStepStateBody:
-      'Dein Land. Extra-Geografie-Marken werden zu Kassen-Token oder Beamten. Ministerien stärken die Regierungsrunde.',
+    tourStepGeoBody: 'Flaggen, Hauptstädte, Karten und Codes. Gewertete richtige Antworten bringen Ländermarken — bis zu fünf Kopien — und das Imperium bekommt Spezialisten und Münzen.',
+    tourStepEmpireTitle: 'Imperium',
+    tourStepEmpireBody: 'Dein Land. Neun Gebäude nach Fach wachsen durch gewertete Runden, Münzen und Ressourcen tropfen von selbst, Epochen öffnen Schwierigkeit, Level und Sammlungen.',
     tourStepDockTitle: 'Mehr',
-    tourStepDockBody:
-      'Das HQ sammelt Wissen, der Laden gibt Token aus, das Studio baut eigene Decks, Multiplayer sind Live-Duelle.',
+    tourStepDockBody: 'Das Studio baut eigene Decks, Multiplayer sind Live-Duelle. Die Schatzkammer des Imperiums verkauft Rahmen, Designs und Schübe.',
   }),
   zh: row({
     tourSkip: '跳过',
@@ -90,13 +81,11 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepWorldsBody:
       '这是大厅。选一个科目：旗帜、足球、领袖、数学等。每个世界都有自由对局、战役和邮票相册。',
     tourStepGeoTitle: '地理',
-    tourStepGeoBody:
-      '旗帜、首都、地图和代码。计分答对会掉国家邮票，最多五份。多余的副本供给「国家」。',
-    tourStepStateTitle: '国家',
-    tourStepStateBody:
-      '你的国家。多余的地理邮票可换成国库代币或职员。部委会加强执政回合。',
+    tourStepGeoBody: '国旗、首都、地图和代码。计分答对掉落国家邮票（最多五份），帝国获得专家和金币。',
+    tourStepEmpireTitle: '帝国',
+    tourStepEmpireBody: '你的国家。九座按学科的建筑随计分回合成长，金币和资源自动累积，时代解锁难度、关卡和合集。',
     tourStepDockTitle: '更多',
-    tourStepDockBody: '总部积累知识，商店花代币，工作室做自己的牌组，多人是实时对决。',
+    tourStepDockBody: '工作室做自己的牌组，多人是实时对决。帝国国库出售边框、主题和加速。',
   }),
   es: row({
     tourSkip: 'Saltar',
@@ -108,14 +97,11 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepWorldsBody:
       'Este es el hub. Elige una materia: banderas, fútbol, líderes, mates y más. Cada mundo tiene juego libre, campaña y álbum de sellos.',
     tourStepGeoTitle: 'Geografía',
-    tourStepGeoBody:
-      'Banderas, capitales, mapas y códigos. Los aciertos con puntuación sueltan sellos de países, hasta cinco copias. Las extra alimentan Estado.',
-    tourStepStateTitle: 'Estado',
-    tourStepStateBody:
-      'Tu país. Los sellos extra de geografía se cambian por fichas de tesoro o funcionarios. Los ministerios refuerzan la ronda de gobierno.',
+    tourStepGeoBody: 'Banderas, capitales, mapas y códigos. Los aciertos puntuados dan sellos de países —hasta cinco copias— y el Imperio gana especialistas y monedas.',
+    tourStepEmpireTitle: 'Imperio',
+    tourStepEmpireBody: 'Tu país. Nueve edificios por materia crecen con rondas puntuadas, las monedas y recursos gotean solos, las eras abren dificultad, niveles y colecciones.',
     tourStepDockTitle: 'Más',
-    tourStepDockBody:
-      'El cuartel guarda saber, la tienda gasta fichas, el estudio arma tus mazos y el multijugador son duelos en vivo.',
+    tourStepDockBody: 'El Estudio arma tus propias barajas, el multijugador son duelos en vivo. El tesoro del Imperio vende marcos, temas e impulsos.',
   }),
   hi: row({
     tourSkip: 'छोड़ें',
@@ -127,14 +113,11 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepWorldsBody:
       'यह हब है। विषय चुनें — झंडे, फुटबॉल, नेता, गणित और और। हर विश्व में फ्री प्ले, अभियान और टिकट एल्बम है।',
     tourStepGeoTitle: 'भूगोल',
-    tourStepGeoBody:
-      'झंडे, राजधानियाँ, नक्शे और कोड। स्कोर वाले सही जवाब देश की टिकटें देते हैं — पाँच प्रतियाँ तक। अतिरिक्त प्रतियाँ राज्य चलाती हैं।',
-    tourStepStateTitle: 'राज्य',
-    tourStepStateBody:
-      'आपका देश। अतिरिक्त भूगोल टिकटें खजाने के टोकन या क्लर्क बनती हैं। मंत्रालय शासन राउंड को मजबूत करते हैं।',
+    tourStepGeoBody: 'झंडे, राजधानियाँ, नक्शे और कोड। स्कोर वाले सही उत्तर देश की डाक टिकटें देते हैं — पाँच प्रतियों तक — और साम्राज्य को विशेषज्ञ और सिक्के मिलते हैं।',
+    tourStepEmpireTitle: 'साम्राज्य',
+    tourStepEmpireBody: 'आपका देश। विषय के अनुसार नौ भवन स्कोर वाले राउंड से बढ़ते हैं, सिक्के और संसाधन अपने आप आते हैं, युग कठिनाई, स्तर और संग्रह खोलते हैं।',
     tourStepDockTitle: 'और',
-    tourStepDockBody:
-      'मुख्यालय ज्ञान जमा करता है, दुकान टोकन खर्च करती है, स्टूडियो आपके डेक बनाता है, मल्टीप्लेयर लाइव द्वंद्व है।',
+    tourStepDockBody: 'स्टूडियो अपने डेक बनाता है, मल्टीप्लेयर लाइव द्वंद्व है। साम्राज्य का कोष फ्रेम, थीम और बूस्ट बेचता है।',
   }),
   ar: row({
     tourSkip: 'تخطي',
@@ -146,14 +129,11 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepWorldsBody:
       'هذه الساحة. اختر مادة: أعلام، كرة قدم، قادة، رياضيات وغيرها. لكل عالم لعب حر وحملة وألبوم طوابع.',
     tourStepGeoTitle: 'الجغرافيا',
-    tourStepGeoBody:
-      'أعلام وعواصم وخرائط ورموز. الإجابات الصحيحة المحسوبة تسقط طوابع الدول — حتى خمس نسخ. الزائد يغذي الدولة.',
-    tourStepStateTitle: 'الدولة',
-    tourStepStateBody:
-      'بلدك. طوابع الجغرافيا الزائدة تصبح رموز خزانة أو موظفين. الوزارات تقوّي جولة الحكم.',
+    tourStepGeoBody: 'الأعلام والعواصم والخرائط والرموز. الإجابات الصحيحة المحتسبة تمنح طوابع الدول — حتى خمس نسخ — وتكسب الإمبراطورية متخصصين وعملات.',
+    tourStepEmpireTitle: 'الإمبراطورية',
+    tourStepEmpireBody: 'بلدك. تسعة مبانٍ حسب المادة تنمو من الجولات المحتسبة، والعملات والموارد تتراكم وحدها، والعصور تفتح الصعوبة والمستويات والمجموعات.',
     tourStepDockTitle: 'المزيد',
-    tourStepDockBody:
-      'المقر يخزن المعرفة، والمتجر يصرف الرموز، والاستوديو يبني مجموعاتك، واللعب الجماعي مبارزات مباشرة.',
+    tourStepDockBody: 'الاستوديو يبني مجموعاتك، واللعب الجماعي مبارزات مباشرة. خزانة الإمبراطورية تبيع الإطارات والسِمات والتعزيزات.',
   }),
   bn: row({
     tourSkip: 'এড়িয়ে যান',
@@ -165,14 +145,11 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepWorldsBody:
       'এটি হাব। একটি বিষয় বেছে নিন — পতাকা, ফুটবল, নেতা, গণিত ও আরও। প্রতি বিশ্বে ফ্রি প্লে, ক্যাম্পেইন ও স্ট্যাম্প অ্যালবাম আছে।',
     tourStepGeoTitle: 'ভূগোল',
-    tourStepGeoBody:
-      'পতাকা, রাজধানী, মানচিত্র ও কোড। স্কোর সঠিক উত্তরে দেশের স্ট্যাম্প পড়ে — পাঁচ কপি পর্যন্ত। বাড়তি কপি রাষ্ট্র চালায়।',
-    tourStepStateTitle: 'রাষ্ট্র',
-    tourStepStateBody:
-      'আপনার দেশ। বাড়তি ভূগোল স্ট্যাম্প কোষাগার টোকেন বা কর্মচারী হয়। মন্ত্রণালয় শাসন রাউন্ড শক্ত করে।',
+    tourStepGeoBody: 'পতাকা, রাজধানী, মানচিত্র ও কোড। স্কোরযুক্ত সঠিক উত্তরে দেশের ডাকটিকিট পড়ে — পাঁচ কপি পর্যন্ত — আর সাম্রাজ্য পায় বিশেষজ্ঞ ও মুদ্রা।',
+    tourStepEmpireTitle: 'সাম্রাজ্য',
+    tourStepEmpireBody: 'আপনার দেশ। বিষয় অনুযায়ী নয়টি ভবন স্কোরযুক্ত রাউন্ডে বাড়ে, মুদ্রা ও সম্পদ নিজে থেকে জমে, যুগ খোলে কঠিনতা, স্তর ও সংগ্রহ।',
     tourStepDockTitle: 'আরও',
-    tourStepDockBody:
-      'সদর দপ্তর জ্ঞান জমায়, দোকান টোকেন খরচ করে, স্টুডিও আপনার ডেক বানায়, মাল্টিপ্লেয়ার লাইভ দ্বন্দ্ব।',
+    tourStepDockBody: 'স্টুডিও নিজের ডেক বানায়, মাল্টিপ্লেয়ার লাইভ দ্বৈরথ। সাম্রাজ্যের কোষাগার বিক্রি করে ফ্রেম, থিম ও বুস্ট।',
   }),
   pt: row({
     tourSkip: 'Saltar',
@@ -184,14 +161,11 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepWorldsBody:
       'Este é o hub. Escolhe uma matéria — bandeiras, futebol, líderes, matemática e mais. Cada mundo tem jogo livre, campanha e álbum de selos.',
     tourStepGeoTitle: 'Geografia',
-    tourStepGeoBody:
-      'Bandeiras, capitais, mapas e códigos. Acertos com pontuação soltam selos de países — até cinco cópias. As extra alimentam o Estado.',
-    tourStepStateTitle: 'Estado',
-    tourStepStateBody:
-      'O teu país. Selos extra de geografia viram fichas do tesouro ou funcionários. Os ministérios reforçam a ronda de governo.',
+    tourStepGeoBody: 'Bandeiras, capitais, mapas e códigos. Acertos pontuados dão selos de países — até cinco cópias — e o Império ganha especialistas e moedas.',
+    tourStepEmpireTitle: 'Império',
+    tourStepEmpireBody: 'Seu país. Nove prédios por matéria crescem com rodadas pontuadas, moedas e recursos pingam sozinhos, eras abrem dificuldade, níveis e coleções.',
     tourStepDockTitle: 'Mais',
-    tourStepDockBody:
-      'O QG guarda saber, a loja gasta fichas, o estúdio monta os teus baralhos e o multijogador são duelos ao vivo.',
+    tourStepDockBody: 'O Estúdio monta seus próprios baralhos, o multijogador são duelos ao vivo. O tesouro do Império vende molduras, temas e impulsos.',
   }),
   ja: row({
     tourSkip: 'スキップ',
@@ -203,14 +177,11 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepWorldsBody:
       'ここがハブです。旗、サッカー、指導者、数学など科目を選びます。各世界にフリープレイ、キャンペーン、切手アルバムがあります。',
     tourStepGeoTitle: '地理',
-    tourStepGeoBody:
-      '旗、首都、地図、コード。得点ラウンドの正解で国の切手が落ちます。最大5枚。余分なコピーは国家に使います。',
-    tourStepStateTitle: '国家',
-    tourStepStateBody:
-      'あなたの国。余った地理の切手は国庫トークンか職員になります。省庁は統治ラウンドを強化します。',
+    tourStepGeoBody: '国旗、首都、地図、コード。スコア対象の正解で国の切手（最大 5 枚）が手に入り、帝国は専門家とコインを得ます。',
+    tourStepEmpireTitle: '帝国',
+    tourStepEmpireBody: 'あなたの国。教科別の 9 つの建物がスコア対象ラウンドで育ち、コインと資源は自動で貯まり、時代が難易度・レベル・コレクションを解放します。',
     tourStepDockTitle: 'そのほか',
-    tourStepDockBody:
-      '本部は知識を貯め、店はトークンを使い、スタジオは自作デッキ、マルチはリアルタイム対戦です。',
+    tourStepDockBody: 'スタジオは自分のデッキを作り、マルチプレイはライブ対戦。帝国の宝物庫ではフレーム、テーマ、ブーストを販売。',
   }),
   he: row({
     tourSkip: 'דילוג',
@@ -222,13 +193,10 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepWorldsBody:
       'זה ההאב. בחרו נושא — דגלים, כדורגל, מנהיגים, מתמטיקה ועוד. לכל עולם יש משחק חופשי, מסע ואלבום בולים.',
     tourStepGeoTitle: 'גיאוגרפיה',
-    tourStepGeoBody:
-      'דגלים, בירות, מפות וקודים. תשובות נכונות עם ניקוד מפילות בולי מדינות — עד חמישה עותקים. העודפים מזינים את המדינה.',
-    tourStepStateTitle: 'מדינה',
-    tourStepStateBody:
-      'המדינה שלכם. בולי גיאו עודפים הופכים לטוקני אוצר או לפקידים. המשרדים מחזקים את סבב השלטון.',
+    tourStepGeoBody: 'דגלים, בירות, מפות וקודים. תשובות נכונות במשחק מדורג מפילות בולי מדינות — עד חמישה עותקים — והאימפריה מקבלת מומחים ומטבעות.',
+    tourStepEmpireTitle: 'אימפריה',
+    tourStepEmpireBody: 'המדינה שלך. תשעה בניינים לפי נושא צומחים מסבבים מדורגים, מטבעות ומשאבים נצברים לבד, ותקופות פותחות רמת קושי, שלבים ואוספים.',
     tourStepDockTitle: 'עוד',
-    tourStepDockBody:
-      'המטה אוגר ידע, החנות מוציאה טוקנים, הסטודיו בונה חפיסות, והמשחק המרובה הוא דו־קרב חי.',
+    tourStepDockBody: 'הסטודיו בונה חפיסות משלך, מרובה משתתפים הוא דו־קרב חי. אוצר האימפריה מוכר מסגרות, ערכות נושא והאצות.',
   }),
 }

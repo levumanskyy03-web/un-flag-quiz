@@ -99,6 +99,11 @@ export const ACHIEVEMENT_IDS = [
   'mythHundred',
   'mythLeaders',
   'veteranYear',
+  'roundsTenK',
+  'allStampsFive',
+  'dailyYear',
+  'duelThousand',
+  'allWorldsStamps',
 ] as const
 
 export type AchievementId = (typeof ACHIEVEMENT_IDS)[number]
@@ -873,6 +878,46 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     ru: 'Год',
     enHint: 'Very hard. Keep an account for 365 days',
     ruHint: 'Очень сложно. Аккаунту исполнился 1 год',
+  },
+  {
+    id: 'roundsTenK',
+    tier: 6,
+    en: 'Ten thousand rounds',
+    ru: 'Десять тысяч раундов',
+    enHint: 'Legacy. Finish 10 000 rounds',
+    ruHint: 'Наследие. Завершите 10 000 раундов',
+  },
+  {
+    id: 'allStampsFive',
+    tier: 6,
+    en: 'Full album',
+    ru: 'Полный альбом',
+    enHint: 'Legacy. Collect 5 stamps for every UN country',
+    ruHint: 'Наследие. По 5 марок за каждую страну ООН',
+  },
+  {
+    id: 'dailyYear',
+    tier: 6,
+    en: 'Daily year',
+    ru: 'Год без пропусков',
+    enHint: 'Legacy. A 365-day daily challenge streak',
+    ruHint: 'Наследие. 365 дневных вызовов подряд',
+  },
+  {
+    id: 'duelThousand',
+    tier: 6,
+    en: 'Thousand duels',
+    ru: 'Тысяча дуэлей',
+    enHint: 'Legacy. Win 1000 duels',
+    ruHint: 'Наследие. Выиграйте 1000 дуэлей',
+  },
+  {
+    id: 'allWorldsStamps',
+    tier: 6,
+    en: 'Every stamp',
+    ru: 'Все марки',
+    enHint: 'Legacy. Own every stamp of every world at least once',
+    ruHint: 'Наследие. Хотя бы по одной марке каждого мира',
   },
 ]
 

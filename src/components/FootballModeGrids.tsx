@@ -44,11 +44,13 @@ export function FootballSetup({
   onChange,
   hideModes,
   campaignPercent,
+  onPickMode,
 }: {
   settings: QuizSettings
   onChange: (settings: QuizSettings) => void
   hideModes?: readonly QuizMode[]
   campaignPercent?: (mode: QuizMode) => number | null
+  onPickMode?: (mode: QuizMode) => void
 }) {
   const t = STRINGS[settings.lang]
   const hidden = new Set(hideModes ?? [])
@@ -61,6 +63,11 @@ export function FootballSetup({
       ? settings.mode
       : (modes[0] ?? defaultFootballModeOf(next))
     onChange({ ...settings, mix: null, mode })
+  }
+
+  function pickMode(mode: QuizMode) {
+    onChange({ ...settings, mix: null, mode })
+    onPickMode?.(mode)
   }
 
   return (
@@ -82,7 +89,7 @@ export function FootballSetup({
         <FootballModeGrids
           lang={settings.lang}
           activeMode={settings.mode}
-          onPick={(mode) => onChange({ ...settings, mix: null, mode })}
+          onPick={pickMode}
           hideModes={[...PLAYER_FOOTBALL_MODES, ...CLUB_FOOTBALL_MODES, ...MANAGER_FOOTBALL_MODES, ...(hideModes ?? [])]}
           campaignPercent={campaignPercent}
         />
@@ -96,7 +103,7 @@ export function FootballSetup({
                 label={modeLabel(mode, settings.lang)}
                 mode={mode}
                 active={settings.mode === mode}
-                onClick={() => onChange({ ...settings, mix: null, mode })}
+                onClick={() => pickMode(mode)}
                 percent={campaignPercent?.(mode)}
               />
             ))}

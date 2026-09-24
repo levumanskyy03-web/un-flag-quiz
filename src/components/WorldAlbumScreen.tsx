@@ -17,6 +17,7 @@ import {
   useWorldStamps,
 } from '../lib/stamps'
 import type { QuizSettings } from './HomeScreen'
+import { stampRarity } from '../lib/empire/album'
 import { AlbumLootHow } from './AlbumLootHow'
 import { TeamFlag } from './Flag'
 import { FitText } from './FitText'
@@ -47,6 +48,7 @@ const GROUP_ORDER: StampGroupId[] = [
   'planets',
   'moons',
   'stars',
+  'exploration',
   'people',
   'cards',
 ]
@@ -67,6 +69,7 @@ function groupLabel(group: StampGroupId, lang: Lang): string {
   if (group === 'planets') return t.astroFamilyPlanets
   if (group === 'moons') return t.astroFamilyMoons
   if (group === 'stars') return t.astroFamilySky
+  if (group === 'exploration') return t.astroFamilyExploration
   if (group === 'people') return t.astroFamilyPeople
   return t.album
 }
@@ -135,10 +138,12 @@ export function WorldAlbumScreen({ settings, world, tabs, onHub, onWorlds }: Wor
               const got = hasStamp(album, card.id)
               const count = stampCopies(album, card.id)
               const name = stampCardName(card, settings.lang)
+              const rarity = stampRarity(world, card.id)
               return (
                 <div
                   key={card.id}
-                  className={`stamp-card${got ? '' : ' is-locked'}${count >= STAMP_MAX ? ' is-max' : ''}`}
+                  className={`stamp-card is-${rarity}${got ? '' : ' is-locked'}${count >= STAMP_MAX ? ' is-max' : ''}`}
+                  title={t[`stampRarity_${rarity}`]}
                 >
                   <span className="stamp-frame">
                     <StampFace card={card} name={name} />

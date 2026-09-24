@@ -163,6 +163,7 @@ export {
   HARD_THEME_MIX,
   MATCH_THEME_MODES,
   isThemeMode,
+  isThemePhotoMode,
   isThemeWorld,
   themeHasCampaign,
   themeModesOfWorld,
@@ -574,7 +575,11 @@ export function hasGeoFinale(mode: QuizMode): boolean {
   )
 }
 
-export type PlayPath = 'pool' | 'levels' | 'learn' | 'mistakes'
+export type PlayPath = 'pool' | 'levels' | 'learn' | 'mistakes' | 'list' | 'daily'
+
+export function isScoredPlayPath(path: PlayPath) {
+  return path === 'pool' || path === 'list' || path === 'daily'
+}
 export type LearnFrom = 'region' | 'level'
 export type RegionFilter = string
 export type RoundEnd = 'complete' | 'timeout' | 'lives'
@@ -966,9 +971,18 @@ export function withPriorBan(question: Question, keys: readonly string[]): Quest
 }
 
 export function shuffle<T>(items: T[]): T[] {
+  return shuffleSeeded(items, Math.floor(Math.random() * 0xffffffff))
+}
+
+export function shuffleSeeded<T>(items: T[], seed: number): T[] {
+  let s = seed >>> 0
   const next = [...items]
+  const rand = () => {
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0
+    return s / 4294967296
+  }
   for (let i = next.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
+    const j = Math.floor(rand() * (i + 1))
     ;[next[i], next[j]] = [next[j], next[i]]
   }
   return next

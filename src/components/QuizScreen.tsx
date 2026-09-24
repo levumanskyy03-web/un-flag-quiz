@@ -20,6 +20,7 @@ import {
   isMathMode,
   isAstroMode,
   isThemeMode,
+  isThemePhotoMode,
   isRankingMode,
   isWaterMapMode,
   isWaterMode,
@@ -52,8 +53,8 @@ import { Lives } from './Lives'
 import { QuizMap } from './QuizMap'
 import { QuizSilhouette } from './QuizSilhouette'
 import { RankingFootnote } from './GeoModeGrids'
-import { powerTokenCost } from '../lib/economyStore'
-import { useTokens } from '../lib/tokenStore'
+import { useEmpire } from '../lib/empireStore'
+import { powerPrice } from '../lib/empire/rules'
 import { ChoiceLabel, FitText } from './FitText'
 import { WorldsBack } from './WorldsBack'
 
@@ -126,7 +127,9 @@ export function QuizScreen({
   power,
 }: QuizScreenProps) {
   const t = STRINGS[lang]
-  const tokens = useTokens()
+  const empire = useEmpire()
+  const price = (kind: 'hint' | 'skip' | 'life') => powerPrice(empire, kind)
+  const priceLabel = (kind: 'hint' | 'skip' | 'life') => (price(kind) === 0 ? t.quizPowerFree : t.quizPowerCoins(price(kind)))
   const hidden = new Set(power?.hiddenKeys ?? [])
   const activeMode = question.mode ?? mode
   const answered = selectedIso !== null || timedOut
@@ -292,7 +295,7 @@ export function QuizScreen({
                     compact={!answered}
                   />
                 </div>
-              ) : activeMode === 'astroFactsToName' ? (
+              ) : astroItem.facts?.length ? (
                 <ul className="neighbors-prompt-list">
                   {astroPrompt.split('\n').map((line) => (
                     <li key={line} className="neighbors-prompt-item">
@@ -307,7 +310,7 @@ export function QuizScreen({
           ) : themeItem ? (
             <div className="code-prompt-block">
               {themeAsk ? <p className="neighbors-prompt-label">{themeAsk}</p> : null}
-              {activeMode === 'csPhotoToName' ? (
+              {isThemePhotoMode(activeMode) ? (
                 <div className="leader-prompt">
                   <LeaderPortrait
                     name={correctName}
@@ -595,26 +598,26 @@ export function QuizScreen({
           <button
             type="button"
             className="btn-ghost"
-            disabled={answered || !power.hintReady || tokens.balance < powerTokenCost('hint')}
+            disabled={answered || !power.hintReady || empire.coins < price('hint')}
             onClick={power.onHint}
           >
-            {t.quizHint} · {powerTokenCost('hint')}
+            {t.quizHint} · {priceLabel('hint')}
           </button>
           <button
             type="button"
             className="btn-ghost"
-            disabled={answered || tokens.balance < powerTokenCost('skip')}
+            disabled={answered || empire.coins < price('skip')}
             onClick={power.onSkip}
           >
-            {t.quizSkip} · {powerTokenCost('skip')}
+            {t.quizSkip} · {priceLabel('skip')}
           </button>
           <button
             type="button"
             className="btn-ghost"
-            disabled={answered || power.extraLifeUsed || tokens.balance < powerTokenCost('life')}
+            disabled={answered || power.extraLifeUsed || empire.coins < price('life')}
             onClick={power.onLife}
           >
-            {t.quizExtraLife} · {powerTokenCost('life')}
+            {t.quizExtraLife} · {priceLabel('life')}
           </button>
         </div>
       ) : null}

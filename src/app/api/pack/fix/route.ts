@@ -2,6 +2,7 @@ import { type NextRequest } from 'next/server'
 import type { PackItem } from '../../../../data/pack'
 import type { PackFormatId } from '../../../../data/pack'
 import type { ModelItemPatch } from '../../../../lib/packFix'
+import { requireGate } from '../../../../lib/empire/serverGate'
 
 export const runtime = 'nodejs'
 
@@ -32,6 +33,8 @@ type Body = {
 }
 
 export async function POST(request: NextRequest) {
+  const gate = await requireGate(request, { kind: 'studio' })
+  if (gate) return gate
   const key = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_GENERATIVE_AI_API_KEY
   if (!key) {
     return Response.json({ error: 'no_key' }, { status: 503 })

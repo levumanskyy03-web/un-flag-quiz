@@ -1,6 +1,8 @@
 "use client";
 
 import { AlbumScreen } from "@/components/AlbumScreen";
+import { CollectionsScreen } from "@/components/CollectionsScreen";
+import { GEO_HUB_TABS } from "@/components/HubNav";
 import { FactsScreen } from "@/components/FactsScreen";
 import { HomeScreen } from "@/components/HomeScreen";
 import { LearnScreen } from "@/components/LearnScreen";
@@ -101,6 +103,16 @@ export function GeoPlay({ play }: { play: PlaySession }) {
           onWorlds={play.goToWorlds}
         />
       )}
+      {play.screen === "lists" && (
+        <CollectionsScreen
+          world="geo"
+          settings={play.quizSettings}
+          tabs={GEO_HUB_TABS}
+          onHub={play.goHub}
+          onWorlds={play.goToWorlds}
+          onPlay={(collection, path) => play.startCollectionRound(collection, path)}
+        />
+      )}
       {play.screen === "quiz" && play.questions[play.index] && (
         isFactsToName(play.currentMode) ? (
         <FactsScreen
@@ -157,7 +169,7 @@ export function GeoPlay({ play }: { play: PlaySession }) {
           endedBy={play.endedBy}
           isNewBest={play.isNewBest}
           earnedXp={play.earnedXp}
-          earnedTokens={play.earnedTokens}
+          empireReward={play.empireReward}
           totalXp={play.xp}
           saveNote={!play.isPractice}
           menuLabel={play.isPractice ? STRINGS[play.quizSettings.lang].backToCards : undefined}

@@ -1,4 +1,6 @@
 import type { Text11 } from '../../i18n/text11'
+import { DEPENDENT_WIKIDATA, RAW_DEPENDENTS } from './dependents'
+import { MAP_DEPENDENT_WIKIDATA, RAW_MAP_DEPENDENTS } from './mapDependents'
 import type { Polity } from './types'
 
 function n(
@@ -73,7 +75,7 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
   {
     id: 'ott',
     region: 'asia',
-    from: 1800,
+    from: 1500,
     to: 1922,
     kind: 'independent',
     difficulty: 'easy',
@@ -86,7 +88,7 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
   {
     id: 'qing',
     region: 'asia',
-    from: 1800,
+    from: 1644,
     to: 1912,
     kind: 'independent',
     difficulty: 'easy',
@@ -99,7 +101,7 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
   {
     id: 'hre',
     region: 'europe',
-    from: 1800,
+    from: 1500,
     to: 1806,
     kind: 'independent',
     difficulty: 'hard',
@@ -125,7 +127,7 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
   {
     id: 'pruss',
     region: 'europe',
-    from: 1800,
+    from: 1500,
     to: 1871,
     kind: 'independent',
     difficulty: 'hard',
@@ -151,7 +153,7 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
   {
     id: 'papal',
     region: 'europe',
-    from: 1800,
+    from: 1500,
     to: 1870,
     kind: 'independent',
     difficulty: 'hard',
@@ -164,7 +166,7 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
   {
     id: 'sard',
     region: 'europe',
-    from: 1800,
+    from: 1720,
     to: 1861,
     kind: 'independent',
     difficulty: 'hard',
@@ -217,7 +219,7 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
   {
     id: 'hi-k',
     region: 'oceania',
-    from: 1800,
+    from: 1795,
     to: 1893,
     kind: 'independent',
     difficulty: 'hard',
@@ -308,7 +310,7 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
   {
     id: 'persia',
     region: 'asia',
-    from: 1800,
+    from: 1500,
     to: 1935,
     kind: 'independent',
     difficulty: 'hard',
@@ -321,7 +323,7 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
   {
     id: 'siam',
     region: 'asia',
-    from: 1800,
+    from: 1500,
     to: 1939,
     kind: 'independent',
     difficulty: 'hard',
@@ -451,7 +453,7 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
   {
     id: 'ru-emp',
     region: 'europe',
-    from: 1800,
+    from: 1500,
     to: 1917,
     kind: 'independent',
     difficulty: 'easy',
@@ -477,7 +479,7 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
   {
     id: 'kr-emp',
     region: 'asia',
-    from: 1800,
+    from: 1500,
     to: 1910,
     kind: 'independent',
     difficulty: 'hard',
@@ -486,6 +488,45 @@ const RAW_POLITIES: Omit<Polity, 'wikidata' | 'marker'>[] = [
     capital: n('Seoul', 'Сеул', 'Seoul', '汉城', 'Seúl', 'सियोल', 'سيول', 'সিউল', 'Seul', 'ソウル', 'סיאול'),
     successors: ['kr', 'kp'],
     fact: n('The Joseon kingdom, then the Korean Empire from 1897; Japan annexed it in 1910.', 'Королевство Чосон, с 1897-го Корейская империя; в 1910-м аннексирована Японией.', 'Königreich Joseon, ab 1897 Kaiserreich Korea; 1910 von Japan annektiert.', '朝鲜王朝，1897年起为大韩帝国，1910年被日本吞并。', 'Reino de Joseon, imperio coreano desde 1897; Japón lo anexionó en 1910.', 'जोसॉन राज्य, 1897 से कोरियाई साम्राज्य; 1910 में जापान ने मिलाया।', 'مملكة جوسون ثم الإمبراطورية الكورية من 1897 وضمتها اليابان عام 1910.', 'জোসেন রাজ্য, ১৮৯৭ থেকে কোরীয় সাম্রাজ্য; ১৯১০-এ জাপান সংযুক্ত করে।', 'Reino Joseon, império coreano desde 1897; o Japão anexou-o em 1910.', '朝鮮王朝、1897年から大韓帝国。1910年に日本が併合。', 'ממלכת ג׳וסון, מ-1897 האימפריה הקוריאנית; יפן סיפחה ב-1910.'),
+  },
+  {
+    id: 'denmark-norway',
+    region: 'europe',
+    from: 1500,
+    to: 1814,
+    kind: 'independent',
+    difficulty: 'easy',
+    flagIso: 'dk',
+    names: n('Denmark–Norway', 'Дания–Норвегия', 'Dänemark–Norwegen', '丹麦–挪威', 'Dinamarca–Noruega', 'डेनमार्क–नॉर्वे', 'الدنمارك–النرويج', 'ডেনমার্ক–নরওয়ে', 'Dinamarca–Noruega', 'デンマーク＝ノルウェー', 'דנמרק–נורווגיה'),
+    capital: n('Copenhagen', 'Копенгаген', 'Kopenhagen', '哥本哈根', 'Copenhague', 'कोपेनहेगन', 'كوبنهاغن', 'কোপেনহেগেন', 'Copenhaga', 'コペンハーゲン', 'קופנהגן'),
+    successors: ['dk', 'no'],
+    fact: n('A dual monarchy until Norway passed to Sweden in 1814.', 'Двойная монархия до перехода Норвегии к Швеции в 1814-м.', 'Doppelmonarchie, bis Norwegen 1814 an Schweden fiel.', '共主联邦，直至1814年挪威划归瑞典。', 'Monarquía dual hasta que Noruega pasó a Suecia en 1814.', 'द्वैध राजतंत्र, 1814 में नॉर्वे स्वीडन को गया।', 'ملكية مزدوجة حتى آلت النرويج للسويد عام 1814.', 'দ্বৈত রাজতন্ত্র, ১৮১৪-এ নরওয়ে সুইডেনে যায়।', 'Monarquia dual até a Noruega passar à Suécia em 1814.', '1814年にノルウェーがスウェーデンへ移るまでの二重王国。', 'מונרכיה כפולה עד שנורווגיה עברה לשוודיה ב-1814.'),
+  },
+  {
+    id: 'batavian-republic',
+    region: 'europe',
+    from: 1795,
+    to: 1806,
+    kind: 'independent',
+    difficulty: 'hard',
+    flagFile: 'Flag_of_the_Batavian_Republic.svg',
+    names: n('Batavian Republic', 'Батавская республика', 'Batavische Republik', '巴达维亚共和国', 'República Bátava', 'बटाविया गणराज्य', 'الجمهورية الباتافية', 'বাতাভীয় প্রজাতন্ত্র', 'República Batava', 'バタヴィア共和国', 'הרפובליקה הבטאווית'),
+    capital: n('The Hague', 'Гаага', 'Den Haag', '海牙', 'La Haya', 'द हेग', 'لاهاي', 'দ্য হেগ', 'Haia', 'ハーグ', 'האג'),
+    successors: ['nl'],
+    fact: n('The Dutch sister republic of France, from 1795 until the Kingdom of Holland in 1806.', 'Голландская сестринская республика Франции с 1795-го до Голландского королевства в 1806-м.', 'Niederländische Schwesterrepublik Frankreichs von 1795 bis zum Königreich Holland 1806.', '荷兰的法兰西姊妹共和国，1795年至1806年荷兰王国。', 'República hermana neerlandesa de Francia, de 1795 al Reino de Holanda en 1806.', 'फ्रांस का डच सह-गणराज्य, 1795 से 1806 के हॉलैंड राज्य तक।', 'الجمهورية الشقيقة الهولندية لفرنسا من 1795 حتى مملكة هولندا عام 1806.', 'ফ্রান্সের ডাচ সহোদর প্রজাতন্ত্র, ১৭৯৫ থেকে ১৮০৬-এ হল্যান্ড রাজ্য।', 'República irmã neerlandesa da França, de 1795 ao Reino da Holanda em 1806.', 'フランスのオランダ姉妹共和国。1795年から1806年のホラント王国まで。', 'רפובליקת האחות ההולנדית של צרפת, מ-1795 עד ממלכת הולנד ב-1806.'),
+  },
+  {
+    id: 'helvetic-republic',
+    region: 'europe',
+    from: 1798,
+    to: 1803,
+    kind: 'independent',
+    difficulty: 'hard',
+    flagFile: 'Flag_of_the_Helvetic_Republic.svg',
+    names: n('Helvetic Republic', 'Гельветическая республика', 'Helvetische Republik', '赫尔维蒂共和国', 'República Helvética', 'हेल्वेटिक गणराज्य', 'الجمهورية الهلفتية', 'হেলভেটিক প্রজাতন্ত্র', 'República Helvética', 'ヘルヴェティア共和国', 'הרפובליקה ההלווטית'),
+    capital: n('Lucerne / Bern', 'Люцерн / Берн', 'Luzern / Bern', '卢塞恩 / 伯尔尼', 'Lucerna / Berna', 'ल्यूसर्न / बर्न', 'لوسيرن / برن', 'লুৎসার্ন / বের্ন', 'Lucerna / Berna', 'ルツェルン / ベルン', 'לוצרן / ברן'),
+    successors: ['ch'],
+    fact: n('A French sister republic on Swiss soil, from 1798 until the Act of Mediation in 1803.', 'Французская сестринская республика на швейцарской земле с 1798-го до Акта медиации 1803 года.', 'Französische Schwesterrepublik auf Schweizer Boden, 1798 bis zur Mediationsakte 1803.', '瑞士土地上的法兰西姊妹共和国，1798年至1803年调解法案。', 'República hermana francesa en suelo suizo, de 1798 al Acta de Mediación de 1803.', 'स्विस भूमि पर फ़्रांसीसी सह-गणराज्य, 1798 से 1803 तक।', 'جمهورية شقيقة فرنسية على أرض سويسرا من 1798 حتى قانون الوساطة 1803.', 'সুইস ভূমিতে ফরাসি সহোদর প্রজাতন্ত্র, ১৭৯৮ থেকে ১৮০৩।', 'República irmã francesa em solo suíço, de 1798 ao Ato de Mediação de 1803.', 'スイスのフランス姉妹共和国。1798年から1803年の調停法まで。', 'רפובליקת אחות צרפתית על אדמת שווייץ, מ-1798 עד חוק התיווך ב-1803.'),
   },
   {
     id: 'sadr',
@@ -568,6 +609,11 @@ const WIKIDATA: Record<string, string> = {
   'ge-emp': 'Q43287',
   'kr-emp': 'Q28233',
   sadr: 'Q40362',
+  'denmark-norway': 'Q62651',
+  'batavian-republic': 'Q158638',
+  'helvetic-republic': 'Q206696',
+  ...DEPENDENT_WIKIDATA,
+  ...MAP_DEPENDENT_WIKIDATA,
 }
 
 const PINS: Record<string, { x: number; y: number }> = {
@@ -587,7 +633,7 @@ const PINS: Record<string, { x: number; y: number }> = {
   uar: pin(31.24, 30.04),
 }
 
-export const POLITIES: Polity[] = RAW_POLITIES.map((item) => ({
+export const POLITIES: Polity[] = [...RAW_POLITIES, ...RAW_DEPENDENTS, ...RAW_MAP_DEPENDENTS].map((item) => ({
   ...item,
   wikidata: WIKIDATA[item.id] ?? '',
   marker: PINS[item.id],

@@ -18,6 +18,7 @@ import {
   isWaterMode,
   slowestAnswer,
   waterName,
+  worldOfMode,
   type MixKind,
   type QuizMode,
   type RoundAnswer,
@@ -28,6 +29,8 @@ import { playShareUrl } from '../lib/playHash'
 import { shareThemeLabel } from '../lib/shareTheme'
 import { optionLabel } from '../lib/quizAnswers'
 import { TeamFlag } from './Flag'
+import { EmpireRewardLine } from './EmpireRewardLine'
+import type { EmpireRoundReward } from '../lib/empire/rules'
 import { ResultsShareShot } from './ResultsShareShot'
 import { WorldsBack } from './WorldsBack'
 
@@ -42,7 +45,7 @@ interface ResultsScreenProps {
   endedBy: RoundEnd
   isNewBest: boolean
   earnedXp?: number
-  earnedTokens?: number
+  empireReward?: EmpireRoundReward | null
   totalXp?: number
   saveNote?: boolean
   menuLabel?: string
@@ -63,7 +66,7 @@ export function ResultsScreen({
   endedBy,
   isNewBest,
   earnedXp = 0,
-  earnedTokens = 0,
+  empireReward = null,
   totalXp,
   saveNote = true,
   menuLabel,
@@ -102,6 +105,16 @@ export function ResultsScreen({
     <div className={`screen results-screen ${success ? 'is-success' : 'is-fail'}`}>
       <WorldsBack lang={lang} onClick={onMenu} label={t.back} />
       <div className="results-body">
+        <ResultsShareShot
+          lang={lang}
+          url={shareUrl}
+          theme={theme}
+          score={t.score(correctCount, total)}
+          percent={`${percent}%`}
+          time={t.totalTime(formatClock(roundMs))}
+          headline={headline}
+          success={success}
+        />
         <div className="results-main">
       <section className={`card score-card ${success ? 'is-success' : 'is-fail'}`}>
         <p className="score-kicker">{theme}</p>
@@ -119,7 +132,7 @@ export function ResultsScreen({
             ) : null}
           </p>
         ) : null}
-        {earnedTokens > 0 ? <p className="score-xp">{t.tokensGained(earnedTokens)}</p> : null}
+        {empireReward ? <EmpireRewardLine lang={lang} reward={empireReward} world={worldOfMode(mode)} /> : null}
         {success && <p className="score-avg">{t.avgTime(avgSeconds)}</p>}
         {slowest && (
           <p className="score-slowest">
@@ -215,16 +228,6 @@ export function ResultsScreen({
         </button>
       </div>
         </div>
-        <ResultsShareShot
-          lang={lang}
-          url={shareUrl}
-          theme={theme}
-          score={t.score(correctCount, total)}
-          percent={`${percent}%`}
-          time={t.totalTime(formatClock(roundMs))}
-          headline={headline}
-          success={success}
-        />
       </div>
     </div>
   )

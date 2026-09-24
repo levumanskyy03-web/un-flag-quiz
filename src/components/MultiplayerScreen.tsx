@@ -13,6 +13,9 @@ import {
 import { sameModes, type QuizMode } from '../lib/quiz'
 import { modesCatalogNo } from '../lib/modeCatalog'
 import { CatalogNo } from './ModeChoice'
+import { EmpireLock } from './EmpireLock'
+import { useEmpire } from '../lib/empireStore'
+import { access } from '../lib/empire/gates'
 
 interface MultiplayerScreenProps {
   settings: QuizSettings
@@ -35,6 +38,7 @@ export function MultiplayerScreen({
   const queues = matchQueues()
   const [selected, setSelected] = useState<QuizMode[]>(() => initialMatchModes())
   const [joinCode, setJoinCode] = useState('')
+  const roomLocked = access(useEmpire(), { kind: 'duelRoom' }) === 'locked'
 
   return (
     <div className="screen home-screen">
@@ -80,9 +84,13 @@ export function MultiplayerScreen({
       <section className="card settings-card">
         <h2>{t.duel}</h2>
         <p className="setting-hint">{t.duelHint}</p>
-        <button type="button" className="btn-secondary" onClick={() => onCreate(selected)}>
-          {t.duelCreate}
-        </button>
+        {roomLocked ? (
+          <EmpireLock lang={settings.lang} feature={{ kind: 'duelRoom' }} title={t.gateDuelRoom} compact />
+        ) : (
+          <button type="button" className="btn-secondary" onClick={() => onCreate(selected)}>
+            {t.duelCreate}
+          </button>
+        )}
         <form
           className="duel-join"
           onSubmit={(event) => {

@@ -35,10 +35,12 @@ export function MathSetup({
   settings,
   onChange,
   hideModes,
+  onPickMode,
 }: {
   settings: QuizSettings
   onChange: (settings: QuizSettings) => void
   hideModes?: readonly QuizMode[]
+  onPickMode?: (mode: QuizMode) => void
 }) {
   const t = STRINGS[settings.lang]
   const hidden = new Set(hideModes ?? [])
@@ -71,7 +73,10 @@ export function MathSetup({
       <MathModeGrids
         lang={settings.lang}
         activeMode={settings.mode}
-        onPick={(mode) => onChange({ ...settings, mix: null, mode })}
+        onPick={(mode) => {
+          onChange({ ...settings, mix: null, mode })
+          onPickMode?.(mode)
+        }}
         hideModes={hideModes}
       />
     </>

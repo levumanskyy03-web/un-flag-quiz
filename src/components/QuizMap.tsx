@@ -20,6 +20,7 @@ import {
   cameraFromPinch,
   clampCamera,
   insetCamera,
+  parseViewBox,
   placeCamera,
   pointerDistance,
   screenToSvg,
@@ -31,7 +32,7 @@ import {
   type Camera,
 } from '../lib/mapCamera'
 import { isAllRegions, parseRegions, type RegionFilter } from '../lib/quiz'
-import { useModernWorldMap } from '../data/history'
+import { HISTORY_MAP_VIEWBOX, useModernWorldMap } from '../data/history'
 import { loadHistoryMap, type HistoryMapData } from '../lib/historyMap'
 
 const PAN_STEP = 0.28
@@ -135,12 +136,13 @@ export function QuizMap({
   }, [world, historyMap])
 
   const bounds = useMemo<Camera>(() => {
-    if (!scoped) return WORLD
+    const worldBounds = historyMap ? parseViewBox(historyMap.viewBox || HISTORY_MAP_VIEWBOX) : WORLD
+    if (!scoped) return worldBounds
     const selected = [...regionIsos].map((iso) => boxes[iso]).filter(Boolean)
-    return selected.length > 0 ? viewBoxFromBoxes(selected) : WORLD
-  }, [boxes, regionIsos, scoped])
+    return selected.length > 0 ? viewBoxFromBoxes(selected) : worldBounds
+  }, [boxes, regionIsos, scoped, historyMap])
   const startBounds = useMemo<Camera>(() => {
-    if (!scoped) return WORLD
+    if (!scoped) return bounds
     const selected = [...fitIsos].map((iso) => boxes[iso]).filter(Boolean)
     return selected.length > 0 ? viewBoxFromBoxes(selected) : bounds
   }, [bounds, boxes, fitIsos, scoped])
@@ -397,7 +399,13 @@ export function QuizMap({
   const waterOverLand = Boolean(waterMode && !waterLine && waterId && !waterCutsLand(waterId))
   const waterBoxes = [...coastalIsos].map((iso) => boxes[iso]).filter(Boolean)
   const overlay = (waterLine || waterUnderLand || waterOverLand) && (
-    <WaterOverlay waterId={waterId} kind={waterKind} boxes={waterBoxes} revealed={revealed} />
+    <WaterOverlay
+      waterId={waterId}
+      kind={waterKind}
+      boxes={waterBoxes}
+      revealed={revealed}
+      camera={camera}
+    />
   )
 
   return (
@@ -513,23 +521,28 @@ function WaterOverlay({
   kind,
   boxes,
   revealed,
+  camera,
 }: {
   waterId?: string
   kind?: string
   boxes: Box[]
   revealed: boolean
+  camera: Camera
 }) {
   const line = kind === 'river'
   const cls = `map-water${line ? ' is-line' : ''}${revealed ? ' is-revealed' : ''}`
   const shape = waterId ? waterShapePath(waterId) : ''
-  if (shape) return <path className={cls} d={shape} />
+  const stroke = line
+    ? Math.max(10, Math.min(32, Math.max(camera.w, camera.h) * 0.1))
+    : undefined
+  if (shape) return <path className={cls} d={shape} style={stroke ? { strokeWidth: stroke } : undefined} />
   if (line && boxes.length > 0) {
     const points = [...boxes]
       .map((box) => ({ x: box.x + box.width / 2, y: box.y + box.height / 2 }))
       .sort((a, b) => a.x - b.x || a.y - b.y)
       .map((point) => `${point.x},${point.y}`)
       .join(' ')
-    return <polyline className={cls} points={points} fill="none" />
+    return <polyline className={cls} points={points} fill="none" style={{ strokeWidth: stroke }} />
   }
   const fallback =
     boxes.length > 0

@@ -17,6 +17,7 @@ import {
   advanceDuelFact,
   answerDuel,
   bindDuelPlayerId,
+  duelPlayerId,
   fetchDuel,
   joinDuel,
   leaveDuel,
@@ -28,11 +29,8 @@ import { isCorrect, isFactsToName, isLeaderPhotoMode, isPlayerPhotoMode, type Qu
 import { playSfx } from "@/lib/sfx";
 import { prefetchWikiPortraits } from "@/lib/wikiThumb";
 import { trackFunnel } from "@/lib/funnel";
-import { tokensForDuel } from "@/data/tokens";
-import { loadBests, loadHistory } from "@/lib/history";
-import { loadLevelClears } from "@/lib/levelProgress";
-import { awardAchievementTokens, awardPlayTokens } from "@/lib/tokenStore";
-import { noteWorldTokenGain } from "@/lib/economyStore";
+import { empireOnDuel } from "@/lib/empireStore";
+import type { DuelReward } from "@/lib/empire/rules";
 import { duelPlayWorld, duelWorldHref, normalizeDuelCode } from "./paths";
 
 const POLL_MS = 700;
@@ -76,7 +74,7 @@ export function DuelApp({ code: rawCode }: { code: string }) {
   const [timedOut, setTimedOut] = useState(false);
   const [remainingMs, setRemainingMs] = useState(0);
   const [roundMs, setRoundMs] = useState(0);
-  const [earnedTokens, setEarnedTokens] = useState(0);
+  const [empireReward, setEmpireReward] = useState<DuelReward | null>(null);
   const [resultTone, setResultTone] = useState<ResultTone | null>(null);
   const indexRef = useRef(-1);
   const phaseRef = useRef<DuelView["phase"] | null>(null);
@@ -233,7 +231,7 @@ export function DuelApp({ code: rawCode }: { code: string }) {
     }
     if (next.phase === "waiting") {
       setResultTone(null);
-      setEarnedTokens(0);
+      setEmpireReward(null);
       return;
     }
     if ((prevPhase === "waiting" || prevPhase === null) && next.phase !== "done") {
@@ -245,13 +243,10 @@ export function DuelApp({ code: rawCode }: { code: string }) {
       if (prevPhase !== "done") {
         playSfx(next.youWon === false ? "fail" : "success");
         trackFunnel("duel_end", { world: duelPlayWorld(next) });
-        if (next.total > 0) {
-          const playGain = awardPlayTokens(tokensForDuel(next.youWon));
-          if (playGain > 0) noteWorldTokenGain(duelPlayWorld(next), playGain);
-          const achGain = awardAchievementTokens(loadHistory(), loadBests(), loadLevelClears());
-          setEarnedTokens(playGain + achGain);
+        if (next.total > 0 && code) {
+          setEmpireReward(empireOnDuel(next.youWon, { code, playerId: duelPlayerId() }));
         } else {
-          setEarnedTokens(0);
+          setEmpireReward(null);
         }
       }
       return;
@@ -424,7 +419,7 @@ export function DuelApp({ code: rawCode }: { code: string }) {
           lang={lang}
           room={view}
           roundMs={roundMs}
-          earnedTokens={earnedTokens}
+          empireReward={empireReward}
           onRematch={() => {
             void rematchDuel(code).then((result) => {
               if (result.ok) applyView(result.room);

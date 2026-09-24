@@ -30,7 +30,10 @@ import {
   type QuizDifficulty,
   type QuizMode,
 } from './quiz'
-import { loadStamps, stampCopyCount, stampCountryCount, STAMP_TOTAL } from './stamps'
+import { loadStamps, loadWorldStampAlbums, stampCopyCount, stampCountryCount, STAMP_MAX, STAMP_TOTAL } from './stamps'
+import { stampCatalog } from './stampCatalog'
+import { loadEmpire } from './empireStore'
+import { QUIZ_WORLDS } from './quiz/core'
 import { accountLevel } from './xp'
 
 const MINUTE_MS = 60_000
@@ -140,6 +143,14 @@ export function listAchievements(
   const rank = accountLevel(lifetime.xp)
   const bornAt = createdAt && createdAt > 0 ? createdAt : lifetime.firstSeen
   const ageMs = Math.max(0, Date.now() - bornAt)
+  const empire = loadEmpire()
+  const worldAlbums = loadWorldStampAlbums()
+  const allWorldsStamps = QUIZ_WORLDS.every((world) => {
+    if (world === 'geo') return stampCountries >= STAMP_TOTAL
+    const have = worldAlbums[world] ?? {}
+    const catalog = stampCatalog(world)
+    return catalog.length > 0 && catalog.every((entry) => (have[entry.id]?.n ?? 0) > 0)
+  })
   const anyPool = (test: (round: RoundRecord) => boolean) => pool.some(test)
   const anyComplete = (test: (round: RoundRecord) => boolean) => completedPool.some(test)
   const unlocked: Record<AchievementId, boolean> = {
@@ -281,6 +292,11 @@ export function listAchievements(
     mythHundred: lifetime.completes >= 100,
     mythLeaders: LEADERS_MODES.every((mode) => leaderModes.has(mode)),
     veteranYear: ageMs >= YEAR_MS,
+    roundsTenK: Math.max(lifetime.rounds, empire.lifetime.rounds) >= 10_000,
+    allStampsFive: stampCountries >= STAMP_TOTAL && Object.values(album).every((entry) => entry.n >= STAMP_MAX),
+    dailyYear: empire.lifetime.dailyBestStreak >= 365,
+    duelThousand: empire.lifetime.duelWins >= 1000,
+    allWorldsStamps,
   }
   return ACHIEVEMENTS.map((item) => ({ id: item.id, unlocked: unlocked[item.id] }))
 }

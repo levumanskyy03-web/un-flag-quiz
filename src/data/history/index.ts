@@ -1,18 +1,21 @@
 import type { Country, Region } from '../countries'
-import { countriesForPool, findCountry } from '../extras'
+import { ALL_COUNTRIES, countriesForPool, findCountry } from '../extras'
 import { FOUNDED } from '../founded'
 import { getPassport } from '../passports'
+import { TERRITORIES } from '../territories'
 import { pickRow } from '../../i18n/text11'
 import type { Lang } from '../../i18n/lang'
-import { POLITY_PASSPORTS, type PolityPassport } from './passports'
+import { MAP_DEPENDENT_ALIASES } from './mapDependents'
+import { POLITY_PASSPORTS } from './passports'
 import { POLITIES } from './polities'
-import type { Polity, PolityKind } from './types'
+import type { Polity, PolityKind, PolityPassport } from './types'
 
 export { POLITIES } from './polities'
 export { POLITY_PASSPORTS } from './passports'
-export type { PolityPassport } from './passports'
-export type { Polity, PolityKind } from './types'
+export type { PolityPassport } from './types'
+export type { Polity, PolityKind, DependentKind } from './types'
 export {
+  HISTORY_MAP_VIEWBOX,
   HISTORY_SNAPSHOTS,
   HISTORY_YEAR_MIN,
   historyMapUrl,
@@ -28,6 +31,25 @@ if (missingPassports.length > 0) {
   throw new Error(`Missing history passport for: ${missingPassports.join(', ')}`)
 }
 
+function slugify(name: string) {
+  return name
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^\w]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 40)
+}
+
+const SLUG_TO_ISO: Record<string, string> = {}
+for (const country of ALL_COUNTRIES) {
+  const slug = slugify(country.nameEn)
+  if (slug && !SLUG_TO_ISO[slug]) SLUG_TO_ISO[slug] = country.iso
+}
+for (const territory of TERRITORIES) {
+  const slug = slugify(territory.nameEn)
+  if (slug && !SLUG_TO_ISO[slug]) SLUG_TO_ISO[slug] = territory.iso
+}
+
 /** Map-slice names that should open a catalogued polity or modern ISO. */
 const MAP_ID_ALIASES: Record<string, string> = {
   'qing-empire': 'qing',
@@ -40,6 +62,17 @@ const MAP_ID_ALIASES: Record<string, string> = {
   'korea-democratic-people-s-republic-of': 'kp',
   'czech-republic': 'cz',
   'west-germany': 'de',
+  'byelarus': 'by',
+  'ivory-coast': 'ci',
+  'gambia-the': 'gm',
+  'tanzania-united-republic-of': 'tz',
+  'bosnia-and-herzegovina': 'ba',
+  'republic-of-turkey': 'tr',
+  'united-arab-emirates': 'ae',
+  swaziland: 'sz',
+  burma: 'mm',
+  zaire: 'cd',
+  ...MAP_DEPENDENT_ALIASES,
 }
 
 const MODERN_FALLBACK: Record<string, string> = {
@@ -47,10 +80,14 @@ const MODERN_FALLBACK: Record<string, string> = {
   kr: 'kr',
 }
 
-export function resolveHistoryId(id: string, year: number): string {
-  const candidates = [id, MAP_ID_ALIASES[id], MODERN_FALLBACK[id]].filter(
+function historyCandidates(id: string): string[] {
+  return [id, MAP_ID_ALIASES[id], SLUG_TO_ISO[id], MODERN_FALLBACK[id]].filter(
     (value, index, all): value is string => Boolean(value) && all.indexOf(value) === index,
   )
+}
+
+export function resolveHistoryId(id: string, year: number): string {
+  const candidates = historyCandidates(id)
   for (const candidate of candidates) {
     const polity = BY_ID.get(candidate)
     if (polity && polityExistsInYear(polity, year)) return candidate
@@ -74,20 +111,23 @@ export function mapIndependence(
   if (opts?.preferModern && getPassport(id)) {
     return { status: 'modern', id }
   }
-  const catalogued = BY_ID.get(id)
-  if (catalogued) {
-    return { status: catalogued.kind, id: catalogued.id, polity: catalogued }
-  }
   const resolved = resolveHistoryId(id, year)
-  const polity = BY_ID.get(resolved)
+  const polity = BY_ID.get(resolved) ?? BY_ID.get(id)
   if (polity && polityExistsInYear(polity, year)) {
-    return { status: polity.kind, id: resolved, polity }
+    return { status: polity.kind, id: polity.id, polity }
   }
-  const country = findCountry(resolved) ?? findCountry(id)
-  if (country && getPassport(country.iso) && modernInYear(country, year)) {
-    return { status: 'modern', id: country.iso }
+  for (const candidate of historyCandidates(id)) {
+    const country = findCountry(candidate)
+    if (country && getPassport(country.iso) && modernInYear(country, year)) {
+      return { status: 'modern', id: country.iso }
+    }
   }
   return { status: 'not_independent', id: resolved }
+}
+
+export function suzerainId(polity: Polity, year: number): string | undefined {
+  const span = polity.parentSpans?.find((item) => item.from <= year && item.to >= year)
+  return span?.id ?? polity.parent
 }
 
 export function polityById(id: string): Polity | undefined {
@@ -106,13 +146,13 @@ export function polityName(id: string, lang: Lang): string | undefined {
 
 export function polityCapital(id: string, lang: Lang): string | undefined {
   const polity = BY_ID.get(id)
-  if (!polity) return undefined
+  if (!polity?.capital) return undefined
   return pickRow(polity.capital, lang, polity.capital.en)
 }
 
 export function polityFact(id: string, lang: Lang): string | undefined {
   const polity = BY_ID.get(id)
-  if (!polity) return undefined
+  if (!polity?.fact) return undefined
   return pickRow(polity.fact, lang, polity.fact.en)
 }
 
@@ -122,7 +162,7 @@ export function polityPassport(id: string): PolityPassport | undefined {
 
 export function polityCurrency(id: string, lang: Lang): string | undefined {
   const row = POLITY_PASSPORTS[id]
-  if (!row) return undefined
+  if (!row?.currency) return undefined
   return pickRow(row.currency, lang, row.currency.en)
 }
 
@@ -153,6 +193,14 @@ export function polityExistsInYear(polity: Polity, year: number) {
 
 export function eraPolities(year: number): Polity[] {
   return POLITIES.filter((item) => polityExistsInYear(item, year))
+}
+
+function isQuizPolity(item: Polity) {
+  return item.kind === 'independent' || item.kind === 'de_facto'
+}
+
+export function eraQuizPolities(year: number): Polity[] {
+  return eraPolities(year).filter(isQuizPolity)
 }
 
 function modernInYear(country: Country, year: number) {
@@ -194,7 +242,7 @@ export function countriesForEraPool(options: GeoPoolOptions = {}): Country[] {
   )
   if (!includeEraStates) return base
   const seen = new Set(base.map((country) => country.iso))
-  const extra = eraPolities(year)
+  const extra = eraQuizPolities(year)
     .map(asCountry)
     .filter((country) => !seen.has(country.iso))
   return [...base, ...extra]

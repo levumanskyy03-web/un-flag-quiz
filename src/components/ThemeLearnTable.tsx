@@ -1,5 +1,5 @@
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
-import { themeById, themeLearnLine } from '../lib/quiz'
+import { isThemePhotoMode, themeById, themeLearnLine } from '../lib/quiz'
 import { LeaderPortrait } from './LeaderPortrait'
 
 export function ThemeLearnTable({
@@ -27,13 +27,17 @@ export function ThemeLearnTable({
             const item = themeById(iso)
             if (!item) return null
             const line = themeLearnLine(item, lang)
-            const photo = item.wikiFile && item.mode === 'csPhotoToName'
+            const photo = Boolean(item.wiki)
+            const photoPrompt = isThemePhotoMode(item.mode)
             return (
               <tr key={iso}>
                 <td>{modeLabel(item.mode, lang)}</td>
                 <td>
                   {photo ? (
-                    <LeaderPortrait name={line.answer} wiki={item.wiki ?? ''} file={item.wikiFile} size="thumb" compact />
+                    <span className="theme-learn-prompt">
+                      <LeaderPortrait name={photoPrompt ? line.answer : line.prompt} wiki={item.wiki ?? ''} file={item.wikiFile} size="thumb" compact />
+                      {photoPrompt ? null : line.prompt}
+                    </span>
                   ) : (
                     line.prompt
                   )}

@@ -1,5 +1,9 @@
-import type { GovKind } from '../governments'
 import type { Text11 } from '../../i18n/text11'
+import { DEPENDENT_PASSPORTS } from './dependents'
+import { MAP_DEPENDENT_PASSPORTS } from './mapDependents'
+import type { PolityPassport } from './types'
+
+export type { PolityPassport } from './types'
 
 function n(
   en: string,
@@ -17,17 +21,7 @@ function n(
   return { en, ru, de, zh, es, hi, ar, bn, pt, ja, he }
 }
 
-export interface PolityPassport {
-  /** Actual start of the state, which may be earlier than our 1800 map window. */
-  founded: number
-  population: number
-  populationYear: number
-  gov: GovKind
-  langs: string[]
-  currency: Text11
-}
-
-export const POLITY_PASSPORTS: Record<string, PolityPassport> = {
+const CORE_PASSPORTS: Record<string, PolityPassport> = {
   su: {
     founded: 1922,
     population: 287_000_000,
@@ -768,4 +762,70 @@ export const POLITY_PASSPORTS: Record<string, PolityPassport> = {
       'פסטה סהראווית',
     ),
   },
+  'denmark-norway': {
+    founded: 1524,
+    population: 1_800_000,
+    populationYear: 1800,
+    gov: 'absMonarchy',
+    langs: ['da', 'no'],
+    currency: n(
+      'Danish rigsdaler',
+      'датский ригсдалер',
+      'Dänischer Rigsdaler',
+      '丹麦克朗达勒',
+      'rigsdaler danés',
+      'डेनिश रिग्सडेलर',
+      'ريغسدالر دنماركي',
+      'ড্যানিশ রিগসডালার',
+      'rigsdaler dinamarquês',
+      'デンマーク・リグスダーラー',
+      'ריגסדאלר דני',
+    ),
+  },
+  'batavian-republic': {
+    founded: 1795,
+    population: 2_000_000,
+    populationYear: 1800,
+    gov: 'parliamentary',
+    langs: ['nl'],
+    currency: n(
+      'Dutch guilder',
+      'голландский гульден',
+      'Niederländischer Gulden',
+      '荷兰盾',
+      'florín neerlandés',
+      'डच गिल्डर',
+      'غيلدر هولندي',
+      'ডাচ গিল্ডার',
+      'florim neerlandês',
+      'オランダ・ギルダー',
+      'גילדר הולנדי',
+    ),
+  },
+  'helvetic-republic': {
+    founded: 1798,
+    population: 1_700_000,
+    populationYear: 1800,
+    gov: 'parliamentary',
+    langs: ['de', 'fr', 'it'],
+    currency: n(
+      'Swiss franc (Helvetic)',
+      'гельветический франк',
+      'Helvetischer Franken',
+      '赫尔维蒂法郎',
+      'franco helvético',
+      'हेल्वेटिक फ़्रैंक',
+      'فرنك هلفتي',
+      'হেলভেটিক ফ্রাঁ',
+      'franco helvético',
+      'ヘルヴェティア・フラン',
+      'פרנק הלווטי',
+    ),
+  },
+}
+
+export const POLITY_PASSPORTS: Record<string, PolityPassport> = {
+  ...CORE_PASSPORTS,
+  ...DEPENDENT_PASSPORTS,
+  ...MAP_DEPENDENT_PASSPORTS,
 }

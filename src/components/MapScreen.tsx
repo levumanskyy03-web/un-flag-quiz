@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEven
 import { COUNTRIES, REGIONS, type Region } from '../data/countries'
 import {
   eraPolities,
+  HISTORY_MAP_VIEWBOX,
   HISTORY_YEAR_MIN,
   historyYearMax,
   mapIndependence,
@@ -11,7 +12,9 @@ import {
   searchPolities,
   useModernWorldMap,
 } from '../data/history'
-import { loadHistoryMap, type HistoryMapData } from '../lib/historyMap'
+import { loadHistoryMap, type HistoryMapData, type HistoryMapFeature } from '../lib/historyMap'
+import { useHistoryCards } from '../lib/historyCards'
+import { historyEntityName, historyMapLabel } from '../lib/historyNames'
 import {
   HOLDOUTS,
   HOLDOUT_BY_ISO,
@@ -71,10 +74,20 @@ function isoFromTarget(target: EventTarget | null) {
 
 function clickableIsoFromTarget(target: EventTarget | null, allowAll = false) {
   const iso = isoFromTarget(target)
-  if (!iso) return null
+  if (!iso || iso === 'unknown') return null
   if (allowAll) return iso
   return isClickableIso(iso) ? iso : null
 }
+
+function historyFeatureClass(feature: HistoryMapFeature) {
+  if (feature.k === 'u' || feature.id === 'unknown') return ' is-unknown'
+  if (feature.k === 'x') return ' is-people'
+  const hue = feature.c !== undefined ? ` hc-${feature.c}` : ''
+  return feature.k === 'd' ? `${hue} is-dep` : hue
+}
+
+const LABEL_MIN_PX = 7.5
+const LABEL_MAX_PX = 15
 
 function locationLabel(id: string, lang: QuizSettings['lang'], year: number, mapName?: string) {
   const historyId = resolveHistoryId(id, year)
@@ -121,6 +134,12 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
   const [mapRegion, setMapRegion] = useState<MapRegion>('all')
   const [regionOpen, setRegionOpen] = useState(false)
   cameraRef.current = camera
+  const [frameSize, setFrameSize] = useState({ w: 0, h: 0 })
+  const cards = useHistoryCards(settings.lang, !modern)
+  const mapBounds = useMemo<Camera>(() => {
+    if (historyMap) return parseViewBox(historyMap.viewBox || HISTORY_MAP_VIEWBOX)
+    return WORLD
+  }, [historyMap])
 
   useEffect(() => {
     let live = true
@@ -154,6 +173,26 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
     })
     setBoxes(next)
   }, [world, historyMap])
+
+  useEffect(() => {
+    const frame = frameRef.current
+    if (!frame) return
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect
+      setFrameSize((prev) => (prev.w === width && prev.h === height ? prev : { w: width, h: height }))
+    })
+    observer.observe(frame)
+    return () => observer.disconnect()
+  }, [])
+
+  const historyLabels = useMemo(() => {
+    if (!historyMap) return []
+    return historyMap.features.flatMap((feature) => {
+      if (!feature.l || feature.id === 'unknown') return []
+      const text = historyMapLabel(feature, settings.lang, eraYear, cards)
+      return text ? [{ id: feature.id, text, l: feature.l, people: feature.k === 'x' }] : []
+    })
+  }, [historyMap, settings.lang, eraYear, cards])
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -196,7 +235,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
       const cam = cameraRef.current
       const origin = svg ? screenToSvg(svg, event.clientX, event.clientY) : null
       const pivot = origin ?? { x: cam.x + cam.w / 2, y: cam.y + cam.h / 2 }
-      setCamera(zoomCamera(cam, factor, pivot))
+      setCamera(zoomCamera(cam, factor, pivot, mapBounds))
     }
     function onTouchMove(event: TouchEvent) {
       if (event.touches.length >= 1) event.preventDefault()
@@ -207,7 +246,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
       frame.removeEventListener('wheel', onWheel)
       frame.removeEventListener('touchmove', onTouchMove)
     }
-  }, [world, historyMap])
+  }, [world, historyMap, mapBounds])
 
   const markers = useMemo(() => {
     if (world && modern) return markersFor(world.locations)
@@ -220,7 +259,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
     })
   }, [world, modern, historyMap, eraYear, mapRegion])
   const baseViewBox = useMemo(() => {
-    if (historyMap) return historyMap.viewBox ?? WORLD_VIEWBOX
+    if (historyMap) return historyMap.viewBox ?? HISTORY_MAP_VIEWBOX
     if (!world || mapRegion === 'all') return world?.viewBox ?? WORLD_VIEWBOX
     const fit = fitIsosForRegion(mapRegion)
     const selected = [...fit].map((iso) => boxes[iso]).filter(Boolean)
@@ -229,8 +268,8 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
   }, [world, mapRegion, boxes, historyMap])
 
   useEffect(() => {
-    setCamera(clampCamera(parseViewBox(baseViewBox)))
-  }, [baseViewBox])
+    setCamera(clampCamera(parseViewBox(baseViewBox), mapBounds))
+  }, [baseViewBox, mapBounds])
 
   const historyIndependence = openId && !modern ? mapIndependence(openId, eraYear, { preferModern: openAsModern }) : null
   const historyCardId = historyIndependence && historyIndependence.status !== 'modern' ? historyIndependence.id : openId
@@ -254,7 +293,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
       const fromCatalog = searchPolities(needle, settings.lang, eraYear, mapRegion)
       const fromMap = (historyMap?.features ?? [])
         .filter((item) => item.name.toLowerCase().includes(needle) || item.id.includes(needle))
-        .map((item) => ({ id: item.id, label: locationLabel(item.id, settings.lang, eraYear, item.name) }))
+        .map((item) => ({ id: item.id, label: historyEntityName(item.id, settings.lang, eraYear, cards, item.name) }))
       const merged = [...fromCatalog, ...fromMap]
       const seen = new Set<string>()
       return merged.filter((item) => {
@@ -295,17 +334,17 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
     return [...countries, ...territories, ...holdouts]
       .sort((a, b) => a.label.localeCompare(b.label, settings.lang))
       .slice(0, 8)
-  }, [needle, settings.lang, modern, eraYear, mapRegion, historyMap])
+  }, [needle, settings.lang, modern, eraYear, mapRegion, historyMap, cards])
 
   function zoomBy(direction: 1 | -1) {
     const factor = direction > 0 ? 1 / 1.28 : 1.28
     setCamera((current) =>
-      zoomCamera(current, factor, { x: current.x + current.w / 2, y: current.y + current.h / 2 }),
+      zoomCamera(current, factor, { x: current.x + current.w / 2, y: current.y + current.h / 2 }, mapBounds),
     )
   }
 
   function panBy(dx: number, dy: number) {
-    setCamera((current) => clampCamera({ ...current, x: current.x + dx, y: current.y + dy }))
+    setCamera((current) => clampCamera({ ...current, x: current.x + dx, y: current.y + dy }, mapBounds))
   }
 
   function pickRegion(region: MapRegion) {
@@ -370,6 +409,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
           (first.x + second.x) / 2,
           (first.y + second.y) / 2,
           pinch.startDist / distance,
+          mapBounds,
         ),
       )
       return
@@ -435,8 +475,8 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
     setHoverId((current) => (current === null ? current : null))
   }
 
-  const canZoomIn = camera.w > WORLD.w / ZOOM_MAX + 1
-  const canZoomOut = camera.w < WORLD.w - 1 || camera.h < WORLD.h - 1
+  const canZoomIn = camera.w > mapBounds.w / ZOOM_MAX + 1
+  const canZoomOut = camera.w < mapBounds.w - 1 || camera.h < mapBounds.h - 1
   const regions: MapRegion[] = ['all', ...REGIONS]
 
   return (
@@ -522,7 +562,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
           {world || historyMap ? (
             <svg
               ref={svgRef}
-              className="world-map"
+              className={`world-map${historyMap ? ' is-history' : ''}`}
               viewBox={`${camera.x} ${camera.y} ${camera.w} ${camera.h}`}
               preserveAspectRatio="xMidYMid meet"
               role="img"
@@ -530,6 +570,19 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
               onMouseOver={onMapHover}
               onMouseOut={onMapUnhover}
             >
+              {historyMap ? (
+                <defs>
+                  <pattern
+                    id="hist-hatch"
+                    patternUnits="userSpaceOnUse"
+                    width={2.4}
+                    height={2.4}
+                    patternTransform="rotate(45)"
+                  >
+                    <line x1={0} y1={0} x2={0} y2={2.4} stroke="rgba(255,250,240,0.75)" strokeWidth={0.9} />
+                  </pattern>
+                </defs>
+              ) : null}
               {historyMap
                 ? historyMap.features.map((feature) => {
                     const isOpen = feature.id === openId
@@ -539,7 +592,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
                         key={feature.id}
                         data-iso={feature.id}
                         d={feature.d}
-                        className={`map-country${isOpen ? ' is-open' : ''}${isHover ? ' is-hover' : ''}`}
+                        className={`map-country${historyFeatureClass(feature)}${isOpen ? ' is-open' : ''}${isHover ? ' is-hover' : ''}`}
                       />
                     )
                   })
@@ -557,6 +610,36 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
                   />
                 )
               })}
+              {historyMap
+                ? historyMap.features.map((feature) =>
+                    feature.k === 'd' && feature.id !== openId ? (
+                      <path key={`hatch-${feature.id}`} className="map-hatch" d={feature.d} />
+                    ) : null,
+                  )
+                : null}
+              {historyMap && frameSize.w > 0
+                ? historyLabels.map((label) => {
+                    const scale = Math.min(frameSize.w / camera.w, frameSize.h / camera.h)
+                    const room = label.l[2] * scale
+                    let px = Math.min(LABEL_MAX_PX, room * 0.6)
+                    const width = label.text.length * 0.56
+                    if (width * px > room * 4) px = (room * 4) / width
+                    if (px < LABEL_MIN_PX) return null
+                    const size = px / scale
+                    return (
+                      <text
+                        key={`label-${label.id}`}
+                        className={`map-label${label.people ? ' is-people' : ''}`}
+                        x={label.l[0]}
+                        y={label.l[1]}
+                        fontSize={size}
+                        strokeWidth={size * 0.3}
+                      >
+                        {label.text}
+                      </text>
+                    )
+                  })
+                : null}
               {markers.map((marker) => {
                 const isOpen = marker.iso === openId
                 const isHover = marker.iso === hoverId
@@ -580,14 +663,33 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
         </div>
         <p className="map-active-name">
           {activeId
-            ? locationLabel(
-                activeId,
-                settings.lang,
-                eraYear,
-                historyMap?.features.find((item) => item.id === activeId)?.name,
-              )
+            ? historyMap
+              ? historyEntityName(
+                  activeId,
+                  settings.lang,
+                  eraYear,
+                  cards,
+                  historyMap.features.find((item) => item.id === activeId)?.name,
+                )
+              : locationLabel(activeId, settings.lang, eraYear)
             : '\u00a0'}
         </p>
+        {!modern ? (
+          <ul className="map-legend">
+            <li>
+              <span className="map-legend-swatch is-state" aria-hidden="true" />
+              {t.historyIndependent}
+            </li>
+            <li>
+              <span className="map-legend-swatch is-dep" aria-hidden="true" />
+              {t.historyDependent}
+            </li>
+            <li>
+              <span className="map-legend-swatch is-people" aria-hidden="true" />
+              {t.historyPeople}
+            </li>
+          </ul>
+        ) : null}
         {!modern ? <p className="map-snapshot">{t.mapSnapshot(nearestHistorySnapshot(eraYear))}</p> : null}
       </section>
 
@@ -613,12 +715,16 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
           key={historyCardId}
           id={historyCardId}
           lang={settings.lang}
+          year={eraYear}
           mapName={historyFeature?.name}
+          mapId={openId ?? undefined}
+          feature={historyFeature}
+          cards={cards}
           onClose={() => {
             setOpenAsModern(false)
             setOpenId(null)
           }}
-          onOpen={(id) => openLocation(id, true)}
+          onOpen={(id) => openLocation(id, !polityById(id))}
         />
       ) : null}
       {resolvedOpen?.holdout && !showPassport && !showHistory ? (

@@ -34,11 +34,9 @@ import {
 import { EXTRA_STRINGS } from './extra'
 import { MATH_MODE_COPY } from './mathCopy'
 import { ASTRO_MODE_COPY } from './astroCopy'
-import { THEME_MODE_COPY } from './themeCopy'
+import { THEME_MODE_COPY, THEME_PROMPT_KEY } from './themeCopy'
 import { PACK_MODE_COPY } from './packCopy'
-import { COMPANY_COPY } from './companyCopy'
-import { STATE_COPY } from './stateCopy'
-import { TOKEN_COPY } from './tokenCopy'
+import { EMPIRE_COPY } from './empireCopy'
 import { ALBUM_COPY } from './albumCopy'
 import { TOUR_COPY } from './tourCopy'
 import { intellectRankOf } from './intellectRank'
@@ -102,6 +100,7 @@ export type Strings = {
   astroFamilyPlanets: string
   astroFamilyMoons: string
   astroFamilySky: string
+  astroFamilyExploration: string
   astroFamilyPeople: string
   astroEasyMixNote: string
   astroHardMixNote: string
@@ -110,8 +109,14 @@ export type Strings = {
   planetToKind: string
   moonToPlanet: string
   planetToMoon: string
+  planetFactsToName: string
+  moonFactsToName: string
   starToClass: string
   constelToName: string
+  deepSkyFactsToName: string
+  missionToTarget: string
+  missionFactsToName: string
+  telescopeFactsToName: string
   astroPhotoToName: string
   astroFactsToName: string
   astroPlanetPrompt: string
@@ -121,6 +126,12 @@ export type Strings = {
   astroPlanetMoonPrompt: string
   astroStarPrompt: string
   astroConstelPrompt: string
+  astroPlanetFactsPrompt: string
+  astroMoonFactsPrompt: string
+  astroDeepSkyPrompt: string
+  astroMissionTargetPrompt: string
+  astroMissionFactsPrompt: string
+  astroTelescopeFactsPrompt: string
   astroPhotoPrompt: string
   astroFactsPrompt: string
   biology: string
@@ -133,30 +144,81 @@ export type Strings = {
   organelleToRole: string
   roleToOrganelle: string
   organToSystem: string
+  systemToOrgan: string
   photoStepToName: string
+  nameToProcess: string
   kingdomToExample: string
+  exampleToKingdom: string
+  animalToClass: string
+  classToAnimal: string
   bioOrganellePrompt: string
   bioRolePrompt: string
   bioOrganPrompt: string
+  bioSystemPrompt: string
   bioPhotoPrompt: string
+  bioNameProcessPrompt: string
   bioKingdomPrompt: string
+  bioExamplePrompt: string
+  bioAnimalPrompt: string
+  bioClassPrompt: string
   olympics: string
   olySubtitle: string
   olyFamilyHosts: string
   olyFamilySports: string
   olyFamilyNoc: string
+  olyFamilyStars: string
   olyEasyMixNote: string
   olyHardMixNote: string
   olyYearToHost: string
   olyHostToYear: string
   olyHostCount: string
+  hostToCountry: string
+  olyYearToCountry: string
+  winterYearToHost: string
   sportToCategory: string
+  categoryToSport: string
+  sportToDebut: string
+  eventToSport: string
+  equipmentToSport: string
+  sportToEquipment: string
+  athleteToSport: string
+  debutToSport: string
+  sportToFederation: string
+  federationToSport: string
+  venueToSport: string
+  sportToVenue: string
+  countryToOlySport: string
+  seasonToSport: string
   nocToName: string
+  nameToNoc: string
+  countryToGolds: string
+  athleteToNoc: string
+  olyPhotoToName: string
   olyYearPrompt: string
   olyHostPrompt: string
   olyCountPrompt: string
+  olyHostCountryPrompt: string
+  olyYearCountryPrompt: string
+  olyWinterPrompt: string
   olySportPrompt: string
+  olyCategoryPrompt: string
+  olyDebutPrompt: string
+  olyEventPrompt: string
+  olyEquipmentPrompt: string
+  olySportEquipPrompt: string
+  olyAthleteSportPrompt: string
+  olyDebutSportPrompt: string
+  olyFederationPrompt: string
+  olyFedSportPrompt: string
+  olyVenuePrompt: string
+  olySportVenuePrompt: string
+  olyCountrySportPrompt: string
+  olySeasonPrompt: string
   olyNocPrompt: string
+  olyNameNocPrompt: string
+  olyGoldsPrompt: string
+  olyAthletePrompt: string
+  olyPhotoPrompt: string
   cs: string
   csSubtitle: string
   csFamilyCode: string
@@ -291,6 +353,17 @@ export type Strings = {
   playerFootBoth: string
   playerEraActive: string
   playerEraLegend: string
+  greatClubsTitle: string
+  clubCardFounded: string
+  clubCardYear: string
+  clubCardSquad: string
+  clubCardSquadEmpty: string
+  clubCardPlayer: string
+  clubCardAbout: string
+  clubCardUniquePlayers: string
+  clubCardDataPeriod: string
+  clubCardAllClubsPlayers: string
+  clubCardStatsNote: string
   playerLearnAll: string
   footballGroupWc: string
   footballGroupEuro: string
@@ -552,8 +625,23 @@ export type Strings = {
   historyStatus: string
   historyIndependent: string
   historyDeFacto: string
+  historyDependent: string
+  historySuzerain: string
+  historyColony: string
+  historyProtectorate: string
+  historyViceroyalty: string
+  historyVassal: string
+  historyCompanyRule: string
+  historyPersonalUnion: string
   historySuccessors: string
   historyNotIndependent: string
+  historyPeople: string
+  historyArea: string
+  historyMapYears: string
+  historyReligion: string
+  historyPredecessors: string
+  historyWiki: string
+  historyModernPlace: string
   difficulty: string
   easy: string
   medium: string
@@ -672,6 +760,15 @@ export type Strings = {
   legalToday: string
   legalLanguages: string
   legalLists: string
+  collectionsHint: string
+  collectionsChallenges: string
+  themeChallenge: string
+  dailyChallenge: string
+  dailyPlay: string
+  dailyDone: (score: number, total: number) => string
+  dailyStreak: (n: number) => string
+  collectionItems: (n: number) => string
+  collectionOpen: string
   share: string
   shareCopied: string
   shareBetter: string
@@ -690,8 +787,8 @@ export type Strings = {
   tourStepWorldsBody: string
   tourStepGeoTitle: string
   tourStepGeoBody: string
-  tourStepStateTitle: string
-  tourStepStateBody: string
+  tourStepEmpireTitle: string
+  tourStepEmpireBody: string
   tourStepDockTitle: string
   tourStepDockBody: string
   sounds: string
@@ -714,10 +811,6 @@ export type Strings = {
   xpHowLevels: string
   xpHowRecord: string
   xpHowRank: string
-  tokenHowLead: string
-  tokenHowEarn: string
-  tokenHowSpend: string
-  tokenHowCap: string
   avatars: string
   avatarChange: string
   avatarPickerHint: string
@@ -802,128 +895,187 @@ export type Strings = {
   multiplayerPlay: string
   multiplayerWaiting: string
   multiplayerHint: string
-  company: string
-  companyHint: string
-  companyKnowledge: string
-  companyRate: (n: string) => string
-  companyCap: (hours: string) => string
-  companyClaim: string
-  companyClaimed: string
-  companyStage: (n: number) => string
-  companyHq: string
-  companyBuyHq: string
-  companyHqOwned: string
-  companyHqHint: string
-  companySparkCatch: string
-  companySparkHint: string
-  companyBuff: string
-  companyTaskFocus: (n: number) => string
-  companyTaskSparks: (n: number) => string
-  companyTaskRounds: (n: number) => string
-  companyTaskWorldRounds: (n: number, world: string) => string
-  companyTaskCompletes: (n: number) => string
-  companyTaskBuyHq: string
-  companyRewardKnowledge: (n: string) => string
-  companyRewardRate: (n: number) => string
-  companyRewardCap: (min: number) => string
-  companyLocked: string
-  companyDone: string
-  companyHud: string
-  companyPlay: string
-  companyFinished: string
-  shop: string
-  shopHint: string
-  state: string
-  stateHint: string
-  stateClaim: string
-  stateClaimCost: (n: number) => string
-  stateSwitch: string
-  statePlay: string
-  stateTreasury: string
-  stateCadres: string
-  stateEducation: string
-  stateEducationHint: string
-  stateInfra: string
-  stateInfraHint: string
-  stateForeign: string
-  stateForeignHint: string
-  stateEconomy: string
-  stateEconomyHint: string
-  stateTrade: string
-  stateTradeHint: string
-  stateAdministration: string
-  stateAdministrationHint: string
-  stateMinistryLevel: (n: number) => string
-  stateUpgrade: string
-  stateMaxLevel: string
-  stateServants: (n: number) => string
-  stateServantRate: (n: string) => string
-  stateHire: string
-  stateSellStamp: string
-  stateStampNeed: string
-  stateStampHow: string
-  stateConvertLeft: (used: number, cap: number) => string
-  stateIdleCap: (n: number, cap: number) => string
-  stateNeedCountry: string
-  statePickCountry: string
-  stateMaxServants: string
-  stateShopOpen: string
-  stateShopVaultHint: string
-  tokens: string
-  tokensBalance: (n: number) => string
-  tokensGained: (n: number) => string
-  tokensDayCap: (earned: number, cap: number) => string
-  shopCosmetics: string
-  shopBoosts: string
-  shopOwned: string
-  shopEquip: string
-  shopEquipped: string
-  shopBuy: string
-  shopLocked: string
-  shopFrameLaurel: string
-  shopFrameGold: string
-  shopFrameNight: string
-  shopFrameOrbit: string
-  shopShareInk: string
-  shopShareGold: string
-  shopShareNight: string
-  shopHqSkin: string
-  shopHqSkinHint: string
-  shopBoostKnowledge: string
-  shopBoostXp: string
-  shopBoostActive: string
-  shopDesk: string
-  shopDeskHint: string
-  shopSellTokens: (tokens: number, knowledge: number) => string
-  shopBuyTokens: (knowledge: number, tokens: number) => string
-  shopExchangeLeft: (knowledge: number, tokens: number) => string
-  shopMarket: string
-  shopMarketHint: string
-  shopMarketNeedWorld: (n: number, world: string) => string
-  shopMarketSold: string
-  shopLotKnowledge: (n: number) => string
-  shopLotWorld: (world: string, n: number) => string
-  shopLotBoost: string
-  shopContracts: string
-  shopContractsHint: string
-  shopContractTake: string
-  shopContractActive: string
-  shopContractWon: string
-  shopContractLost: string
-  shopContractStake: (n: number) => string
-  shopContractStampStake: string
-  shopContractPayout: (n: number) => string
-  shopContractProgress: (current: number, goal: number) => string
-  shopContractWorldRounds: (n: number, world: string) => string
-  shopContractWorldComplete: (n: number, world: string) => string
-  shopContractPerfect: (world: string) => string
-  shopContractStampGeo: (n: number) => string
-  shopVault: string
-  shopVaultHint: string
-  shopVaultPledge: string
-  shopVaultRecall: string
-  shopVaultOn: (name: string) => string
-  shopVaultNeed: string
+  empire: string
+  empireHint: string
+  empireIntro: string
+  empireEraOf: (n: number) => string
+  empireEra_settlement: string
+  empireEra_antiquity: string
+  empireEra_medieval: string
+  empireEra_earlyModern: string
+  empireEra_industrial: string
+  empireEra_electric: string
+  empireEra_digital: string
+  empireEra_space: string
+  empireRes_maps: string
+  empireRes_seals: string
+  empireRes_tickets: string
+  empireRes_medals: string
+  empireRes_seeds: string
+  empireRes_blueprints: string
+  empireRes_stardust: string
+  empireRes_chips: string
+  empireRes_spices: string
+  empireCoins: string
+  empireGems: string
+  empireSpecialists: string
+  empireBuilding_hall: string
+  empireBuilding_housing: string
+  empireBuilding_storage: string
+  empireBuilding_treasury: string
+  empireBuilding_library: string
+  empireBuildingDesc_hall: string
+  empireBuildingDesc_housing: string
+  empireBuildingDesc_storage: string
+  empireBuildingDesc_treasury: string
+  empireBuildingDesc_library: string
+  empireWorldBuildingHint: (world: string) => string
+  empireBuild: string
+  empireUpgrade: string
+  empireBuilding: string
+  empireLevel: (n: number) => string
+  empirePerHour: (n: string) => string
+  empireMaxLevel: string
+  empireBusy: string
+  empireNoFunds: string
+  empireAdvanceEra: string
+  empireEraMax: string
+  empireEraNeedHall: (n: number) => string
+  empireEraNeedSum: (n: number) => string
+  empireEraNeedRes: (n: number) => string
+  empireHousing: string
+  empirePending: (n: number) => string
+  empireOffline: (h: number) => string
+  empireSlots: (a: number, b: number) => string
+  empireTabCountry: string
+  empireTabTreasury: string
+  empireTabWorld: string
+  empireSellHint: string
+  empireSellTen: (n: number) => string
+  empireNameHint: string
+  empireRename: string
+  empireHowToEarn: string
+  empireComingSoon: string
+  empireBack: string
+  empireBoard: string
+  empireScore: string
+  empireYourRank: (n: number) => string
+  empireBoardEmpty: string
+  empireSyncLocal: string
+  empireSyncServer: string
+  empireSyncOffline: string
+  empireRewardTitle: string
+  empireRewardSpecialists: (n: number) => string
+  empireRewardCoins: (n: number) => string
+  empireRewardResource: (n: number, name: string) => string
+  empireRewardGem: (n: number) => string
+  empireRewardCapped: string
+  quizPowerFree: string
+  empireDuelStreak: (n: number) => string
+  quizPowerCoins: (n: number) => string
+  gateLocked: string
+  gatePlusSoon: string
+  gateOr: string
+  gateNeedEra: (n: number) => string
+  gateNeedBuilding: (name: string, n: number) => string
+  gateUnlockCoins: (n: number) => string
+  gateUnlockGems: (n: number) => string
+  gateUnlockResource: (n: number, name: string) => string
+  gateToEmpire: string
+  gateNoFunds: string
+  gateDifficulty: string
+  gateLevels: string
+  gateLevelHardcore: string
+  gateLearn: (n: number) => string
+  gateMistakes: string
+  gateList: string
+  gateDuelRoom: string
+  gateStudio: string
+  gateStudioWhy: string
+  gateBoard: (n: number) => string
+  empirePlusActive: string
+  empireCosmetics: string
+  empireFrames: string
+  empireShares: string
+  empireBoosts: string
+  empireOwned: string
+  empireEquip: string
+  empireEquipped: string
+  empireUnequip: string
+  empireBuyFor: (n: number) => string
+  empireFrame_laurel: string
+  empireFrame_gold: string
+  empireFrame_night: string
+  empireFrame_orbit: string
+  empireShare_ink: string
+  empireShare_gold: string
+  empireShare_night: string
+  empireBoostXp: string
+  empireBoostBuyCoins: (min: number, n: number) => string
+  empireBoostBuyGems: (h: number, n: number) => string
+  empireBoostActive: (min: number) => string
+  empireWallet: (coins: number, gems: number) => string
+  empireSkipBuild: (n: number) => string
+  empirePerks: string
+  empirePerk_offline24: string
+  empirePerk_slot2: string
+  empirePerkBuy: (days: number, gems: number) => string
+  empirePerkLeft: (days: number) => string
+  empireAlbumBonus: (pct: string) => string
+  empireAlbumHint: string
+  empireSetGems: (n: number) => string
+  stampRarity_common: string
+  stampRarity_rare: string
+  stampRarity_epic: string
+  stampRarity_legendary: string
+  empireLegacy: string
+  empireLegacyIntro: string
+  empireLegacyGuest: string
+  empireLegacy_atlas: string
+  empireLegacy_thousandDays: string
+  empireLegacy_flawless: string
+  empireLegacy_polymath: string
+  empireLegacy_builder: string
+  empireLegacyDesc_atlas: string
+  empireLegacyDesc_thousandDays: string
+  empireLegacyDesc_flawless: string
+  empireLegacyDesc_polymath: string
+  empireLegacyDesc_builder: string
+  empireLegacyStage: (n: number, total: number) => string
+  empireLegacyNext: (at: string) => string
+  empireLegacyFinal: string
+  empireLegacyClaim: string
+  empireLegacyDone: string
+  empireLegacyEta: (days: number) => string
+  empireLegacyValue: (value: string, at: string) => string
+  empireLegacyRewardGems: (n: number) => string
+  empireLegacyReward_frame: string
+  empireLegacyReward_share: string
+  empireLegacyReward_title: string
+  empireLegacyUnlock_res5: string
+  empireLegacyUnlock_res10: string
+  empireLegacyUnlock_library10: string
+  empireLegacyUnlock_specialist: string
+  empireLegacyUnlock_maxLevel: string
+  empireLegacyUnlock_buildFast: string
+  empireLegacyUnlock_pantheon: string
+  empireLegacyUnlock_flawlessAnim: string
+  empireLegacyUnlock_goldFlag: string
+  empireLegacyUnlock_night: string
+  empireLegacyUnlock_offline24: string
+  empireLegacyUnlock_slot2: string
+  empireTitles: string
+  empireTitleNone: string
+  empireTitleActive: string
+  empireTitle_cartographer: string
+  empireTitle_keeper: string
+  empireTitle_flawless: string
+  empireTitle_polymath: string
+  empireTitle_architect: string
+  empireBuilding_pantheon: string
+  empireFrame_atlas: string
+  empireFrame_flawless: string
+  empireShare_veteran: string
   quizHint: string
   quizSkip: string
   quizExtraLife: string
@@ -1184,9 +1336,7 @@ export const STRINGS: Record<Lang, Strings> = {
     ...MATH_MODE_COPY.ru,
     ...ASTRO_MODE_COPY.ru,
     ...PACK_MODE_COPY.ru,
-    ...COMPANY_COPY.ru,
-    ...STATE_COPY.ru,
-    ...TOKEN_COPY.ru,
+    ...EMPIRE_COPY.ru,
     ...ALBUM_COPY.ru,
     ...TOUR_COPY.ru,
     ...THEME_MODE_COPY.ru,
@@ -1283,6 +1433,17 @@ export const STRINGS: Record<Lang, Strings> = {
     playerFootBoth: 'обе',
     playerEraActive: 'Играет',
     playerEraLegend: 'Легенда',
+    greatClubsTitle: '50 клубов',
+    clubCardFounded: 'Основан',
+    clubCardYear: 'Год',
+    clubCardSquad: 'Состав',
+    clubCardSquadEmpty: 'За этот год состава нет',
+    clubCardPlayer: 'Карточка игрока',
+    clubCardAbout: 'Данные охватывают всю доступную историю клуба. Выберите год, чтобы увидеть состав; выделенные имена открывают карточки игроков.',
+    clubCardUniquePlayers: 'Игроков за всё время',
+    clubCardDataPeriod: 'Период данных',
+    clubCardAllClubsPlayers: 'Уникальных игроков в 50 клубах',
+    clubCardStatsNote: 'Уникальность определяется по ID игрока, статье Wikipedia или нормализованному имени. Игрок, выступавший за несколько клубов, учитывается один раз.',
     playerLearnAll: 'Все',
     footballGroupWc: 'Чемпионат мира',
     footballGroupEuro: 'Евро',
@@ -1448,8 +1609,8 @@ export const STRINGS: Record<Lang, Strings> = {
     silhouetteToName: 'Силуэт → страна',
     nameToSilhouette: 'Страна → силуэт',
     factsToName: 'Факты → страна',
-    mapToSea: 'Море → страна',
-    mapToRiver: 'Река → страна',
+    mapToSea: 'Море → карта',
+    mapToRiver: 'Река → карта',
     seaToName: 'Берег → страна',
     riverToName: 'Водоем → страна',
     nameToLanguage: 'Страна → язык',
@@ -1546,8 +1707,23 @@ export const STRINGS: Record<Lang, Strings> = {
     historyStatus: 'Статус',
     historyIndependent: 'Независимое государство',
     historyDeFacto: 'Де-факто независимое',
+    historyDependent: 'Зависимая территория',
+    historySuzerain: 'Зависима от',
+    historyColony: 'Колония',
+    historyProtectorate: 'Протекторат',
+    historyViceroyalty: 'Вице-королевство',
+    historyVassal: 'Вассал',
+    historyCompanyRule: 'Территория компании',
+    historyPersonalUnion: 'Личная уния / часть монархии',
     historySuccessors: 'Преемники',
     historyNotIndependent: 'Не независимое государство',
+    historyPeople: 'Народ / земли без государства',
+    historyArea: 'Площадь (по карте)',
+    historyMapYears: 'На карте',
+    historyReligion: 'Религия',
+    historyPredecessors: 'Предшественники',
+    historyWiki: 'Читать в Википедии',
+    historyModernPlace: 'Сейчас это',
     difficulty: 'Сложность',
     easy: 'Легкая',
     medium: 'Средняя',
@@ -1778,6 +1954,15 @@ export const STRINGS: Record<Lang, Strings> = {
     legalToday: 'Страна дня',
     legalLanguages: 'Языки',
     legalLists: 'Подборки',
+    collectionsHint: 'Челлендж дня, челлендж темы и короткие наборы — можно сразу играть.',
+    collectionsChallenges: 'Челленджи',
+    themeChallenge: 'Челлендж темы',
+    dailyChallenge: 'Челлендж дня',
+    dailyPlay: 'Играть',
+    dailyDone: (score, total) => `Сегодня ${score}/${total}`,
+    dailyStreak: (n) => (n === 1 ? '1 день подряд' : `${n} дней подряд`),
+    collectionItems: (n) => (n === 1 ? '1 карточка' : `${n} карточек`),
+    collectionOpen: 'Открыть страницу',
     share: 'Поделиться',
     shareCopied: 'Ссылка скопирована',
     shareBetter: 'Сможешь лучше?',
@@ -1914,9 +2099,7 @@ export const STRINGS: Record<Lang, Strings> = {
     ...MATH_MODE_COPY.en,
     ...ASTRO_MODE_COPY.en,
     ...PACK_MODE_COPY.en,
-    ...COMPANY_COPY.en,
-    ...STATE_COPY.en,
-    ...TOKEN_COPY.en,
+    ...EMPIRE_COPY.en,
     ...ALBUM_COPY.en,
     ...TOUR_COPY.en,
     ...THEME_MODE_COPY.en,
@@ -2013,6 +2196,17 @@ export const STRINGS: Record<Lang, Strings> = {
     playerFootBoth: 'both',
     playerEraActive: 'Active',
     playerEraLegend: 'Legend',
+    greatClubsTitle: '50 clubs',
+    clubCardFounded: 'Founded',
+    clubCardYear: 'Year',
+    clubCardSquad: 'Squad',
+    clubCardSquadEmpty: 'No squad for this year',
+    clubCardPlayer: 'Player card',
+    clubCardAbout: 'The data covers the club’s full available history. Choose a year to view its squad; highlighted names open player cards.',
+    clubCardUniquePlayers: 'All-time players',
+    clubCardDataPeriod: 'Data period',
+    clubCardAllClubsPlayers: 'Unique players across 50 clubs',
+    clubCardStatsNote: 'Players are matched by player ID, Wikipedia article, or normalized name. A player who represented several clubs is counted once.',
     playerLearnAll: 'All',
     footballGroupWc: 'World Cup',
     footballGroupEuro: 'Euro',
@@ -2178,8 +2372,8 @@ export const STRINGS: Record<Lang, Strings> = {
     silhouetteToName: 'Silhouette → country',
     nameToSilhouette: 'Country → silhouette',
     factsToName: 'Facts → country',
-    mapToSea: 'Sea → country',
-    mapToRiver: 'River → country',
+    mapToSea: 'Sea → map',
+    mapToRiver: 'River → map',
     seaToName: 'Coast → country',
     riverToName: 'River/lake → country',
     nameToLanguage: 'Country → language',
@@ -2276,8 +2470,23 @@ export const STRINGS: Record<Lang, Strings> = {
     historyStatus: 'Status',
     historyIndependent: 'Independent state',
     historyDeFacto: 'De facto independent',
+    historyDependent: 'Dependent territory',
+    historySuzerain: 'Dependent on',
+    historyColony: 'Colony',
+    historyProtectorate: 'Protectorate',
+    historyViceroyalty: 'Viceroyalty',
+    historyVassal: 'Vassal',
+    historyCompanyRule: 'Company territory',
+    historyPersonalUnion: 'Personal union / part of a monarchy',
     historySuccessors: 'Successors',
     historyNotIndependent: 'Not an independent state',
+    historyPeople: 'People / land without a state',
+    historyArea: 'Area (on the map)',
+    historyMapYears: 'On the map',
+    historyReligion: 'Religion',
+    historyPredecessors: 'Predecessors',
+    historyWiki: 'Read on Wikipedia',
+    historyModernPlace: 'Today this is',
     difficulty: 'Difficulty',
     easy: 'Easier',
     medium: 'Medium',
@@ -2502,6 +2711,15 @@ export const STRINGS: Record<Lang, Strings> = {
     legalToday: 'Country of the day',
     legalLanguages: 'Languages',
     legalLists: 'Lists',
+    collectionsHint: 'The daily challenge, a theme challenge, and short sets — play them right away.',
+    collectionsChallenges: 'Challenges',
+    themeChallenge: 'Theme challenge',
+    dailyChallenge: 'Challenge of the day',
+    dailyPlay: 'Play',
+    dailyDone: (score, total) => `Today ${score}/${total}`,
+    dailyStreak: (n) => (n === 1 ? '1-day streak' : `${n}-day streak`),
+    collectionItems: (n) => (n === 1 ? '1 card' : `${n} cards`),
+    collectionOpen: 'Open page',
     share: 'Share',
     shareCopied: 'Link copied',
     shareBetter: 'Can you do better?',
@@ -2677,14 +2895,26 @@ export function astroQuestionPrompt(mode: QuizMode, lang: Lang): string | null {
       return t.astroOrderPrompt
     case 'planetToKind':
       return t.astroKindPrompt
+    case 'planetFactsToName':
+      return t.astroPlanetFactsPrompt
     case 'moonToPlanet':
       return t.astroMoonPrompt
     case 'planetToMoon':
       return t.astroPlanetMoonPrompt
+    case 'moonFactsToName':
+      return t.astroMoonFactsPrompt
     case 'starToClass':
       return t.astroStarPrompt
     case 'constelToName':
       return t.astroConstelPrompt
+    case 'deepSkyFactsToName':
+      return t.astroDeepSkyPrompt
+    case 'missionToTarget':
+      return t.astroMissionTargetPrompt
+    case 'missionFactsToName':
+      return t.astroMissionFactsPrompt
+    case 'telescopeFactsToName':
+      return t.astroTelescopeFactsPrompt
     case 'astroPhotoToName':
       return t.astroPhotoPrompt
     case 'astroFactsToName':
@@ -2696,47 +2926,8 @@ export function astroQuestionPrompt(mode: QuizMode, lang: Lang): string | null {
 
 export function themeQuestionPrompt(mode: QuizMode, lang: Lang): string | null {
   if (!isThemeMode(mode)) return null
-  const t = STRINGS[lang]
-  switch (mode) {
-    case 'organelleToRole':
-      return t.bioOrganellePrompt
-    case 'roleToOrganelle':
-      return t.bioRolePrompt
-    case 'organToSystem':
-      return t.bioOrganPrompt
-    case 'photoStepToName':
-      return t.bioPhotoPrompt
-    case 'kingdomToExample':
-      return t.bioKingdomPrompt
-    case 'olyYearToHost':
-      return t.olyYearPrompt
-    case 'olyHostToYear':
-      return t.olyHostPrompt
-    case 'olyHostCount':
-      return t.olyCountPrompt
-    case 'sportToCategory':
-      return t.olySportPrompt
-    case 'nocToName':
-      return t.olyNocPrompt
-    case 'csTermToMeaning':
-      return t.csTermPrompt
-    case 'meaningToCsTerm':
-      return t.csMeaningPrompt
-    case 'decToBinary':
-      return t.csDecPrompt
-    case 'binaryToDec':
-      return t.csBinPrompt
-    case 'csPhotoToName':
-      return t.csPhotoPrompt
-    case 'dishToCuisine':
-      return t.foodDishPrompt
-    case 'cuisineToDish':
-      return t.foodCuisinePrompt
-    case 'foodToOrigin':
-      return t.foodOriginPrompt
-    default:
-      return null
-  }
+  const value = STRINGS[lang][THEME_PROMPT_KEY[mode]]
+  return typeof value === 'string' ? value : null
 }
 
 export function mathQuestionPrompt(mode: QuizMode, lang: Lang): string | null {

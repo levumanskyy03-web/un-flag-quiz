@@ -5,7 +5,7 @@ import { STRINGS, type Lang } from '../i18n/strings'
 import { getCookieConsent, subscribeCookieConsent } from '../lib/cookieConsent'
 import { markSiteTourSeen } from '../lib/siteTour'
 
-export const SITE_TOUR_STEPS = ['worlds', 'geo', 'state', 'dock'] as const
+export const SITE_TOUR_STEPS = ['worlds', 'geo', 'empire', 'dock'] as const
 export type SiteTourStep = (typeof SITE_TOUR_STEPS)[number]
 
 type Hole = { top: number; left: number; width: number; height: number }
@@ -42,13 +42,13 @@ export function SiteTour({ lang }: { lang: Lang }) {
   const titles: Record<SiteTourStep, string> = {
     worlds: t.tourStepWorldsTitle,
     geo: t.tourStepGeoTitle,
-    state: t.tourStepStateTitle,
+    empire: t.tourStepEmpireTitle,
     dock: t.tourStepDockTitle,
   }
   const bodies: Record<SiteTourStep, string> = {
     worlds: t.tourStepWorldsBody,
     geo: t.tourStepGeoBody,
-    state: t.tourStepStateBody,
+    empire: t.tourStepEmpireBody,
     dock: t.tourStepDockBody,
   }
 

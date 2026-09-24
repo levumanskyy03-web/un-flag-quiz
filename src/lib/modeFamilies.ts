@@ -92,7 +92,7 @@ export const MATH_FAMILIES = ['mix', 'arithmetic', 'geometry', 'symbols', 'peopl
 export const MATH_PLAY_FAMILIES = MATH_FAMILIES.filter((id) => id !== 'mix')
 export type MathFamilyId = (typeof MATH_FAMILIES)[number]
 
-export const ASTRO_FAMILIES = ['mix', 'planets', 'moons', 'sky', 'people'] as const
+export const ASTRO_FAMILIES = ['mix', 'planets', 'moons', 'sky', 'exploration', 'people'] as const
 export const ASTRO_PLAY_FAMILIES = ASTRO_FAMILIES.filter((id) => id !== 'mix')
 export type AstroFamilyId = (typeof ASTRO_FAMILIES)[number]
 
@@ -204,6 +204,7 @@ export function themeFamilyLabel(world: ThemeWorld, id: ThemeFamilyId, lang: Lan
   if (id === 'hosts') return t.olyFamilyHosts
   if (id === 'sports') return t.olyFamilySports
   if (id === 'noc') return t.olyFamilyNoc
+  if (id === 'stars') return t.olyFamilyStars
   if (id === 'code') return t.csFamilyCode
   if (id === 'binary') return t.csFamilyBinary
   if (id === 'hackers') return t.csFamilyPeople
@@ -359,5 +360,6 @@ export function astroFamilyLabel(id: AstroFamilyId, lang: Lang): string {
   if (id === 'planets') return t.astroFamilyPlanets
   if (id === 'moons') return t.astroFamilyMoons
   if (id === 'sky') return t.astroFamilySky
+  if (id === 'exploration') return t.astroFamilyExploration
   return t.astroFamilyPeople
 }

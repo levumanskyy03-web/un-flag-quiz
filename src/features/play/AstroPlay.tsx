@@ -1,6 +1,7 @@
 "use client";
 
 import { WorldAlbumScreen } from "@/components/WorldAlbumScreen";
+import { CollectionsScreen } from "@/components/CollectionsScreen";
 import { ASTRO_HUB_TABS } from "@/components/HubNav";
 import { defaultAstroMode, AstroScreen } from "@/components/AstroScreen";
 import { LearnScreen } from "@/components/LearnScreen";
@@ -84,6 +85,16 @@ export function AstroPlay({ play }: { play: PlaySession }) {
           onWorlds={play.goToWorlds}
         />
       )}
+      {play.screen === "lists" && (
+        <CollectionsScreen
+          world="astronomy"
+          settings={play.quizSettings}
+          tabs={ASTRO_HUB_TABS}
+          onHub={play.goHub}
+          onWorlds={play.goToWorlds}
+          onPlay={(collection, path) => play.startCollectionRound(collection, path)}
+        />
+      )}
       {play.screen === "quiz" && play.questions[play.index] && (
         <QuizScreen
           lang={play.quizSettings.lang}
@@ -119,7 +130,7 @@ export function AstroPlay({ play }: { play: PlaySession }) {
           endedBy={play.endedBy}
           isNewBest={play.isNewBest}
           earnedXp={play.earnedXp}
-          earnedTokens={play.earnedTokens}
+          empireReward={play.empireReward}
           totalXp={play.xp}
           saveNote={!play.isPractice}
           menuLabel={play.isPractice ? STRINGS[play.quizSettings.lang].backToCards : undefined}

@@ -5,7 +5,9 @@ import type { RoundRecord } from "@/lib/history";
 import type { LevelClear } from "@/lib/levelProgress";
 import type { MistakeEntry } from "@/lib/mistakes";
 import type { StampAlbum } from "@/lib/stamps";
+import type { Collection } from "@/data/collections";
 import type { PlayPath, Question, QuizMode, RoundAnswer, RoundEnd } from "@/lib/quiz";
+import type { EmpireRoundReward } from "@/lib/empire/rules";
 
 export type PlayScreen =
   | "home"
@@ -16,7 +18,8 @@ export type PlayScreen =
   | "quiz"
   | "results"
   | "mistakes"
-  | "album";
+  | "album"
+  | "lists";
 
 export type PlaySession = {
   screen: PlayScreen;
@@ -36,7 +39,7 @@ export type PlaySession = {
   endedBy: RoundEnd;
   isNewBest: boolean;
   earnedXp: number;
-  earnedTokens: number;
+  empireReward: EmpireRoundReward | null;
   worldRecord: { previousName: string | null } | null;
   livesLeft: number;
   livesLimit: number;
@@ -60,11 +63,10 @@ export type PlaySession = {
   startMathRound: (path?: PlayPath, isos?: string[], level?: number) => void;
   startAstroRound: (path?: PlayPath, isos?: string[], level?: number) => void;
   startThemeRound: (path?: PlayPath, isos?: string[], level?: number) => void;
+  startCollectionRound: (collection: Collection, path: "list" | "daily") => void;
   startRound: () => void;
-  startStateRound: () => void;
   goHub: (tab: HubTab) => void;
   goToWorlds: () => void;
-  goState: () => void;
   goBackFromPlay: () => void;
   handleClearFootballHistory: () => void;
   handleClearLeadersHistory: () => void;

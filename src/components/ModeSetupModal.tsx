@@ -79,6 +79,9 @@ import { FitText } from './FitText'
 import { ModeChoice } from './ModeChoice'
 import { modeCatalogNo, modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
 import { DifficultyPicker } from './DifficultyPicker'
+import { EmpireLock } from './EmpireLock'
+import { useEmpire } from '../lib/empireStore'
+import { access, type GateFeature } from '../lib/empire/gates'
 import { ExtrasToggle, geoOpts } from './ExtrasToggle'
 import type { QuizSettings } from './HomeScreen'
 
@@ -100,6 +103,13 @@ interface ModeSetupModalProps {
 
 export function ModeSetupModal({ family, settings, onChange, onStart, onClose }: ModeSetupModalProps) {
   const t = STRINGS[settings.lang]
+  const empire = useEmpire()
+  const difficultyFeature: GateFeature | null = settings.levelHardcore
+    ? { kind: 'difficulty', difficulty: 'hardcore' }
+    : settings.difficulty === 'hard'
+      ? { kind: 'difficulty', difficulty: 'hard' }
+      : null
+  const difficultyGate = difficultyFeature && access(empire, difficultyFeature) === 'locked' ? difficultyFeature : null
   const rankingsInfo = family.world === 'geo' && family.id === 'rankings'
   const title =
     family.world === 'geo'
@@ -445,6 +455,7 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
               hardcore={settings.levelHardcore}
               onChange={({ difficulty, hardcore }) => update({ path: 'pool', difficulty, levelHardcore: hardcore })}
             />
+            {difficultyGate ? <EmpireLock lang={settings.lang} feature={difficultyGate} title={t.gateDifficulty} compact /> : null}
 
             {family.world === 'football' && isPlayerFactsToName(settings.mode) && !settings.mix ? (
               <p className="setting-hint">{t.playerFactsHint}</p>
@@ -474,7 +485,7 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
               </>
             )}
 
-            <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
+            <button type="button" className="btn-primary" disabled={poolSize === 0 || difficultyGate !== null} onClick={onStart}>
               {t.start}
             </button>
           </>

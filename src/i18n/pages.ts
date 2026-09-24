@@ -68,7 +68,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     languageRange: (name) => `Ареал: ${name}`,
     nationalShort: "нац.",
     listsTitle: "Подборки",
-    listsLead: "Короткие списки стран по одному признаку — с паспортами и викториной.",
+    listsLead: "Короткие наборы по каждой теме — с викториной. География ещё с паспортами стран.",
     listsCopy: LIST_COPY.ru,
     aboutTitle: "О проекте",
     about: [
@@ -144,7 +144,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     languageRange: (name) => `Range: ${name}`,
     nationalShort: "nat.",
     listsTitle: "Lists",
-    listsLead: "Short country roundups by one trait — with passports and the quiz.",
+    listsLead: "Short sets for every theme, with a quiz. Geography lists still include country passports.",
     listsCopy: LIST_COPY.en,
     aboutTitle: "About",
     about: [
@@ -220,7 +220,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     languageRange: (name) => `Verbreitung: ${name}`,
     nationalShort: "nat.",
     listsTitle: "Listen",
-    listsLead: "Kurze Länderlisten nach einem Merkmal — mit Pässen und Quiz.",
+    listsLead: "Kurze Sets für jedes Thema, mit Quiz. Geografie-Listen haben weiter Länderpässe.",
     listsCopy: LIST_COPY.de,
     aboutTitle: "Über uns",
     about: [
@@ -294,7 +294,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     languageRange: (name) => `分布：${name}`,
     nationalShort: "官方",
     listsTitle: "专题",
-    listsLead: "按一个特点整理的短名单，可看护照并去答题。",
+    listsLead: "每个主题都有短名单，可直接答题。地理名单仍带国家护照。",
     listsCopy: LIST_COPY.zh,
     aboutTitle: "关于",
     about: [
@@ -367,7 +367,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     languageRange: (name) => `Área: ${name}`,
     nationalShort: "nac.",
     listsTitle: "Listas",
-    listsLead: "Listas cortas de países por un rasgo — con pasaportes y el quiz.",
+    listsLead: "Listas cortas de cada tema, con quiz. En geografía siguen los pasaportes.",
     listsCopy: LIST_COPY.es,
     aboutTitle: "Acerca de",
     about: [
@@ -443,7 +443,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     languageRange: (name) => `क्षेत्र: ${name}`,
     nationalShort: "राष्ट्री.",
     listsTitle: "सूचियाँ",
-    listsLead: "एक गुण के हिसाब से छोटे देश-सूची — पासपोर्ट और क्विज़ के साथ।",
+    listsLead: "हर विषय की छोटी सूचियाँ, क्विज़ के साथ। भूगोल में पासपोर्ट भी हैं।",
     listsCopy: LIST_COPY.hi,
     aboutTitle: "परिचय",
     about: [
@@ -518,7 +518,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     languageRange: (name) => `الانتشار: ${name}`,
     nationalShort: "رسمي",
     listsTitle: "قوائم",
-    listsLead: "قوائم قصيرة لدول بصفة واحدة — مع الجوازات والاختبار.",
+    listsLead: "مجموعات قصيرة لكل موضوع مع اختبار. قوائم الجغرافيا ما زالت بجوازات الدول.",
     listsCopy: LIST_COPY.ar,
     aboutTitle: "حول الموقع",
     about: [
@@ -593,7 +593,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     languageRange: (name) => `এলাকা: ${name}`,
     nationalShort: "জাতী.",
     listsTitle: "তালিকা",
-    listsLead: "একটি বৈশিষ্ট্যে দেশের ছোট তালিকা — পাসপোর্ট ও কুইজসহ।",
+    listsLead: "প্রতি বিষয়ের ছোট তালিকা, কুইজসহ। ভূগোলে দেশের পাসপোর্টও আছে।",
     listsCopy: LIST_COPY.bn,
     aboutTitle: "সম্পর্কে",
     about: [
@@ -669,7 +669,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     languageRange: (name) => `Área: ${name}`,
     nationalShort: "nac.",
     listsTitle: "Listas",
-    listsLead: "Listas curtas de países por um traço — com passaportes e o quiz.",
+    listsLead: "Listas curtas de cada tema, com quiz. Em geografia há passaportes dos países.",
     listsCopy: LIST_COPY.pt,
     aboutTitle: "Sobre",
     about: [
@@ -744,7 +744,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     languageRange: (name) => `分布：${name}`,
     nationalShort: "公用語",
     listsTitle: "特集",
-    listsLead: "一つの特徴でまとめた国の短いリスト。パスポートとクイズへ行けます。",
+    listsLead: "テーマごとの短いリスト。クイズで遊べます。地理はパスポート付きです。",
     listsCopy: LIST_COPY.ja,
     aboutTitle: "このサイト",
     about: [
@@ -816,7 +816,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     languageRange: (name) => `תחום: ${name}`,
     nationalShort: "לאומ.",
     listsTitle: "רשימות",
-    listsLead: "רשימות קצרות של מדינות לפי תכונה אחת — עם דרכונים והחידון.",
+    listsLead: "רשימות קצרות לכל נושא, עם חידון. בגיאוגרפיה יש גם דרכוני מדינות.",
     listsCopy: LIST_COPY.he,
     aboutTitle: "אודות",
     about: [

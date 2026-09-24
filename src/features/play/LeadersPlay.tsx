@@ -1,6 +1,7 @@
 "use client";
 
 import { WorldAlbumScreen } from "@/components/WorldAlbumScreen";
+import { CollectionsScreen } from "@/components/CollectionsScreen";
 import { WORLD_HUB_TABS } from "@/components/HubNav";
 import { defaultLeadersMode, LeadersScreen } from "@/components/LeadersScreen";
 import { LearnScreen } from "@/components/LearnScreen";
@@ -78,6 +79,16 @@ export function LeadersPlay({ play }: { play: PlaySession }) {
           onWorlds={play.goToWorlds}
         />
       )}
+      {play.screen === "lists" && (
+        <CollectionsScreen
+          world="leaders"
+          settings={play.quizSettings}
+          tabs={WORLD_HUB_TABS}
+          onHub={play.goHub}
+          onWorlds={play.goToWorlds}
+          onPlay={(collection, path) => play.startCollectionRound(collection, path)}
+        />
+      )}
       {play.screen === "quiz" && play.questions[play.index] && (
         <QuizScreen
           lang={play.quizSettings.lang}
@@ -113,7 +124,7 @@ export function LeadersPlay({ play }: { play: PlaySession }) {
           endedBy={play.endedBy}
           isNewBest={play.isNewBest}
           earnedXp={play.earnedXp}
-          earnedTokens={play.earnedTokens}
+          empireReward={play.empireReward}
           totalXp={play.xp}
           saveNote={!play.isPractice}
           menuLabel={play.isPractice ? STRINGS[play.quizSettings.lang].backToCards : undefined}

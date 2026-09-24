@@ -2,7 +2,7 @@ import { STRINGS, type Lang } from '../i18n/strings'
 import { FitGroup, FitText } from './FitText'
 import { GeoIcon } from './GeoIcon'
 
-export type HubTab = 'free' | 'levels' | 'learn' | 'map' | 'mistakes' | 'album'
+export type HubTab = 'free' | 'levels' | 'learn' | 'map' | 'mistakes' | 'album' | 'lists'
 
 interface HubNavProps {
   lang: Lang
@@ -11,21 +11,26 @@ interface HubNavProps {
   onSelect: (tab: HubTab) => void
 }
 
-export const GEO_HUB_TABS: HubTab[] = ['levels', 'free', 'learn', 'map', 'mistakes', 'album']
-export const WORLD_HUB_TABS: HubTab[] = ['levels', 'free', 'learn', 'mistakes', 'album']
-export const MATH_HUB_TABS: HubTab[] = ['free', 'levels', 'learn', 'mistakes', 'album']
+export const GEO_HUB_TABS: HubTab[] = ['levels', 'free', 'learn', 'lists', 'mistakes', 'album']
+export const WORLD_HUB_TABS: HubTab[] = ['levels', 'free', 'learn', 'lists', 'mistakes', 'album']
+export const MATH_HUB_TABS: HubTab[] = ['free', 'levels', 'learn', 'lists', 'mistakes', 'album']
 export const ASTRO_HUB_TABS: HubTab[] = MATH_HUB_TABS
 export const THEME_HUB_TABS: HubTab[] = MATH_HUB_TABS
-const ICONS: Record<HubTab, 'compass' | 'map' | 'meridians' | 'pin' | 'stamp' | 'hash'> = {
+const ICONS: Record<HubTab, 'compass' | 'map' | 'meridians' | 'pin' | 'stamp' | 'hash' | 'deck'> = {
   free: 'compass',
   levels: 'map',
   learn: 'meridians',
   map: 'pin',
   mistakes: 'hash',
   album: 'stamp',
+  lists: 'deck',
 }
 
-export function HubNav({ lang, active, tabs = GEO_HUB_TABS, onSelect }: HubNavProps) {
+function hubShowsMap(tabs?: HubTab[]) {
+  return !tabs || tabs === GEO_HUB_TABS || tabs.includes('map')
+}
+
+export function HubNav({ lang, active, tabs, onSelect }: HubNavProps) {
   const t = STRINGS[lang]
   const labels: Record<HubTab, string> = {
     free: t.freePlay,
@@ -34,14 +39,17 @@ export function HubNav({ lang, active, tabs = GEO_HUB_TABS, onSelect }: HubNavPr
     map: t.map,
     mistakes: t.mistakesTrain,
     album: t.album,
+    lists: t.legalLists,
   }
-  const columns = tabs.length <= 3 ? 3 : tabs.length <= 4 ? 4 : 3
+  const showMap = hubShowsMap(tabs)
+  const gridTabs = (tabs ?? GEO_HUB_TABS).filter((tab) => tab !== 'map')
+  const columns = gridTabs.length <= 3 ? 3 : gridTabs.length <= 4 ? 4 : 3
 
   return (
-    <nav className="hub-nav" aria-label={t.explore}>
+    <nav className={`hub-nav${showMap ? ' has-map' : ''}`} aria-label={t.explore}>
       <div className={`choice-grid is-hub is-hub-${columns}`}>
         <FitGroup wrap minPx={8}>
-          {tabs.map((tab) => (
+          {gridTabs.map((tab) => (
             <button
               key={tab}
               type="button"
@@ -55,6 +63,17 @@ export function HubNav({ lang, active, tabs = GEO_HUB_TABS, onSelect }: HubNavPr
           ))}
         </FitGroup>
       </div>
+      {showMap ? (
+        <button
+          type="button"
+          className={`choice hub-map-aside ${active === 'map' ? 'is-active' : ''}`}
+          aria-pressed={active === 'map'}
+          onClick={() => onSelect('map')}
+        >
+          <GeoIcon name="pin" size={15} />
+          <FitText>{labels.map}</FitText>
+        </button>
+      ) : null}
     </nav>
   )
 }
