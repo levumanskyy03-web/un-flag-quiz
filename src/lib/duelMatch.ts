@@ -5,15 +5,9 @@ import {
   EASY_MIX_MODES,
   FLAGS_MIX_MODES,
   MAP_MIX_MODES,
-  MATCH_FOOTBALL_MODES,
-  MATCH_GEO_MODES,
-  MATCH_LEADERS_MODES,
   MATH_MATCH_MIX,
   ASTRO_MATCH_MIX,
-  MATCH_MATH_MODES,
-  MATCH_ASTRO_MODES,
   THEME_MATCH_MIX,
-  MATCH_THEME_MODES,
   THEME_WORLDS,
   PHOTO_LEADERS_MATCH_MIX,
   PLAYER_FOOTBALL_MATCH_MIX,
@@ -34,8 +28,6 @@ export interface MatchQueue {
 
 export const GEO_MATCH_MIXES: MatchQueue[] = [
   { id: 'geo-easy', modes: [...EASY_MIX_MODES] },
-  { id: 'geo-flags', modes: [...FLAGS_MIX_MODES] },
-  { id: 'geo-map', modes: [...MAP_MIX_MODES] },
 ]
 
 export const FOOTBALL_MATCH_MIXES: MatchQueue[] = [
@@ -48,55 +40,23 @@ export const LEADERS_MATCH_MIXES: MatchQueue[] = [
   { id: 'ld-photos', modes: [...PHOTO_LEADERS_MATCH_MIX] },
 ]
 
-export const GEO_MATCH_SINGLES: MatchQueue[] = MATCH_GEO_MODES.map((mode) => ({
-  id: `geo-${mode}`,
-  modes: [mode],
-}))
-
-export const FOOTBALL_MATCH_SINGLES: MatchQueue[] = MATCH_FOOTBALL_MODES.map((mode) => ({
-  id: `fb-${mode}`,
-  modes: [mode],
-}))
-
-export const LEADERS_MATCH_SINGLES: MatchQueue[] = MATCH_LEADERS_MODES.map((mode) => ({
-  id: `ld-${mode}`,
-  modes: [mode],
-}))
-
 export const MATH_MATCH_MIXES: MatchQueue[] = [
   { id: 'math-easy', modes: [...MATH_MATCH_MIX] },
 ]
 
-export const MATH_MATCH_SINGLES: MatchQueue[] = MATCH_MATH_MODES.map((mode) => ({
-  id: `math-${mode}`,
-  modes: [mode],
-}))
-
 export const ASTRO_MATCH_MIXES: MatchQueue[] = [
   { id: 'astro-easy', modes: [...ASTRO_MATCH_MIX] },
 ]
-
-export const ASTRO_MATCH_SINGLES: MatchQueue[] = MATCH_ASTRO_MODES.map((mode) => ({
-  id: `astro-${mode}`,
-  modes: [mode],
-}))
 
 export const THEME_MATCH_MIXES: MatchQueue[] = THEME_WORLDS.map((world) => ({
   id: `${world}-easy`,
   modes: [...THEME_MATCH_MIX[world]],
 }))
 
-export const THEME_MATCH_SINGLES: MatchQueue[] = THEME_WORLDS.flatMap((world) =>
-  MATCH_THEME_MODES[world].map((mode) => ({
-    id: `${world}-${mode}`,
-    modes: [mode],
-  })),
-)
-
 export function matchQueues(): { mixes: MatchQueue[]; singles: MatchQueue[] } {
   return {
     mixes: [...GEO_MATCH_MIXES, ...FOOTBALL_MATCH_MIXES, ...LEADERS_MATCH_MIXES, ...MATH_MATCH_MIXES, ...ASTRO_MATCH_MIXES, ...THEME_MATCH_MIXES],
-    singles: [...GEO_MATCH_SINGLES, ...FOOTBALL_MATCH_SINGLES, ...LEADERS_MATCH_SINGLES, ...MATH_MATCH_SINGLES, ...ASTRO_MATCH_SINGLES, ...THEME_MATCH_SINGLES],
+    singles: [],
   }
 }
 
@@ -148,11 +108,7 @@ export function matchQueueNote(queue: MatchQueue, lang: Lang): string {
   return queue.modes.map((mode) => modeLabel(mode, lang)).join(' · ')
 }
 
-export function initialMatchModes(initialMode?: QuizMode): QuizMode[] {
-  const { mixes, singles } = matchQueues()
-  if (initialMode) {
-    const single = singles.find((queue) => queue.modes[0] === initialMode)
-    if (single) return [...single.modes]
-  }
+export function initialMatchModes(): QuizMode[] {
+  const { mixes } = matchQueues()
   return [...mixes[0].modes]
 }

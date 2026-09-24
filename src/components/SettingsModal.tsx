@@ -64,6 +64,7 @@ interface SettingsModalProps {
   onClose: () => void
   onAuth?: (account: Account | null) => void
   onClearBests?: () => void
+  embedded?: boolean
 }
 
 export function SettingsModal({
@@ -76,6 +77,7 @@ export function SettingsModal({
   onClose,
   onAuth,
   onClearBests,
+  embedded = false,
 }: SettingsModalProps) {
   const t = STRINGS[lang]
   const router = useRouter()
@@ -358,21 +360,25 @@ export function SettingsModal({
     setReportOpened(true)
   }
 
-  return (
-    <div className="passport-overlay" onClick={onClose}>
+  const sheet = (
+    <>
       <div
-        className="passport-sheet account-sheet settings-sheet"
-        role="dialog"
-        aria-modal="true"
+        className={`passport-sheet account-sheet settings-sheet${embedded ? ' is-page' : ''}`}
+        role={embedded ? undefined : 'dialog'}
+        aria-modal={embedded ? undefined : true}
         aria-labelledby={titleId}
         onClick={(event) => event.stopPropagation()}
       >
-        <header className="account-sheet-head">
+        {embedded ? (
           <h2 id={titleId}>{t.settings}</h2>
-          <button type="button" className="btn-ghost" onClick={onClose}>
-            {t.close}
-          </button>
-        </header>
+        ) : (
+          <header className="account-sheet-head">
+            <h2 id={titleId}>{t.settings}</h2>
+            <button type="button" className="btn-ghost" onClick={onClose}>
+              {t.close}
+            </button>
+          </header>
+        )}
 
         <div className="choice-grid settings-tabs">
           {(['account', 'achievements', 'xp', 'about', 'report'] as const).map((item) => (
@@ -871,6 +877,14 @@ export function SettingsModal({
           onClose={() => setPickerOpen(false)}
         />
       ) : null}
+    </>
+  )
+
+  if (embedded) return <section className="card settings-card profile-settings">{sheet}</section>
+
+  return (
+    <div className="passport-overlay" onClick={onClose}>
+      {sheet}
     </div>
   )
 }

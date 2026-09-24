@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_ORIGIN}/cs`, lastModified: now },
     { url: `${SITE_ORIGIN}/food`, lastModified: now },
     { url: `${SITE_ORIGIN}/multiplayer`, lastModified: now },
+    { url: `${SITE_ORIGIN}/profile`, lastModified: now },
     { url: `${SITE_ORIGIN}/studio`, lastModified: now },
     { url: `${SITE_ORIGIN}/empire`, lastModified: now },
     { url: `${SITE_ORIGIN}/about`, lastModified: now },

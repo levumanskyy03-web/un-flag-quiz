@@ -895,6 +895,9 @@ export type Strings = {
   multiplayerPlay: string
   multiplayerWaiting: string
   multiplayerHint: string
+  profile: string
+  profileHint: string
+  playWithFriend: string
   empire: string
   empireHint: string
   empireIntro: string
@@ -1975,7 +1978,10 @@ export const STRINGS: Record<Lang, Strings> = {
     multiplayer: 'Мультиплеер',
     multiplayerPlay: 'Играть онлайн',
     multiplayerWaiting: 'Ищем соперника',
-    multiplayerHint: 'География, футбол и лидеры стран — один онлайн-режим вне тем.',
+    multiplayerHint: 'Онлайн-миксы: одна очередь на несколько режимов.',
+    profile: 'Профиль',
+    profileHint: 'Настройки аккаунта и игра с другом.',
+    playWithFriend: 'Играть с другом',
     duelCreate: 'Создать комнату',
     duelJoin: 'Войти',
     duelCode: 'Код комнаты',
@@ -2732,7 +2738,10 @@ export const STRINGS: Record<Lang, Strings> = {
     multiplayer: 'Multiplayer',
     multiplayerPlay: 'Play online',
     multiplayerWaiting: 'Looking for an opponent',
-    multiplayerHint: 'Geography, football and country leaders — one online mode outside the themes.',
+    multiplayerHint: 'Online mixes: one queue across several modes.',
+    profile: 'Profile',
+    profileHint: 'Account settings and a game with a friend.',
+    playWithFriend: 'Play with a friend',
     duelCreate: 'Create room',
     duelJoin: 'Join',
     duelCode: 'Room code',

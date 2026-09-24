@@ -9,6 +9,7 @@ type GeoIconName =
   | 'trophy'
   | 'ball'
   | 'stamp'
+  | 'user'
   | 'hash'
   | 'laurel'
   | 'sigma'
@@ -75,6 +76,17 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
               fill="none"
             />
           </g>
+        </>
+      ) : null}
+      {name === 'user' ? (
+        <>
+          <circle cx="8" cy="5.15" r="2.25" stroke="currentColor" strokeWidth="1.2" />
+          <path
+            d="M3.15 13.35c.75-2.45 2.55-3.6 4.85-3.6s4.1 1.15 4.85 3.6"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+          />
         </>
       ) : null}
       {name === 'trophy' ? (

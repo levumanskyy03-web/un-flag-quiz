@@ -1343,6 +1343,13 @@ html[dir="rtl"] .coc-level {
   overflow: auto;
 }
 
+.settings-sheet.is-page {
+  max-height: none;
+  overflow: visible;
+  width: 100%;
+  box-shadow: none;
+}
+
 .settings-tabs {
   width: 100%;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -5719,7 +5726,7 @@ html[data-world="food"]:not([data-result]) body {
 
 .world-pick-dock {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
   margin-top: 14px;
   padding: 6px 4px 4px;

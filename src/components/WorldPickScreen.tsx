@@ -19,6 +19,7 @@ interface WorldPickScreenProps {
   onPick: (world: World) => void
   onDaily: () => void
   onMultiplayer: () => void
+  onProfile: () => void
   onStudio: () => void
   onEmpire: () => void
 }
@@ -71,6 +72,7 @@ export function WorldPickScreen({
   onPick,
   onDaily,
   onMultiplayer,
+  onProfile,
   onStudio,
   onEmpire,
 }: WorldPickScreenProps) {
@@ -140,6 +142,10 @@ export function WorldPickScreen({
           <button type="button" className="world-dock-tab" onClick={onStudio}>
             <GeoIcon name="stamp" size={22} />
             <FitText>{t.studio}</FitText>
+          </button>
+          <button type="button" className="world-dock-tab" onClick={onProfile}>
+            <GeoIcon name="user" size={22} />
+            <FitText>{t.profile}</FitText>
           </button>
           <button type="button" className="world-dock-tab" onClick={onMultiplayer}>
             <GeoIcon name="trophy" size={22} />

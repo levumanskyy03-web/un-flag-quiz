@@ -9,11 +9,8 @@ export function MultiplayerPlay({ play }: { play: PlaySession }) {
   return (
     <MultiplayerScreen
       settings={play.quizSettings}
-      error={duel.error}
       onWorlds={play.goToWorlds}
       onMatch={(modes) => void duel.match(modes)}
-      onCreate={(modes) => void duel.create(modes)}
-      onJoin={duel.join}
     />
   );
 }

@@ -72,7 +72,7 @@ export function DuelCreateModal({
   const themeCatalog = isThemeCatalog(modeCatalog)
   const [selected, setSelected] = useState<QuizMode[]>(() =>
     intent === 'match'
-      ? initialMatchModes(initialMode)
+      ? initialMatchModes()
       : orderedModes([isRankingMode(initialMode) ? 'flagToName' : initialMode]),
   )
   const [factsRegion, setFactsRegion] = useState<RegionFilter>(region)
@@ -168,6 +168,7 @@ export function DuelCreateModal({
                     />
                   ))}
                 </div>
+                {queues.singles.length > 0 ? (
                 <div className="choice-grid is-modes">
                   {queues.singles.map((queue) => (
                     <button
@@ -181,6 +182,7 @@ export function DuelCreateModal({
                     </button>
                   ))}
                 </div>
+                ) : null}
               </>
             ) : mixButtons ? (
             <div className="choice-grid">

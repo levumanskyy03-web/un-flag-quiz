@@ -107,6 +107,7 @@ import { MathPlay } from "./MathPlay";
 import { AstroPlay } from "./AstroPlay";
 import { ThemePlay } from "./ThemePlay";
 import { MultiplayerPlay } from "./MultiplayerPlay";
+import { ProfilePlay } from "./ProfilePlay";
 import { StudioPlay } from "./StudioPlay";
 import { EmpirePlay } from "./EmpirePlay";
 import { empireAccess, empireBuyPower, empireClaimAchievements, empireOnRound, empireStartMistakes, empireSyncAlbum, empireTimeBonusMs, empireXpMultiplier, startEmpireLoop, stopEmpireLoop } from "@/lib/empireStore";
@@ -115,11 +116,11 @@ import { listGateOf } from "@/lib/empire/gates";
 
 type Screen = "home" | "levels" | "level20" | "learn" | "map" | "quiz" | "results" | "mistakes" | "album" | "lists";
 type ResultTone = "success" | "fail" | "gold";
-type Hub = World | "multiplayer" | "studio" | "empire";
+type Hub = World | "multiplayer" | "studio" | "empire" | "profile";
 
-function isMetaHub(hub: Hub | null | undefined): hub is "multiplayer" | "studio" | "empire" {
+function isMetaHub(hub: Hub | null | undefined): hub is "multiplayer" | "studio" | "empire" | "profile" {
   return (
-    hub === "multiplayer" || hub === "studio" || hub === "empire"
+    hub === "multiplayer" || hub === "studio" || hub === "empire" || hub === "profile"
   );
 }
 
@@ -162,6 +163,7 @@ export function worldFromPath(pathname: string): World | null {
 
 export function hubFromPath(pathname: string): Hub | null {
   if (pathname === "/multiplayer" || pathname.startsWith("/multiplayer/")) return "multiplayer";
+  if (pathname === "/profile" || pathname.startsWith("/profile/")) return "profile";
   if (pathname === "/studio" || pathname.startsWith("/studio/")) return "studio";
   if (pathname === "/empire" || pathname.startsWith("/empire/")) return "empire";
   return worldFromPath(pathname);
@@ -292,6 +294,8 @@ export default function PlayApp() {
     document.title =
       hub === "multiplayer"
         ? STRINGS[quizSettings.lang].multiplayer
+        : hub === "profile"
+          ? STRINGS[quizSettings.lang].profile
         : hub === "studio"
           ? STRINGS[quizSettings.lang].studio
           : hub === "empire"
@@ -1822,6 +1826,15 @@ export default function PlayApp() {
               router.push("/empire");
             });
           }}
+          onProfile={() => {
+            softNav(() => {
+              syncWorldAttr(null);
+              setWorldNav("profile");
+              screenRef.current = "home";
+              setScreenState("home");
+              router.push("/profile");
+            });
+          }}
           onMultiplayer={() => {
             softNav(() => {
               syncWorldAttr(null);
@@ -1901,6 +1914,7 @@ export default function PlayApp() {
         />
       )}
       {hub === "multiplayer" ? <MultiplayerPlay play={play} /> : null}
+      {hub === "profile" ? <ProfilePlay play={play} /> : null}
       {hub === "studio" ? <StudioPlay play={play} /> : null}
       {hub === "empire" ? <EmpirePlay play={play} /> : null}
       {world === "football" ? <FootballPlay play={play} /> : null}
