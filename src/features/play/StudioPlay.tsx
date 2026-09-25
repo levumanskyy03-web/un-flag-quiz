@@ -29,7 +29,25 @@ import type { PlaySession } from "./session";
 type View = "list" | "edit" | "home" | "learn" | "mistakes" | "levels" | "quiz" | "results";
 type MixKind = "easy" | "hard" | "custom";
 
+/** Studio stays closed until the pack editor is ready to ship again. */
+const STUDIO_OPEN = false
+
 export function StudioPlay({ play }: { play: PlaySession }) {
+  if (STUDIO_OPEN) return <StudioPlayLive play={play} />
+  const lang = play.quizSettings.lang
+  const t = STRINGS[lang]
+  return (
+    <div className="screen home-screen pack-studio">
+      <header className="home-header">
+        <WorldsBack lang={lang} onClick={play.goToWorlds} />
+        <h1>{t.studio}</h1>
+        <p className="subtitle">{t.studioUnavailable}</p>
+      </header>
+    </div>
+  )
+}
+
+function StudioPlayLive({ play }: { play: PlaySession }) {
   const lang = play.quizSettings.lang;
   const t = STRINGS[lang];
   const studioLocked = access(useEmpire(), { kind: "studio" }) === "locked";

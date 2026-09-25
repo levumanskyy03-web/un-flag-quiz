@@ -4,6 +4,7 @@ import type { Strings } from './strings'
 export type PackCopy = Pick<
   Strings,
   | 'studio'
+  | 'studioUnavailable'
   | 'studioSubtitle'
   | 'studioNew'
   | 'studioEmpty'
@@ -125,6 +126,7 @@ function row(copy: PackCopy): PackCopy {
 export const PACK_MODE_COPY: Record<Lang, PackCopy> = {
   ru: row({
     studio: 'Свои материалы',
+    studioUnavailable: 'Временно недоступно',
     studioSubtitle: 'Закиньте конспект — выберите форматы — поправьте карточки — играйте.',
     studioNew: 'Новый пакет',
     studioEmpty: 'Пока нет пакетов. Вставьте лекцию или загрузите файлы.',
@@ -245,6 +247,7 @@ export const PACK_MODE_COPY: Record<Lang, PackCopy> = {
   }),
   en: row({
     studio: 'Your materials',
+    studioUnavailable: 'Temporarily unavailable',
     studioSubtitle: 'Drop notes — pick formats — edit cards — play.',
     studioNew: 'New pack',
     studioEmpty: 'No packs yet. Paste a lecture or upload files.',
@@ -365,6 +368,7 @@ export const PACK_MODE_COPY: Record<Lang, PackCopy> = {
   }),
   de: row({
     studio: 'Eigene Materialien',
+    studioUnavailable: 'Vorübergehend nicht verfügbar',
     studioSubtitle: 'Notizen laden — Formate wählen — Karten prüfen — spielen.',
     studioNew: 'Neues Paket',
     studioEmpty: 'Noch keine Pakete. Vorlesung einfügen oder Dateien laden.',
@@ -485,6 +489,7 @@ export const PACK_MODE_COPY: Record<Lang, PackCopy> = {
   }),
   zh: row({
     studio: '自己的材料',
+    studioUnavailable: '暂时不可用',
     studioSubtitle: '上传笔记 — 选择题型 — 改卡片 — 开始玩。',
     studioNew: '新建卡包',
     studioEmpty: '还没有卡包。粘贴讲义或上传文件。',
@@ -604,6 +609,7 @@ export const PACK_MODE_COPY: Record<Lang, PackCopy> = {
   }),
   es: row({
     studio: 'Tus materiales',
+    studioUnavailable: 'Temporalmente no disponible',
     studioSubtitle: 'Sube apuntes — elige formatos — corrige — juega.',
     studioNew: 'Paquete nuevo',
     studioEmpty: 'Aún no hay paquetes. Pega la clase o sube archivos.',
@@ -724,6 +730,7 @@ export const PACK_MODE_COPY: Record<Lang, PackCopy> = {
   }),
   hi: row({
     studio: 'अपनी सामग्री',
+    studioUnavailable: 'अभी उपलब्ध नहीं',
     studioSubtitle: 'नोट्स डालें — फॉर्मैट चुनें — कार्ड सुधारें — खेलें।',
     studioNew: 'नया पैक',
     studioEmpty: 'अभी कोई पैक नहीं। लेक्चर चिपकाएँ या फ़ाइलें अपलोड करें।',
@@ -843,6 +850,7 @@ export const PACK_MODE_COPY: Record<Lang, PackCopy> = {
   }),
   ar: row({
     studio: 'موادك',
+    studioUnavailable: 'غير متاح مؤقتًا',
     studioSubtitle: 'أرفق الملاحظات — اختر الأنماط — صحّح البطاقات — العب.',
     studioNew: 'حزمة جديدة',
     studioEmpty: 'لا حزم بعد. الصق المحاضرة أو ارفع ملفات.',
@@ -962,6 +970,7 @@ export const PACK_MODE_COPY: Record<Lang, PackCopy> = {
   }),
   bn: row({
     studio: 'নিজের উপাদান',
+    studioUnavailable: 'সাময়িকভাবে অনুপলব্ধ',
     studioSubtitle: 'নোট দিন — ফরম্যাট বেছে নিন — কার্ড ঠিক করুন — খেলুন।',
     studioNew: 'নতুন প্যাক',
     studioEmpty: 'এখনো প্যাক নেই। লেকচার পেস্ট করুন বা ফাইল দিন।',
@@ -1081,6 +1090,7 @@ export const PACK_MODE_COPY: Record<Lang, PackCopy> = {
   }),
   pt: row({
     studio: 'Os teus materiais',
+    studioUnavailable: 'Temporariamente indisponível',
     studioSubtitle: 'Carrega notas — escolhe formatos — corrige — joga.',
     studioNew: 'Novo pacote',
     studioEmpty: 'Ainda sem pacotes. Cola a aula ou carrega ficheiros.',
@@ -1200,6 +1210,7 @@ export const PACK_MODE_COPY: Record<Lang, PackCopy> = {
   }),
   ja: row({
     studio: '自分の教材',
+    studioUnavailable: '一時的に利用できません',
     studioSubtitle: 'ノートを入れて、形式を選び、カードを直して遊ぶ。',
     studioNew: '新しいパック',
     studioEmpty: 'まだパックがありません。講義を貼るかファイルを入れてください。',
@@ -1319,6 +1330,7 @@ export const PACK_MODE_COPY: Record<Lang, PackCopy> = {
   }),
   he: row({
     studio: 'החומרים שלך',
+    studioUnavailable: 'זמנית לא זמין',
     studioSubtitle: 'מעלים סיכום — בוחרים פורמטים — מתקנים — משחקים.',
     studioNew: 'חבילה חדשה',
     studioEmpty: 'עדיין אין חבילות. מדביקים שיעור או מעלים קבצים.',

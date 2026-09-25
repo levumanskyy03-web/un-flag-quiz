@@ -1083,6 +1083,7 @@ export type Strings = {
   quizSkip: string
   quizExtraLife: string
   studio: string
+  studioUnavailable: string
   studioSubtitle: string
   studioNew: string
   studioEmpty: string
