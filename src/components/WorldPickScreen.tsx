@@ -139,9 +139,9 @@ export function WorldPickScreen({
 
       <nav className="world-pick-dock" aria-label={t.explore} data-tour="dock">
         <FitGroup wrap={false} minPx={7}>
-          <button type="button" className="world-dock-tab" onClick={onStudio}>
+          <button type="button" className="world-dock-tab is-closed" onClick={onStudio}>
             <GeoIcon name="stamp" size={22} />
-            <FitText>{t.studio}</FitText>
+            <FitText>{t.studioUnavailable}</FitText>
           </button>
           <button type="button" className="world-dock-tab" onClick={onProfile}>
             <GeoIcon name="user" size={22} />

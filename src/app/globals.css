@@ -5772,6 +5772,10 @@ html[data-world="food"]:not([data-result]) body {
   color: color-mix(in srgb, var(--text) 82%, var(--paper));
 }
 
+.world-dock-tab.is-closed {
+  opacity: 0.55;
+}
+
 .wp-board,
 .wp-orbit,
 .wp-duel,
