@@ -1768,7 +1768,7 @@ export default function PlayApp() {
   };
 
   return (
-    <div className={`app${resultTone ? ` is-${resultTone}` : ""}${world === "football" ? " is-football" : ""}${world === "leaders" ? " is-leaders" : ""}${world === "math" ? " is-math" : ""}${world === "astronomy" ? " is-astronomy" : ""}${world && isThemeWorld(world) ? ` is-${world}` : ""}${hub === null ? " is-worlds" : ""}`}>
+    <div className={`app${resultTone ? ` is-${resultTone}` : ""}${world === "football" ? " is-football" : ""}${world === "leaders" ? " is-leaders" : ""}${world === "math" ? " is-math" : ""}${world === "astronomy" ? " is-astronomy" : ""}${world && isThemeWorld(world) ? ` is-${world}` : ""}${hub === null ? " is-worlds" : ""}${hub === "empire" ? " is-empire" : ""}`}>
       {world === "geo" ? (
         <div className="map-marks" aria-hidden="true">
           <span className="map-marks-n">N</span>

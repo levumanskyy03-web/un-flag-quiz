@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import './empireTown.css'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   EMPIRE_RESOURCE_BY_WORLD,
   EMPIRE_RESOURCES,
@@ -23,24 +24,20 @@ import {
   buildSlots,
   buildingLevel,
   buildingMax,
-  buildingsOf,
   hasLegacy,
   legacyOverview,
   pantheonResPerHour,
   canAfford,
-  coinsPerHour,
   cosmeticOwned,
   cosmeticPrice,
   coinsPerHourOf,
   eraCheck,
   housingCap,
-  offlineHours,
   resPerHour,
   sellRate,
   skipBuildCost,
   specialistsTotal,
   storageCap,
-  treasuryCap,
   upgradeCost,
   type EmpireState,
 } from '../lib/empire/rules'
@@ -63,13 +60,10 @@ import {
   useEmpire,
   useEmpireSync,
 } from '../lib/empireStore'
-import { QUIZ_WORLDS, type QuizWorld } from '../lib/quiz'
+import { type QuizWorld } from '../lib/quiz'
 import { LEGACY_MISSIONS, type LegacyReward, type LegacyTitleId } from '../data/empireLegacy'
 import { Flag } from './Flag'
 import { GeoIcon } from './GeoIcon'
-import { WorldsBack } from './WorldsBack'
-
-type Tab = 'country' | 'treasury' | 'legacy' | 'world'
 
 export function worldTitle(world: QuizWorld, lang: Lang) {
   const t = STRINGS[lang]
@@ -180,29 +174,6 @@ function towerTier(level: number) {
   return level >= 25 ? 3 : level >= 10 ? 2 : 1
 }
 
-function Tower({ building, state, onClick, active }: { building: EmpireBuilding; state: EmpireState; onClick: () => void; active: boolean }) {
-  const level = buildingLevel(state, building)
-  const storeys = Math.min(12, level)
-  const busy = (state.buildings[building]?.buildUntil ?? null) !== null
-  const icon = isEmpireWorldBuilding(building) ? WORLD_ICON[building] : COMMON_ICON[building as keyof typeof COMMON_ICON]
-  const cls = `empire-tower is-${building} is-tier-${towerTier(level)}${active ? ' is-active' : ''}${level === 0 ? ' is-plot' : ''}`
-  return (
-    <button type="button" className={cls} onClick={onClick}>
-      <span className="empire-tower-roof" aria-hidden="true" />
-      <span className="empire-tower-shaft" aria-hidden="true">
-        {Array.from({ length: storeys }, (_, i) => (
-          <i key={i} className="empire-tower-storey" />
-        ))}
-        {busy ? <i className="empire-tower-scaffold" /> : null}
-      </span>
-      <span className="empire-tower-base">
-        <GeoIcon name={icon} size={16} />
-        <strong>{level}</strong>
-      </span>
-    </button>
-  )
-}
-
 function CostLine({ building, state, lang }: { building: EmpireBuilding; state: EmpireState; lang: Lang }) {
   const t = STRINGS[lang]
   const cost = upgradeCost(state, building)
@@ -311,6 +282,319 @@ function BuildingCard({ building, state, lang, now }: { building: EmpireBuilding
   )
 }
 
+const MAP_W = 1560
+const MAP_H = 1180
+const TOWN_ZOOM = 0.55
+const WALK_SPEED = 250
+const PLAYER_R = 14
+const BLOCK_R = 48
+const INTERACT_R = 112
+
+type TownSpot = {
+  key: string
+  kind: 'build' | 'legacy' | 'board'
+  building?: EmpireBuilding
+  x: number
+  y: number
+}
+
+const TOWN_LAYOUT: readonly TownSpot[] = [
+  { key: 'board', kind: 'board', x: 280, y: 250 },
+  { key: 'hall', kind: 'build', building: 'hall', x: 540, y: 250 },
+  { key: 'housing', kind: 'build', building: 'housing', x: 800, y: 250 },
+  { key: 'storage', kind: 'build', building: 'storage', x: 1060, y: 250 },
+  { key: 'library', kind: 'build', building: 'library', x: 1320, y: 250 },
+  { key: 'geo', kind: 'build', building: 'geo', x: 280, y: 530 },
+  { key: 'leaders', kind: 'build', building: 'leaders', x: 540, y: 530 },
+  { key: 'football', kind: 'build', building: 'football', x: 800, y: 530 },
+  { key: 'olympics', kind: 'build', building: 'olympics', x: 1060, y: 530 },
+  { key: 'biology', kind: 'build', building: 'biology', x: 1320, y: 530 },
+  { key: 'math', kind: 'build', building: 'math', x: 280, y: 810 },
+  { key: 'astronomy', kind: 'build', building: 'astronomy', x: 540, y: 810 },
+  { key: 'cs', kind: 'build', building: 'cs', x: 800, y: 810 },
+  { key: 'food', kind: 'build', building: 'food', x: 1060, y: 810 },
+  { key: 'treasury', kind: 'build', building: 'treasury', x: 1320, y: 810 },
+  { key: 'legacy', kind: 'legacy', x: 540, y: 1040 },
+  { key: 'pantheon', kind: 'build', building: 'pantheon', x: 800, y: 1040 },
+]
+
+type WalkKey = 'left' | 'right' | 'up' | 'down'
+
+function walkKey(e: KeyboardEvent): WalkKey | null {
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') return 'left'
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') return 'right'
+  if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') return 'up'
+  if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') return 'down'
+  return null
+}
+
+function hitsPlot(x: number, y: number, spots: readonly TownSpot[]) {
+  if (x < 20 || y < 20 || x > MAP_W - 20 || y > MAP_H - 20) return true
+  const min = PLAYER_R + BLOCK_R
+  for (const spot of spots) {
+    const dx = x - spot.x
+    const dy = y - spot.y
+    if (dx * dx + dy * dy < min * min) return true
+  }
+  return false
+}
+
+function approachPoint(x: number, y: number, spots: readonly TownSpot[]) {
+  let px = Math.min(MAP_W - 24, Math.max(24, x))
+  let py = Math.min(MAP_H - 24, Math.max(24, y))
+  const min = PLAYER_R + BLOCK_R + 4
+  for (const spot of spots) {
+    const dx = px - spot.x
+    const dy = py - spot.y
+    const dist = Math.hypot(dx, dy)
+    if (dist < min) {
+      if (dist < 0.01) {
+        px = spot.x + min
+        continue
+      }
+      px = spot.x + (dx / dist) * min
+      py = spot.y + (dy / dist) * min
+    }
+  }
+  return { x: px, y: py }
+}
+
+function spotLabel(spot: TownSpot, lang: Lang) {
+  const t = STRINGS[lang]
+  if (spot.kind === 'board') return t.empireBoard
+  if (spot.kind === 'legacy') return t.empireLegacy
+  return buildingTitle(spot.building!, lang)
+}
+
+function TownPlot({ spot, state, lang, near }: { spot: TownSpot; state: EmpireState; lang: Lang; near: boolean }) {
+  const building = spot.building
+  const level = building ? buildingLevel(state, building) : 1
+  const busy = building ? (state.buildings[building]?.buildUntil ?? null) !== null : false
+  const tier = building ? towerTier(level) : 1
+  const icon = building
+    ? isEmpireWorldBuilding(building)
+      ? WORLD_ICON[building]
+      : COMMON_ICON[building]
+    : spot.kind === 'board'
+      ? 'deck'
+      : 'laurel'
+  return (
+    <div
+      className={`empire-plot is-${spot.key} is-tier-${tier}${level === 0 ? ' is-empty' : ''}${busy ? ' is-busy' : ''}${near ? ' is-near' : ''}`}
+      style={{ left: spot.x, top: spot.y }}
+    >
+      <div className="empire-yard">
+        <span className="empire-roof" />
+        <span className="empire-house">
+          <i />
+          <i />
+        </span>
+        {busy ? (
+          <>
+            <i className="empire-scaffold" />
+            <i className="empire-site-crane" />
+            <i className="empire-worker" />
+            <i className="empire-worker is-b" />
+          </>
+        ) : level > 0 ? (
+          <i className="empire-smoke" />
+        ) : (
+          <i className="empire-stake" />
+        )}
+        <GeoIcon name={icon} size={16} />
+      </div>
+      {building ? <strong className="empire-plot-lv">{level}</strong> : null}
+      <span className="empire-plot-name">{spotLabel(spot, lang)}</span>
+    </div>
+  )
+}
+
+function TownMap({
+  spots,
+  state,
+  lang,
+  dockOpen,
+  onNear,
+}: {
+  spots: readonly TownSpot[]
+  state: EmpireState
+  lang: Lang
+  dockOpen: boolean
+  onNear: (key: string | null) => void
+}) {
+  const viewRef = useRef<HTMLDivElement>(null)
+  const pos = useRef({ x: 670, y: 390 })
+  const dest = useRef<{ x: number; y: number } | null>(null)
+  const keys = useRef(new Set<WalkKey>())
+  const face = useRef(1)
+  const nearKey = useRef<string | null>(null)
+  const spotsRef = useRef(spots)
+  const dockRef = useRef(dockOpen)
+  const onNearRef = useRef(onNear)
+  const [frame, setFrame] = useState({ x: 670, y: 390, face: 1, moving: false, near: null as string | null, camX: 0, camY: 0 })
+
+  useEffect(() => {
+    spotsRef.current = spots
+    dockRef.current = dockOpen
+    onNearRef.current = onNear
+  })
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      const key = walkKey(e)
+      if (!key) return
+      const target = e.target
+      if (target instanceof HTMLElement && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return
+      e.preventDefault()
+      keys.current.add(key)
+    }
+    const up = (e: KeyboardEvent) => {
+      const key = walkKey(e)
+      if (key) keys.current.delete(key)
+    }
+    window.addEventListener('keydown', down)
+    window.addEventListener('keyup', up)
+    return () => {
+      window.removeEventListener('keydown', down)
+      window.removeEventListener('keyup', up)
+    }
+  }, [])
+
+  useEffect(() => {
+    let raf = 0
+    let last = performance.now()
+    const step = (nowTs: number) => {
+      const dt = Math.min(0.05, (nowTs - last) / 1000)
+      last = nowTs
+      const list = spotsRef.current
+      let vx = 0
+      let vy = 0
+      if (keys.current.has('left')) vx -= 1
+      if (keys.current.has('right')) vx += 1
+      if (keys.current.has('up')) vy -= 1
+      if (keys.current.has('down')) vy += 1
+      if (vx || vy) dest.current = null
+      else if (dest.current) {
+        const dx = dest.current.x - pos.current.x
+        const dy = dest.current.y - pos.current.y
+        const dist = Math.hypot(dx, dy)
+        if (dist < 8) dest.current = null
+        else {
+          vx = dx / dist
+          vy = dy / dist
+        }
+      }
+      let moving = false
+      if (vx || vy) {
+        const len = Math.hypot(vx, vy) || 1
+        const mx = (vx / len) * WALK_SPEED * dt
+        const my = (vy / len) * WALK_SPEED * dt
+        const nx = pos.current.x + mx
+        const ny = pos.current.y + my
+        if (!hitsPlot(nx, ny, list)) {
+          pos.current = { x: nx, y: ny }
+        } else if (!hitsPlot(nx, pos.current.y, list)) {
+          pos.current = { x: nx, y: pos.current.y }
+        } else if (!hitsPlot(pos.current.x, ny, list)) {
+          pos.current = { x: pos.current.x, y: ny }
+        }
+        if (vx < -0.2) face.current = -1
+        else if (vx > 0.2) face.current = 1
+        moving = true
+      }
+      let best: string | null = null
+      let bestD = INTERACT_R
+      for (const spot of list) {
+        const dist = Math.hypot(pos.current.x - spot.x, pos.current.y - spot.y)
+        if (dist < bestD) {
+          best = spot.key
+          bestD = dist
+        }
+      }
+      if (best !== nearKey.current) {
+        nearKey.current = best
+        onNearRef.current(best)
+      }
+      const view = viewRef.current
+      const vw = view?.clientWidth ?? 640
+      const vh = view?.clientHeight ?? 520
+      const worldW = vw / TOWN_ZOOM
+      const worldH = vh / TOWN_ZOOM
+      const bias = dockRef.current ? worldH * 0.16 : 0
+      const maxX = Math.max(0, MAP_W - worldW)
+      const maxY = Math.max(0, MAP_H - worldH)
+      const camX = Math.min(maxX, Math.max(0, pos.current.x - worldW / 2))
+      const camY = Math.min(maxY, Math.max(0, pos.current.y - worldH * 0.42 - bias))
+      setFrame({ x: pos.current.x, y: pos.current.y, face: face.current, moving, near: best, camX, camY })
+      raf = window.requestAnimationFrame(step)
+    }
+    raf = window.requestAnimationFrame(step)
+    return () => window.cancelAnimationFrame(raf)
+  }, [])
+
+  function press(key: WalkKey, event: React.PointerEvent<HTMLButtonElement>) {
+    event.preventDefault()
+    event.stopPropagation()
+    event.currentTarget.setPointerCapture(event.pointerId)
+    keys.current.add(key)
+  }
+
+  function release(key: WalkKey) {
+    keys.current.delete(key)
+  }
+
+  return (
+    <div
+      className="empire-town-view"
+      ref={viewRef}
+      onPointerDown={(e) => {
+        if (e.button !== 0) return
+        if ((e.target as HTMLElement).closest('.empire-pad, .empire-hud, .empire-dock, button, a, input')) return
+        const rect = viewRef.current?.getBoundingClientRect()
+        if (!rect) return
+        const worldX = (e.clientX - rect.left) / TOWN_ZOOM + frame.camX
+        const worldY = (e.clientY - rect.top) / TOWN_ZOOM + frame.camY
+        dest.current = approachPoint(worldX, worldY, spotsRef.current)
+      }}
+    >
+      <div
+        className="empire-town-map"
+        style={{ transform: `translate(${-frame.camX * TOWN_ZOOM}px, ${-frame.camY * TOWN_ZOOM}px) scale(${TOWN_ZOOM})` }}
+      >
+        <div className="empire-path is-h" style={{ top: 250, left: 180, width: 1240 }} />
+        <div className="empire-path is-h" style={{ top: 530, left: 180, width: 1240 }} />
+        <div className="empire-path is-h" style={{ top: 810, left: 180, width: 1240 }} />
+        <div className="empire-path is-h" style={{ top: 1040, left: 420, width: 520 }} />
+        <div className="empire-path is-v" style={{ left: 540, top: 180, height: 920 }} />
+        <div className="empire-path is-v" style={{ left: 800, top: 180, height: 700 }} />
+        <i className="empire-tree" style={{ left: 140, top: 140 }} />
+        <i className="empire-tree is-b" style={{ left: 1460, top: 160 }} />
+        <i className="empire-tree" style={{ left: 150, top: 980 }} />
+        <i className="empire-tree is-b" style={{ left: 1420, top: 1000 }} />
+        {spots.map((spot) => (
+          <TownPlot key={spot.key} spot={spot} state={state} lang={lang} near={frame.near === spot.key} />
+        ))}
+        <div
+          className={`empire-hero${frame.moving ? ' is-moving' : ''}`}
+          style={{ left: frame.x, top: frame.y, transform: `translate(-50%, -82%) scaleX(${frame.face})` }}
+        >
+          <i className="empire-hero-shadow" />
+          <span className="empire-hero-bob">
+            <i className="empire-hero-head" />
+            <i className="empire-hero-body" />
+          </span>
+        </div>
+      </div>
+      <div className="empire-pad">
+        <button type="button" className="is-up" aria-label="↑" onPointerDown={(e) => press('up', e)} onPointerUp={() => release('up')} onPointerCancel={() => release('up')} />
+        <button type="button" className="is-left" aria-label="←" onPointerDown={(e) => press('left', e)} onPointerUp={() => release('left')} onPointerCancel={() => release('left')} />
+        <button type="button" className="is-down" aria-label="↓" onPointerDown={(e) => press('down', e)} onPointerUp={() => release('down')} onPointerCancel={() => release('down')} />
+        <button type="button" className="is-right" aria-label="→" onPointerDown={(e) => press('right', e)} onPointerUp={() => release('right')} onPointerCancel={() => release('right')} />
+      </div>
+    </div>
+  )
+}
+
 type BoardEntry = { id: string | null; score: number; name: string | null; countryIso: string | null; title?: LegacyTitleId | null; goldFlag?: boolean }
 
 function WorldTab({ lang, state }: { lang: Lang; state: EmpireState }) {
@@ -377,11 +661,12 @@ function WorldTab({ lang, state }: { lang: Lang; state: EmpireState }) {
 export function EmpireScreen({ lang, onWorlds }: { lang: Lang; onWorlds: () => void }) {
   const t = STRINGS[lang]
   const state = useEmpire()
-  const [tab, setTab] = useState<Tab>('country')
-  const [focus, setFocus] = useState<EmpireBuilding | null>(null)
+  const [near, setNear] = useState<string | null>(null)
   const [now, setNow] = useState(() => Date.now())
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState('')
+  const pantheon = hasLegacy(state, 'legacy:pantheon')
+  const spots = useMemo(() => (pantheon ? TOWN_LAYOUT : TOWN_LAYOUT.filter((spot) => spot.key !== 'pantheon')), [pantheon])
 
   useEffect(() => {
     startEmpireLoop()
@@ -398,161 +683,129 @@ export function EmpireScreen({ lang, onWorlds }: { lang: Lang; onWorlds: () => v
   const canAdvance = Boolean(check.next) && check.hallOk && check.sumOk && check.resOk
   const slots = buildSlots(state, now)
   const building = activeBuilds(state, now).length
-  const focusList: readonly EmpireBuilding[] = focus ? [focus] : buildingsOf(state)
-  const skyline: readonly EmpireBuilding[] = hasLegacy(state, 'legacy:pantheon') ? [...QUIZ_WORLDS, 'pantheon'] : QUIZ_WORLDS
+  const spot = spots.find((row) => row.key === near) ?? null
+  const night = hasLegacy(state, 'legacy:night')
 
   return (
-    <div className="screen home-screen empire-screen">
-      <WorldsBack lang={lang} onClick={onWorlds} label={t.empireBack} />
-
-      <header className="empire-head">
-        <div className="empire-title">
-          <span className="empire-kicker">{t.empire}</span>
-          {editing ? (
-            <form
-              className="empire-name-form"
-              onSubmit={(e) => {
-                e.preventDefault()
-                empireRename(draft)
-                setEditing(false)
-              }}
-            >
-              <input autoFocus maxLength={24} value={draft} placeholder={t.empireNameHint} onChange={(e) => setDraft(e.target.value)} />
-              <button type="submit" className="btn-primary">
-                {t.empireRename}
-              </button>
-            </form>
-          ) : (
-            <button
-              type="button"
-              className="empire-name"
-              onClick={() => {
-                setDraft(state.name)
-                setEditing(true)
-              }}
-            >
-              <h1>{state.name || t.empireNameHint}</h1>
-              {state.title ? <span className="empire-title-badge">{titleName(state.title, lang)}</span> : null}
-              <span aria-hidden="true">✎</span>
-            </button>
-          )}
-          <p className="empire-era">
-            {t.empireEraOf(state.era)} · {eraTitle(state.era, t)} · ×{era.mult}
-          </p>
-        </div>
-        <div className="empire-wallet">
-          <span>
-            <GeoIcon name="pin" size={16} />
-            <strong>{fmt(state.coins, lang)}</strong>
-            <small>/ {fmt(treasuryCap(state), lang)}</small>
-          </span>
-          <span>
-            <GeoIcon name="orbit" size={16} />
-            <strong>{state.gems}</strong>
-            <small>{t.empireGems}</small>
-          </span>
-          <span>
-            <GeoIcon name="hq" size={16} />
-            <strong>
-              {specialistsTotal(state)} / {housingCap(state)}
-            </strong>
-            <small>{t.empireSpecialists}</small>
-          </span>
-          <span>
-            <strong>{t.empirePerHour(fmtRate(coinsPerHour(state), lang))}</strong>
-            <small>{t.empireOffline(offlineHours(state, now))}</small>
-          </span>
-        </div>
-      </header>
-
-      <nav className="empire-tabs" aria-label={t.empire}>
-        {(['country', 'treasury', 'legacy', 'world'] as Tab[]).map((id) => (
-          <button key={id} type="button" className={tab === id ? 'is-active' : ''} onClick={() => setTab(id)}>
-            {id === 'country' ? t.empireTabCountry : id === 'treasury' ? t.empireTabTreasury : id === 'legacy' ? t.empireLegacy : t.empireTabWorld}
+    <div className={`screen home-screen empire-screen is-town is-era-${state.era}${night ? ' is-night' : ''}`}>
+      <div className={`empire-town-wrap${spot ? ' has-dock' : ''}`}>
+        <header className="empire-hud">
+          <button type="button" className="empire-exit" aria-label={t.empireBack} onClick={onWorlds}>
+            <span aria-hidden="true">‹</span>
           </button>
-        ))}
-      </nav>
+          <div className="empire-wallet">
+            <span className="empire-chip is-coin">
+              <i aria-hidden="true" />
+              <strong>{fmt(state.coins, lang)}</strong>
+            </span>
+            <span className="empire-chip is-gem">
+              <i aria-hidden="true" />
+              <strong>{state.gems}</strong>
+            </span>
+            <span className="empire-chip is-folk">
+              <i aria-hidden="true" />
+              <strong>
+                {specialistsTotal(state)}/{housingCap(state)}
+              </strong>
+            </span>
+          </div>
+        </header>
 
-      {tab === 'country' ? (
-        <>
-          <section className={`empire-scene is-era-${state.era}${hasLegacy(state, 'legacy:night') ? ' is-night' : ''}`}>
-            <div className="empire-sky" aria-hidden="true">
-              <span className="empire-sun" />
-              <span className="empire-stars" />
+        <TownMap spots={spots} state={state} lang={lang} dockOpen={spot !== null} onNear={setNear} />
+
+        {spot ? (
+          <aside className={`empire-dock is-${spot.key}`}>
+            <div className="empire-room" aria-hidden="true">
+              <span className="empire-room-roof" />
+              <span className="empire-room-window" />
             </div>
-            <div className="empire-skyline" style={{ gridTemplateColumns: `repeat(${skyline.length}, 1fr)` }}>
-              {skyline.map((b) => (
-                <Tower key={b} building={b} state={state} active={focus === b} onClick={() => setFocus(focus === b ? null : b)} />
-              ))}
-            </div>
-            <div className="empire-ground" aria-hidden="true" />
-          </section>
-
-          <p className="empire-intro">{state.era === 1 && buildingLevel(state, 'hall') === 0 ? t.empireIntro : t.empireHowToEarn}</p>
-
-          <section className="empire-era-box">
-            <div>
-              <strong>{check.next ? `${t.empireEraOf(check.next)} · ${eraTitle(check.next, t)}` : t.empireEraMax}</strong>
-              {check.next ? (
-                <ul>
-                  <li className={check.hallOk ? 'is-ok' : ''}>{t.empireEraNeedHall(check.hallMin)}</li>
-                  <li className={check.sumOk ? 'is-ok' : ''}>{t.empireEraNeedSum(check.levelSumMin)}</li>
-                  <li className={check.resOk ? 'is-ok' : ''}>{t.empireEraNeedRes(check.eachResourceMin)}</li>
-                </ul>
-              ) : null}
-            </div>
-            <div className="empire-era-actions">
-              <small>{t.empireSlots(building, slots)}</small>
-              <button type="button" className="btn-primary" disabled={!canAdvance} onClick={() => empireAdvanceEra()}>
-                {t.empireAdvanceEra}
-              </button>
-            </div>
-          </section>
-
-          <section className="empire-grid">
-            {focus ? (
-              <button type="button" className="btn-secondary empire-unfocus" onClick={() => setFocus(null)}>
-                ← {t.empireTabCountry}
-              </button>
-            ) : null}
-            {focusList.map((b) => (
-              <BuildingCard key={b} building={b} state={state} lang={lang} now={now} />
-            ))}
-          </section>
-        </>
-      ) : null}
-
-      {tab === 'treasury' ? (
-        <section className="empire-treasury">
-          <p>{t.empireSellHint}</p>
-          <ul className="empire-res-list">
-            {EMPIRE_RESOURCES.map((key) => {
-              const world = EMPIRE_WORLD_BY_RESOURCE[key]
-              const have = state.res[key] ?? 0
-              const gain = Math.floor(10 * sellRate(state))
-              return (
-                <li key={key} className={`is-${world}`}>
-                  <GeoIcon name={WORLD_ICON[world]} size={18} />
-                  <div>
-                    <strong>{resourceTitle(key, t)}</strong>
-                    <small>
-                      {fmt(have, lang)} / {fmt(storageCap(state), lang)} · {t.empirePerHour(fmtRate(resPerHour(state, world), lang))}
-                    </small>
-                  </div>
-                  <button type="button" className="btn-secondary" disabled={have < 10} onClick={() => empireSell(key, 10)}>
-                    {t.empireSellTen(gain)}
+            <div className="empire-room-body">
+            {spot.kind === 'board' ? <WorldTab lang={lang} state={state} /> : null}
+            {spot.kind === 'legacy' ? <LegacyTab lang={lang} state={state} now={now} /> : null}
+            {spot.building ? <BuildingCard building={spot.building} state={state} lang={lang} now={now} /> : null}
+            {spot.building === 'hall' ? (
+              <section className="empire-era-box">
+                <div className="empire-room-name">
+                  {editing ? (
+                    <form
+                      className="empire-name-form"
+                      onSubmit={(e) => {
+                        e.preventDefault()
+                        empireRename(draft)
+                        setEditing(false)
+                      }}
+                    >
+                      <input autoFocus maxLength={24} value={draft} placeholder={t.empireNameHint} onChange={(e) => setDraft(e.target.value)} />
+                      <button type="submit" className="btn-primary">
+                        {t.empireRename}
+                      </button>
+                    </form>
+                  ) : (
+                    <button
+                      type="button"
+                      className="empire-name"
+                      onClick={() => {
+                        setDraft(state.name)
+                        setEditing(true)
+                      }}
+                    >
+                      <h1>{state.name || t.empireNameHint}</h1>
+                    </button>
+                  )}
+                  <p className="empire-era">
+                    {t.empireEraOf(state.era)} · {eraTitle(state.era, t)} · ×{era.mult}
+                    {' · '}
+                    {t.empireSlots(building, slots)}
+                  </p>
+                </div>
+                <div>
+                  <strong>{check.next ? `${t.empireEraOf(check.next)} · ${eraTitle(check.next, t)}` : t.empireEraMax}</strong>
+                  {check.next ? (
+                    <ul>
+                      <li className={check.hallOk ? 'is-ok' : ''}>{t.empireEraNeedHall(check.hallMin)}</li>
+                      <li className={check.sumOk ? 'is-ok' : ''}>{t.empireEraNeedSum(check.levelSumMin)}</li>
+                      <li className={check.resOk ? 'is-ok' : ''}>{t.empireEraNeedRes(check.eachResourceMin)}</li>
+                    </ul>
+                  ) : null}
+                </div>
+                <div className="empire-era-actions">
+                  <button type="button" className="btn-primary" disabled={!canAdvance} onClick={() => empireAdvanceEra()}>
+                    {t.empireAdvanceEra}
                   </button>
-                </li>
-              )
-            })}
-          </ul>
-          <CosmeticsBlock lang={lang} state={state} now={now} />
-        </section>
-      ) : null}
-
-      {tab === 'legacy' ? <LegacyTab lang={lang} state={state} now={now} /> : null}
-
-      {tab === 'world' ? <WorldTab lang={lang} state={state} /> : null}
+                </div>
+              </section>
+            ) : null}
+            {spot.building === 'treasury' ? (
+              <section className="empire-treasury">
+                <p>{t.empireSellHint}</p>
+                <ul className="empire-res-list">
+                  {EMPIRE_RESOURCES.map((key) => {
+                    const world = EMPIRE_WORLD_BY_RESOURCE[key]
+                    const have = state.res[key] ?? 0
+                    const gain = Math.floor(10 * sellRate(state))
+                    return (
+                      <li key={key} className={`is-${world}`}>
+                        <GeoIcon name={WORLD_ICON[world]} size={18} />
+                        <div>
+                          <strong>{resourceTitle(key, t)}</strong>
+                          <small>
+                            {fmt(have, lang)} / {fmt(storageCap(state), lang)} · {t.empirePerHour(fmtRate(resPerHour(state, world), lang))}
+                          </small>
+                        </div>
+                        <button type="button" className="btn-secondary" disabled={have < 10} onClick={() => empireSell(key, 10)}>
+                          {t.empireSellTen(gain)}
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+                <CosmeticsBlock lang={lang} state={state} now={now} />
+              </section>
+            ) : null}
+            </div>
+          </aside>
+        ) : null}
+      </div>
     </div>
   )
 }

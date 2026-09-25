@@ -1,0 +1,744 @@
+
+.app.is-empire {
+  width: 100%;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: #67b84d;
+}
+
+.app.is-empire .app-chrome,
+.app.is-empire .legal-footer {
+  display: none;
+}
+
+.empire-screen.is-town {
+  gap: 0;
+  min-height: 100dvh;
+}
+
+.empire-town-wrap {
+  position: relative;
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.empire-town-view {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: pointer;
+  background: #67b84d;
+}
+
+.empire-town-map {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1560px;
+  height: 1180px;
+  transform-origin: 0 0;
+  background-color: #67b84d;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.16) 0 10px, transparent 11px),
+    radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.12) 0 8px, transparent 9px),
+    radial-gradient(circle at 40% 72%, rgba(0, 0, 0, 0.06) 0 14px, transparent 15px),
+    repeating-linear-gradient(90deg, transparent 0 46px, rgba(255, 255, 255, 0.05) 46px 47px),
+    repeating-linear-gradient(0deg, transparent 0 46px, rgba(0, 0, 0, 0.04) 46px 47px);
+}
+
+.empire-screen.is-night .empire-town-map {
+  background-color: #1d4a3c;
+}
+
+.empire-screen.is-era-7 .empire-town-map,
+.empire-screen.is-era-8 .empire-town-map {
+  background-color: #2f6d58;
+}
+
+.empire-path {
+  position: absolute;
+  z-index: 0;
+  background: #e6c27a;
+  box-shadow: inset 0 0 0 3px #c89a4a;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.empire-path.is-h {
+  height: 36px;
+  margin-top: -18px;
+}
+
+.empire-path.is-v {
+  width: 36px;
+  margin-left: -18px;
+}
+
+.empire-tree {
+  position: absolute;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  margin: -28px 0 0 -18px;
+  border-radius: 50%;
+  background: #2f8a3a;
+  box-shadow:
+    0 0 0 4px #1e6a28,
+    0 16px 0 -6px #6b4423;
+  pointer-events: none;
+}
+
+.empire-tree.is-b {
+  background: #3aa24a;
+}
+
+.empire-plot {
+  position: absolute;
+  z-index: 2;
+  width: 112px;
+  height: 112px;
+  margin: -56px 0 0 -56px;
+  pointer-events: none;
+}
+
+.empire-yard {
+  position: absolute;
+  inset: 10px 14px 22px;
+  border-radius: 16px;
+  background: #f4d7a2;
+  box-shadow:
+    0 8px 0 #b8884a,
+    0 0 0 3px #5c3a1e;
+}
+
+.empire-plot.is-empty .empire-yard {
+  background: repeating-linear-gradient(135deg, #d7b27a 0 8px, #c89a58 8px 16px);
+}
+
+.empire-roof {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: -16px;
+  height: 28px;
+  background: #e25b45;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  filter: drop-shadow(0 2px 0 #5c3a1e);
+}
+
+.empire-plot.is-empty .empire-roof,
+.empire-plot.is-empty .empire-house {
+  display: none;
+}
+
+.empire-house {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+  height: 36px;
+  border-radius: 8px 8px 4px 4px;
+  background: #fff8ee;
+  box-shadow: inset 0 -6px 0 rgba(90, 50, 20, 0.12);
+}
+
+.empire-house i {
+  position: absolute;
+  bottom: 6px;
+  width: 8px;
+  height: 10px;
+  border-radius: 2px;
+  background: #7ec8e8;
+  box-shadow: 0 0 0 2px #5c3a1e;
+}
+
+.empire-house i:first-child {
+  left: 6px;
+}
+
+.empire-house i:last-child {
+  right: 6px;
+}
+
+.empire-plot.is-tier-2 .empire-house {
+  height: 48px;
+}
+
+.empire-plot.is-tier-3 .empire-house {
+  height: 58px;
+}
+
+.empire-plot.is-tier-3 .empire-roof {
+  top: -28px;
+  height: 36px;
+}
+
+.empire-plot.is-geo .empire-roof { background: #3aa0e0; }
+.empire-plot.is-leaders .empire-roof { background: #d4a017; }
+.empire-plot.is-football .empire-roof { background: #2f9e44; }
+.empire-plot.is-olympics .empire-roof { background: #e07a2f; }
+.empire-plot.is-biology .empire-roof { background: #3aaa6a; }
+.empire-plot.is-math .empire-roof { background: #5b6ee1; }
+.empire-plot.is-astronomy .empire-roof { background: #6a4ad4; }
+.empire-plot.is-cs .empire-roof { background: #2a9d8f; }
+.empire-plot.is-food .empire-roof { background: #e05a3c; }
+.empire-plot.is-hall .empire-roof { background: #c4493a; }
+.empire-plot.is-housing .empire-roof { background: #e0a050; }
+.empire-plot.is-storage .empire-roof { background: #8d6a43; }
+.empire-plot.is-library .empire-roof { background: #3d6ea8; }
+.empire-plot.is-treasury .empire-roof { background: #e0b03a; }
+.empire-plot.is-pantheon .empire-roof { background: #f2efe4; }
+.empire-plot.is-board .empire-roof { background: #f4f0e6; }
+.empire-plot.is-legacy .empire-roof { background: #7a4e9a; }
+
+.empire-yard svg {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.empire-plot-lv {
+  position: absolute;
+  right: 6px;
+  top: 0;
+  z-index: 4;
+  min-width: 18px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: #24180f;
+  color: #fff8ee;
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.empire-plot-name {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 0 #24180f, 0 0 4px #24180f;
+}
+
+.empire-plot.is-near .empire-yard {
+  outline: 3px solid #fff36a;
+  outline-offset: 3px;
+}
+
+.empire-stake {
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  width: 8px;
+  height: 28px;
+  margin-left: -4px;
+  background: #6b4423;
+  border-radius: 2px;
+}
+
+.empire-stake::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 2px;
+  width: 22px;
+  height: 14px;
+  background: #fff6d8;
+  box-shadow: 0 0 0 2px #5c3a1e;
+}
+
+.empire-scaffold {
+  position: absolute;
+  inset: 4px;
+  z-index: 3;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 10px, #5c3a1e 10px 12px),
+    repeating-linear-gradient(0deg, transparent 0 12px, #e7c27a 12px 14px);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.empire-site-crane {
+  position: absolute;
+  z-index: 4;
+  top: -26px;
+  right: -6px;
+  width: 8px;
+  height: 54px;
+  background: #f0c14a;
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px #5c3a1e;
+}
+
+.empire-site-crane::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 0;
+  width: 36px;
+  height: 6px;
+  background: #f0c14a;
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px #5c3a1e;
+  transform-origin: 100% 50%;
+  animation: empire-town-crane 1.4s ease-in-out infinite;
+}
+
+.empire-site-crane::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 28px;
+  width: 2px;
+  height: 18px;
+  background: #24180f;
+}
+
+@keyframes empire-town-crane {
+  50% { transform: rotate(-18deg); }
+}
+
+.empire-worker {
+  position: absolute;
+  z-index: 5;
+  left: 8px;
+  bottom: 8px;
+  width: 10px;
+  height: 14px;
+  border-radius: 5px 5px 3px 3px;
+  background: #3aa0e0;
+  box-shadow: 0 0 0 2px #24180f;
+  animation: empire-worker-walk 2.4s linear infinite;
+}
+
+.empire-worker.is-b {
+  background: #e07a2f;
+  animation-delay: -1.2s;
+}
+
+@keyframes empire-worker-walk {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(46px, 0); }
+  50% { transform: translate(46px, -22px); }
+  75% { transform: translate(0, -22px); }
+  100% { transform: translate(0, 0); }
+}
+
+.empire-smoke {
+  position: absolute;
+  top: -8px;
+  right: 16px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  animation: empire-puff 1.6s ease-out infinite;
+}
+
+@keyframes empire-puff {
+  50% { transform: translateY(-10px); opacity: 0.2; }
+  100% { transform: translateY(-16px); opacity: 0; }
+}
+
+.empire-hero {
+  position: absolute;
+  z-index: 6;
+  width: 28px;
+  height: 36px;
+  pointer-events: none;
+}
+
+.empire-hero-shadow {
+  position: absolute;
+  left: 2px;
+  bottom: 0;
+  width: 24px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(20, 40, 20, 0.35);
+}
+
+.empire-hero-bob {
+  position: absolute;
+  inset: 0;
+}
+
+.empire-hero.is-moving .empire-hero-bob {
+  animation: empire-bob 0.28s ease-in-out infinite;
+}
+
+@keyframes empire-bob {
+  50% { transform: translateY(-3px); }
+}
+
+.empire-hero-head {
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 20px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffd7b5;
+  box-shadow: 0 0 0 2px #24180f;
+}
+
+.empire-hero-body {
+  position: absolute;
+  left: 5px;
+  top: 16px;
+  width: 18px;
+  height: 14px;
+  border-radius: 8px 8px 6px 6px;
+  background: #3aa0e0;
+  box-shadow: 0 0 0 2px #24180f;
+}
+
+.empire-hero-body::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  bottom: -6px;
+  width: 4px;
+  height: 7px;
+  border-radius: 2px;
+  background: #24180f;
+  box-shadow: 6px 0 0 #24180f;
+}
+
+.empire-hud {
+  position: absolute;
+  z-index: 7;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.empire-exit {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(36, 24, 15, 0.28);
+  color: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  text-shadow: 0 1px 0 #24180f;
+  cursor: pointer;
+}
+
+.empire-exit:hover {
+  background: rgba(36, 24, 15, 0.5);
+}
+
+.empire-hud > * {
+  pointer-events: auto;
+}
+
+.empire-room-name .empire-name h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #24180f;
+}
+
+.empire-room-name .empire-era {
+  margin: 2px 0 8px;
+  font-size: 0.78rem;
+  color: #6d5130;
+}
+
+.empire-screen.is-town .empire-wallet {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.empire-screen.is-town .empire-chip {
+  grid-template-columns: 16px auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  text-shadow: 0 1px 0 #24180f, 0 0 4px #24180f;
+}
+
+.empire-hud-slots {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(18, 24, 43, 0.82);
+  color: #fff;
+  font-weight: 800;
+}
+
+.empire-town-hint {
+  position: absolute;
+  z-index: 6;
+  left: 10px;
+  right: 78px;
+  bottom: 10px;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(18, 24, 43, 0.82);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.empire-dock {
+  --room: #e25b45;
+  position: absolute;
+  z-index: 8;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 62%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 0;
+  border-radius: 28px 28px 0 0;
+  background: #f6e7c8;
+  color: #24180f;
+  box-shadow: none;
+}
+
+.empire-dock.is-geo { --room: #3aa0e0; }
+.empire-dock.is-leaders { --room: #d4a017; }
+.empire-dock.is-football { --room: #2f9e44; }
+.empire-dock.is-olympics { --room: #e07a2f; }
+.empire-dock.is-biology { --room: #3aaa6a; }
+.empire-dock.is-math { --room: #5b6ee1; }
+.empire-dock.is-astronomy { --room: #6a4ad4; }
+.empire-dock.is-cs { --room: #2a9d8f; }
+.empire-dock.is-food { --room: #e05a3c; }
+.empire-dock.is-hall { --room: #c4493a; }
+.empire-dock.is-housing { --room: #e0a050; }
+.empire-dock.is-storage { --room: #8d6a43; }
+.empire-dock.is-library { --room: #3d6ea8; }
+.empire-dock.is-treasury { --room: #e0b03a; }
+.empire-dock.is-pantheon { --room: #f2efe4; }
+.empire-dock.is-board { --room: #f4f0e6; }
+.empire-dock.is-legacy { --room: #7a4e9a; }
+
+.empire-room {
+  position: relative;
+  flex: 0 0 54px;
+  background:
+    linear-gradient(#f3d7a4, #f3d7a4) 0 40px / 100% 14px no-repeat,
+    repeating-linear-gradient(90deg, #f8edd4 0 14px, #f3e2c2 14px 15px);
+}
+
+.empire-room-roof {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 0;
+  height: 28px;
+  background: var(--room);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  filter: drop-shadow(0 2px 0 #5c3a1e);
+}
+
+.empire-room-window {
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  width: 72px;
+  height: 28px;
+  transform: translateX(-50%);
+  border-radius: 8px 8px 2px 2px;
+  background:
+    linear-gradient(#7ec8f0, #d7f0ff);
+  box-shadow:
+    inset 0 0 0 3px #5c3a1e,
+    inset 34px 0 0 #5c3a1e,
+    inset 0 12px 0 #5c3a1e;
+}
+
+.empire-room-body {
+  position: relative;
+  overflow: auto;
+  padding: 8px 12px 18px;
+  background:
+    radial-gradient(circle at 12% 0, color-mix(in srgb, var(--room) 28%, transparent), transparent 42%),
+    repeating-linear-gradient(#f8edd4 0 18px, #f4e4c4 18px 19px);
+}
+
+.empire-dock .empire-card,
+.empire-dock .empire-legacy,
+.empire-dock .empire-world,
+.empire-dock .empire-treasury,
+.empire-dock .empire-era-box {
+  margin: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #24180f;
+}
+
+.empire-dock .empire-card {
+  padding: 0;
+  gap: 8px;
+}
+
+.empire-dock .empire-card h3,
+.empire-dock .empire-legacy h2,
+.empire-dock .empire-legacy h3,
+.empire-dock .empire-world h2,
+.empire-dock .empire-era-box strong {
+  color: #24180f;
+}
+
+.empire-dock .empire-card p,
+.empire-dock .empire-card header small,
+.empire-dock .empire-card-stats dt,
+.empire-dock .empire-intro,
+.empire-dock small {
+  color: #6d5130;
+}
+
+.empire-dock .empire-card-stats div {
+  padding: 6px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 0 0 2px rgba(92, 58, 30, 0.18);
+}
+
+.empire-dock .empire-card-buy,
+.empire-dock .empire-card-busy,
+.empire-dock .empire-era-actions {
+  padding: 8px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 3px 0 rgba(92, 58, 30, 0.18);
+}
+
+.empire-dock .btn-primary {
+  border: 0;
+  border-radius: 12px;
+  background: #f0a202;
+  color: #24180f;
+  box-shadow: 0 4px 0 #5c3a1e;
+}
+
+.empire-dock .btn-secondary {
+  border-radius: 12px;
+  border: 2px solid #5c3a1e;
+  background: #fff8ee;
+  color: #24180f;
+}
+
+.empire-dock .empire-res-list li,
+.empire-dock .empire-legacy-item,
+.empire-dock .empire-board li,
+.empire-dock .empire-cosmetic-list li {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  color: #24180f;
+}
+
+.empire-pad {
+  position: absolute;
+  z-index: 8;
+  left: 10px;
+  bottom: 10px;
+  display: grid;
+  grid-template-columns: 36px 36px 36px;
+  grid-template-rows: 36px 36px;
+  gap: 4px;
+  width: 116px;
+}
+
+.empire-town-wrap.has-dock .empire-pad {
+  bottom: calc(62% + 14px);
+}
+
+.empire-pad button {
+  border: 0;
+  border-radius: 12px;
+  background: rgba(18, 24, 43, 0.82);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  color: #fff;
+}
+
+.empire-pad button::before {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  margin: 0 auto;
+  border: 6px solid transparent;
+}
+
+.empire-pad .is-up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.empire-pad .is-up::before {
+  border-bottom-color: #fff;
+}
+
+.empire-pad .is-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.empire-pad .is-left::before {
+  border-right-color: #fff;
+}
+
+.empire-pad .is-down {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.empire-pad .is-down::before {
+  border-top-color: #fff;
+}
+
+.empire-pad .is-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.empire-pad .is-right::before {
+  border-left-color: #fff;
+}
+
+@media (pointer: fine) {
+  .empire-pad {
+    display: none;
+  }
+
+  .empire-town-wrap.has-dock .empire-town-hint,
+  .empire-town-hint {
+    right: 10px;
+  }
+}
