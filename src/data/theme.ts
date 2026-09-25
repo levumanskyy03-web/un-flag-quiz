@@ -522,6 +522,14 @@ export function themeById(id: string): ThemeItem | undefined {
   return BY_ID.get(id)
 }
 
+export function themeWikis(): string[] {
+  const titles = new Set<string>()
+  for (const item of THEME_ITEMS) {
+    if (item.wiki) titles.add(item.wiki)
+  }
+  return [...titles]
+}
+
 export function themeCountry(item: ThemeItem): Country {
   return {
     iso: item.id,

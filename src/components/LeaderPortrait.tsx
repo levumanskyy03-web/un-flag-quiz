@@ -131,7 +131,11 @@ export function LeaderPortrait({ name, wiki, file, flagIso, size = 'card', compa
     if (!visible || plate) return
     let live = true
     const cached = peekWikiPortrait(wiki, file ?? hint)
-    if (cached) setPortrait(cached)
+    if (cached) {
+      setPortrait(cached)
+      setFailed(false)
+      if (!fallbacks[0] || cached.url !== fallbacks[0]) setImgTry(fallbacks.length)
+    }
     if (!wiki || cached) {
       return () => {
         live = false
@@ -148,11 +152,13 @@ export function LeaderPortrait({ name, wiki, file, flagIso, size = 'card', compa
         return
       }
       setPortrait(next)
+      setFailed(false)
+      if (!fallbacks[0] || next.url !== fallbacks[0]) setImgTry(fallbacks.length)
     })
     return () => {
       live = false
     }
-  }, [wiki, file, hint, fetchTry, visible, plate])
+  }, [wiki, file, hint, fetchTry, visible, plate, fallbacks])
 
   const credit = compact || size !== 'hero' ? portrait?.compactCredit : portrait?.credit
   const src = fallbacks[imgTry] ?? portrait?.url

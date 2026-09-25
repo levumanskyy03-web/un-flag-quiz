@@ -1,7 +1,9 @@
 import { SITE_UA } from './site'
 import { allFootballClubs } from '../data/footballClubs'
 import { footballPlayerWikis } from '../data/footballPlayers'
+import { astroWikis } from '../data/astro'
 import { mathWikis } from '../data/math'
+import { themeWikis } from '../data/theme'
 import { ALL_LEADER_TERMS } from '../data/leaders'
 import { WIKI_PORTRAIT_FILES, isAllowedPortraitFile } from '../data/leaderPortraitFiles'
 
@@ -23,6 +25,8 @@ const ALLOWED_TITLES = new Set(
   [
     ...ALL_LEADER_TERMS.map((term) => term.wiki),
     ...mathWikis(),
+    ...astroWikis(),
+    ...themeWikis(),
     ...footballPlayerWikis(),
     ...allFootballClubs().map((club) => club.wiki ?? club.nameEn),
   ]
