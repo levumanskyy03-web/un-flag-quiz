@@ -222,32 +222,51 @@ export type Strings = {
   cs: string
   csSubtitle: string
   csFamilyCode: string
+  csFamilyLangs: string
+  csFamilyStructs: string
   csFamilyBinary: string
   csFamilyPeople: string
   csEasyMixNote: string
   csHardMixNote: string
   csTermToMeaning: string
   meaningToCsTerm: string
+  codeToLang: string
+  structToUse: string
+  useToStruct: string
   decToBinary: string
   binaryToDec: string
   csPhotoToName: string
+  personToWork: string
+  workToPerson: string
   csTermPrompt: string
   csMeaningPrompt: string
+  csCodePrompt: string
+  csStructPrompt: string
+  csUsePrompt: string
   csDecPrompt: string
   csBinPrompt: string
   csPhotoPrompt: string
+  csPersonPrompt: string
+  csWorkPrompt: string
   food: string
   foodSubtitle: string
   foodFamilyDishes: string
   foodFamilyOrigin: string
+  foodFamilyPlates: string
   foodEasyMixNote: string
   foodHardMixNote: string
   dishToCuisine: string
   cuisineToDish: string
   foodToOrigin: string
+  dishToIngredients: string
+  foodPhotoToDish: string
+  foodPhotoToCuisine: string
   foodDishPrompt: string
   foodCuisinePrompt: string
   foodOriginPrompt: string
+  foodDishIngredientsPrompt: string
+  foodPhotoPrompt: string
+  foodPhotoCuisinePrompt: string
   transport: string
   transportSubtitle: string
   transFamilyVehicles: string
@@ -689,6 +708,13 @@ export type Strings = {
   yourAnswer: string
   correctAnswer: string
   playAgain: string
+  roundStreak: (n: number) => string
+  longestStreak: (n: number) => string
+  rankMaster: string
+  rankExplorer: string
+  rankLearner: string
+  rankRookie: string
+  answerKey: (n: number) => string
   nextLevel: string
   backToMenu: string
   noMistakes: string
@@ -802,6 +828,7 @@ export type Strings = {
   settingsReport: string
   settingsAchievements: string
   settingsXp: string
+  settingsResults: string
   xpHowLead: string
   xpHowFreeTitle: string
   xpHowFree: string
@@ -1775,6 +1802,13 @@ export const STRINGS: Record<Lang, Strings> = {
     yourAnswer: 'Ваш ответ',
     correctAnswer: 'Правильно',
     playAgain: 'Ещё раз',
+    roundStreak: (n) => `Серия ${n}`,
+    longestStreak: (n) => `Лучшая серия: ${n}`,
+    rankMaster: 'Мастер',
+    rankExplorer: 'Знаток',
+    rankLearner: 'Исследователь',
+    rankRookie: 'Новичок',
+    answerKey: (n) => `Клавиша ${n}`,
     nextLevel: 'Следующий уровень',
     backToMenu: 'Вернуться в меню',
     noMistakes: 'Без ошибок — так держать',
@@ -1848,6 +1882,7 @@ export const STRINGS: Record<Lang, Strings> = {
     settingsReport: 'Сообщить о проблеме',
     settingsAchievements: 'Ачивки',
     settingsXp: 'Опыт',
+    settingsResults: 'Результаты',
     xpHowLead: 'Опыт копится за игру. Уровень аккаунта растёт от всей суммы.',
     xpHowFreeTitle: 'Свободная игра',
     xpHowFree:
@@ -2541,6 +2576,13 @@ export const STRINGS: Record<Lang, Strings> = {
     yourAnswer: 'Your answer',
     correctAnswer: 'Correct',
     playAgain: 'Play again',
+    roundStreak: (n) => `Streak ${n}`,
+    longestStreak: (n) => `Longest streak: ${n}`,
+    rankMaster: 'Master',
+    rankExplorer: 'Expert',
+    rankLearner: 'Explorer',
+    rankRookie: 'Rookie',
+    answerKey: (n) => `Key ${n}`,
     nextLevel: 'Next level',
     backToMenu: 'Back to menu',
     noMistakes: 'No mistakes — well done',
@@ -2614,6 +2656,7 @@ export const STRINGS: Record<Lang, Strings> = {
     settingsReport: 'Report a problem',
     settingsAchievements: 'Achievements',
     settingsXp: 'XP',
+    settingsResults: 'Results',
     xpHowLead: 'XP builds as you play. Account level follows the total.',
     xpHowFreeTitle: 'Free play',
     xpHowFree:

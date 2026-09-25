@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import confetti from 'canvas-confetti'
 import { findCountry } from '../data/extras'
 import { playerById, playerCountry } from '../data/footballPlayers'
 import { STRINGS, footballQuestionPrompt, type Lang } from '../i18n/strings'
@@ -7,6 +11,8 @@ import {
   formatClock,
   formatSeconds,
   isCorrect,
+  longestStreak,
+  worldOfMode,
   isFactMode,
   isFactsToName,
   isFootballTeamChoice,
@@ -18,9 +24,9 @@ import {
   isWaterMode,
   slowestAnswer,
   waterName,
-  worldOfMode,
   type MixKind,
   type QuizMode,
+  type QuizWorld,
   type RoundAnswer,
   type RoundEnd,
 } from '../lib/quiz'
@@ -32,7 +38,43 @@ import { TeamFlag } from './Flag'
 import { EmpireRewardLine } from './EmpireRewardLine'
 import type { EmpireRoundReward } from '../lib/empire/rules'
 import { ResultsShareShot } from './ResultsShareShot'
+import { ShareButton } from './ShareButton'
 import { WorldsBack } from './WorldsBack'
+
+function useCountUp(target: number) {
+  const [value, setValue] = useState(0)
+  useEffect(() => {
+    if (target <= 0) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let frame = 0
+    if (reduce) {
+      frame = requestAnimationFrame(() => setValue(target))
+      return () => cancelAnimationFrame(frame)
+    }
+    const start = performance.now()
+    const duration = 700
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - start) / duration)
+      setValue(Math.round(target * (1 - (1 - progress) ** 3)))
+      if (progress < 1) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [target])
+  return value
+}
+
+function worldTitle(world: QuizWorld, t: { geography: string; football: string; leaders: string; math: string; astronomy: string; biology: string; olympics: string; cs: string; food: string }) {
+  if (world === 'geo') return t.geography
+  if (world === 'football') return t.football
+  if (world === 'leaders') return t.leaders
+  if (world === 'math') return t.math
+  if (world === 'astronomy') return t.astronomy
+  if (world === 'biology') return t.biology
+  if (world === 'olympics') return t.olympics
+  if (world === 'cs') return t.cs
+  return t.food
+}
 
 interface ResultsScreenProps {
   lang: Lang
@@ -85,6 +127,8 @@ export function ResultsScreen({
   const success = endedBy === 'complete'
   const perfect = success && percent === 100
   const avgSeconds = formatSeconds(averageTimeMs(answers), lang)
+  const bestStreak = longestStreak(answers)
+  const shownCorrect = useCountUp(correctCount)
   const slowest = perfect ? slowestAnswer(answers) : null
   const headline =
     endedBy === 'timeout'
@@ -100,6 +144,22 @@ export function ResultsScreen({
             : percent >= 50
               ? t.good
               : t.keepGoing
+  const rank =
+    success && percent === 100 ? t.rankMaster : percent >= 80 ? t.rankExplorer : percent >= 50 ? t.rankLearner : t.rankRookie
+
+  useEffect(() => {
+    if (endedBy !== 'complete' || percent < 80) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    void confetti({
+      particleCount: 110,
+      spread: 72,
+      origin: { y: 0.62 },
+      colors: ['#34d399', '#818cf8', '#f5c542', '#fb7185'],
+    })
+    return () => {
+      confetti.reset()
+    }
+  }, [endedBy, percent])
 
   return (
     <div className={`screen results-screen ${success ? 'is-success' : 'is-fail'}`}>
@@ -118,7 +178,8 @@ export function ResultsScreen({
         <div className="results-main">
       <section className={`card score-card ${success ? 'is-success' : 'is-fail'}`}>
         <p className="score-kicker">{theme}</p>
-        <p className="score-value">{t.score(correctCount, total)}</p>
+        <p className="rank-badge">{worldTitle(worldOfMode(mode), t)} · {rank}</p>
+        <p className="score-value">{t.score(shownCorrect, total)}</p>
         <p className="score-percent">{percent}%</p>
         <p className="score-time">{t.totalTime(formatClock(roundMs))}</p>
         {earnedXp > 0 ? (
@@ -133,7 +194,8 @@ export function ResultsScreen({
           </p>
         ) : null}
         {empireReward ? <EmpireRewardLine lang={lang} reward={empireReward} world={worldOfMode(mode)} /> : null}
-        {success && <p className="score-avg">{t.avgTime(avgSeconds)}</p>}
+        <p className="score-avg">{t.avgTime(avgSeconds)}</p>
+        <p className="score-streak">{t.longestStreak(bestStreak)}</p>
         {slowest && (
           <p className="score-slowest">
             {t.slowestCountry(countryName(slowest.question.country, lang), formatSeconds(slowest.timeMs, lang))}
@@ -223,6 +285,12 @@ export function ResultsScreen({
         <button type="button" className={success && onNextLevel ? 'btn-secondary' : 'btn-primary'} onClick={onAgain}>
           {t.playAgain}
         </button>
+        <ShareButton
+          lang={lang}
+          className="btn-secondary"
+          url={shareUrl}
+          text={t.shareResult(t.score(correctCount, total), theme, shareUrl)}
+        />
         <button type="button" className="btn-secondary" onClick={onWorlds ?? onMenu}>
           {onWorlds ? t.worldsBack : (menuLabel ?? t.backToMenu)}
         </button>

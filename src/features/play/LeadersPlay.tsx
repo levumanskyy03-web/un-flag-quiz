@@ -96,6 +96,7 @@ export function LeadersPlay({ play }: { play: PlaySession }) {
           region={play.quizSettings.region}
           path={play.quizSettings.path}
           question={play.questions[play.index]}
+          answers={play.answers}
           index={play.index}
           total={play.questions.length}
           selectedIso={play.selectedIso}

@@ -61,9 +61,12 @@ export const COLLECTIONS: Collection[] = [
   { world: 'olympics', id: 'sports', mode: 'sportToCategory', ids: itemIds(themeItemsOf('sportToCategory')) },
   { world: 'olympics', id: 'nocs', mode: 'nocToName', ids: itemIds(themeItemsOf('nocToName')) },
   { world: 'cs', id: 'terms', mode: 'csTermToMeaning', ids: itemIds(themeItemsOf('csTermToMeaning')) },
+  { world: 'cs', id: 'langs', mode: 'codeToLang', ids: itemIds(themeItemsOf('codeToLang')) },
+  { world: 'cs', id: 'structs', mode: 'structToUse', ids: itemIds(themeItemsOf('structToUse')) },
   { world: 'cs', id: 'hackers', mode: 'csPhotoToName', ids: itemIds(themeItemsOf('csPhotoToName')) },
   { world: 'food', id: 'dishes', mode: 'dishToCuisine', ids: itemIds(themeItemsOf('dishToCuisine')) },
   { world: 'food', id: 'origins', mode: 'foodToOrigin', ids: itemIds(themeItemsOf('foodToOrigin')) },
+  { world: 'food', id: 'plates', mode: 'foodPhotoToDish', ids: itemIds(themeItemsOf('foodPhotoToDish')) },
 ]
 
 export function isQuizWorldId(value: string): value is QuizWorld {

@@ -773,6 +773,29 @@ export function isCorrect(answer: RoundAnswer): boolean {
   return answer.selectedIso === answer.question.country.iso
 }
 
+export function currentStreak(answers: RoundAnswer[]): number {
+  let streak = 0
+  for (let i = answers.length - 1; i >= 0; i -= 1) {
+    if (!isCorrect(answers[i]!)) break
+    streak += 1
+  }
+  return streak
+}
+
+export function longestStreak(answers: RoundAnswer[]): number {
+  let best = 0
+  let run = 0
+  for (const answer of answers) {
+    if (isCorrect(answer)) {
+      run += 1
+      if (run > best) best = run
+    } else {
+      run = 0
+    }
+  }
+  return best
+}
+
 export function formatClock(ms: number): string {
   const totalSec = Math.max(0, Math.floor(ms / 1000))
   const minutes = Math.floor(totalSec / 60)

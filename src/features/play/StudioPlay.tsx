@@ -63,6 +63,8 @@ function StudioPlayLive({ play }: { play: PlaySession }) {
   const [timedOut, setTimedOut] = useState(false);
   const [remainingMs, setRemainingMs] = useState(QUESTION_TIME_MS + 5000);
   const [correctCount, setCorrectCount] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
   const [livesLeft, setLivesLeft] = useState(3);
   const [practice, setPractice] = useState(false);
   const [fixItem, setFixItem] = useState<PackItem | null>(null);
@@ -95,6 +97,8 @@ function StudioPlayLive({ play }: { play: PlaySession }) {
     setSelectedId(null);
     setTimedOut(false);
     setCorrectCount(0);
+    setStreak(0);
+    setBestStreak(0);
     setLivesLeft(3);
     setPractice(Boolean(opts?.practice));
     setRemainingMs(QUESTION_TIME_MS + 5000);
@@ -109,6 +113,7 @@ function StudioPlayLive({ play }: { play: PlaySession }) {
       setRemainingMs(0);
       setTimedOut(true);
       playSfx("wrong");
+      setStreak(0);
       setLivesLeft((n) => Math.max(0, n - 1));
     }, limit);
     return () => window.clearTimeout(tick);
@@ -123,8 +128,14 @@ function StudioPlayLive({ play }: { play: PlaySession }) {
     if (ok) {
       playSfx("correct");
       setCorrectCount((n) => n + 1);
+      setStreak((n) => {
+        const next = n + 1;
+        setBestStreak((best) => Math.max(best, next));
+        return next;
+      });
     } else {
       playSfx("wrong");
+      setStreak(0);
       const mistakes = [...(pack.mistakes ?? []), { itemId: question.itemId, format: question.format, at: Date.now() }].slice(0, 200);
       void persist({ ...pack, mistakes });
       if (!practice) setLivesLeft((n) => Math.max(0, n - 1));
@@ -250,6 +261,7 @@ function StudioPlayLive({ play }: { play: PlaySession }) {
           remainingMs={remainingMs}
           livesLeft={livesLeft}
           practice={practice}
+          streak={streak}
           onSelect={selectAnswer}
           onNext={nextQuestion}
           onBack={() => setView("home")}
@@ -271,6 +283,7 @@ function StudioPlayLive({ play }: { play: PlaySession }) {
           <h1>
             {correctCount}/{questions.length}
           </h1>
+          {bestStreak >= 2 ? <p className="quiz-streak">{t.longestStreak(bestStreak)}</p> : null}
         </header>
         <button type="button" className="btn-primary" onClick={() => startRound({ practice })}>
           {t.playAgain}

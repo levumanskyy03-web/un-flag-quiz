@@ -4,6 +4,8 @@ import { pickL, t11, type L11 } from './math'
 import { isThemeMode, type ThemeMode } from '../lib/quiz/themeModes'
 import { THEME_LEVEL_QUESTIONS } from '../lib/quiz/themeModes'
 import { olyGeneratedRows } from './olympics/rows'
+import { csGeneratedRows } from './cs/rows'
+import { foodGeneratedRows } from './food/rows'
 import { olyPortrait } from './olympics/portraits'
 
 export type ThemeTier = 'easy' | 'medium' | 'hard'
@@ -241,53 +243,6 @@ const THORPE = t11('Иан Торп', 'Ian Thorpe', 'Ian Thorpe', '伊恩·索�
 const FRASER = t11('Шэлли-Энн Фрейзер-Прайс', 'Shelly-Ann Fraser-Pryce', 'Shelly-Ann Fraser-Pryce', '谢莉-安·弗雷泽-普赖斯', 'Shelly-Ann Fraser-Pryce', 'शेली-एन फ़्रेज़र-प्राइस', 'شيلي آن فريزر برايس', 'শেলি-অ্যান ফ্রেজার-প্রাইস', 'Shelly-Ann Fraser-Pryce', 'シェリーアン・フレーザープライス', 'שלי-אן פרייזר-פרייס')
 const FELIX = t11('Эллисон Феликс', 'Allyson Felix', 'Allyson Felix', '阿莉森·费利克斯', 'Allyson Felix', 'एलीसन फेलिक्स', 'أليسون فيليكس', 'অ্যালিসন ফেলিক্স', 'Allyson Felix', 'アリソン・フェリックス', 'אליסון פליקס')
 const BLANK = t11('Фанни Бланкерс-Кун', 'Fanny Blankers-Koen', 'Fanny Blankers-Koen', '范妮·布兰克尔斯-科恩', 'Fanny Blankers-Koen', 'फ़ैनी ब्लैंकर्स-कोएन', 'فاني بلانكرز كوين', 'ফ্যানি ব্ল্যাঙ্কার্স-কোয়েন', 'Fanny Blankers-Koen', 'ファニー・ブランカーズ・クーン', 'פני בלנקרס-קון')
-
-const ALGO = t11('алгоритм', 'algorithm', 'Algorithmus', '算法', 'algoritmo', 'एल्गोरिदम', 'خوارزمية', 'অ্যালগরিদম', 'algoritmo', 'アルゴリズム', 'אלגוריתם')
-const VARB = t11('переменная', 'variable', 'Variable', '变量', 'variable', 'चर', 'متغير', 'ভেরিয়েবল', 'variável', '変数', 'משתנה')
-const LOOP = t11('цикл', 'loop', 'Schleife', '循环', 'bucle', 'लूप', 'حلقة', 'লুপ', 'ciclo', 'ループ', 'לולאה')
-const HTML = t11('HTML', 'HTML', 'HTML', 'HTML', 'HTML', 'HTML', 'HTML', 'HTML', 'HTML', 'HTML', 'HTML')
-const HTTP = t11('HTTP', 'HTTP', 'HTTP', 'HTTP', 'HTTP', 'HTTP', 'HTTP', 'HTTP', 'HTTP', 'HTTP', 'HTTP')
-const BIT = t11('бит', 'bit', 'Bit', '比特', 'bit', 'बिट', 'بت', 'বিট', 'bit', 'ビット', 'סיבית')
-const ALGOA = t11('пошаговый план решения', 'step-by-step solution plan', 'Schrittfolge zur Lösung', '逐步解题计划', 'plan paso a paso', 'चरणबद्ध हल', 'خطة حل خطوة بخطوة', 'ধাপে ধাপে সমাধান', 'plano passo a passo', '手順のある解法', 'תוכנית פתרון שלב-שלב')
-const VARA = t11('именованное значение в памяти', 'named value in memory', 'benannter Speicherwert', '内存中的命名值', 'valor con nombre', 'स्मृति में नामित मान', 'قيمة مسماة في الذاكرة', 'মেমোরিতে নামযুক্ত মান', 'valor nomeado na memória', 'メモリ上の名前付き値', 'ערך בעל שם בזיכרון')
-const LOOPA = t11('повтор действий', 'repeat actions', 'Aktionen wiederholen', '重复操作', 'repetir acciones', 'क्रिया दोहराना', 'تكرار الأفعال', 'কাজ পুনরাবৃত্তি', 'repetir ações', '処理の繰り返し', 'חזרה על פעולות')
-const HTMLA = t11('язык разметки веб-страниц', 'web page markup language', 'Auszeichnungssprache für Seiten', '网页标记语言', 'lenguaje de marcado web', 'वेब मार्कअप भाषा', 'لغة ترميز الويب', 'ওয়েব মার্কআপ ভাষা', 'linguagem de marcação web', 'ウェブのマークアップ', 'שפת סימון לדפים')
-const HTTPA = t11('протокол запроса страниц', 'page request protocol', 'Protokoll für Seitenabruf', '网页请求协议', 'protocolo de petición', 'पेज अनुरोध प्रोटोकॉल', 'بروتوكول طلب الصفحات', 'পেজ অনুরোধ প্রোটোকল', 'protocolo de pedido', 'ページ要求のプロトコル', 'פרוטוקול בקשת דפים')
-const BITA = t11('0 или 1', '0 or 1', '0 oder 1', '0 或 1', '0 o 1', '0 या 1', '0 أو 1', '০ বা ১', '0 ou 1', '0か1', '0 או 1')
-
-const D5 = t11('5', '5', '5', '5', '5', '5', '5', '5', '5', '5', '5')
-const B101 = t11('101₂', '101₂', '101₂', '101₂', '101₂', '101₂', '101₂', '101₂', '101₂', '101₂', '101₂')
-const D8 = t11('8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8')
-const B1000 = t11('1000₂', '1000₂', '1000₂', '1000₂', '1000₂', '1000₂', '1000₂', '1000₂', '1000₂', '1000₂', '1000₂')
-const D10 = t11('10', '10', '10', '10', '10', '10', '10', '10', '10', '10', '10')
-const B1010 = t11('1010₂', '1010₂', '1010₂', '1010₂', '1010₂', '1010₂', '1010₂', '1010₂', '1010₂', '1010₂', '1010₂')
-const D15 = t11('15', '15', '15', '15', '15', '15', '15', '15', '15', '15', '15')
-const B1111 = t11('1111₂', '1111₂', '1111₂', '1111₂', '1111₂', '1111₂', '1111₂', '1111₂', '1111₂', '1111₂', '1111₂')
-
-const TURING = t11('Тьюринг', 'Turing', 'Turing', '图灵', 'Turing', 'ट्यूरिंग', 'تورنغ', 'টিউরিং', 'Turing', 'チューリング', 'טיורינג')
-const ADA = t11('Лавлейс', 'Lovelace', 'Lovelace', '洛夫莱斯', 'Lovelace', 'लवलेस', 'لافليس', 'লাভলেস', 'Lovelace', 'ラブレース', 'לאבלייס')
-const TBL = t11('Бернерс-Ли', 'Berners-Lee', 'Berners-Lee', '伯纳斯-李', 'Berners-Lee', 'बर्नर्स-ली', 'بيرنرز-لي', 'বার্নাস-লি', 'Berners-Lee', 'バーナーズ＝リー', 'ברנרס-לי')
-const HOPPER = t11('Хоппер', 'Hopper', 'Hopper', '霍珀', 'Hopper', 'हॉपर', 'هوبر', 'হপার', 'Hopper', 'ホッパー', 'הופר')
-
-const SUSHI = t11('суши', 'sushi', 'Sushi', '寿司', 'sushi', 'सुशी', 'سوشي', 'সুশি', 'sushi', '寿司', 'סושי')
-const PIZZA = t11('пицца', 'pizza', 'Pizza', '披萨', 'pizza', 'पिज़्ज़ा', 'بيتزا', 'পিজা', 'pizza', 'ピザ', 'פיצה')
-const TACO = t11('тако', 'taco', 'Taco', '塔可', 'taco', 'टैको', 'تاكو', 'টাকো', 'taco', 'タコス', 'טאקו')
-const PAELLA = t11('паэлья', 'paella', 'Paella', '海鲜饭', 'paella', 'पायेला', 'باييلا', 'পায়েয়া', 'paella', 'パエリア', 'פאייה')
-const PAD = t11('пад тай', 'pad thai', 'Pad Thai', '泰式炒河粉', 'pad thai', 'पैड थाई', 'باد تاي', 'প্যাড থাই', 'pad thai', 'パッタイ', 'פאד תאי')
-const FEIJO = t11('фейжоада', 'feijoada', 'Feijoada', '黑豆饭', 'feijoada', 'फेजोआडा', 'فيجوادا', 'ফেইজুয়াদা', 'feijoada', 'フェイジョアーダ', 'פייז׳ואדה')
-const CURRY = t11('карри', 'curry', 'Curry', '咖喱', 'curry', 'करी', 'كاري', 'কারি', 'caril', 'カレー', 'קארי')
-const CROIS = t11('круассан', 'croissant', 'Croissant', '可颂', 'cruasán', 'क्रुआसाँ', 'كرواسون', 'ক্রুয়াসাঁ', 'croissant', 'クロワッサン', 'קרואסון')
-const JP = t11('Япония', 'Japan', 'Japan', '日本', 'Japón', 'जापान', 'اليابان', 'জাপান', 'Japão', '日本', 'יפן')
-const IT = t11('Италия', 'Italy', 'Italien', '意大利', 'Italia', 'इटली', 'إيطاليا', 'ইতালি', 'Itália', 'イタリア', 'איטליה')
-const MX = t11('Мексика', 'Mexico', 'Mexiko', '墨西哥', 'México', 'मेक्सिको', 'المكسيك', 'মেক্সিকো', 'México', 'メキシコ', 'מקסיקו')
-const ES = t11('Испания', 'Spain', 'Spanien', '西班牙', 'España', 'स्पेन', 'إسبانيا', 'স্পেন', 'Espanha', 'スペイン', 'ספרד')
-const TH = t11('Таиланд', 'Thailand', 'Thailand', '泰国', 'Tailandia', 'थाईलैंड', 'تايلاند', 'থাইল্যান্ড', 'Tailândia', 'タイ', 'תאילנד')
-const BR = t11('Бразилия', 'Brazil', 'Brasilien', '巴西', 'Brasil', 'ब्राज़ील', 'البرازيل', 'ব্রাজিল', 'Brasil', 'ブラジル', 'ברזיל')
-const IN = t11('Индия', 'India', 'Indien', '印度', 'India', 'भारत', 'الهند', 'ভারত', 'Índia', 'インド', 'הודו')
-const FR = t11('Франция', 'France', 'Frankreich', '法国', 'Francia', 'फ़्रांस', 'فرنسا', 'ফ্রান্স', 'França', 'フランス', 'צרפת')
-const RICE = t11('рис и сырая рыба', 'rice and raw fish', 'Reis und roher Fisch', '米饭与生鱼', 'arroz y pescado crudo', 'चावल और कच्ची मछली', 'أرز وسمك نيء', 'ভাত ও কাঁচা মাছ', 'arroz e peixe cru', 'ご飯と生魚', 'אורז ודג חי')
-const DOUGH = t11('тесто, томат, сыр', 'dough, tomato, cheese', 'Teig, Tomate, Käse', '面团、番茄、奶酪', 'masa, tomate, queso', 'आटा, टमाटर, पनीर', 'عجينة وطماطم وجبن', 'ডো, টমেটো, পনির', 'massa, tomate, queijo', '生地・トマト・チーズ', 'בצק, עגבנייה, גבינה')
-const MAIZE = t11('кукурузная тортилья', 'corn tortilla', 'Maistortilla', '玉米饼', 'tortilla de maíz', 'मक्का टॉर्टिला', 'تورتيلا ذرة', 'ভুট্টার টরটিলা', 'tortilha de milho', 'トルティーヤ', 'טורטייה')
 
 const CAR = t11('автомобиль', 'car', 'Auto', '汽车', 'coche', 'कार', 'سيارة', 'গাড়ি', 'carro', '自動車', 'מכונית')
 const TRAIN = t11('поезд', 'train', 'Zug', '火车', 'tren', 'रेल', 'قطار', 'ট্রেন', 'comboio', '列車', 'רכבת')
@@ -542,50 +497,8 @@ export const THEME_ITEMS: ThemeItem[] = [
   star('oph-fraser', 'olyPhotoToName', 'medium', FRASER, FRASER, { key: 'fraser' }),
   star('oph-blank', 'olyPhotoToName', 'hard', BLANK, BLANK, { key: 'blank' }),
 
-  row('t-al', 'csTermToMeaning', 'easy', ALGO, ALGOA, { key: 'algoa' }),
-  row('t-va', 'csTermToMeaning', 'easy', VARB, VARA, { key: 'vara' }),
-  row('t-lo', 'csTermToMeaning', 'easy', LOOP, LOOPA, { key: 'loopa' }),
-  row('t-ht', 'csTermToMeaning', 'medium', HTML, HTMLA, { key: 'htmla' }),
-  row('t-hp', 'csTermToMeaning', 'medium', HTTP, HTTPA, { key: 'httpa' }),
-  row('t-bi', 'csTermToMeaning', 'easy', BIT, BITA, { key: 'bita' }),
-  row('m-al', 'meaningToCsTerm', 'easy', ALGOA, ALGO, { key: 'algo' }),
-  row('m-va', 'meaningToCsTerm', 'easy', VARA, VARB, { key: 'var' }),
-  row('m-lo', 'meaningToCsTerm', 'easy', LOOPA, LOOP, { key: 'loop' }),
-  row('m-ht', 'meaningToCsTerm', 'medium', HTMLA, HTML, { key: 'html' }),
-  row('m-hp', 'meaningToCsTerm', 'medium', HTTPA, HTTP, { key: 'http' }),
-  row('m-bi', 'meaningToCsTerm', 'easy', BITA, BIT, { key: 'bit' }),
-  row('d-5', 'decToBinary', 'easy', D5, B101, { key: 'b101' }),
-  row('d-8', 'decToBinary', 'easy', D8, B1000, { key: 'b1000' }),
-  row('d-10', 'decToBinary', 'medium', D10, B1010, { key: 'b1010' }),
-  row('d-15', 'decToBinary', 'medium', D15, B1111, { key: 'b1111' }),
-  row('b-5', 'binaryToDec', 'easy', B101, D5, { key: 'd5' }),
-  row('b-8', 'binaryToDec', 'easy', B1000, D8, { key: 'd8' }),
-  row('b-10', 'binaryToDec', 'medium', B1010, D10, { key: 'd10' }),
-  row('b-15', 'binaryToDec', 'medium', B1111, D15, { key: 'd15' }),
-  row('ph-tu', 'csPhotoToName', 'easy', TURING, TURING, { key: 'tur', wiki: 'Alan Turing', wikiFile: 'Alan Turing Aged 16.jpg' }),
-  row('ph-ad', 'csPhotoToName', 'easy', ADA, ADA, { key: 'ada', wiki: 'Ada Lovelace', wikiFile: 'Ada Lovelace portrait.jpg' }),
-  row('ph-tb', 'csPhotoToName', 'medium', TBL, TBL, { key: 'tbl', wiki: 'Tim Berners-Lee', wikiFile: 'Tim Berners-Lee 2014.jpg' }),
-  row('ph-ho', 'csPhotoToName', 'medium', HOPPER, HOPPER, { key: 'hop', wiki: 'Grace Hopper', wikiFile: 'Commodore Grace M. Hopper, USN (covered).jpg' }),
-
-  row('di-su', 'dishToCuisine', 'easy', SUSHI, JP, { key: 'jp' }),
-  row('di-pi', 'dishToCuisine', 'easy', PIZZA, IT, { key: 'it' }),
-  row('di-ta', 'dishToCuisine', 'easy', TACO, MX, { key: 'mx' }),
-  row('di-pa', 'dishToCuisine', 'medium', PAELLA, ES, { key: 'es' }),
-  row('di-pd', 'dishToCuisine', 'medium', PAD, TH, { key: 'th' }),
-  row('di-fe', 'dishToCuisine', 'hard', FEIJO, BR, { key: 'br' }),
-  row('di-cu', 'dishToCuisine', 'easy', CURRY, IN, { key: 'in' }),
-  row('di-cr', 'dishToCuisine', 'easy', CROIS, FR, { key: 'fr' }),
-  row('cu-su', 'cuisineToDish', 'easy', JP, SUSHI, { key: 'sushi' }),
-  row('cu-pi', 'cuisineToDish', 'easy', IT, PIZZA, { key: 'pizza' }),
-  row('cu-ta', 'cuisineToDish', 'easy', MX, TACO, { key: 'taco' }),
-  row('cu-pa', 'cuisineToDish', 'medium', ES, PAELLA, { key: 'paella' }),
-  row('cu-pd', 'cuisineToDish', 'medium', TH, PAD, { key: 'pad' }),
-  row('cu-fe', 'cuisineToDish', 'hard', BR, FEIJO, { key: 'fei' }),
-  row('cu-cu', 'cuisineToDish', 'easy', IN, CURRY, { key: 'curry' }),
-  row('cu-cr', 'cuisineToDish', 'easy', FR, CROIS, { key: 'crois' }),
-  row('or-su', 'foodToOrigin', 'easy', RICE, SUSHI, { key: 'sushi' }),
-  row('or-pi', 'foodToOrigin', 'easy', DOUGH, PIZZA, { key: 'pizza' }),
-  row('or-ta', 'foodToOrigin', 'medium', MAIZE, TACO, { key: 'taco' }),
+  ...csGeneratedRows(),
+  ...foodGeneratedRows(),
 
   row('ve-car', 'vehicleToKind', 'easy', CAR, LAND, { key: 'land' }),
   row('ve-tr', 'vehicleToKind', 'easy', TRAIN, RAIL, { key: 'rail' }),

@@ -106,8 +106,12 @@ const EXTRA: Record<string, { title: L11; lead: L11 }> = {
     lead: t11('Блюдо → кухня.', 'A dish → its cuisine.', 'Gericht → Küche.', '菜肴 → 菜系。', 'Un plato → su cocina.', 'व्यंजन → उसकी रसोई।', 'طبق → مطبخه.', 'খাবার → রান্না।', 'Um prato → a sua cozinha.', '料理 → 料理系統。', 'מנה → המטבח.'),
   },
   origins: {
-    title: t11('Откуда еда', 'Food origins', 'Herkunft der Speisen', '食物产地', 'Origen de la comida', 'भोजन की उत्पत्ति', 'أصل الطعام', 'খাবারের উৎস', 'Origem da comida', '食べ物の起源', 'מקור האוכל'),
-    lead: t11('Продукт → страна происхождения.', 'A food → its country of origin.', 'Lebensmittel → Herkunftsland.', '食物 → 原产国。', 'Un alimento → su país de origen.', 'भोजन → मूल देश।', 'طعام → بلد المنشأ.', 'খাবার → উৎস দেশ।', 'Um alimento → o país de origem.', '食べ物 → 原産国。', 'מזון → ארץ המקור.'),
+    title: t11('Состав блюд', 'Dish ingredients', 'Zutaten der Gerichte', '菜肴食材', 'Ingredientes de los platos', 'व्यंजन की सामग्री', 'مكونات الأطباق', 'পদের উপকরণ', 'Ingredientes dos pratos', '料理の材料', 'רכיבי המנות'),
+    lead: t11('Состав → блюдо.', 'Ingredients → the dish.', 'Zutaten → Gericht.', '食材 → 菜肴。', 'Ingredientes → el plato.', 'सामग्री → व्यंजन।', 'مكونات → الطبق.', 'উপকরণ → পদ।', 'Ingredientes → o prato.', '材料 → 料理。', 'רכיבים → המנה.'),
+  },
+  plates: {
+    title: t11('Фото блюд', 'Dish photos', 'Fotos von Gerichten', '菜肴照片', 'Fotos de platos', 'व्यंजन की तस्वीरें', 'صور الأطباق', 'পদের ছবি', 'Fotos de pratos', '料理の写真', 'תמונות מנות'),
+    lead: t11('Фото тарелки → блюдо.', 'A plate photo → the dish.', 'Fototeller → Gericht.', '餐盘照片 → 菜肴。', 'Foto del plato → el nombre.', 'प्लेट की तस्वीर → व्यंजन।', 'صورة الصحن → الطبق.', 'প্লেটের ছবি → পদ।', 'Foto do prato → o nome.', '皿の写真 → 料理。', 'תמונת צלחת → המנה.'),
   },
 }
 

@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { STRINGS, type Lang } from '../i18n/strings'
 import type { FactClue } from '../lib/countryFacts'
 import type { PlayerFactClue } from '../lib/playerFacts'
@@ -9,13 +11,14 @@ import {
   FACTS_WRONG_LIMIT,
   factsClueTimeMs,
 } from '../lib/factsRules'
-import { countryName, formatClock, isPlayerFactsToName, type Question } from '../lib/quiz'
+import { countryName, currentStreak, formatClock, isPlayerFactsToName, type Question, type RoundAnswer } from '../lib/quiz'
 import { Lives } from './Lives'
 import { WorldsBack } from './WorldsBack'
 
 interface FactsScreenProps {
   lang: Lang
   question: Question
+  answers?: RoundAnswer[]
   index: number
   total: number
   roundMs: number
@@ -47,6 +50,7 @@ interface FactsScreenProps {
 export function FactsScreen({
   lang,
   question,
+  answers = [],
   index,
   total,
   roundMs,
@@ -62,6 +66,8 @@ export function FactsScreen({
   onWorlds,
 }: FactsScreenProps) {
   const t = STRINGS[lang]
+  const streak = currentStreak(answers)
+  const reduceMotion = useReducedMotion()
   const facts = duel?.facts ?? question.facts ?? []
   const maxFacts = duel?.maxFacts ?? Math.min(FACTS_MAX, Math.max(1, facts.length))
   const wrongLimit = duel?.wrongLimit ?? FACTS_WRONG_LIMIT
@@ -167,7 +173,19 @@ export function FactsScreen({
         ) : (
           <span className="levels-header-spacer" aria-hidden="true" />
         )}
-        <div className="progress-copy">{t.questionOf(index + 1, total)}</div>
+        <div className="quiz-progress-block">
+          <div
+            className="progress-track quiz-round-track"
+            role="progressbar"
+            aria-valuenow={index + 1}
+            aria-valuemin={1}
+            aria-valuemax={total}
+            aria-label={t.questionOf(index + 1, total)}
+          >
+            <div className="progress-bar" style={{ width: `${total === 0 ? 0 : ((index + 1) / total) * 100}%` }} />
+          </div>
+          {streak >= 2 ? <p className="quiz-streak">🔥 {t.roundStreak(streak)}</p> : null}
+        </div>
         {duel ? (
           <div className="facts-header-end">
             {factLivesTotal > 0 ? (
@@ -212,7 +230,13 @@ export function FactsScreen({
       </div>
       <p className={`timer-copy${urgent ? ' is-urgent' : ''}`}>{secondsLeft}</p>
 
-      <section className="card facts-card">
+      <motion.section
+        key={`${index}-${question.country.iso}`}
+        className="card facts-card"
+        initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.28, ease: 'easeOut' }}
+      >
         {clue ? (
           <>
             <p className="facts-uniqueness">{t.factUniqueness(clue.uniqueness)}</p>
@@ -226,7 +250,7 @@ export function FactsScreen({
         {locked && selectedIso !== question.country.iso ? (
           <p className="facts-flash">{t.factFailed}</p>
         ) : null}
-      </section>
+      </motion.section>
 
       {activeIndex > 0 ? (
         <ol className="facts-prev">

@@ -217,7 +217,7 @@ function astroCatalog(): StampCard[] {
 function themeCatalog(world: QuizWorld): StampCard[] {
   return THEME_ITEMS.filter((item) => themeWorldOf(item.mode) === world).map((item) => ({
     id: item.id,
-    group: isThemePhotoMode(item.mode) ? 'people' : 'cards',
+    group: isThemePhotoMode(item.mode) && world !== 'food' ? 'people' : 'cards',
     visual: item.wikiFile ? 'portrait' : 'text',
     wiki: item.wiki,
     wikiFile: item.wikiFile,

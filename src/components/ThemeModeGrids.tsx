@@ -44,9 +44,12 @@ export function themeTopicLabel(topic: ThemeTopic, lang: Lang): string {
   if (topic === 'noc') return t.olyFamilyNoc
   if (topic === 'stars') return t.olyFamilyStars
   if (topic === 'code') return t.csFamilyCode
+  if (topic === 'langs') return t.csFamilyLangs
+  if (topic === 'structs') return t.csFamilyStructs
   if (topic === 'binary') return t.csFamilyBinary
   if (topic === 'hackers') return t.csFamilyPeople
   if (topic === 'dishes') return t.foodFamilyDishes
+  if (topic === 'plates') return t.foodFamilyPlates
   return t.foodFamilyOrigin
 }
 

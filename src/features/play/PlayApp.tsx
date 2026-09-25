@@ -288,7 +288,6 @@ export default function PlayApp() {
   const currentPath: PlayPath = quizSettings.path;
 
   useEffect(() => {
-    persistLang(quizSettings.lang);
     document.documentElement.lang = localeTag(quizSettings.lang);
     document.documentElement.dir = langDir(quizSettings.lang);
     document.title =

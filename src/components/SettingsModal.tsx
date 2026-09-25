@@ -51,7 +51,7 @@ import { requestSiteTour } from '../lib/siteTour'
 
 const REPORT_EMAIL = 'levumanskyy03@gmail.com'
 
-type Tab = 'account' | 'achievements' | 'xp' | 'about' | 'report'
+type Tab = 'account' | 'results' | 'achievements' | 'xp' | 'about' | 'report'
 type AuthTab = 'login' | 'register'
 
 interface SettingsModalProps {
@@ -381,7 +381,7 @@ export function SettingsModal({
         )}
 
         <div className="choice-grid settings-tabs">
-          {(['account', 'achievements', 'xp', 'about', 'report'] as const).map((item) => (
+          {(['account', 'results', 'achievements', 'xp', 'about', 'report'] as const).map((item) => (
             <button
               key={item}
               type="button"
@@ -389,15 +389,7 @@ export function SettingsModal({
               aria-pressed={tab === item}
               onClick={() => setTab(item)}
             >
-              {item === 'account'
-                ? t.settingsAccount
-                : item === 'achievements'
-                  ? t.settingsAchievements
-                  : item === 'xp'
-                    ? t.settingsXp
-                    : item === 'about'
-                      ? t.settingsAbout
-                      : t.settingsReport}
+              {tabLabel(item, t)}
             </button>
           ))}
         </div>
@@ -439,6 +431,10 @@ export function SettingsModal({
                 </button>
               </div>
             </div>
+
+            <h3 className="settings-sub">{t.profileLanguage}</h3>
+            <LanguageToggle lang={lang} onChange={onLangChange} />
+            <p className="setting-hint">{t.savedOnDevice}</p>
 
             {authReady && !account ? (
               <div ref={authBlockRef} className="settings-auth">
@@ -571,8 +567,6 @@ export function SettingsModal({
               </>
             ) : null}
 
-            <h3 className="settings-sub">{t.profileLanguage}</h3>
-            <LanguageToggle lang={lang} onChange={onLangChange} />
             <button
               type="button"
               className="btn-secondary"
@@ -642,7 +636,11 @@ export function SettingsModal({
                 {saved ? <p className="settings-ok">{t.profileSaved}</p> : null}
               </>
             ) : null}
+          </div>
+        ) : null}
 
+        {tab === 'results' ? (
+          <div className="settings-pane">
             <h3 className="settings-sub">{t.modeStats}</h3>
             <ul className="mode-stats">
               {stats.map((item) => (
@@ -887,6 +885,15 @@ export function SettingsModal({
       {sheet}
     </div>
   )
+}
+
+function tabLabel(item: Tab, t: (typeof STRINGS)[Lang]): string {
+  if (item === 'account') return t.settingsAccount
+  if (item === 'results') return t.settingsResults
+  if (item === 'achievements') return t.settingsAchievements
+  if (item === 'xp') return t.settingsXp
+  if (item === 'about') return t.settingsAbout
+  return t.settingsReport
 }
 
 function bestSetupLine(record: RoundRecord, lang: Lang): string {

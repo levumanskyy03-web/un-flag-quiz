@@ -19,10 +19,12 @@ export function SiteLangProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("ru");
 
   useEffect(() => {
-    const stored = getStoredLang();
-    setLangState(stored);
-    persistLang(stored);
-    const onChange = () => setLangState(getStoredLang());
+    const stored = readStoredLang();
+    if (stored) setLangState(stored);
+    const onChange = () => {
+      const next = readStoredLang();
+      if (next) setLangState(next);
+    };
     window.addEventListener("storage", onChange);
     return () => window.removeEventListener("storage", onChange);
   }, []);

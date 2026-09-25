@@ -27,7 +27,7 @@ export function ThemeLearnTable({
             const item = themeById(iso)
             if (!item) return null
             const line = themeLearnLine(item, lang)
-            const photo = Boolean(item.wiki)
+            const photo = Boolean(item.wiki || item.wikiFile)
             const photoPrompt = isThemePhotoMode(item.mode)
             return (
               <tr key={iso}>

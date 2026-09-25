@@ -1,3 +1,5 @@
+import { useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { STRINGS, astroQuestionPrompt, themeQuestionPrompt, drivingLabel, footballQuestionPrompt, mathQuestionPrompt, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
 import { QuizClocks } from './QuizClocks'
 import { type Country } from '../data/countries'
@@ -33,10 +35,12 @@ import {
   questionLimitMs,
   quizMapRegion,
   waterName,
+  currentStreak,
   type PlayPath,
   type Question,
   type QuizMode,
   type RegionFilter,
+  type RoundAnswer,
 } from '../lib/quiz'
 import { drivingSide } from '../data/driving'
 import { rankingPlaceOf } from '../data/rankings'
@@ -57,6 +61,7 @@ import { useEmpire } from '../lib/empireStore'
 import { powerPrice } from '../lib/empire/rules'
 import { ChoiceLabel, FitText } from './FitText'
 import { WorldsBack } from './WorldsBack'
+import { AnswerKey, answerMotion, answerTone, useAnswerHotkeys } from './AnswerHotkey'
 
 interface QuizScreenProps {
   lang: Lang
@@ -77,6 +82,7 @@ interface QuizScreenProps {
   includeExtras?: boolean
   includeEraStates?: boolean
   eraYear?: number
+  answers?: RoundAnswer[]
   duel?: {
     opponentName: string
     opponentReady: boolean
@@ -119,6 +125,7 @@ export function QuizScreen({
   includeExtras = false,
   includeEraStates = false,
   eraYear,
+  answers = [],
   duel,
   onSelect,
   onNext,
@@ -163,11 +170,28 @@ export function QuizScreen({
           .filter((country): country is Country => country !== undefined)
           .sort((a, b) => countryName(a, lang).localeCompare(countryName(b, lang), localeTag(lang)))
       : []
+  const streak = currentStreak(answers)
+  const reduceMotion = useReducedMotion()
+  const hotkeyIds =
+    activeMode === 'nameToMap'
+      ? []
+      : isWaterMapMode(activeMode)
+        ? (question.waterOptions ?? []).filter((id) => !hidden.has(id))
+        : isFootballYearChoice(activeMode)
+          ? (question.yearOptions ?? []).filter((year) => !hidden.has(String(year))).map(String)
+          : question.options.filter((option) => !hidden.has(option.iso)).map((option) => option.iso)
+  useAnswerHotkeys(hotkeyIds, onSelect, !answered && hotkeyIds.length > 0)
+  const hotkeyN = (id: string) => {
+    const n = hotkeyIds.indexOf(id)
+    return n >= 0 && n < 4 ? n + 1 : 0
+  }
+  const press = !reduceMotion ? { y: 6, scale: 0.98 } : undefined
 
   return (
     <div className={`screen quiz-screen${activeMode === 'nameToMap' ? ' is-map-find' : ''}`}>
       <WorldsBack lang={lang} onClick={onBack} label={t.back} />
       <header className="quiz-header">
+        <div className="quiz-header-row">
         {onWorlds ? (
           <button type="button" className="btn-ghost" onClick={onWorlds}>
             {t.worldsBack}
@@ -175,7 +199,6 @@ export function QuizScreen({
         ) : (
           <span className="levels-header-spacer" aria-hidden="true" />
         )}
-        <div className="progress-copy">{t.questionOf(index + 1, total)}</div>
         {duel ? (
           <div className="duel-score" aria-label={t.duel}>
             {duel.youScore}:{duel.opponentScore}
@@ -200,6 +223,20 @@ export function QuizScreen({
             {livesLeft}
           </span>
         )}
+        </div>
+        <div className="quiz-progress-block">
+          <div
+            className="progress-track quiz-round-track"
+            role="progressbar"
+            aria-valuenow={index + 1}
+            aria-valuemin={1}
+            aria-valuemax={total}
+            aria-label={t.questionOf(index + 1, total)}
+          >
+            <div className="progress-bar" style={{ width: `${total === 0 ? 0 : ((index + 1) / total) * 100}%` }} />
+          </div>
+          {streak >= 2 ? <p className="quiz-streak">🔥 {t.roundStreak(streak)}</p> : null}
+        </div>
       </header>
 
       {duel ? (
@@ -223,6 +260,12 @@ export function QuizScreen({
         />
       )}
 
+      <motion.div
+        key={`${index}-${question.country.iso}-${question.waterId ?? ''}-${question.year ?? ''}`}
+        initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.28, ease: 'easeOut' }}
+      >
       {activeMode === 'mapToName' || isWaterMapMode(activeMode) ? (
         <section className="card question-card is-map">
           <p className={mixHint ? 'mix-ask-hint' : 'quiz-map-ask'}>
@@ -321,7 +364,7 @@ export function QuizScreen({
                   />
                 </div>
               ) : (
-                <h2 className="prompt-name">{themePrompt}</h2>
+                <h2 className={`prompt-name${activeMode === 'codeToLang' || activeMode === 'decToBinary' || activeMode === 'binaryToDec' ? ' code-prompt' : ''}`}>{themePrompt}</h2>
               )}
             </div>
           ) : activeMode === 'flagToName' ? (
@@ -493,7 +536,7 @@ export function QuizScreen({
       ) : (
         <div className={`options ${activeMode === 'nameToFlag' || activeMode === 'nameToSilhouette' ? 'options-flags' : 'options-names'}`}>
           {isWaterMapMode(activeMode)
-            ? (question.waterOptions ?? []).filter((id) => !hidden.has(id)).map((id) => {
+            ? (question.waterOptions ?? []).filter((id) => !hidden.has(id)).map((id, tone) => {
                 const isCorrectOption = id === question.waterId
                 const isSelected = id === selectedIso
                 const isOpponent = Boolean(duel?.reveal && duel.opponentAnswer === id)
@@ -505,19 +548,25 @@ export function QuizScreen({
                       : 'is-muted'
                   : ''
                 return (
-                  <button
+                  <motion.button
                     key={id}
                     type="button"
-                    className={`option ${stateClass}${isOpponent ? ' is-duel-opponent' : ''}`}
+                    className={`option ${answerTone(tone)} ${stateClass}${isOpponent ? ' is-duel-opponent' : ''}`}
                     disabled={answered}
                     onClick={() => onSelect(id)}
+                    animate={answerMotion(reduceMotion, answered && isSelected && !isCorrectOption, answered && isCorrectOption)}
+                    whileHover={!answered && !reduceMotion ? { scale: 1.03 } : undefined}
+                    whileTap={!answered ? press : undefined}
+                    transition={{ duration: 0.42 }}
                   >
+                    {hotkeyN(id) > 0 ? <AnswerKey n={hotkeyN(id)} label={t.answerKey(hotkeyN(id))} /> : null}
                     {waterName(id, lang)}
-                  </button>
+                    {answered && isCorrectOption ? <span className="option-check" aria-hidden="true">✓</span> : null}
+                  </motion.button>
                 )
               })
             : isFootballYearChoice(activeMode)
-            ? (question.yearOptions ?? []).filter((year) => !hidden.has(String(year))).map((year) => {
+            ? (question.yearOptions ?? []).filter((year) => !hidden.has(String(year))).map((year, tone) => {
                 const key = String(year)
                 const isCorrectOption = year === question.year
                 const isSelected = key === selectedIso
@@ -530,18 +579,24 @@ export function QuizScreen({
                       : 'is-muted'
                   : ''
                 return (
-                  <button
+                  <motion.button
                     key={key}
                     type="button"
-                    className={`option option-year ${stateClass}${isOpponent ? ' is-duel-opponent' : ''}`}
+                    className={`option option-year ${answerTone(tone)} ${stateClass}${isOpponent ? ' is-duel-opponent' : ''}`}
                     disabled={answered}
                     onClick={() => onSelect(key)}
+                    animate={answerMotion(reduceMotion, answered && isSelected && !isCorrectOption, answered && isCorrectOption)}
+                    whileHover={!answered && !reduceMotion ? { scale: 1.03 } : undefined}
+                    whileTap={!answered ? press : undefined}
+                    transition={{ duration: 0.42 }}
                   >
+                    {hotkeyN(key) > 0 ? <AnswerKey n={hotkeyN(key)} label={t.answerKey(hotkeyN(key))} /> : null}
                     {year}
-                  </button>
+                    {answered && isCorrectOption ? <span className="option-check" aria-hidden="true">✓</span> : null}
+                  </motion.button>
                 )
               })
-            : question.options.filter((option) => !hidden.has(option.iso)).map((option) => {
+            : question.options.filter((option) => !hidden.has(option.iso)).map((option, tone) => {
             const name = countryName(option, lang)
             const isCorrectOption = option.iso === question.country.iso
             const isSelected = option.iso === selectedIso
@@ -555,13 +610,18 @@ export function QuizScreen({
               : ''
 
             return (
-              <button
+              <motion.button
                 key={option.iso}
                 type="button"
-                className={`option ${stateClass}${isFactMode(activeMode) ? ' option-fact' : ''}${isCodeOptionMode(activeMode) ? ' option-code' : ''}${isOpponent ? ' is-duel-opponent' : ''}`}
+                className={`option ${answerTone(tone)} ${stateClass}${isFactMode(activeMode) ? ' option-fact' : ''}${isCodeOptionMode(activeMode) ? ' option-code' : ''}${isOpponent ? ' is-duel-opponent' : ''}`}
                 disabled={answered}
                 onClick={() => onSelect(option.iso)}
+                animate={answerMotion(reduceMotion, answered && isSelected && !isCorrectOption, answered && isCorrectOption)}
+                whileHover={!answered && !reduceMotion ? { scale: 1.03 } : undefined}
+                whileTap={!answered ? press : undefined}
+                transition={{ duration: 0.42 }}
               >
+                {hotkeyN(option.iso) > 0 ? <AnswerKey n={hotkeyN(option.iso)} label={t.answerKey(hotkeyN(option.iso))} /> : null}
                 {activeMode === 'nameToFlag' ? (
                   <>
                     <Flag iso={option.iso} name={name} size="option" />
@@ -587,11 +647,13 @@ export function QuizScreen({
                 ) : (
                   <ChoiceLabel>{optionLabel(option, activeMode, lang, question)}</ChoiceLabel>
                 )}
-              </button>
+                {answered && isCorrectOption ? <span className="option-check" aria-hidden="true">✓</span> : null}
+              </motion.button>
             )
           })}
         </div>
       )}
+      </motion.div>
 
       {power?.enabled && !duel ? (
         <div className="quiz-power">

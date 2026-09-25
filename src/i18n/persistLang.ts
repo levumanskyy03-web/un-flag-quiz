@@ -13,3 +13,12 @@ export function readStoredLang(): Lang | null {
   const stored = localStorage.getItem(SITE_LANG_KEY)
   return isLang(stored) ? stored : null
 }
+
+export function readLangCookie(): Lang | null {
+  if (typeof document === 'undefined') return null
+  for (const part of document.cookie.split(';')) {
+    const [key, value] = part.trim().split('=')
+    if (key === SITE_LANG_KEY && isLang(value)) return value
+  }
+  return null
+}

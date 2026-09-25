@@ -206,9 +206,12 @@ export function themeFamilyLabel(world: ThemeWorld, id: ThemeFamilyId, lang: Lan
   if (id === 'noc') return t.olyFamilyNoc
   if (id === 'stars') return t.olyFamilyStars
   if (id === 'code') return t.csFamilyCode
+  if (id === 'langs') return t.csFamilyLangs
+  if (id === 'structs') return t.csFamilyStructs
   if (id === 'binary') return t.csFamilyBinary
   if (id === 'hackers') return t.csFamilyPeople
   if (id === 'dishes') return t.foodFamilyDishes
+  if (id === 'plates') return t.foodFamilyPlates
   return t.foodFamilyOrigin
 }
 
