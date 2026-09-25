@@ -5103,7 +5103,13 @@ body:has(.club-card-overlay) .state-hud {
 }
 
 .passport-sheet.ratings-sheet {
-  border: 1px solid color-mix(in srgb, var(--text) 28%, var(--border));
+  --text: #152033;
+  --muted: #4a5b72;
+  --card: #ffffff;
+  --border: rgba(21, 32, 51, 0.16);
+  --bg: #e4edf6;
+  color: var(--text);
+  border: 1px solid rgba(21, 32, 51, 0.22);
   border-radius: 8px;
   box-shadow:
     var(--shadow),
@@ -5113,6 +5119,17 @@ body:has(.club-card-overlay) .state-hud {
     linear-gradient(to right, color-mix(in srgb, var(--accent) 20%, transparent) 1px, transparent 1px) 16px 16px / 20px 20px,
     linear-gradient(to bottom, color-mix(in srgb, var(--accent) 20%, transparent) 1px, transparent 1px) 16px 16px / 20px 20px,
     #f4f8fc;
+}
+
+.ratings-sheet .choice:not(.is-active),
+.ratings-sheet .btn-ghost {
+  background: rgba(21, 32, 51, 0.05);
+  border-color: rgba(21, 32, 51, 0.18);
+  color: var(--text);
+}
+
+.ratings-sheet .choice.is-active {
+  color: #fff;
 }
 
 .duel-setup-sheet {
@@ -5764,6 +5781,7 @@ body:has(.club-card-overlay) .state-hud {
 .app.is-food { --accent: #6366f1; --accent-hover: #818cf8; --accent-soft: rgba(99, 102, 241, 0.2); }
 
 .world-pick-dock {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
@@ -5813,6 +5831,24 @@ body:has(.club-card-overlay) .state-hud {
 
 .world-dock-tab.is-closed {
   opacity: 0.55;
+}
+
+.dock-unavailable {
+  position: absolute;
+  z-index: 3;
+  left: 8px;
+  bottom: calc(100% + 8px);
+  margin: 0;
+  max-width: 16rem;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #f4f8fc;
+  color: #152033;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.25;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+  animation: fade-rise 0.2s ease;
 }
 
 .wp-board,

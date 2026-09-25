@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { worldCatalogNo } from '../lib/modeCatalog'
 import { QUIZ_WORLDS, type QuizWorld } from '../lib/quiz'
@@ -73,10 +73,11 @@ export function WorldPickScreen({
   onDaily,
   onMultiplayer,
   onProfile,
-  onStudio,
   onEmpire,
 }: WorldPickScreenProps) {
   const t = STRINGS[settings.lang]
+  const [closedNote, setClosedNote] = useState(false)
+  const noteTimer = useRef<number | null>(null)
   const empire = useEmpire()
   const empireLabel = empire.name || t.empire
   const showTour = useSiteTourOpen()
@@ -86,6 +87,17 @@ export function WorldPickScreen({
   useEffect(() => {
     setRecord(loadDailyRecord())
   }, [])
+  useEffect(() => {
+    return () => {
+      if (noteTimer.current !== null) window.clearTimeout(noteTimer.current)
+    }
+  }, [])
+
+  function showStudioClosed() {
+    setClosedNote(true)
+    if (noteTimer.current !== null) window.clearTimeout(noteTimer.current)
+    noteTimer.current = window.setTimeout(() => setClosedNote(false), 2200)
+  }
   const done = Boolean(record && record.day === utcDayStamp() && record.id === daily.id && record.world === daily.world)
 
   return (
@@ -139,10 +151,15 @@ export function WorldPickScreen({
 
       <nav className="world-pick-dock" aria-label={t.explore} data-tour="dock">
         <FitGroup wrap={false} minPx={7}>
-          <button type="button" className="world-dock-tab is-closed" onClick={onStudio}>
+          <button type="button" className="world-dock-tab is-closed" onClick={showStudioClosed}>
             <GeoIcon name="stamp" size={22} />
-            <FitText>{t.studioUnavailable}</FitText>
+            <FitText>{t.studio}</FitText>
           </button>
+          {closedNote ? (
+            <p className="dock-unavailable" role="status">
+              {t.studioUnavailable}
+            </p>
+          ) : null}
           <button type="button" className="world-dock-tab" onClick={onProfile}>
             <GeoIcon name="user" size={22} />
             <FitText>{t.profile}</FitText>
