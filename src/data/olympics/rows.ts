@@ -118,6 +118,29 @@ export function olyGeneratedRows(): ThemeItem[] {
     rows.push(item(`oly-co-${sport.signature!.noc}`, 'countryToOlySport', sport.tier, country, sport.name, sport.id))
   }
 
+  const seenAthletes = new Set<string>()
+  for (const sport of OLY_SPORTS) {
+    const athlete = sport.athletes[0]
+    if (!athlete) continue
+    const athleteKey = pickL(athlete.name, 'en')
+    if (seenAthletes.has(athleteKey)) continue
+    seenAthletes.add(athleteKey)
+    rows.push(item(`oly-sa-${sport.id}`, 'sportToAthlete', athlete.tier, sport.name, athlete.name, athleteKey))
+  }
+
+  for (const sport of OLY_SPORTS) {
+    rows.push(
+      item(
+        `oly-sz-${sport.id}`,
+        'sportToSeason',
+        sport.tier,
+        sport.name,
+        SEASON_BUCKET_LABEL[sport.seasonBucket],
+        sport.seasonBucket,
+      ),
+    )
+  }
+
   for (const sport of uniqueBy(OLY_SPORTS, (item) => item.seasonBucket)) {
     rows.push(
       item(

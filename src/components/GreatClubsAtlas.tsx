@@ -13,6 +13,7 @@ import {
 import { playerById } from '../data/footballPlayers'
 import { footballTeamCountry } from '../data/worldCup'
 import { STRINGS, type Lang } from '../i18n/strings'
+import { HelpTip } from './HelpTip'
 import { countryName } from '../lib/quiz'
 import { FitText } from './FitText'
 import { LeaderPortrait } from './LeaderPortrait'
@@ -154,6 +155,7 @@ export function ClubCardModal({
               {nation ? <p className="club-card-country">{nation}</p> : null}
               <h2 id="club-card-title" className="passport-title">
                 {name}
+                <HelpTip text={t.clubCardAbout} />
               </h2>
               <p className="club-card-founded">
                 {t.clubCardFounded} <strong>{founded}</strong>
@@ -161,7 +163,6 @@ export function ClubCardModal({
             </div>
           </header>
           <section className="club-card-overview">
-            <p className="club-card-about">{t.clubCardAbout}</p>
             <div className="club-card-stats">
               <div>
                 <span>{t.clubCardUniquePlayers}</span>
@@ -176,7 +177,6 @@ export function ClubCardModal({
                 <strong>{formatCount(GREAT_CLUBS_UNIQUE_PLAYER_COUNT)}</strong>
               </div>
             </div>
-            <p className="club-card-stats-note">{t.clubCardStatsNote}</p>
           </section>
           <div className="club-card-controls">
             <label className="club-card-year">

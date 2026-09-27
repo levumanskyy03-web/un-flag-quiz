@@ -6,6 +6,7 @@ import { type AvatarId } from '../data/avatars'
 import { PAGE_COPY } from '../i18n/pages'
 import { STRINGS, localeTag, mixLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
 import { setupDifficultyText } from './DifficultyPicker'
+import { HelpTip } from './HelpTip'
 import {
   checkNameAvailable,
   fetchAccount,
@@ -26,6 +27,7 @@ import { isNameCooldown } from '../lib/nameRules'
 import { statsByMode } from '../lib/modeStats'
 import { loadProfile, saveProfile } from '../lib/profile'
 import { isMusicMuted, isSfxMuted, playSfx, setAllAudioMuted, setMusicMuted, setSfxMuted, subscribeAudio } from '../lib/sfx'
+import { isDailyRemindOn, isNativeApp, setDailyRemind, subscribeDailyRemind } from '../lib/nativeFeel'
 import {
   footballHasDifficulty,
   formatClock,
@@ -107,6 +109,8 @@ export function SettingsModal({
   const [countryIso, setCountryIso] = useState('')
   const [sfxMuted, setSfxMutedState] = useState(isSfxMuted)
   const [musicMuted, setMusicMutedState] = useState(isMusicMuted)
+  const [nativeApp, setNativeApp] = useState(false)
+  const [remindOn, setRemindOn] = useState(false)
 
   useEffect(
     () =>
@@ -116,6 +120,11 @@ export function SettingsModal({
       }),
     [],
   )
+  useEffect(() => {
+    setNativeApp(isNativeApp())
+    setRemindOn(isDailyRemindOn())
+    return subscribeDailyRemind(() => setRemindOn(isDailyRemindOn()))
+  }, [])
   const authBlockRef = useRef<HTMLDivElement>(null)
   const stats = useMemo(() => statsByMode(history, bests, levelClears), [history, bests, levelClears])
   const xp = loadLifetime(countLifetimeSeed(history, levelClears)).xp
@@ -434,12 +443,13 @@ export function SettingsModal({
 
             <h3 className="settings-sub">{t.profileLanguage}</h3>
             <LanguageToggle lang={lang} onChange={onLangChange} />
-            <p className="setting-hint">{t.savedOnDevice}</p>
 
             {authReady && !account ? (
               <div ref={authBlockRef} className="settings-auth">
-                <h3 className="settings-sub">{t.account}</h3>
-                <p className="setting-hint">{t.guestHint}</p>
+                <h3 className="settings-sub">
+                  {t.account}
+                  <HelpTip text={t.guestHint} />
+                </h3>
                 <div className="choice-grid">
                   <button
                     type="button"
@@ -490,7 +500,10 @@ export function SettingsModal({
                     />
                   </label>
                   <label className="player-name">
-                    <span>{t.password}</span>
+                    <span>
+                      {t.password}
+                      {authTab === 'register' ? <HelpTip text={t.passwordHint} /> : null}
+                    </span>
                     <input
                       type="password"
                       name="password"
@@ -520,7 +533,6 @@ export function SettingsModal({
                   {authTab === 'register' ? (
                     <CountryPicker lang={lang} value={countryIso} onChange={setCountryIso} />
                   ) : null}
-                  <p className="setting-hint">{t.passwordHint}</p>
                   {error ? <p className="account-error">{authErrorText(error, t)}</p> : null}
                   <button type="submit" className="btn-primary" disabled={busy}>
                     {authTab === 'register' ? t.signUp : t.signIn}
@@ -532,7 +544,10 @@ export function SettingsModal({
             {account ? (
               <>
                 <label className="player-name">
-                  <span>{t.profileName}</span>
+                  <span>
+                    {t.profileName}
+                    <HelpTip text={t.nameChangeHint} />
+                  </span>
                   <input
                     type="text"
                     name="profile-name"
@@ -547,7 +562,6 @@ export function SettingsModal({
                     }}
                   />
                 </label>
-                <p className="setting-hint">{t.nameChangeHint}</p>
                 {nameFree === false ? <p className="account-error">{t.authNameTaken}</p> : null}
                 {error ? <p className="account-error">{authErrorText(error, t)}</p> : null}
                 <button type="button" className="btn-secondary" onClick={() => void saveName()} disabled={busy}>
@@ -596,10 +610,12 @@ export function SettingsModal({
                 <button type="button" className="btn-secondary" onClick={() => void signOut()} disabled={busy}>
                   {t.signOut}
                 </button>
-                <button type="button" className="btn-secondary" onClick={() => void signOut(true)} disabled={busy}>
-                  {t.signOutAll}
-                </button>
-                <p className="setting-hint">{t.signOutAllHint}</p>
+                <span className="settings-inline">
+                  <button type="button" className="btn-secondary" onClick={() => void signOut(true)} disabled={busy}>
+                    {t.signOutAll}
+                  </button>
+                  <HelpTip text={t.signOutAllHint} />
+                </span>
                 <button
                   type="button"
                   className="btn-sign-out"
@@ -629,7 +645,6 @@ export function SettingsModal({
                     }}
                   />
                 </label>
-                <p className="setting-hint">{t.savedOnDevice}</p>
                 <button type="button" className="btn-secondary" onClick={() => void saveName()} disabled={busy}>
                   {t.saveProfile}
                 </button>
@@ -776,6 +791,30 @@ export function SettingsModal({
                 {t.soundsOff}
               </button>
             </div>
+            {nativeApp ? (
+              <>
+                <p className="settings-sub">{t.dailyRemind}</p>
+                <p className="setting-hint">{t.dailyRemindHint}</p>
+                <div className="choice-grid">
+                  <button
+                    type="button"
+                    className={`choice ${remindOn ? 'is-active' : ''}`}
+                    aria-pressed={remindOn}
+                    onClick={() => void setDailyRemind(true, lang)}
+                  >
+                    {t.soundsOn}
+                  </button>
+                  <button
+                    type="button"
+                    className={`choice ${remindOn ? '' : 'is-active'}`}
+                    aria-pressed={!remindOn}
+                    onClick={() => void setDailyRemind(false, lang)}
+                  >
+                    {t.soundsOff}
+                  </button>
+                </div>
+              </>
+            ) : null}
             <CookieConsentControls lang={lang} />
             <button
               type="button"
@@ -817,9 +856,11 @@ export function SettingsModal({
               sendReport()
             }}
           >
-            <p className="setting-hint">{t.reportHint}</p>
             <label className="player-name">
-              <span>{t.reportSubject}</span>
+              <span>
+                {t.reportSubject}
+                <HelpTip text={t.reportHint} />
+              </span>
               <input
                 type="text"
                 value={reportTitle}

@@ -49,6 +49,7 @@ import {
 } from '../lib/mapCamera'
 import { countryName } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
+import { HelpTip } from './HelpTip'
 import { HubNav, type HubTab } from './HubNav'
 import { HoldoutModal } from './HoldoutModal'
 import { HistoryCard } from './HistoryCard'
@@ -693,8 +694,10 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
         {!modern ? <p className="map-snapshot">{t.mapSnapshot(nearestHistorySnapshot(eraYear))}</p> : null}
       </section>
 
-      <p className="map-source">{modern ? t.mapCredit : t.mapHistoryCredit}</p>
-      {modern ? <p className="map-source">{t.mapHoldoutHint}</p> : null}
+      <p className="map-source">
+        {modern ? t.mapCredit : t.mapHistoryCredit}
+        {modern ? <HelpTip text={t.mapHoldoutHint} /> : null}
+      </p>
 
       {showPassport && passportCountry ? (
         <PassportModal

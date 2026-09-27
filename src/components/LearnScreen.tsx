@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { type Region } from '../data/countries'
 import { findCountry } from '../data/extras'
 import { isFinalLevel } from '../data/levels'
-import { difficultyLabel, drivingLabel, governmentLabel, REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
+import { difficultyLabel, drivingLabel, governmentLabel, religionLabel, REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
 import {
   QUIZ_MODES,
   LEVEL_MODES,
@@ -36,6 +36,7 @@ import {
   isNameToGov,
   isLanguageMode,
   isDrivingMode,
+  isReligionMode,
   isSilhouetteMode,
   isPlayerFactsToName,
   isPlayerFootballMode,
@@ -58,6 +59,7 @@ import { playerClueSequence, playerFactLabel } from '../lib/playerFacts'
 import { languageName, quizLanguageId } from '../data/languages'
 import { govKindOf } from '../data/governments'
 import { drivingSide } from '../data/driving'
+import { religionOf } from '../data/religion'
 import { watersFor } from '../data/water'
 import { formatLeaderNumbers, formatTermNumber, leaderShowsNumber, personYearsLabel, splitLearnTerms, termById, yearsLabel } from '../data/leaders'
 import { leaderBio, leaderFeat } from '../data/leaderBios'
@@ -76,11 +78,13 @@ import { FitText } from './FitText'
 import { ModeChoice } from './ModeChoice'
 import { LeaderPortrait } from './LeaderPortrait'
 import { LeaderBioModal } from './LeaderBioModal'
+import { ChoiceWithHelp, HelpTip } from './HelpTip'
 import { LeaderNoteMark } from './LeaderNoteMark'
 import { LeadersLearnTable } from './LeadersLearnTable'
 import { LeadersSetup } from './LeadersScreen'
 import { MathLearnTable } from './MathLearnTable'
 import { AstroLearnTable } from './AstroLearnTable'
+import { FoodLearnGrid } from './FoodLearnGrid'
 import { ThemeLearnTable } from './ThemeLearnTable'
 import { MathSetup } from './MathModeGrids'
 import { AstroSetup } from './AstroModeGrids'
@@ -173,28 +177,30 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   const openClub = openClubId ? greatClub(openClubId) : undefined
   const geoFinale = settings.learnFrom === 'level' && isFinalLevel(settings.level) && hasGeoFinale(settings.mode)
   const title = settings.learnFrom === 'level' ? (geoFinale ? t.finalLevel : t.levelLabel(settings.level)) : t.learn
-  const subtitle =
+  const learnHelp =
     settings.learnFrom === 'level'
       ? geoFinale
         ? t.finalLevelHint
-        : undefined
-        : football
-          ? t.footballLearnHint
-          : leaders
-            ? t.leadersSubtitle
-            : math
-              ? t.mathSubtitle
-              : astro
-                ? t.astroSubtitle
-              : theme
-                ? themeWorld === 'olympics'
-                  ? t.olySubtitle
-                  : themeWorld === 'cs'
-                    ? t.csSubtitle
-                    : themeWorld === 'food'
-                      ? t.foodSubtitle
-                      : t.bioSubtitle
-            : regionLabel(settings.region, settings.lang)
+        : ''
+      : football
+        ? t.footballLearnHint
+        : math
+          ? t.mathSubtitle
+          : astro
+            ? t.astroSubtitle
+            : theme
+              ? themeWorld === 'olympics'
+                ? t.olySubtitle
+                : themeWorld === 'cs'
+                  ? t.csSubtitle
+                  : themeWorld === 'food'
+                    ? t.foodSubtitle
+                    : t.bioSubtitle
+              : ''
+  const learnPlace =
+    settings.learnFrom === 'region' && !football && !leaders && !math && !astro && !theme
+      ? regionLabel(settings.region, settings.lang)
+      : ''
   const hubTabs = math ? MATH_HUB_TABS : astro || theme ? ASTRO_HUB_TABS : football || leaders ? WORLD_HUB_TABS : undefined
 
   useEffect(() => {
@@ -265,16 +271,15 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
       </header>
 
       <p className="learn-copy">
-        {subtitle ? `${subtitle}` : ''}
+        {learnPlace ? `${learnPlace}${mixModes ? '' : ' · '}` : ''}
         {mixModes
           ? ''
           : rosterLearn
-            ? `${subtitle ? ' · ' : ''}${
-                playerEra === 'all'
-                  ? t.footballRosterSplit(rosterActive, rosterLegends)
-                  : t.footballRosterCount(countries.length)
-              }`
-            : `${subtitle ? ' · ' : ''}${t.countriesCount(countries.length)}`}
+            ? playerEra === 'all'
+              ? t.footballRosterSplit(rosterActive, rosterLegends)
+              : t.footballRosterCount(countries.length)
+            : t.countriesCount(countries.length)}
+        {learnHelp ? <HelpTip text={learnHelp} /> : null}
       </p>
 
       {settings.learnFrom === 'region' && !football && !leaders && !math && !astro && (
@@ -364,31 +369,30 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         <>
           {settings.learnFrom === 'region' ? (
             <div className="choice-grid">
+              <ChoiceWithHelp tip={t.footballEasyMixNote}>
               <button
                 type="button"
-                className={`choice has-note is-wide ${settings.mix === 'easy' ? 'is-active' : ''}`}
+                className={`choice is-wide ${settings.mix === 'easy' ? 'is-active' : ''}`}
                 aria-pressed={settings.mix === 'easy'}
                 onClick={() => onChange({ ...settings, mix: 'easy', mixModes: [...EASY_FOOTBALL_MIX_MODES], mode: 'wcWinners' })}
               >
                 <FitText minPx={9}>{t.easyMix}</FitText>
-                <FitText className="choice-note" wrap minPx={7}>
-                  {t.footballEasyMixNote}
-                </FitText>
               </button>
+              </ChoiceWithHelp>
+              <ChoiceWithHelp tip={t.footballHardMixNote}>
               <button
                 type="button"
-                className={`choice has-note is-wide ${settings.mix === 'hard' ? 'is-active' : ''}`}
+                className={`choice is-wide ${settings.mix === 'hard' ? 'is-active' : ''}`}
                 aria-pressed={settings.mix === 'hard'}
                 onClick={() => onChange({ ...settings, mix: 'hard', mixModes: [...HARD_FOOTBALL_MIX_MODES], mode: 'wcWinners' })}
               >
                 <FitText minPx={9}>{t.hardMix}</FitText>
-                <FitText className="choice-note" wrap minPx={7}>
-                  {t.footballHardMixNote}
-                </FitText>
               </button>
+              </ChoiceWithHelp>
+              <ChoiceWithHelp tip={t.customMixNote}>
               <button
                 type="button"
-                className={`choice has-note is-wide ${settings.mix === 'custom' ? 'is-active' : ''}`}
+                className={`choice is-wide ${settings.mix === 'custom' ? 'is-active' : ''}`}
                 aria-pressed={settings.mix === 'custom'}
                 onClick={() =>
                   onChange({
@@ -400,10 +404,8 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 }
               >
                 <FitText minPx={9}>{t.customMix}</FitText>
-                <FitText className="choice-note" wrap minPx={7}>
-                  {t.customMixNote}
-                </FitText>
               </button>
+              </ChoiceWithHelp>
             </div>
           ) : null}
           {mixModes ? (
@@ -428,9 +430,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           ) : (
             <FootballSetup settings={settings} onChange={(next) => onChange({ ...next, mix: null })} />
           )}
-          {isPlayerFootballMode(settings.mode) && !mixModes ? (
-            <p className="setting-hint">{t.playerClubNote}</p>
-          ) : null}
+          {isPlayerFootballMode(settings.mode) && !mixModes ? <HelpTip text={t.playerClubNote} /> : null}
           {football && !mixModes && footballTopicOf(settings.mode) === 'clubs' ? (
             <GreatClubsAtlas lang={settings.lang} />
           ) : null}
@@ -534,6 +534,17 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         <MathLearnTable isos={countries.map((country) => country.iso)} lang={settings.lang} hideAnswers={hideAnswers} />
       ) : astro ? (
         <AstroLearnTable isos={countries.map((country) => country.iso)} lang={settings.lang} hideAnswers={hideAnswers} />
+      ) : theme && themeWorld === 'food' ? (
+        <FoodLearnGrid
+          isos={countries.map((country) => country.iso)}
+          lang={settings.lang}
+          returnTo={{
+            mode: settings.mode,
+            learnFrom: settings.learnFrom,
+            level: settings.level,
+            region: settings.region,
+          }}
+        />
       ) : theme ? (
         <ThemeLearnTable isos={countries.map((country) => country.iso)} lang={settings.lang} hideAnswers={hideAnswers} />
       ) : null}
@@ -551,7 +562,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           onReveal={(id) => setRevealed((prev) => new Set(prev).add(id))}
           onOpen={setOpenTermId}
         />
-      ) : mixModes ? null : (
+      ) : mixModes || math || astro || theme ? null : (
       <section className={`learn-grid${leaders ? ' is-leaders' : ''}`}>
         {countries.map((country) => {
           const name = countryName(country, settings.lang)
@@ -566,6 +577,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           const quizLang = isLanguageMode(settings.mode) ? quizLanguageId(country.iso) : null
           const govKind = isNameToGov(settings.mode) ? govKindOf(country.iso) : undefined
           const drive = isDrivingMode(settings.mode) ? drivingSide(country.iso) : null
+          const religion = isReligionMode(settings.mode) ? religionOf(country.iso) : null
           const term = leaders ? termById(country.iso) : undefined
           if (leaders && term) {
             const bio = leaderBio(term, settings.lang)
@@ -666,6 +678,8 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 <p className="learn-card-meta">{governmentLabel(govKind, settings.lang)}</p>
               ) : drive ? (
                 <p className="learn-card-meta">{drivingLabel(drive, settings.lang)}</p>
+              ) : religion ? (
+                <p className="learn-card-meta">{religionLabel(religion, settings.lang)}</p>
               ) : null}
             </button>
           )
@@ -673,14 +687,16 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
       </section>
       )}
 
-      <button
-        type="button"
-        className="btn-primary"
-        disabled={countries.length === 0 && !mixModes}
-        onClick={() => onPractice(leaders ? countries.map((country) => country.iso) : undefined)}
-      >
-        {t.checkYourself}
-      </button>
+      <div className="learn-quiz-dock">
+        <button
+          type="button"
+          className="btn-primary learn-quiz-btn"
+          disabled={countries.length === 0 && !mixModes}
+          onClick={() => onPractice(leaders ? countries.map((country) => country.iso) : undefined)}
+        >
+          {t.checkYourself}
+        </button>
+      </div>
 
       {openCountry && (
         <PassportModal

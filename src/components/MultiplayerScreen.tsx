@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { STRINGS } from '../i18n/strings'
 import { FitText } from './FitText'
+import { ChoiceWithHelp } from './HelpTip'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
 import {
@@ -30,7 +31,6 @@ export function MultiplayerScreen({ settings, onWorlds, onMatch }: MultiplayerSc
       <header className="home-header">
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1>{t.multiplayer}</h1>
-        <p className="subtitle">{t.multiplayerHint}</p>
       </header>
 
       <section className="card settings-card">
@@ -67,19 +67,16 @@ function MatchQueueButton({
 }) {
   const note = matchQueueNote(queue, lang)
   return (
-    <button
-      type="button"
-      className={`choice has-note has-mode-no is-wide ${active ? 'is-active' : ''}`}
-      aria-pressed={active}
-      onClick={onPick}
-    >
-      <CatalogNo n={modesCatalogNo(queue.modes)} />
-      <FitText minPx={9}>{matchQueueTitle(queue, lang)}</FitText>
-      {note ? (
-        <FitText className="choice-note" wrap minPx={7}>
-          {note}
-        </FitText>
-      ) : null}
-    </button>
+    <ChoiceWithHelp tip={note}>
+      <button
+        type="button"
+        className={`choice has-mode-no is-wide ${active ? 'is-active' : ''}`}
+        aria-pressed={active}
+        onClick={onPick}
+      >
+        <CatalogNo n={modesCatalogNo(queue.modes)} />
+        <FitText minPx={9}>{matchQueueTitle(queue, lang)}</FitText>
+      </button>
+    </ChoiceWithHelp>
   )
 }

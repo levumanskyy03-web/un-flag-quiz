@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } f
 import { AVATARS, avatarLabel, type AvatarId } from '../data/avatars'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { AvatarMark } from './AvatarMark'
+import { HelpTip } from './HelpTip'
 
 const VIEW = 240
 const OUT = 256
@@ -63,7 +64,10 @@ export function AvatarPicker({ lang, avatarId, photo, onPick, onPhoto, onClose }
         onClick={(event) => event.stopPropagation()}
       >
         <header className="account-sheet-head">
-          <h2>{t.avatars}</h2>
+          <h2>
+            {t.avatars}
+            <HelpTip text={cropSrc ? t.avatarCropHint : t.avatarPickerHint} />
+          </h2>
           <button type="button" className="btn-ghost" onClick={onClose}>
             {t.close}
           </button>
@@ -85,7 +89,6 @@ export function AvatarPicker({ lang, avatarId, photo, onPick, onPhoto, onClose }
           />
         ) : (
           <>
-            <p className="setting-hint">{t.avatarPickerHint}</p>
             <div className="avatar-grid">
               {AVATARS.map((avatar) => (
                 <button
@@ -209,7 +212,6 @@ function AvatarCrop({ lang, src, onCancel, onDone }: AvatarCropProps) {
 
   return (
     <div className="avatar-crop">
-      <p className="setting-hint">{t.avatarCropHint}</p>
       <div
         className="avatar-crop-view"
         onPointerDown={onPointerDown}

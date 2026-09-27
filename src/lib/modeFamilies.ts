@@ -8,6 +8,7 @@ import {
   PLAYER_FOOTBALL_MODES,
   WC_FOOTBALL_MODES,
   isDrivingMode,
+  isReligionMode,
   isFootballMode,
   isLeadersMode,
   isMathMode,
@@ -63,6 +64,7 @@ export const GEO_FAMILIES = [
   'water',
   'nameToLanguage',
   'driving',
+  'religion',
   'nameToGov',
   'codes',
   'rankings',
@@ -88,7 +90,7 @@ export const FOOTBALL_PLAY_FAMILIES = FOOTBALL_FAMILIES.filter((id) => id !== 'm
 
 export type FootballFamilyId = (typeof FOOTBALL_FAMILIES)[number]
 
-export const MATH_FAMILIES = ['mix', 'arithmetic', 'geometry', 'symbols', 'people'] as const
+export const MATH_FAMILIES = ['mix', 'arithmetic', 'geometry', 'symbols', 'people', 'digits'] as const
 export const MATH_PLAY_FAMILIES = MATH_FAMILIES.filter((id) => id !== 'mix')
 export type MathFamilyId = (typeof MATH_FAMILIES)[number]
 
@@ -103,6 +105,7 @@ export function modesOfGeoFamily(id: GeoFamilyId): QuizMode[] {
   if (id === 'silhouette') return ['silhouetteToName', 'nameToSilhouette']
   if (id === 'nameToLanguage') return ['nameToLanguage', 'languageToName']
   if (id === 'driving') return ['nameToDriving', 'drivingToName']
+  if (id === 'religion') return ['nameToReligion', 'religionToName']
   if (id === 'water') return ['mapToSea', 'seaToName', 'mapToRiver', 'riverToName']
   if (id === 'codes') return [...CODES_MODES]
   if (id === 'rankings') return [...RANKING_MODES]
@@ -128,6 +131,7 @@ export function geoFamilyOf(mode: QuizMode, mix: MixKind | null): GeoFamilyId {
   if (mode === 'silhouetteToName' || mode === 'nameToSilhouette') return 'silhouette'
   if (mode === 'nameToLanguage' || mode === 'languageToName') return 'nameToLanguage'
   if (mode === 'nameToDriving' || mode === 'drivingToName') return 'driving'
+  if (mode === 'nameToReligion' || mode === 'religionToName') return 'religion'
   if (mode === 'mapToSea' || mode === 'seaToName' || mode === 'mapToRiver' || mode === 'riverToName') return 'water'
   if ((CODES_MODES as readonly string[]).includes(mode)) return 'codes'
   if ((RANKING_MODES as readonly string[]).includes(mode)) return 'rankings'
@@ -136,7 +140,7 @@ export function geoFamilyOf(mode: QuizMode, mix: MixKind | null): GeoFamilyId {
 }
 
 export function modesOfMathFamily(id: MathFamilyId): QuizMode[] {
-  if (id === 'mix') return []
+  if (id === 'mix' || id === 'digits') return []
   return [...mathModesOf(id)]
 }
 
@@ -201,10 +205,13 @@ export function themeFamilyLabel(world: ThemeWorld, id: ThemeFamilyId, lang: Lan
   if (id === 'cell') return t.bioFamilyCell
   if (id === 'body') return t.bioFamilyBody
   if (id === 'life') return t.bioFamilyLife
+  if (id === 'wild') return t.bioFamilyWild
+  if (id === 'labs') return t.bioFamilyLabs
   if (id === 'hosts') return t.olyFamilyHosts
   if (id === 'sports') return t.olyFamilySports
   if (id === 'noc') return t.olyFamilyNoc
   if (id === 'stars') return t.olyFamilyStars
+  if (id === 'emblems') return t.olyFamilySymbols
   if (id === 'code') return t.csFamilyCode
   if (id === 'langs') return t.csFamilyLangs
   if (id === 'structs') return t.csFamilyStructs
@@ -237,7 +244,7 @@ export function difficultyForMode(mode: QuizMode, difficulty: QuizDifficulty): Q
   const pool = difficulty === 'hardcore' ? 'hard' : difficulty
   if (mode === 'factsToName' || mode === 'playerFactsToName') return pool
   if (mode === 'nameToLanguage' || mode === 'languageToName') return pool
-  if (isDrivingMode(mode)) return pool
+  if (isDrivingMode(mode) || isReligionMode(mode)) return pool
   if (isLeadersMode(mode) || isMathMode(mode) || isAstroMode(mode) || isThemeMode(mode) || mode === 'playerPhotoToName' || mode === 'managerPhotoToName') return pool
   return pool === 'medium' ? 'hard' : pool
 }
@@ -329,6 +336,7 @@ export function geoFamilyLabel(id: GeoFamilyId, lang: Lang): string {
   if (id === 'map') return t.familyMap
   if (id === 'silhouette') return t.familySilhouette
   if (id === 'driving') return t.familyDriving
+  if (id === 'religion') return t.familyReligion
   if (id === 'water') return t.familyWater
   if (id === 'codes') return t.codes
   if (id === 'rankings') return t.rankings
@@ -354,6 +362,7 @@ export function mathFamilyLabel(id: MathFamilyId, lang: Lang): string {
   if (id === 'arithmetic') return t.mathFamilyArithmetic
   if (id === 'geometry') return t.mathFamilyGeometry
   if (id === 'symbols') return t.mathFamilySymbols
+  if (id === 'digits') return t.mathFamilyDigits
   return t.mathFamilyPeople
 }
 

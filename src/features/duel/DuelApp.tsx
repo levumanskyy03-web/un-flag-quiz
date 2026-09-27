@@ -433,9 +433,9 @@ export function DuelApp({ code: rawCode }: { code: string }) {
         <nav className="legal-links">
           <a href="/about">{t.legalAbout}</a>
           <a href="/privacy">{t.legalPrivacy}</a>
-          <a href="/cookies">{t.legalCookies}</a>
-          <a href="/terms">{t.legalTerms}</a>
           <a href="/contacts">{t.legalContacts}</a>
+          <a href="/terms">{t.legalTerms}</a>
+          <a href="/cookies" className="legal-cookie">{t.legalCookies}</a>
         </nav>
         <p className="credit">{t.credit}</p>
       </footer>

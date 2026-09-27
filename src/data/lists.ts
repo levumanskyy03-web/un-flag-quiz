@@ -1,6 +1,7 @@
 import { COUNTRIES } from './countries'
 import { MONARCHY } from './geoTraits'
 import { LAND_NEIGHBORS } from './neighbors'
+import { isosOfReligion } from './religion'
 
 /** UN members with land area under 1 000 km² (CIA World Factbook / UN statistical geoscheme). */
 export const MICROSTATE_ISOS = [
@@ -129,6 +130,11 @@ function unIsos(pred: (iso: string) => boolean): string[] {
 export const ISLAND_ISOS = unIsos((iso) => (LAND_NEIGHBORS[iso] ?? []).length === 0)
 export const ONE_NEIGHBOR_ISOS = unIsos((iso) => (LAND_NEIGHBORS[iso] ?? []).length === 1)
 export const MONARCHY_ISOS = unIsos((iso) => MONARCHY.has(iso))
+export const ORTHODOX_ISOS = isosOfReligion('orthodox')
+export const BUDDHIST_ISOS = isosOfReligion('buddhist')
+export const HINDU_ISOS = isosOfReligion('hindu')
+export const SHIA_ISOS = isosOfReligion('shia')
+export const NO_RELIGION_ISOS = isosOfReligion('unaffiliated')
 
 export const LIST_IDS = [
   'microstates',
@@ -141,6 +147,11 @@ export const LIST_IDS = [
   'one-neighbor',
   'monarchies',
   'security-council',
+  'orthodox',
+  'buddhist',
+  'hindu',
+  'shia',
+  'no-religion',
 ] as const
 
 export type ListId = (typeof LIST_IDS)[number]
@@ -156,6 +167,11 @@ export const SITE_LISTS: { id: ListId; isos: readonly string[] }[] = [
   { id: 'one-neighbor', isos: ONE_NEIGHBOR_ISOS },
   { id: 'monarchies', isos: MONARCHY_ISOS },
   { id: 'security-council', isos: SECURITY_COUNCIL_ISOS },
+  { id: 'orthodox', isos: ORTHODOX_ISOS },
+  { id: 'buddhist', isos: BUDDHIST_ISOS },
+  { id: 'hindu', isos: HINDU_ISOS },
+  { id: 'shia', isos: SHIA_ISOS },
+  { id: 'no-religion', isos: NO_RELIGION_ISOS },
 ]
 
 export function isListId(value: string): value is ListId {

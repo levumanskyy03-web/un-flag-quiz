@@ -12,6 +12,8 @@
     "postinstall": "node scripts/copy-pdfjs-assets.cjs"
   },
   "dependencies": {
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/local-notifications": "^8.3.1",
     "@svg-maps/world": "^2.0.0",
     "@vercel/analytics": "^2.0.1",
     "canvas-confetti": "^1.9.4",

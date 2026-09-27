@@ -11,7 +11,8 @@ import {
   passportCurrency,
 } from "../data/passports";
 import { PAGE_COPY } from "../i18n/pages";
-import { STRINGS, governmentLabel, regionLabel } from "../i18n/strings";
+import { STRINGS, governmentLabel, regionLabel, religionLabel } from "../i18n/strings";
+import { religionOf } from "../data/religion";
 import { useSiteLang } from "../i18n/siteLang";
 import { adjacentCountries, countryPath, neighborCountries } from "../lib/countryCatalog";
 import { countryName } from "../lib/quiz";
@@ -37,6 +38,7 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
   const name = countryName(country, lang);
   const founded = foundedYear(country.iso);
   const govKind = govKindOf(country.iso);
+  const religion = religionOf(country.iso);
   const neighbors = neighborCountries(country.iso, landNeighbors(country.iso));
   const adjacent = adjacentCountries(country.iso);
 
@@ -83,6 +85,12 @@ export function CountryPassportView({ country, kicker }: CountryPassportViewProp
           <div>
             <dt>{t.government}</dt>
             <dd>{governmentLabel(govKind, lang)}</dd>
+          </div>
+        ) : null}
+        {religion ? (
+          <div>
+            <dt>{t.religion}</dt>
+            <dd>{religionLabel(religion, lang)}</dd>
           </div>
         ) : null}
         {founded !== undefined ? (

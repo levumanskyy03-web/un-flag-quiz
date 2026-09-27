@@ -10,29 +10,19 @@ import { CODES_MODES, QUIZ_MODES, type QuizMode } from '../lib/quiz'
 import { modeCatalogNo } from '../lib/modeCatalog'
 import { CatalogNo, ModeChoice } from './ModeChoice'
 import { PassportModal } from './PassportModal'
+import { HelpTip } from './HelpTip'
 import { RankingAboutDialog } from './RankingAboutDialog'
 
 interface RankingFootnoteProps {
   mode: RankingMode
   lang: Lang
-  onOpen?: () => void
 }
 
-export function RankingFootnote({ mode, lang, onOpen }: RankingFootnoteProps) {
+export function RankingFootnote({ mode, lang }: RankingFootnoteProps) {
   const t = STRINGS[lang]
   const cite = rankingCite(mode, lang)
   const text = `${t.rankingFootnote(cite.asOf, cite.source, cite.count)} ${rankingUnit(mode, lang)}${cite.note ? ` ${cite.note}` : ''}`
-  if (onOpen) {
-    return (
-      <button type="button" className="ranking-footnote is-openable" onClick={onOpen}>
-        <span className="passport-ranking-help ranking-footnote-help" aria-hidden="true">
-          ?
-        </span>
-        {text}
-      </button>
-    )
-  }
-  return <p className="ranking-footnote">{text}</p>
+  return <HelpTip text={text} />
 }
 
 interface GeoModeGridsProps {
@@ -106,8 +96,10 @@ export function CodesModeGrid({
     <div className={`ranking-modes${standalone || hideHeading ? ' is-standalone' : ''}`}>
       {hideHeading ? null : (
         <>
-          <h2>{t.codes}</h2>
-          <p className="setting-hint">{t.codesSubtitle}</p>
+          <h2>
+            {t.codes}
+            <HelpTip text={t.codesSubtitle} />
+          </h2>
         </>
       )}
       <ModeButtons
@@ -178,9 +170,6 @@ export function RankingModeGrid({
           )
         })}
       </div>
-      {rankingActive ? (
-        <RankingFootnote mode={rankingActive} lang={lang} onOpen={() => setOpen(rankingActive)} />
-      ) : null}
       {open ? (
         <RankingAboutDialog
           mode={open}

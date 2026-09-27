@@ -1,3 +1,5 @@
+import { feel } from './nativeFeel'
+
 export type SfxName = 'correct' | 'wrong' | 'success' | 'fail' | 'record'
 
 const MUTE_KEY = 'un-flag-quiz-sfx-mute'
@@ -79,6 +81,7 @@ export function subscribeSfxMute(onChange: (muted: boolean) => void) {
 }
 
 export function playSfx(name: SfxName) {
+  feel(name)
   if (typeof window === 'undefined' || isSfxMuted()) return
   const audio = new Audio(FILES[name])
   audio.volume = VOLUME[name]

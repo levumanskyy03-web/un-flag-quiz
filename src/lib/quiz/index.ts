@@ -2,6 +2,7 @@ import { footballCampaignLevels, footballLevelPlayerIds, footballLevelYears } fr
 import { LEVEL_COUNT } from '../../data/levels'
 import { quizLanguageId } from '../../data/languages'
 import { govKindOf } from '../../data/governments'
+import { religionOf } from '../../data/religion'
 import { canAskWater, countryForWater, isWaterMapMode, isWaterMode, waterCampaignLevels, watersFor } from '../../data/water'
 import { rankingPlaceOf } from '../../data/rankings'
 import {
@@ -13,6 +14,7 @@ import {
   isAstroMode,
   isLanguageMode,
   isNameToGov,
+  isReligionMode,
   isPlayerFootballMode,
   isRankingMode,
   isThemeMode,
@@ -159,7 +161,9 @@ export function getLearnPool(
       ? pool.filter((country) => rankingPlaceOf(mode, country.iso) !== null)
       : isLanguageMode(mode)
         ? pool.filter((country) => quizLanguageId(country.iso))
-        : isNameToGov(mode)
+        : isReligionMode(mode)
+          ? pool.filter((country) => religionOf(country.iso))
+          : isNameToGov(mode)
           ? pool.filter((country) => govKindOf(country.iso))
           : pool
   return filtered.filter((country) => extraFitsMode(country, mode))

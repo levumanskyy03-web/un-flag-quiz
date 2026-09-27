@@ -11,9 +11,11 @@ interface LegalShellProps {
   title?: string;
   children: ReactNode;
   catalogBack?: boolean;
+  /** Where «Назад» goes. Country pages use catalogBack (/countries). */
+  backHref?: string;
 }
 
-function LegalShellInner({ title, children, catalogBack = false }: LegalShellProps) {
+function LegalShellInner({ title, children, catalogBack = false, backHref }: LegalShellProps) {
   const { lang, setLang } = useSiteLang();
   const t = STRINGS[lang];
   return (
@@ -21,7 +23,11 @@ function LegalShellInner({ title, children, catalogBack = false }: LegalShellPro
       <nav className="legal-nav">
         <div className="legal-nav-back">
           <WorldsBackLink lang={lang} />
-          {catalogBack ? (
+          {backHref ? (
+            <a className="btn-ghost worlds-back" href={backHref}>
+              {t.back}
+            </a>
+          ) : catalogBack ? (
             <a className="btn-ghost worlds-back" href="/countries">
               {t.back}
             </a>
@@ -44,9 +50,9 @@ function LegalShellInner({ title, children, catalogBack = false }: LegalShellPro
         <nav className="legal-links">
           <a href="/about">{t.legalAbout}</a>
           <a href="/privacy">{t.legalPrivacy}</a>
-          <a href="/cookies">{t.legalCookies}</a>
-          <a href="/terms">{t.legalTerms}</a>
           <a href="/contacts">{t.legalContacts}</a>
+          <a href="/terms">{t.legalTerms}</a>
+          <a href="/cookies" className="legal-cookie">{t.legalCookies}</a>
         </nav>
         <p className="credit">{t.credit}</p>
       </footer>

@@ -226,7 +226,7 @@ export const MATH_PEOPLE: MathPerson[] = [
     century: 9,
     tier: 'medium',
     wiki: 'Muhammad ibn Musa al-Khwarizmi',
-    wikiFile: '1983 CPA 5413.jpg',
+    wikiFile: 'Al-Khwarizmi portrait.jpg',
     facts: [
       t11('Трактат об ал-джабр — корень слова «алгебра».', 'Treatise on al-jabr, root of “algebra”.', 'Abhandlung über al-ğabr, Ursprung von „Algebra“.', '论“还原”，代数一词的来源。', 'Tratado de al-jabr, origen de «álgebra».', 'अल-जब्र ग्रंथ, algebra शब्द की जड़।', 'رسالة الجبر، أصل كلمة الجبر.', 'আল-জাবর গ্রন্থ, algebra শব্দের উৎস।', 'Tratado de al-jabr, origem de «álgebra».', 'アルジャブルの書。「代数」の語源。', 'חיבור אל-ג׳בר, שורש המילה אלגברה.'),
       t11('Багдад, Дом мудрости.', 'Baghdad, House of Wisdom.', 'Bagdad, Haus der Weisheit.', '巴格达智慧宫。', 'Bagdad, Casa de la Sabiduría.', 'बगदाद, ज्ञान गृह।', 'بغداد، بيت الحكمة.', 'বাগদাদ, হাউস অব উইজডম।', 'Bagdade, Casa da Sabedoria.', 'バグダード、知恵の館。', 'בגדאד, בית החוכמה.'),
@@ -317,7 +317,7 @@ export const MATH_PEOPLE: MathPerson[] = [
     century: 19,
     tier: 'medium',
     wiki: 'Sofya Kovalevskaya',
-    wikiFile: 'Sofja Wassiljewna Kowalewskaja 1880.jpg',
+    wikiFile: 'Sofia Kovalevskaya.jpg',
     facts: [
       t11('Первая женщина — профессор математики в Европе (Стокгольм).', 'First woman professor of mathematics in Europe (Stockholm).', 'Erste Mathematikprofessorin Europas (Stockholm).', '欧洲首位女数学教授（斯德哥尔摩）。', 'Primera catedrática de matemáticas en Europa (Estocolmo).', 'यूरोप की पहली महिला गणित प्रोफेसर (स्टॉकहोम)।', 'أول أستاذة رياضيات في أوروبا (ستوكهولم).', 'ইউরোপের প্রথম নারী গণিত অধ্যাপক (স্টকহোম)।', 'Primeira professora de matemática na Europa (Estocolmo).', '欧州初の女性数学教授（ストックホルム）。', 'הפרופסורית הראשונה למתמטיקה באירופה (שטוקהולם).'),
       t11('Задача вращения твёрдого тела.', 'Rotation of a rigid body.', 'Kreiselproblem.', '刚体旋转问题。', 'Rotación de un sólido rígido.', 'दृढ़ पिंड का घूर्णन।', 'دوران الجسم الصلب.', 'কঠিন বস্তুর ঘূর্ণন।', 'Rotação de um corpo rígido.', '剛体の回転。', 'סיבוב גוף קשיח.'),

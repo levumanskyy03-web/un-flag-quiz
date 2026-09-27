@@ -307,7 +307,7 @@ export const ASTRO_PEOPLE: AstroPerson[] = [
     name: t11('Кеплер', 'Kepler', 'Kepler', '开普勒', 'Kepler', 'केपलर', 'كيبلر', 'কেপলার', 'Kepler', 'ケプラー', 'קפלר'),
     tier: 'easy',
     wiki: 'Johannes Kepler',
-    wikiFile: 'Johannes Kepler 1610.jpg',
+    wikiFile: 'Johannes Kepler, portrait by Hans von Aachen.jpg',
     facts: [
       t11('Три закона движения планет.', 'Three laws of planetary motion.', 'Drei Planetengesetze.', '行星运动三定律。', 'Tres leyes planetarias.', 'ग्रह गति के तीन नियम।', 'ثلاثة قوانين لحركة الكواكب.', 'গ্রহগতির তিন সূত্র।', 'Três leis planetárias.', '惑星運動の三法則。', 'שלושת חוקי התנועה.'),
       t11('Эллиптические орбиты, не круги.', 'Elliptical orbits, not circles.', 'Ellipsenbahnen, keine Kreise.', '椭圆轨道而非圆。', 'Órbitas elípticas.', 'दीर्घवृत्तीय कक्षाएँ।', 'مدارات إهليلجية.', 'উপবৃত্তাকার কক্ষ।', 'Órbitas elípticas.', '楕円軌道。', 'מסלולים אליפטיים.'),
@@ -318,7 +318,7 @@ export const ASTRO_PEOPLE: AstroPerson[] = [
     name: t11('Хаббл', 'Hubble', 'Hubble', '哈勃', 'Hubble', 'हबल', 'هابل', 'হাবল', 'Hubble', 'ハッブル', 'האבל'),
     tier: 'easy',
     wiki: 'Edwin Hubble',
-    wikiFile: 'Edwin Hubble.jpg',
+    wikiFile: 'Studio portrait photograph of Edwin Powell Hubble (cropped).JPG',
     facts: [
       t11('Галактики за пределами Млечного Пути.', 'Galaxies beyond the Milky Way.', 'Galaxien jenseits der Milchstraße.', '银河系外的星系。', 'Galaxias más allá de la Vía Láctea.', 'आकाशगंगा से परे गैलेक्सियाँ।', 'مجرات خارج درب التبانة.', 'আকাশগঙ্গার বাইরের ছায়াপথ।', 'Galáxias além da Via Láctea.', '天の川の外の銀河。', 'גלקסיות מחוץ לשביל החלב.'),
       t11('Разбегание: закон Хаббла.', 'Expansion: Hubble’s law.', 'Expansion: Hubblesches Gesetz.', '哈勃定律。', 'Ley de Hubble.', 'हबल का नियम।', 'قانون هابل.', 'হাবলের সূত্র।', 'Lei de Hubble.', 'ハッブルの法則。', 'חוק האבל.'),
@@ -329,7 +329,7 @@ export const ASTRO_PEOPLE: AstroPerson[] = [
     name: t11('Саган', 'Sagan', 'Sagan', '萨根', 'Sagan', 'सैगन', 'ساغان', 'স্যাগান', 'Sagan', 'セーガン', 'סאגן'),
     tier: 'medium',
     wiki: 'Carl Sagan',
-    wikiFile: 'Carl Sagan Planetary Society.jpg',
+    wikiFile: 'Astronomer Carl Sagan in 1987, crop.jpg',
     facts: [
       t11('«Космос», «бледно-голубая точка».', 'Cosmos; Pale Blue Dot.', 'Kosmos; Pale Blue Dot.', '《宇宙》；暗淡蓝点。', 'Cosmos; Punto azul pálido.', 'कॉसमॉस; पेल ब्लू डॉट।', 'الكون؛ النقطة الزرقاء الباهتة.', 'কসমস; পেল ব্লু ডট।', 'Cosmos; Pálido Ponto Azul.', 'コスモス、ペールブルー・ドット。', 'קוסמוס; הנקודה הכחולה.'),
       t11('Voyager: золотая пластинка.', 'Voyager Golden Record.', 'Voyager Golden Record.', '旅行者镀金唱片。', 'Disco de oro de Voyager.', 'वॉयेजर स्वर्ण डिस्क।', 'أسطوانة فويجر الذهبية.', 'ভয়েজার গোল্ডেন রেকর্ড।', 'Disco de ouro da Voyager.', 'ボイジャーのゴールデンレコード。', 'תקליט הזהב של וויאג׳ר.'),
@@ -351,7 +351,7 @@ export const ASTRO_PEOPLE: AstroPerson[] = [
     name: t11('Кэролайн Гершель', 'Caroline Herschel', 'Caroline Herschel', '卡罗琳·赫歇尔', 'Caroline Herschel', 'कैरोलिन हर्शेल', 'كارولين هيرشل', 'ক্যারোলিন হার্শেল', 'Caroline Herschel', 'カロライン・ハーシェル', 'קרוליין הרשל'),
     tier: 'hard',
     wiki: 'Caroline Herschel',
-    wikiFile: 'Caroline Herschel.jpg',
+    wikiFile: 'Caroline Herschel, aged 92. Stipple engraving by J. Brown. Wellcome V0002715.jpg',
     facts: [
       t11('Кометы; работала с братом Уильямом.', 'Comets; worked with William Herschel.', 'Kometen; mit Wilhelm Herschel.', '彗星；与威廉合作。', 'Cometas; con William Herschel.', 'धूमकेतु; विलियम के साथ।', 'مذنبات مع ويليام.', 'ধূমকেতু; উইলিয়ামের সাথে।', 'Cometas; com William.', '彗星。ウィリアムと協働。', 'שביטים; עם ויליאם.'),
       t11('Первая женщина с королевской пенсией за науку в Британии.', 'First British woman paid a royal science pension.', 'Erste Britin mit königlicher Wissenschaftspension.', '首位获英国王室科学津贴的女性。', 'Primera británica con pensión científica real.', 'ब्रिटेन में वैज्ञानिक पेंशन पाने वाली पहली महिला।', 'أول بريطانية بتقاعد علمي ملكي.', 'রাজকীয় বিজ্ঞান পেনশন পাওয়া প্রথম ব্রিটিশ নারী।', 'Primeira britânica com pensão científica real.', '英国で科学の王室年金を得た最初の女性。', 'הראשונה בבריטניה לפנסיה מדעית מלכותית.'),
@@ -362,7 +362,7 @@ export const ASTRO_PEOPLE: AstroPerson[] = [
     name: t11('Энни Кэннон', 'Annie Jump Cannon', 'Annie Jump Cannon', '安妮·坎农', 'Annie Jump Cannon', 'एनी जंप कैनन', 'آني جمب كانون', 'অ্যানি জাম্প ক্যানন', 'Annie Jump Cannon', 'アニー・ジャンプ・キャノン', 'אני ג׳אמפ קנון'),
     tier: 'hard',
     wiki: 'Annie Jump Cannon',
-    wikiFile: 'Annie Jump Cannon 1922 portrait.jpg',
+    wikiFile: 'Annie Jump Cannon 1922 Portrait.jpg',
     facts: [
       t11('Классификация спектров OBAFGKM.', 'OBAFGKM spectral classes.', 'Spektralklassen OBAFGKM.', 'OBAFGKM 光谱分类。', 'Clases espectrales OBAFGKM.', 'OBAFGKM वर्णक्रम।', 'أصناف أطياف OBAFGKM.', 'OBAFGKM বর্ণালি শ্রেণি।', 'Classes espectrais OBAFGKM.', 'OBAFGKMスペクトル型。', 'סיווג ספקטרלי OBAFGKM.'),
       t11('Гарвард, каталог Генри Дрейпера.', 'Harvard, Henry Draper Catalogue.', 'Harvard, Henry-Draper-Katalog.', '哈佛，亨利·德雷珀星表。', 'Harvard, catálogo Henry Draper.', 'हार्वर्ड, ड्रेपर सूची।', 'هارفارد وفهرس دريبر.', 'হার্ভার্ড, ড্রেপার ক্যাটালগ।', 'Harvard, catálogo Draper.', 'ハーバード、ドレイパーカタログ。', 'הרווארד, קטלוג דרייפר.'),
@@ -395,7 +395,7 @@ export const ASTRO_PEOPLE: AstroPerson[] = [
     name: t11('Сесилия Пейн-Гапошкина', 'Cecilia Payne-Gaposchkin', 'Cecilia Payne-Gaposchkin', '塞西莉亚·佩恩-加波施金', 'Cecilia Payne-Gaposchkin', 'सेसिलिया पेन-गापोश्किन', 'سيسيليا باين غابوشكين', 'সিসিলিয়া পেইন-গ্যাপোশকিন', 'Cecilia Payne-Gaposchkin', 'セシリア・ペイン＝ガポーシュキン', 'ססיליה פיין־גפושקין'),
     tier: 'hard',
     wiki: 'Cecilia Payne-Gaposchkin',
-    wikiFile: 'Cecilia Payne-Gaposchkin.jpg',
+    wikiFile: 'Cecilia Helena Payne-Gaposchkin (1900-1979) - Science Service.jpg',
     facts: [
       t11('Доказала, что звёзды состоят в основном из водорода и гелия.', 'Showed that stars are mostly hydrogen and helium.', 'Zeigte, dass Sterne vor allem aus Wasserstoff und Helium bestehen.', '证明恒星主要由氢和氦组成。', 'Demostró que las estrellas son sobre todo hidrógeno y helio.', 'दिखाया कि तारे मुख्यतः हाइड्रोजन और हीलियम हैं।', 'أثبتت أن النجوم تتكون أساساً من الهيدروجين والهيليوم.', 'প্রমাণ করেন তারা মূলত হাইড্রোজেন ও হিলিয়াম।', 'Mostrou que as estrelas são sobretudo hidrogénio e hélio.', '恒星が主に水素とヘリウムでできると示した。', 'הראתה שכוכבים מורכבים בעיקר ממימן והליום.'),
       t11('Её диссертация изменила звёздную астрофизику.', 'Her thesis transformed stellar astrophysics.', 'Ihre Dissertation veränderte die stellare Astrophysik.', '她的论文改变了恒星天体物理学。', 'Su tesis transformó la astrofísica estelar.', 'उनकी थीसिस ने तारकीय खगोलभौतिकी बदल दी।', 'غيّرت أطروحتها الفيزياء الفلكية النجمية.', 'তাঁর থিসিস নাক্ষত্রিক জ্যোতির্পদার্থবিদ্যা বদলে দেয়।', 'A sua tese transformou a astrofísica estelar.', '博士論文が恒星天体物理学を変えた。', 'עבודת הדוקטור שלה שינתה את האסטרופיזיקה הכוכבית.'),

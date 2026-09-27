@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { HelpTip } from './HelpTip'
 import { STRINGS, mixLabel, modeLabel } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import {
@@ -37,6 +38,7 @@ interface MathScreenProps {
   onHub: (tab: HubTab) => void
   onWorlds: () => void
   onClearHistory: () => void
+  onOpenDigits: () => void
 }
 
 export function defaultMathMode(mode: QuizSettings['mode']): QuizSettings['mode'] {
@@ -52,6 +54,7 @@ export function MathScreen({
   onHub,
   onWorlds,
   onClearHistory,
+  onOpenDigits,
 }: MathScreenProps) {
   const t = STRINGS[settings.lang]
   const mix = settings.mix
@@ -106,8 +109,8 @@ export function MathScreen({
         <h1 className="football-title">
           <GeoIcon name="sigma" size={28} />
           {t.math}
+          <HelpTip text={t.mathSubtitle} />
         </h1>
-        <p className="subtitle">{t.mathSubtitle}</p>
       </header>
 
       <HubNav lang={settings.lang} active="free" tabs={MATH_HUB_TABS} onSelect={onHub} />
@@ -123,6 +126,10 @@ export function MathScreen({
                 className={`choice has-mode-no ${activeFamily === id ? 'is-active' : ''}`}
                 aria-pressed={activeFamily === id}
                 onClick={() => {
+                  if (id === 'digits') {
+                    onOpenDigits()
+                    return
+                  }
                   applyMathSettings({ ...settings, ...settingsForMathFamily(settings, id) })
                   setSetupFamily({ world: 'math', id })
                 }}
@@ -134,10 +141,13 @@ export function MathScreen({
           </FitGroup>
         </div>
         <div className="mode-aside">
-          <h2>{t.familyMix}</h2>
+          <h2>
+            {t.familyMix}
+            <HelpTip text={t.customMixNote} />
+          </h2>
           <button
             type="button"
-            className={`choice has-note has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
+            className={`choice has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
             aria-pressed={activeFamily === 'mix'}
             onClick={() => {
               applyMathSettings({ ...settings, ...settingsForMathFamily(settings, 'mix') })
@@ -146,9 +156,6 @@ export function MathScreen({
           >
             <CatalogNo n={worldCatalogNo('math')} />
             <FitText minPx={9}>{mix ? mixLabel(mix, settings.lang) : t.familyMix}</FitText>
-            <FitText className="choice-note" wrap minPx={7}>
-              {t.customMixNote}
-            </FitText>
           </button>
         </div>
       </section>
@@ -163,10 +170,6 @@ export function MathScreen({
           {t.bestOfSetup(t.score(currentBest.correct, currentBest.total), formatClock(currentBest.roundMs))}
         </p>
       ) : null}
-
-      <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
-        {t.start}
-      </button>
 
       {setupFamily ? (
         <ModeSetupModal
@@ -198,6 +201,12 @@ export function MathScreen({
           </ul>
         </section>
       ) : null}
+
+      <div className="hub-start-dock">
+        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
+          {t.start}
+        </button>
+      </div>
     </div>
   )
 }

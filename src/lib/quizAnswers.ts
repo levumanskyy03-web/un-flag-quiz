@@ -11,7 +11,8 @@ import {
 import { languageName, quizLanguageId } from '../data/languages'
 import { govKindOf } from '../data/governments'
 import { drivingSide } from '../data/driving'
-import { drivingLabel, governmentLabel, type Lang } from '../i18n/strings'
+import { religionOf } from '../data/religion'
+import { drivingLabel, governmentLabel, religionLabel, type Lang } from '../i18n/strings'
 import { currencyChoiceLabel } from './currencyFakes'
 import { foundedChoiceLabel } from './foundedFakes'
 import { populationChoiceLabel } from './populationFakes'
@@ -57,7 +58,8 @@ export function answerKey(country: Country, mode: QuizMode): string {
   }
   if (mode === 'nameToGov') return `gov:${govKindOf(country.iso) ?? country.iso}`
   if (mode === 'nameToDriving') return `drive:${drivingSide(country.iso)}`
-  if (mode === 'languageToName' || mode === 'drivingToName' || mode === 'silhouetteToName' || mode === 'nameToSilhouette') {
+  if (mode === 'nameToReligion') return `rel:${religionOf(country.iso) ?? country.iso}`
+  if (mode === 'languageToName' || mode === 'drivingToName' || mode === 'religionToName' || mode === 'silhouetteToName' || mode === 'nameToSilhouette') {
     return country.iso
   }
   const passport = PASSPORTS[country.iso]
@@ -104,6 +106,10 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
     return kind ? governmentLabel(kind, lang) : countryName(country, lang)
   }
   if (mode === 'nameToDriving') return drivingLabel(drivingSide(country.iso), lang)
+  if (mode === 'nameToReligion') {
+    const id = religionOf(country.iso)
+    return id ? religionLabel(id, lang) : countryName(country, lang)
+  }
   const passport = PASSPORTS[country.iso]
   if (!passport) return countryName(country, lang)
   if (mode === 'nameToCapital') return passportCapital(passport, lang, country.iso)

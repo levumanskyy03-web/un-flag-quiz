@@ -50,7 +50,6 @@ export function LangPrompt({ ask }: { ask: boolean }) {
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id={titleId}>Choose your language</h2>
-        <p className="setting-hint">Saved on this device. You can change it later in Settings.</p>
         <div className="choice-grid lang-prompt-grid">
           {PROMPT_LANGS.map((code) => (
             <button key={code} type="button" className="choice" onClick={() => remember(code)}>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { HelpTip } from './HelpTip'
 import { STRINGS, localeTag, mixLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import {
@@ -105,7 +106,6 @@ export function HomeScreen({
       <header className="home-header">
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1>{t.title}</h1>
-        <p className="subtitle">{t.subtitle}</p>
       </header>
 
       <HubNav lang={settings.lang} active="free" onSelect={onHub} />
@@ -132,10 +132,13 @@ export function HomeScreen({
           </FitGroup>
         </div>
         <div className="mode-aside">
-          <h2>{t.familyMix}</h2>
+          <h2>
+            {t.familyMix}
+            <HelpTip text={t.customMixNote} />
+          </h2>
           <button
             type="button"
-            className={`choice has-note has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
+            className={`choice has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
             aria-pressed={activeFamily === 'mix'}
             onClick={() => {
               update(settingsForGeoFamily(settings, 'mix'))
@@ -144,9 +147,6 @@ export function HomeScreen({
           >
             <CatalogNo n={worldCatalogNo('geo')} />
             <FitText minPx={9}>{settings.mix ? mixLabel(settings.mix, settings.lang) : t.familyMix}</FitText>
-            <FitText className="choice-note" wrap minPx={7}>
-              {t.customMixNote}
-            </FitText>
           </button>
         </div>
       </section>
@@ -164,9 +164,6 @@ export function HomeScreen({
       )}
 
       <div className="home-launch">
-        <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
-          {t.start}
-        </button>
         <button
           type="button"
           className={`choice home-launch-rankings ${setupFamily?.id === 'rankings' ? 'is-active' : ''}`}
@@ -205,6 +202,12 @@ export function HomeScreen({
           </ul>
         </section>
       )}
+
+      <div className="hub-start-dock">
+        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
+          {t.start}
+        </button>
+      </div>
     </div>
   )
 }

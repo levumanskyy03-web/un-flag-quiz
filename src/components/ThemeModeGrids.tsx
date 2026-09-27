@@ -39,10 +39,13 @@ export function themeTopicLabel(topic: ThemeTopic, lang: Lang): string {
   if (topic === 'cell') return t.bioFamilyCell
   if (topic === 'body') return t.bioFamilyBody
   if (topic === 'life') return t.bioFamilyLife
+  if (topic === 'wild') return t.bioFamilyWild
+  if (topic === 'labs') return t.bioFamilyLabs
   if (topic === 'hosts') return t.olyFamilyHosts
   if (topic === 'sports') return t.olyFamilySports
   if (topic === 'noc') return t.olyFamilyNoc
   if (topic === 'stars') return t.olyFamilyStars
+  if (topic === 'emblems') return t.olyFamilySymbols
   if (topic === 'code') return t.csFamilyCode
   if (topic === 'langs') return t.csFamilyLangs
   if (topic === 'structs') return t.csFamilyStructs

@@ -11,7 +11,8 @@ import {
   passportCapital,
   passportCurrency,
 } from '../data/passports'
-import { STRINGS, governmentLabel, localeTag, regionLabel, type Lang } from '../i18n/strings'
+import { STRINGS, governmentLabel, localeTag, regionLabel, religionLabel, type Lang } from '../i18n/strings'
+import { religionOf } from '../data/religion'
 import { countryName } from '../lib/quiz'
 import { Flag } from './Flag'
 import { FitText } from './FitText'
@@ -43,6 +44,7 @@ export function PassportModal({
   const name = countryName(country, lang)
   const founded = foundedYear(country.iso)
   const govKind = govKindOf(country.iso)
+  const religion = religionOf(country.iso)
   const neighbors = landNeighbors(country.iso)
     .map((iso) => findCountry(iso))
     .filter((item): item is Country => item !== undefined)
@@ -135,6 +137,12 @@ export function PassportModal({
             <div>
               <dt>{t.government}</dt>
               <dd>{governmentLabel(govKind, lang)}</dd>
+            </div>
+          ) : null}
+          {religion ? (
+            <div>
+              <dt>{t.religion}</dt>
+              <dd>{religionLabel(religion, lang)}</dd>
             </div>
           ) : null}
           {founded !== undefined ? (

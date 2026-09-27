@@ -86,8 +86,6 @@ export function CollectionsScreen({
       <header className="quiz-header is-hub">
         <HubNav lang={settings.lang} active="lists" tabs={tabs} onSelect={onHub} />
       </header>
-      <p className="setting-hint">{t.collectionsHint}</p>
-
       <button
         type="button"
         className={`collections-hero is-${daily.world}`}

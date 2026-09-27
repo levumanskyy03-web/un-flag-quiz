@@ -18,6 +18,7 @@ import {
 } from '../data/empire'
 import { CARD_FRAME_IDS, FRAME_MIN_ERA, SHARE_THEME_IDS, SHOP_FRAME_IDS, SHOP_SHARE_IDS, type CardFrameId, type ShareThemeId } from '../data/cosmetics'
 import { STRINGS, type Lang } from '../i18n/strings'
+import { HelpTip } from './HelpTip'
 import {
   activeBuilds,
   albumMult,
@@ -218,11 +219,13 @@ function BuildingCard({ building, state, lang, now }: { building: EmpireBuilding
       <header>
         <GeoIcon name={world ? WORLD_ICON[world] : COMMON_ICON[building as keyof typeof COMMON_ICON]} size={20} />
         <div>
-          <h3>{buildingTitle(building, lang)}</h3>
+          <h3>
+            {buildingTitle(building, lang)}
+            <HelpTip text={buildingDesc(building, lang)} />
+          </h3>
           <small>{t.empireLevel(level)} / {max}</small>
         </div>
       </header>
-      <p>{buildingDesc(building, lang)}</p>
       {world ? (
         <dl className="empire-card-stats">
           <div>
@@ -777,7 +780,9 @@ export function EmpireScreen({ lang, onWorlds }: { lang: Lang; onWorlds: () => v
             ) : null}
             {spot.building === 'treasury' ? (
               <section className="empire-treasury">
-                <p>{t.empireSellHint}</p>
+                <p>
+                  <HelpTip text={t.empireSellHint} />
+                </p>
                 <ul className="empire-res-list">
                   {EMPIRE_RESOURCES.map((key) => {
                     const world = EMPIRE_WORLD_BY_RESOURCE[key]
@@ -834,7 +839,9 @@ function LegacyTab({ lang, state, now }: { lang: Lang; state: EmpireState; now: 
 
   return (
     <section className="empire-legacy">
-      <p className="empire-intro">{t.empireLegacyIntro}</p>
+      <p className="empire-intro">
+        <HelpTip text={t.empireLegacyIntro} />
+      </p>
       {sync !== 'server' ? <p className="empire-legacy-guest">{t.empireLegacyGuest}</p> : null}
       <ul className="empire-legacy-list">
         {rows.map((row) => {
@@ -950,7 +957,9 @@ function CosmeticsBlock({ lang, state, now }: { lang: Lang; state: EmpireState; 
           )
         })}
       </ul>
-      <p className="empire-album-hint">{t.empireAlbumHint}</p>
+      <p className="empire-album-hint">
+        <HelpTip text={t.empireAlbumHint} />
+      </p>
 
       <h2>{t.empireFrames}</h2>
       <ul className="empire-cosmetic-list">

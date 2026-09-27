@@ -1,6 +1,7 @@
 'use client'
 
 import { STRINGS, difficultyLabel, type Lang } from '../i18n/strings'
+import { HelpTip } from './HelpTip'
 import { ChoiceLabel } from './FitText'
 import type { QuizDifficulty } from '../lib/quiz'
 
@@ -26,7 +27,6 @@ export function HardcoreToggle({
       className={`hardcore-toggle${on ? ' is-active' : ''}`}
       aria-pressed={on}
       aria-label={t.hardcore}
-      title={t.hardcoreHint}
       onClick={() => onChange(!on)}
     >
       <span className="hardcore-dot" aria-hidden />
@@ -71,8 +71,8 @@ export function DifficultyPicker({
           ))}
         </div>
         <HardcoreToggle lang={lang} on={hardcoreOn} onChange={(on) => onChange({ difficulty: selected, hardcore: on })} />
+        <HelpTip text={t.hardcoreHint} />
       </div>
-      {hardcoreOn ? <p className="setting-hint">{t.hardcoreHint}</p> : null}
     </>
   )
 }

@@ -5,6 +5,7 @@ import { Nunito, Plus_Jakarta_Sans } from "next/font/google";
 import { AdScripts } from "../components/AdScripts";
 import { CookieNotice } from "../components/CookieNotice";
 import { LangPrompt } from "../components/LangPrompt";
+import { NativeShell } from "../components/NativeShell";
 import { SiteAudio } from "../components/SiteAudio";
 import { isLang, langDir, localeTag, SITE_LANG_KEY } from "../i18n/lang";
 import { requestLang } from "../i18n/requestLang";
@@ -43,6 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={localeTag(lang)} dir={langDir(lang)} suppressHydrationWarning>
       <body className={`${plusJakarta.variable} ${plusJakarta.className} ${nunito.variable}`}>
         <SiteAudio />
+        <NativeShell />
         {children}
         <LangPrompt ask={askLang} />
         <CookieNotice lang={lang} dismissed={cookieNoticeDismissed} />

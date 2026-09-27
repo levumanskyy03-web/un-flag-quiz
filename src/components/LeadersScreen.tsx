@@ -77,7 +77,6 @@ export function LeadersScreen({
           <GeoIcon name="laurel" size={28} />
           {t.leaders}
         </h1>
-        <p className="subtitle">{t.leadersSubtitle}</p>
       </header>
 
       <HubNav lang={settings.lang} active="free" tabs={WORLD_HUB_TABS} onSelect={onHub} />
@@ -122,10 +121,6 @@ export function LeadersScreen({
         </p>
       ) : null}
 
-      <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
-        {t.start}
-      </button>
-
       {setupFamily ? (
         <ModeSetupModal
           family={setupFamily}
@@ -154,6 +149,12 @@ export function LeadersScreen({
           </ul>
         </section>
       ) : null}
+
+      <div className="hub-start-dock">
+        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
+          {t.start}
+        </button>
+      </div>
     </div>
   )
 }

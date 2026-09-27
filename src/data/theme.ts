@@ -6,6 +6,7 @@ import { THEME_LEVEL_QUESTIONS } from '../lib/quiz/themeModes'
 import { olyGeneratedRows } from './olympics/rows'
 import { csGeneratedRows } from './cs/rows'
 import { foodGeneratedRows } from './food/rows'
+import { BIO_CLASS_PHOTO, bioGeneratedRows } from './biology/rows'
 import { olyPortrait } from './olympics/portraits'
 
 export type ThemeTier = 'easy' | 'medium' | 'hard'
@@ -155,6 +156,21 @@ const BEIJING = t11('Пекин', 'Beijing', 'Peking', '北京', 'Pekín', 'ब�
 const RIO = t11('Рио-де-Жанейро', 'Rio de Janeiro', 'Rio de Janeiro', '里约', 'Río de Janeiro', 'रियो', 'ريو', 'রিও', 'Rio de Janeiro', 'リオ', 'ריו')
 const SYDNEY = t11('Сидней', 'Sydney', 'Sydney', '悉尼', 'Sídney', 'सिडनी', 'سيدني', 'সিডনি', 'Sydney', 'シドニー', 'סידני')
 const BARC = t11('Барселона', 'Barcelona', 'Barcelona', '巴塞罗那', 'Barcelona', 'बार्सिलोना', 'برشلونة', 'বার্সেলোনা', 'Barcelona', 'バルセロナ', 'ברצלונה')
+const STLOUIS = t11('Сент-Луис', 'St. Louis', 'St. Louis', '圣路易斯', 'San Luis', 'सेंट लुइस', 'سانت لويس', 'সেন্ট লুইস', 'St. Louis', 'セントルイス', 'סנט לואיס')
+const STOCK = t11('Стокгольм', 'Stockholm', 'Stockholm', '斯德哥尔摩', 'Estocolmo', 'स्टॉकहोम', 'ستوكهولم', 'স্টকহোম', 'Estocolmo', 'ストックホルム', 'שטוקהולם')
+const ANTW = t11('Антверпен', 'Antwerp', 'Antwerpen', '安特卫普', 'Amberes', 'एंटवर्प', 'أنتويرب', 'অ্যান্টওয়ার্প', 'Antuérpia', 'アントワープ', 'אנטוורפן')
+const AMST = t11('Амстердам', 'Amsterdam', 'Amsterdam', '阿姆斯特丹', 'Ámsterdam', 'एम्स्टर्डम', 'أمستردام', 'আমস্টারডাম', 'Amesterdão', 'アムステルダム', 'אמסטרדם')
+const LA = t11('Лос-Анджелес', 'Los Angeles', 'Los Angeles', '洛杉矶', 'Los Ángeles', 'लॉस एंजिल्स', 'لوس أنجلوس', 'লস অ্যাঞ্জেলেস', 'Los Angeles', 'ロサンゼルス', 'לוס אנג׳לס')
+const BERLIN = t11('Берлин', 'Berlin', 'Berlin', '柏林', 'Berlín', 'बर्लिन', 'برلين', 'বার্লিন', 'Berlim', 'ベルリン', 'ברלין')
+const HELS = t11('Хельсинки', 'Helsinki', 'Helsinki', '赫尔辛基', 'Helsinki', 'हेलसिंकी', 'هلسنكي', 'হেলসিঙ্কি', 'Helsínquia', 'ヘルシンキ', 'הלסינקי')
+const MELB = t11('Мельбурн', 'Melbourne', 'Melbourne', '墨尔本', 'Melbourne', 'मेलबर्न', 'ملبورن', 'মেলবোর্ন', 'Melbourne', 'メルボルン', 'מלבורן')
+const ROME = t11('Рим', 'Rome', 'Rom', '罗马', 'Roma', 'रोम', 'روما', 'রোম', 'Roma', 'ローマ', 'רומא')
+const MEXCITY = t11('Мехико', 'Mexico City', 'Mexiko-Stadt', '墨西哥城', 'Ciudad de México', 'मेक्सिको सिटी', 'مكسيكو', 'মেক্সিকো সিটি', 'Cidade do México', 'メキシコシティ', 'מקסיקו סיטי')
+const MUNICH = t11('Мюнхен', 'Munich', 'München', '慕尼黑', 'Múnich', 'म्यूनिख', 'ميونخ', 'মিউনিখ', 'Munique', 'ミュンヘン', 'מינכן')
+const MONTREAL = t11('Монреаль', 'Montreal', 'Montreal', '蒙特利尔', 'Montreal', 'मॉन्ट्रियल', 'مونتريال', 'মন্ট্রিয়ল', 'Montreal', 'モントリオール', 'מונטריאול')
+const MOSCOW = t11('Москва', 'Moscow', 'Moskau', '莫斯科', 'Moscú', 'मास्को', 'موسكو', 'মস্কো', 'Moscovo', 'モスクワ', 'מוסקבה')
+const SEOUL = t11('Сеул', 'Seoul', 'Seoul', '首尔', 'Seúl', 'सियोल', 'سيول', 'সিউল', 'Seul', 'ソウル', 'סיאול')
+const ATLANTA = t11('Атланта', 'Atlanta', 'Atlanta', '亚特兰大', 'Atlanta', 'अटलांटा', 'أتلانتا', 'আটলান্টা', 'Atlanta', 'アトランタ', 'אטלנטה')
 const Y1896 = t11('1896, лето', '1896 Summer', 'Sommer 1896', '1896 夏奥', 'Verano 1896', '1896 ग्रीष्म', 'صيف 1896', '১৮৯৬ গ্রীষ্ম', 'Verão 1896', '1896夏', 'קיץ 1896')
 const Y2024 = t11('2024, лето', '2024 Summer', 'Sommer 2024', '2024 夏奥', 'Verano 2024', '2024 ग्रीष्म', 'صيف 2024', '২০২৪ গ্রীষ্ম', 'Verão 2024', '2024夏', 'קיץ 2024')
 const Y2020 = t11('2020/21, лето', '2020/21 Summer', 'Sommer 2020/21', '2020/21 夏奥', 'Verano 2020/21', '2020/21 ग्रीष्म', 'صيف 2020/21', '২০২০/২১ গ্রীষ্ম', 'Verão 2020/21', '2020/21夏', 'קיץ 2020/21')
@@ -185,6 +201,10 @@ function winterY(n: string) {
   return t11(`${n}, зима`, `${n} Winter`, `Winter ${n}`, `${n} 冬奥`, `Invierno ${n}`, `${n} शीत`, `شتاء ${n}`, `${n} শীত`, `Inverno ${n}`, `${n}冬`, `חורף ${n}`)
 }
 
+function summerY(n: string) {
+  return t11(`${n}, лето`, `${n} Summer`, `Sommer ${n}`, `${n} 夏奥`, `Verano ${n}`, `${n} ग्रीष्म`, `صيف ${n}`, `${n} গ্রীষ্ম`, `Verão ${n}`, `${n}夏`, `קיץ ${n}`)
+}
+
 const ESP = t11('Испания', 'Spain', 'Spanien', '西班牙', 'España', 'स्पेन', 'إسبانيا', 'স্পেন', 'Espanha', 'スペイン', 'ספרד')
 const ITA = t11('Италия', 'Italy', 'Italien', '意大利', 'Italia', 'इटली', 'إيطاليا', 'ইতালি', 'Itália', 'イタリア', 'איטליה')
 const GER = t11('Германия', 'Germany', 'Deutschland', '德国', 'Alemania', 'जर्मनी', 'ألمانيا', 'জার্মানি', 'Alemanha', 'ドイツ', 'גרמניה')
@@ -202,6 +222,9 @@ const HUN = t11('Венгрия', 'Hungary', 'Ungarn', '匈牙利', 'Hungría', 
 const SWE = t11('Швеция', 'Sweden', 'Schweden', '瑞典', 'Suecia', 'स्वीडन', 'السويد', 'সুইডেন', 'Suécia', 'スウェーデン', 'שוודיה')
 const NED = t11('Нидерланды', 'Netherlands', 'Niederlande', '荷兰', 'Países Bajos', 'नीदरलैंड', 'هولندا', 'নেদারল্যান্ডস', 'Países Baixos', 'オランダ', 'הולנד')
 const RUS = t11('Россия', 'Russia', 'Russland', '俄罗斯', 'Rusia', 'रूस', 'روسيا', 'রাশিয়া', 'Rússia', 'ロシア', 'רוסיה')
+const BEL = t11('Бельгия', 'Belgium', 'Belgien', '比利时', 'Bélgica', 'बेल्जियम', 'بلجيكا', 'বেলজিয়াম', 'Bélgica', 'ベルギー', 'בלגיה')
+const MEX = t11('Мексика', 'Mexico', 'Mexiko', '墨西哥', 'México', 'मेक्सिको', 'المكسيك', 'মেক্সিকো', 'México', 'メキシコ', 'מקסיקו')
+const URS = t11('СССР', 'Soviet Union', 'Sowjetunion', '苏联', 'Unión Soviética', 'सोवियत संघ', 'الاتحاد السوفيتي', 'সোভিয়েত ইউনিয়ন', 'União Soviética', 'ソ連', 'ברית המועצות')
 
 const CHAMONIX = t11('Шамони', 'Chamonix', 'Chamonix', '霞慕尼', 'Chamonix', 'शामोनी', 'شاموني', 'শামোনি', 'Chamonix', 'シャモニー', 'שאמוני')
 const PLACID = t11('Лейк-Плэсид', 'Lake Placid', 'Lake Placid', '普莱西德湖', 'Lake Placid', 'लेक प्लैसिड', 'ليك بلاسيد', 'লেক প্লাসিড', 'Lake Placid', 'レークプラシッド', 'לייק פלאסיד')
@@ -257,6 +280,23 @@ const AIR = t11('воздушный', 'air', 'Luft', '空中', 'aéreo', 'वा
 const BENZ = t11('Карл Бенц', 'Karl Benz', 'Carl Benz', '卡尔·本茨', 'Karl Benz', 'कार्ल बेंज', 'كارل بنز', 'কার্ল বেঞ্জ', 'Karl Benz', 'カール・ベンツ', 'קארל בנץ')
 const WRIGHT = t11('братья Райт', 'Wright brothers', 'Brüder Wright', '莱特兄弟', 'hermanos Wright', 'राइट बंधु', 'الأخوان رايت', 'রাইট ভাইয়েরা', 'irmãos Wright', 'ライト兄弟', 'האחים רייט')
 const STEPH = t11('Стивенсон', 'Stephenson', 'Stephenson', '斯蒂芬森', 'Stephenson', 'स्टीफेंसन', 'ستيفنسون', 'স্টিফেনসন', 'Stephenson', 'スチーブンソン', 'סטיבנסון')
+
+const RINGS = t11('пять колец', 'five rings', 'fünf Ringe', '五环', 'cinco anillos', 'पाँच छल्ले', 'خمس حلقات', 'পাঁচটি রিং', 'cinco anéis', '五輪', 'חמש טבעות')
+const CONTINENTS = t11('пять континентов', 'five continents', 'fünf Kontinente', '五大洲', 'cinco continentes', 'पाँच महाद्वीप', 'خمس قارات', 'পাঁচ মহাদেশ', 'cinco continentes', '五大陸', 'חמש יבשות')
+const FLAME = t11('олимпийский огонь', 'Olympic flame', 'olympische Flamme', '奥运圣火', 'llama olímpica', 'ओलंपिक ज्योति', 'الشعلة الأولمبية', 'অলিম্পিক শিখা', 'chama olímpica', '聖火', 'הלפיד האולימפי')
+const RELAY = t11('эстафета от Олимпии', 'relay from Olympia', 'Staffel aus Olympia', '来自奥林匹亚的传递', 'relevo desde Olimpia', 'ओलंपिया से रिले', 'تتابع من أولمبيا', 'অলিম্পিয়া থেকে রিলে', 'revezamento desde Olímpia', 'オリンピアからのリレー', 'שליחים מאולימפיה')
+const MOTTO = t11('Citius, Altius, Fortius', 'Citius, Altius, Fortius', 'Citius, Altius, Fortius', 'Citius, Altius, Fortius', 'Citius, Altius, Fortius', 'Citius, Altius, Fortius', 'Citius, Altius, Fortius', 'Citius, Altius, Fortius', 'Citius, Altius, Fortius', 'Citius, Altius, Fortius', 'Citius, Altius, Fortius')
+const FASTER = t11('быстрее, выше, сильнее', 'faster, higher, stronger', 'schneller, höher, stärker', '更快、更高、更强', 'más rápido, más alto, más fuerte', 'तेज़, ऊँचा, मज़बूत', 'أسرع، أعلى، أقوى', 'দ্রুত, উঁচু, শক্তিশালী', 'mais rápido, mais alto, mais forte', 'より速く、より高く、より強く', 'מהר יותר, גבוה יותר, חזק יותר')
+const WREATH = t11('оливковый венок', 'olive wreath', 'Olivenkranz', '橄榄枝花环', 'corona de olivo', 'जैतून की माला', 'إكليل الزيتون', 'জলপাই মালা', 'coroa de oliveira', 'オリーブの冠', 'זר זית')
+const PRIZE = t11('награда древних Игр', 'prize of the ancient Games', 'Preis der antiken Spiele', '古代奥运会的奖品', 'premio de los Juegos antiguos', 'प्राचीन खेलों का पुरस्कार', 'جائزة الألعاب القديمة', 'প্রাচীন গেমসের পুরস্কার', 'prémio dos Jogos antigos', '古代大会の賞', 'פרס המשחקים העתיקים')
+const COUB = t11('Пьер де Кубертен', 'Pierre de Coubertin', 'Pierre de Coubertin', '顾拜旦', 'Pierre de Coubertin', 'पियरे दे कुबेर्तेन', 'بيير دي كوبرتان', 'পিয়ের দ্য কুবেরতাঁ', 'Pierre de Coubertin', 'クーベルタン', 'פייר דה קובטן')
+const FOUNDER = t11('основатель современных Игр', 'founder of the modern Games', 'Gründer der modernen Spiele', '现代奥运会创始人', 'fundador de los Juegos modernos', 'आधुनिक खेलों के संस्थापक', 'مؤسس الألعاب الحديثة', 'আধুনিক গেমসের প্রতিষ্ঠাতা', 'fundador dos Jogos modernos', '近代大会の創始者', 'מייסד המשחקים המודרניים')
+const WHITE = t11('белый флаг с кольцами', 'white flag with rings', 'weiße Flagge mit Ringen', '带五环的白旗', 'bandera blanca con anillos', 'छल्लों वाला सफेद झंडा', 'علم أبيض بحلقات', 'রিংসহ সাদা পতাকা', 'bandeira branca com anéis', '五輪の白旗', 'דגל לבן עם טבעות')
+const IOC = t11('флаг МОК', 'IOC flag', 'IOC-Flagge', '国际奥委会旗', 'bandera del COI', 'IOC झंडा', 'علم اللجنة الأولمبية', 'আইওসি পতাকা', 'bandeira do COI', 'IOC旗', 'דגל הוועד האולימפי')
+const GOLD = t11('золотая медаль', 'gold medal', 'Goldmedaille', '金牌', 'medalla de oro', 'स्वर्ण पदक', 'ميدالية ذهبية', 'স্বর্ণপদক', 'medalha de ouro', '金メダル', 'מדליית זהב')
+const FIRST = t11('первое место', 'first place', 'erster Platz', '第一名', 'primer puesto', 'पहला स्थान', 'المركز الأول', 'প্রথম স্থান', 'primeiro lugar', '1位', 'מקום ראשון')
+const OLYMPIAD = t11('олимпиада', 'Olympiad', 'Olympiade', '奥林匹克周期', 'olimpiada', 'ओलंपियाड', 'الأولمبياد', 'অলিম্পিয়াড', 'Olimpíada', 'オリンピアード', 'אולימפיאדה')
+const FOUR = t11('четыре года', 'four years', 'vier Jahre', '四年', 'cuatro años', 'चार वर्ष', 'أربع سنوات', 'চার বছর', 'quatro anos', '4年', 'ארבע שנים')
 
 export const THEME_ITEMS: ThemeItem[] = [
   row('n-role', 'organelleToRole', 'easy', NUCLEUS, DNA, { key: 'dna' }),
@@ -330,43 +370,80 @@ export const THEME_ITEMS: ThemeItem[] = [
   row('fu-king', 'exampleToKingdom', 'medium', MUSH1, FUNGI, { key: 'fungi' }),
   row('ba-king', 'exampleToKingdom', 'medium', ECOLI, BACT, { key: 'bact' }),
   row('pr-king', 'exampleToKingdom', 'hard', AMOEBA1, PROTIST, { key: 'protist' }),
-  row('lion-cl', 'animalToClass', 'easy', LION1, MAMMAL, { key: 'mammal' }),
-  row('eagle-cl', 'animalToClass', 'easy', EAGLE, BIRD, { key: 'bird' }),
-  row('shark-cl', 'animalToClass', 'easy', SHARK, FISH, { key: 'fish' }),
-  row('frog-cl', 'animalToClass', 'easy', FROG, AMPH, { key: 'amph' }),
-  row('snake-cl', 'animalToClass', 'easy', SNAKE, REPT, { key: 'rept' }),
-  row('bee-cl', 'animalToClass', 'easy', BEE, INSECT, { key: 'insect' }),
-  row('spider-cl', 'animalToClass', 'medium', SPIDER, ARACH, { key: 'arach' }),
-  row('snail-cl', 'animalToClass', 'medium', SNAIL, MOLL, { key: 'moll' }),
-  row('crab-cl', 'animalToClass', 'medium', CRAB, CRUST, { key: 'crust' }),
-  row('worm-cl', 'animalToClass', 'hard', WORM, ANNEL, { key: 'annel' }),
-  row('mam-an', 'classToAnimal', 'easy', MAMMAL, LION1, { key: 'lion1' }),
-  row('bird-an', 'classToAnimal', 'easy', BIRD, EAGLE, { key: 'eagle' }),
-  row('fish-an', 'classToAnimal', 'easy', FISH, SHARK, { key: 'shark' }),
-  row('amph-an', 'classToAnimal', 'easy', AMPH, FROG, { key: 'frog' }),
-  row('rept-an', 'classToAnimal', 'easy', REPT, SNAKE, { key: 'snake' }),
-  row('ins-an', 'classToAnimal', 'easy', INSECT, BEE, { key: 'bee' }),
-  row('ara-an', 'classToAnimal', 'medium', ARACH, SPIDER, { key: 'spider' }),
-  row('mol-an', 'classToAnimal', 'medium', MOLL, SNAIL, { key: 'snail' }),
-  row('cru-an', 'classToAnimal', 'medium', CRUST, CRAB, { key: 'crab' }),
-  row('ann-an', 'classToAnimal', 'hard', ANNEL, WORM, { key: 'worm' }),
+  row('lion-cl', 'animalToClass', 'easy', LION1, MAMMAL, { key: 'mammal', wikiFile: BIO_CLASS_PHOTO.lion }),
+  row('eagle-cl', 'animalToClass', 'easy', EAGLE, BIRD, { key: 'bird', wikiFile: BIO_CLASS_PHOTO.eagle }),
+  row('shark-cl', 'animalToClass', 'easy', SHARK, FISH, { key: 'fish', wikiFile: BIO_CLASS_PHOTO.shark }),
+  row('frog-cl', 'animalToClass', 'easy', FROG, AMPH, { key: 'amph', wikiFile: BIO_CLASS_PHOTO.frog }),
+  row('snake-cl', 'animalToClass', 'easy', SNAKE, REPT, { key: 'rept', wikiFile: BIO_CLASS_PHOTO.snake }),
+  row('bee-cl', 'animalToClass', 'easy', BEE, INSECT, { key: 'insect', wikiFile: BIO_CLASS_PHOTO.bee }),
+  row('spider-cl', 'animalToClass', 'medium', SPIDER, ARACH, { key: 'arach', wikiFile: BIO_CLASS_PHOTO.spider }),
+  row('snail-cl', 'animalToClass', 'medium', SNAIL, MOLL, { key: 'moll', wikiFile: BIO_CLASS_PHOTO.snail }),
+  row('crab-cl', 'animalToClass', 'medium', CRAB, CRUST, { key: 'crust', wikiFile: BIO_CLASS_PHOTO.crab }),
+  row('worm-cl', 'animalToClass', 'hard', WORM, ANNEL, { key: 'annel', wikiFile: BIO_CLASS_PHOTO.worm }),
+  row('mam-an', 'classToAnimal', 'easy', MAMMAL, LION1, { key: 'lion1', wikiFile: BIO_CLASS_PHOTO.lion }),
+  row('bird-an', 'classToAnimal', 'easy', BIRD, EAGLE, { key: 'eagle', wikiFile: BIO_CLASS_PHOTO.eagle }),
+  row('fish-an', 'classToAnimal', 'easy', FISH, SHARK, { key: 'shark', wikiFile: BIO_CLASS_PHOTO.shark }),
+  row('amph-an', 'classToAnimal', 'easy', AMPH, FROG, { key: 'frog', wikiFile: BIO_CLASS_PHOTO.frog }),
+  row('rept-an', 'classToAnimal', 'easy', REPT, SNAKE, { key: 'snake', wikiFile: BIO_CLASS_PHOTO.snake }),
+  row('ins-an', 'classToAnimal', 'easy', INSECT, BEE, { key: 'bee', wikiFile: BIO_CLASS_PHOTO.bee }),
+  row('ara-an', 'classToAnimal', 'medium', ARACH, SPIDER, { key: 'spider', wikiFile: BIO_CLASS_PHOTO.spider }),
+  row('mol-an', 'classToAnimal', 'medium', MOLL, SNAIL, { key: 'snail', wikiFile: BIO_CLASS_PHOTO.snail }),
+  row('cru-an', 'classToAnimal', 'medium', CRUST, CRAB, { key: 'crab', wikiFile: BIO_CLASS_PHOTO.crab }),
+  row('ann-an', 'classToAnimal', 'hard', ANNEL, WORM, { key: 'worm', wikiFile: BIO_CLASS_PHOTO.worm }),
+  ...bioGeneratedRows(),
 
   row('y-1896', 'olyYearToHost', 'easy', Y1896, ATHENS, { key: 'athens' }),
-  row('y-2024', 'olyYearToHost', 'easy', Y2024, PARIS, { key: 'paris' }),
-  row('y-2020', 'olyYearToHost', 'easy', Y2020, TOKYO, { key: 'tokyo' }),
-  row('y-2012', 'olyYearToHost', 'easy', Y2012, LONDON, { key: 'london' }),
-  row('y-2008', 'olyYearToHost', 'medium', Y2008, BEIJING, { key: 'beijing' }),
-  row('y-2016', 'olyYearToHost', 'medium', Y2016, RIO, { key: 'rio' }),
-  row('y-2000', 'olyYearToHost', 'medium', Y2000, SYDNEY, { key: 'sydney' }),
+  row('y-1900', 'olyYearToHost', 'hard', summerY('1900'), PARIS, { key: 'paris' }),
+  row('y-1904', 'olyYearToHost', 'hard', summerY('1904'), STLOUIS, { key: 'stlouis' }),
+  row('y-1908', 'olyYearToHost', 'hard', summerY('1908'), LONDON, { key: 'london' }),
+  row('y-1912', 'olyYearToHost', 'hard', summerY('1912'), STOCK, { key: 'stockholm' }),
+  row('y-1920', 'olyYearToHost', 'hard', summerY('1920'), ANTW, { key: 'antwerp' }),
+  row('y-1924', 'olyYearToHost', 'medium', summerY('1924'), PARIS, { key: 'paris' }),
+  row('y-1928', 'olyYearToHost', 'hard', summerY('1928'), AMST, { key: 'amsterdam' }),
+  row('y-1932', 'olyYearToHost', 'medium', summerY('1932'), LA, { key: 'la' }),
+  row('y-1936', 'olyYearToHost', 'medium', summerY('1936'), BERLIN, { key: 'berlin' }),
+  row('y-1948', 'olyYearToHost', 'medium', summerY('1948'), LONDON, { key: 'london' }),
+  row('y-1952', 'olyYearToHost', 'hard', summerY('1952'), HELS, { key: 'helsinki' }),
+  row('y-1956', 'olyYearToHost', 'medium', summerY('1956'), MELB, { key: 'melbourne' }),
+  row('y-1960', 'olyYearToHost', 'medium', summerY('1960'), ROME, { key: 'rome' }),
+  row('y-1964', 'olyYearToHost', 'medium', summerY('1964'), TOKYO, { key: 'tokyo' }),
+  row('y-1968', 'olyYearToHost', 'medium', summerY('1968'), MEXCITY, { key: 'mexico' }),
+  row('y-1972', 'olyYearToHost', 'medium', summerY('1972'), MUNICH, { key: 'munich' }),
+  row('y-1976', 'olyYearToHost', 'medium', summerY('1976'), MONTREAL, { key: 'montreal' }),
+  row('y-1980', 'olyYearToHost', 'easy', summerY('1980'), MOSCOW, { key: 'moscow' }),
+  row('y-1984', 'olyYearToHost', 'medium', summerY('1984'), LA, { key: 'la' }),
+  row('y-1988', 'olyYearToHost', 'medium', summerY('1988'), SEOUL, { key: 'seoul' }),
   row('y-1992', 'olyYearToHost', 'hard', Y1992, BARC, { key: 'barc' }),
+  row('y-1996', 'olyYearToHost', 'medium', summerY('1996'), ATLANTA, { key: 'atlanta' }),
+  row('y-2000', 'olyYearToHost', 'medium', Y2000, SYDNEY, { key: 'sydney' }),
+  row('y-2004', 'olyYearToHost', 'medium', summerY('2004'), ATHENS, { key: 'athens' }),
+  row('y-2008', 'olyYearToHost', 'medium', Y2008, BEIJING, { key: 'beijing' }),
+  row('y-2012', 'olyYearToHost', 'easy', Y2012, LONDON, { key: 'london' }),
+  row('y-2016', 'olyYearToHost', 'medium', Y2016, RIO, { key: 'rio' }),
+  row('y-2020', 'olyYearToHost', 'easy', Y2020, TOKYO, { key: 'tokyo' }),
+  row('y-2024', 'olyYearToHost', 'easy', Y2024, PARIS, { key: 'paris' }),
   row('h-1896', 'olyHostToYear', 'easy', ATHENS, Y1896, { key: '1896' }),
-  row('h-2024', 'olyHostToYear', 'easy', PARIS, Y2024, { key: '2024' }),
-  row('h-2020', 'olyHostToYear', 'easy', TOKYO, Y2020, { key: '2020' }),
-  row('h-2012', 'olyHostToYear', 'easy', LONDON, Y2012, { key: '2012' }),
-  row('h-2008', 'olyHostToYear', 'medium', BEIJING, Y2008, { key: '2008' }),
-  row('h-2016', 'olyHostToYear', 'medium', RIO, Y2016, { key: '2016' }),
-  row('h-2000', 'olyHostToYear', 'medium', SYDNEY, Y2000, { key: '2000' }),
+  row('h-1904', 'olyHostToYear', 'hard', STLOUIS, summerY('1904'), { key: '1904' }),
+  row('h-1912', 'olyHostToYear', 'hard', STOCK, summerY('1912'), { key: '1912' }),
+  row('h-1920', 'olyHostToYear', 'hard', ANTW, summerY('1920'), { key: '1920' }),
+  row('h-1928', 'olyHostToYear', 'hard', AMST, summerY('1928'), { key: '1928' }),
+  row('h-1936', 'olyHostToYear', 'medium', BERLIN, summerY('1936'), { key: '1936' }),
+  row('h-1952', 'olyHostToYear', 'hard', HELS, summerY('1952'), { key: '1952' }),
+  row('h-1956', 'olyHostToYear', 'medium', MELB, summerY('1956'), { key: '1956' }),
+  row('h-1960', 'olyHostToYear', 'medium', ROME, summerY('1960'), { key: '1960' }),
+  row('h-1968', 'olyHostToYear', 'medium', MEXCITY, summerY('1968'), { key: '1968' }),
+  row('h-1972', 'olyHostToYear', 'medium', MUNICH, summerY('1972'), { key: '1972' }),
+  row('h-1976', 'olyHostToYear', 'medium', MONTREAL, summerY('1976'), { key: '1976' }),
+  row('h-1980', 'olyHostToYear', 'easy', MOSCOW, summerY('1980'), { key: '1980' }),
+  row('h-1988', 'olyHostToYear', 'medium', SEOUL, summerY('1988'), { key: '1988' }),
   row('h-1992', 'olyHostToYear', 'hard', BARC, Y1992, { key: '1992' }),
+  row('h-1996', 'olyHostToYear', 'medium', ATLANTA, summerY('1996'), { key: '1996' }),
+  row('h-2000', 'olyHostToYear', 'medium', SYDNEY, Y2000, { key: '2000' }),
+  row('h-2008', 'olyHostToYear', 'medium', BEIJING, Y2008, { key: '2008' }),
+  row('h-2012', 'olyHostToYear', 'easy', LONDON, Y2012, { key: '2012' }),
+  row('h-2016', 'olyHostToYear', 'medium', RIO, Y2016, { key: '2016' }),
+  row('h-2020', 'olyHostToYear', 'easy', TOKYO, Y2020, { key: '2020' }),
+  row('h-2024', 'olyHostToYear', 'easy', PARIS, Y2024, { key: '2024' }),
   row('hc-usa', 'olyHostCount', 'medium', USA, COUNT4, { key: 'c4' }),
   row('hc-gbr', 'olyHostCount', 'medium', GBR, COUNT3, { key: 'c3' }),
   row('hc-fra', 'olyHostCount', 'hard', FRA, COUNT3, { key: 'c3' }),
@@ -402,25 +479,62 @@ export const THEME_ITEMS: ThemeItem[] = [
 
   row('hc2-ath', 'hostToCountry', 'easy', ATHENS, GRE, { key: 'gre' }),
   row('hc2-par', 'hostToCountry', 'easy', PARIS, FRA, { key: 'fra' }),
+  row('hc2-stl', 'hostToCountry', 'hard', STLOUIS, USA, { key: 'usa' }),
+  row('hc2-sto', 'hostToCountry', 'hard', STOCK, SWE, { key: 'swe' }),
+  row('hc2-ant', 'hostToCountry', 'hard', ANTW, BEL, { key: 'bel' }),
+  row('hc2-ams', 'hostToCountry', 'hard', AMST, NED, { key: 'ned' }),
+  row('hc2-la', 'hostToCountry', 'medium', LA, USA, { key: 'usa' }),
+  row('hc2-ber', 'hostToCountry', 'medium', BERLIN, GER, { key: 'ger' }),
+  row('hc2-hel', 'hostToCountry', 'hard', HELS, FIN, { key: 'fin' }),
+  row('hc2-mel', 'hostToCountry', 'medium', MELB, AUS, { key: 'aus' }),
+  row('hc2-rom', 'hostToCountry', 'medium', ROME, ITA, { key: 'ita' }),
   row('hc2-tok', 'hostToCountry', 'easy', TOKYO, JPN, { key: 'jpn' }),
+  row('hc2-mex', 'hostToCountry', 'medium', MEXCITY, MEX, { key: 'mex' }),
+  row('hc2-mun', 'hostToCountry', 'medium', MUNICH, GER, { key: 'ger' }),
+  row('hc2-mon', 'hostToCountry', 'medium', MONTREAL, CAN, { key: 'can' }),
+  row('hc2-mos', 'hostToCountry', 'easy', MOSCOW, URS, { key: 'urs' }),
+  row('hc2-seo', 'hostToCountry', 'medium', SEOUL, KOR, { key: 'kor' }),
   row('hc2-lon', 'hostToCountry', 'easy', LONDON, GBR, { key: 'gbr' }),
+  row('hc2-bar', 'hostToCountry', 'medium', BARC, ESP, { key: 'esp' }),
+  row('hc2-atl', 'hostToCountry', 'medium', ATLANTA, USA, { key: 'usa' }),
+  row('hc2-syd', 'hostToCountry', 'medium', SYDNEY, AUS, { key: 'aus' }),
   row('hc2-bei', 'hostToCountry', 'medium', BEIJING, CHN, { key: 'chn' }),
   row('hc2-rio', 'hostToCountry', 'easy', RIO, BRA, { key: 'bra' }),
-  row('hc2-syd', 'hostToCountry', 'medium', SYDNEY, AUS, { key: 'aus' }),
-  row('hc2-bar', 'hostToCountry', 'medium', BARC, ESP, { key: 'esp' }),
   row('hc2-soc', 'hostToCountry', 'hard', SOCHI, RUS, { key: 'rus' }),
   row('hc2-pye', 'hostToCountry', 'medium', PYEONG, KOR, { key: 'kor' }),
   row('hc2-cal', 'hostToCountry', 'medium', CALGARY, CAN, { key: 'can' }),
   row('hc2-lil', 'hostToCountry', 'hard', LILLEH, NOR, { key: 'nor' }),
 
   row('yc-1896', 'olyYearToCountry', 'easy', Y1896, GRE, { key: 'gre' }),
-  row('yc-2024', 'olyYearToCountry', 'easy', Y2024, FRA, { key: 'fra' }),
-  row('yc-2020', 'olyYearToCountry', 'easy', Y2020, JPN, { key: 'jpn' }),
-  row('yc-2012', 'olyYearToCountry', 'easy', Y2012, GBR, { key: 'gbr' }),
-  row('yc-2008', 'olyYearToCountry', 'medium', Y2008, CHN, { key: 'chn' }),
-  row('yc-2016', 'olyYearToCountry', 'easy', Y2016, BRA, { key: 'bra' }),
-  row('yc-2000', 'olyYearToCountry', 'medium', Y2000, AUS, { key: 'aus' }),
+  row('yc-1900', 'olyYearToCountry', 'hard', summerY('1900'), FRA, { key: 'fra' }),
+  row('yc-1904', 'olyYearToCountry', 'hard', summerY('1904'), USA, { key: 'usa' }),
+  row('yc-1908', 'olyYearToCountry', 'hard', summerY('1908'), GBR, { key: 'gbr' }),
+  row('yc-1912', 'olyYearToCountry', 'hard', summerY('1912'), SWE, { key: 'swe' }),
+  row('yc-1920', 'olyYearToCountry', 'hard', summerY('1920'), BEL, { key: 'bel' }),
+  row('yc-1924', 'olyYearToCountry', 'medium', summerY('1924'), FRA, { key: 'fra' }),
+  row('yc-1928', 'olyYearToCountry', 'hard', summerY('1928'), NED, { key: 'ned' }),
+  row('yc-1932', 'olyYearToCountry', 'medium', summerY('1932'), USA, { key: 'usa' }),
+  row('yc-1936', 'olyYearToCountry', 'medium', summerY('1936'), GER, { key: 'ger' }),
+  row('yc-1948', 'olyYearToCountry', 'medium', summerY('1948'), GBR, { key: 'gbr' }),
+  row('yc-1952', 'olyYearToCountry', 'hard', summerY('1952'), FIN, { key: 'fin' }),
+  row('yc-1956', 'olyYearToCountry', 'medium', summerY('1956'), AUS, { key: 'aus' }),
+  row('yc-1960', 'olyYearToCountry', 'medium', summerY('1960'), ITA, { key: 'ita' }),
+  row('yc-1964', 'olyYearToCountry', 'medium', summerY('1964'), JPN, { key: 'jpn' }),
+  row('yc-1968', 'olyYearToCountry', 'medium', summerY('1968'), MEX, { key: 'mex' }),
+  row('yc-1972', 'olyYearToCountry', 'medium', summerY('1972'), GER, { key: 'ger' }),
+  row('yc-1976', 'olyYearToCountry', 'medium', summerY('1976'), CAN, { key: 'can' }),
+  row('yc-1980', 'olyYearToCountry', 'easy', summerY('1980'), URS, { key: 'urs' }),
+  row('yc-1984', 'olyYearToCountry', 'medium', summerY('1984'), USA, { key: 'usa' }),
+  row('yc-1988', 'olyYearToCountry', 'medium', summerY('1988'), KOR, { key: 'kor' }),
   row('yc-1992', 'olyYearToCountry', 'medium', Y1992, ESP, { key: 'esp' }),
+  row('yc-1996', 'olyYearToCountry', 'medium', summerY('1996'), USA, { key: 'usa' }),
+  row('yc-2000', 'olyYearToCountry', 'medium', Y2000, AUS, { key: 'aus' }),
+  row('yc-2004', 'olyYearToCountry', 'medium', summerY('2004'), GRE, { key: 'gre' }),
+  row('yc-2008', 'olyYearToCountry', 'medium', Y2008, CHN, { key: 'chn' }),
+  row('yc-2012', 'olyYearToCountry', 'easy', Y2012, GBR, { key: 'gbr' }),
+  row('yc-2016', 'olyYearToCountry', 'easy', Y2016, BRA, { key: 'bra' }),
+  row('yc-2020', 'olyYearToCountry', 'easy', Y2020, JPN, { key: 'jpn' }),
+  row('yc-2024', 'olyYearToCountry', 'easy', Y2024, FRA, { key: 'fra' }),
 
   row('wy-1924', 'winterYearToHost', 'medium', winterY('1924'), CHAMONIX, { key: 'chamonix' }),
   row('wy-1980', 'winterYearToHost', 'medium', winterY('1980'), PLACID, { key: 'placid' }),
@@ -436,6 +550,53 @@ export const THEME_ITEMS: ThemeItem[] = [
   row('wy-2018', 'winterYearToHost', 'easy', winterY('2018'), PYEONG, { key: 'pyeong' }),
   row('wy-2022', 'winterYearToHost', 'easy', winterY('2022'), BEIJING, { key: 'beijing' }),
   row('wy-2026', 'winterYearToHost', 'medium', winterY('2026'), MILAN, { key: 'milan' }),
+
+  row('wh-1924', 'winterHostToYear', 'hard', CHAMONIX, winterY('1924'), { key: '1924' }),
+  row('wh-1964', 'winterHostToYear', 'hard', INNSBRUCK, winterY('1964'), { key: '1964' }),
+  row('wh-1972', 'winterHostToYear', 'medium', SAPPORO, winterY('1972'), { key: '1972' }),
+  row('wh-1980', 'winterHostToYear', 'medium', PLACID, winterY('1980'), { key: '1980' }),
+  row('wh-1988', 'winterHostToYear', 'medium', CALGARY, winterY('1988'), { key: '1988' }),
+  row('wh-1994', 'winterHostToYear', 'medium', LILLEH, winterY('1994'), { key: '1994' }),
+  row('wh-1998', 'winterHostToYear', 'medium', NAGANO, winterY('1998'), { key: '1998' }),
+  row('wh-2002', 'winterHostToYear', 'medium', SALT, winterY('2002'), { key: '2002' }),
+  row('wh-2006', 'winterHostToYear', 'easy', TURIN, winterY('2006'), { key: '2006' }),
+  row('wh-2010', 'winterHostToYear', 'easy', VANC, winterY('2010'), { key: '2010' }),
+  row('wh-2014', 'winterHostToYear', 'easy', SOCHI, winterY('2014'), { key: '2014' }),
+  row('wh-2018', 'winterHostToYear', 'easy', PYEONG, winterY('2018'), { key: '2018' }),
+  row('wh-2022', 'winterHostToYear', 'easy', BEIJING, winterY('2022'), { key: '2022' }),
+  row('wh-2026', 'winterHostToYear', 'medium', MILAN, winterY('2026'), { key: '2026' }),
+
+  row('wc-1924', 'winterHostToCountry', 'hard', CHAMONIX, FRA, { key: 'fra' }),
+  row('wc-1964', 'winterHostToCountry', 'hard', INNSBRUCK, AUT, { key: 'aut' }),
+  row('wc-1972', 'winterHostToCountry', 'medium', SAPPORO, JPN, { key: 'jpn' }),
+  row('wc-1980', 'winterHostToCountry', 'medium', PLACID, USA, { key: 'usa' }),
+  row('wc-1988', 'winterHostToCountry', 'medium', CALGARY, CAN, { key: 'can' }),
+  row('wc-1994', 'winterHostToCountry', 'medium', LILLEH, NOR, { key: 'nor' }),
+  row('wc-1998', 'winterHostToCountry', 'medium', NAGANO, JPN, { key: 'jpn' }),
+  row('wc-2002', 'winterHostToCountry', 'medium', SALT, USA, { key: 'usa' }),
+  row('wc-2006', 'winterHostToCountry', 'easy', TURIN, ITA, { key: 'ita' }),
+  row('wc-2010', 'winterHostToCountry', 'easy', VANC, CAN, { key: 'can' }),
+  row('wc-2014', 'winterHostToCountry', 'easy', SOCHI, RUS, { key: 'rus' }),
+  row('wc-2018', 'winterHostToCountry', 'easy', PYEONG, KOR, { key: 'kor' }),
+  row('wc-2022', 'winterHostToCountry', 'easy', BEIJING, CHN, { key: 'chn' }),
+  row('wc-2026', 'winterHostToCountry', 'medium', MILAN, ITA, { key: 'ita' }),
+
+  row('sy-rings', 'olySymbolToMeaning', 'easy', RINGS, CONTINENTS, { key: 'continents' }),
+  row('sy-flame', 'olySymbolToMeaning', 'easy', FLAME, RELAY, { key: 'relay' }),
+  row('sy-motto', 'olySymbolToMeaning', 'easy', MOTTO, FASTER, { key: 'faster' }),
+  row('sy-wreath', 'olySymbolToMeaning', 'medium', WREATH, PRIZE, { key: 'prize' }),
+  row('sy-coub', 'olySymbolToMeaning', 'medium', COUB, FOUNDER, { key: 'founder' }),
+  row('sy-flag', 'olySymbolToMeaning', 'easy', WHITE, IOC, { key: 'ioc' }),
+  row('sy-gold', 'olySymbolToMeaning', 'easy', GOLD, FIRST, { key: 'first' }),
+  row('sy-span', 'olySymbolToMeaning', 'medium', OLYMPIAD, FOUR, { key: 'four' }),
+  row('sm-rings', 'olyMeaningToSymbol', 'easy', CONTINENTS, RINGS, { key: 'rings' }),
+  row('sm-flame', 'olyMeaningToSymbol', 'easy', RELAY, FLAME, { key: 'flame' }),
+  row('sm-motto', 'olyMeaningToSymbol', 'easy', FASTER, MOTTO, { key: 'motto' }),
+  row('sm-wreath', 'olyMeaningToSymbol', 'medium', PRIZE, WREATH, { key: 'wreath' }),
+  row('sm-coub', 'olyMeaningToSymbol', 'medium', FOUNDER, COUB, { key: 'coub' }),
+  row('sm-flag', 'olyMeaningToSymbol', 'easy', IOC, WHITE, { key: 'flag' }),
+  row('sm-gold', 'olyMeaningToSymbol', 'easy', FIRST, GOLD, { key: 'gold' }),
+  row('sm-span', 'olyMeaningToSymbol', 'medium', FOUR, OLYMPIAD, { key: 'olympiad' }),
 
   row('nn-usa', 'nameToNoc', 'easy', USA, code('USA'), { key: 'usa' }),
   row('nn-gbr', 'nameToNoc', 'easy', GBR, code('GBR'), { key: 'gbr' }),

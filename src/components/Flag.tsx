@@ -27,7 +27,13 @@ export function Flag({ iso, name, size }: FlagProps) {
   return (
     <span className={classes}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={flagUrl(iso)} alt={name} className="flag-img" />
+      <img
+        src={flagUrl(iso)}
+        alt={name}
+        className="flag-img"
+        decoding="async"
+        loading={size === "hero" || size === "option" ? "eager" : "lazy"}
+      />
     </span>
   );
 }

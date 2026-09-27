@@ -91,6 +91,7 @@ import {
   type RoundAnswer,
   type RoundEnd,
 } from "@/lib/quiz";
+import { clearDishReturn, readDishReturn } from "@/lib/dishReturn";
 import { encodePlayHash, parsePlayHash } from "@/lib/playHash";
 import { bumpTrainerComplete, clearMistakes, loadMistakes, recordMistakes, clearCorrected, type MistakeEntry } from "@/lib/mistakes";
 import { awardRoundStamps, loadStamps, subscribeStamps, type StampAlbum } from "@/lib/stamps";
@@ -372,6 +373,7 @@ export default function PlayApp() {
         region: "all",
       }));
     } else if (world && isThemeWorld(world) && (!isThemeMode(settings.mode) || worldOfMode(settings.mode) !== world)) {
+      if (world === "food" && readDishReturn()) return;
       setSettings((prev) => ({
         ...prev,
         mode: defaultThemeMode(world, prev.mode),
@@ -393,6 +395,29 @@ export default function PlayApp() {
       }));
     }
   }, [world, settings.mode, settings.difficulty, settings.path]);
+
+  useEffect(() => {
+    if (world !== "food") {
+      clearDishReturn();
+      return;
+    }
+    const back = readDishReturn();
+    if (back && isThemeMode(back.mode) && themeWorldOf(back.mode) === "food") {
+      const mode = back.mode;
+      setSettings((prev) => ({
+        ...prev,
+        mode,
+        mix: null,
+        path: "learn",
+        learnFrom: back.learnFrom,
+        level: back.level,
+        region: back.region,
+      }));
+      setScreen("learn");
+    }
+    const clear = window.setTimeout(clearDishReturn, 0);
+    return () => window.clearTimeout(clear);
+  }, [world]);
 
   useEffect(() => {
     function applyHash() {
@@ -1252,6 +1277,8 @@ export default function PlayApp() {
       mode === "languageToName" ||
       mode === "nameToDriving" ||
       mode === "drivingToName" ||
+      mode === "nameToReligion" ||
+      mode === "religionToName" ||
       mode === "nameToGov" ||
       isRankingMode(mode)
     ) {
@@ -1934,9 +1961,9 @@ export default function PlayApp() {
         <nav className="legal-links">
           <a href="/about">{STRINGS[quizSettings.lang].legalAbout}</a>
           <a href="/privacy">{STRINGS[quizSettings.lang].legalPrivacy}</a>
-          <a href="/cookies">{STRINGS[quizSettings.lang].legalCookies}</a>
-          <a href="/terms">{STRINGS[quizSettings.lang].legalTerms}</a>
           <a href="/contacts">{STRINGS[quizSettings.lang].legalContacts}</a>
+          <a href="/terms">{STRINGS[quizSettings.lang].legalTerms}</a>
+          <a href="/cookies" className="legal-cookie">{STRINGS[quizSettings.lang].legalCookies}</a>
         </nav>
         <p className="credit">{STRINGS[quizSettings.lang].credit}</p>
       </footer>

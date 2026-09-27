@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { HelpTip } from './HelpTip'
 import { STRINGS, mixLabel, modeLabel } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import {
@@ -106,8 +107,8 @@ export function AstroScreen({
         <h1 className="football-title">
           <GeoIcon name="orbit" size={28} />
           {t.astronomy}
+          <HelpTip text={t.astroSubtitle} />
         </h1>
-        <p className="subtitle">{t.astroSubtitle}</p>
       </header>
 
       <HubNav lang={settings.lang} active="free" tabs={ASTRO_HUB_TABS} onSelect={onHub} />
@@ -134,10 +135,13 @@ export function AstroScreen({
           </FitGroup>
         </div>
         <div className="mode-aside">
-          <h2>{t.familyMix}</h2>
+          <h2>
+            {t.familyMix}
+            <HelpTip text={t.customMixNote} />
+          </h2>
           <button
             type="button"
-            className={`choice has-note has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
+            className={`choice has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
             aria-pressed={activeFamily === 'mix'}
             onClick={() => {
               applyAstroSettings({ ...settings, ...settingsForAstroFamily(settings, 'mix') })
@@ -146,9 +150,6 @@ export function AstroScreen({
           >
             <CatalogNo n={worldCatalogNo('astronomy')} />
             <FitText minPx={9}>{mix ? mixLabel(mix, settings.lang) : t.familyMix}</FitText>
-            <FitText className="choice-note" wrap minPx={7}>
-              {t.customMixNote}
-            </FitText>
           </button>
         </div>
       </section>
@@ -163,10 +164,6 @@ export function AstroScreen({
           {t.bestOfSetup(t.score(currentBest.correct, currentBest.total), formatClock(currentBest.roundMs))}
         </p>
       ) : null}
-
-      <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
-        {t.start}
-      </button>
 
       {setupFamily ? (
         <ModeSetupModal
@@ -198,6 +195,12 @@ export function AstroScreen({
           </ul>
         </section>
       ) : null}
+
+      <div className="hub-start-dock">
+        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
+          {t.start}
+        </button>
+      </div>
     </div>
   )
 }

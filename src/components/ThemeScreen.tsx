@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { HelpTip } from './HelpTip'
 import { STRINGS, mixLabel, modeLabel } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import {
@@ -126,8 +127,8 @@ export function ThemeScreen({
         <h1 className="football-title">
           <GeoIcon name={WORLD_ICON[world]} size={28} />
           {title}
+          <HelpTip text={subtitle} />
         </h1>
-        <p className="subtitle">{subtitle}</p>
       </header>
 
       <HubNav lang={settings.lang} active="free" tabs={THEME_HUB_TABS} onSelect={onHub} />
@@ -154,10 +155,13 @@ export function ThemeScreen({
           </FitGroup>
         </div>
         <div className="mode-aside">
-          <h2>{t.familyMix}</h2>
+          <h2>
+            {t.familyMix}
+            <HelpTip text={t.customMixNote} />
+          </h2>
           <button
             type="button"
-            className={`choice has-note has-mode-no is-wide ${mix ? 'is-active' : ''}`}
+            className={`choice has-mode-no is-wide ${mix ? 'is-active' : ''}`}
             aria-pressed={Boolean(mix)}
             onClick={() => {
               applyThemeSettings({ ...settings, ...settingsForThemeFamily(world, settings, 'mix') })
@@ -166,9 +170,6 @@ export function ThemeScreen({
           >
             <CatalogNo n={worldCatalogNo(world)} />
             <FitText minPx={9}>{mix ? mixLabel(mix, settings.lang) : t.familyMix}</FitText>
-            <FitText className="choice-note" wrap minPx={7}>
-              {t.customMixNote}
-            </FitText>
           </button>
         </div>
       </section>
@@ -183,10 +184,6 @@ export function ThemeScreen({
           {t.bestOfSetup(t.score(currentBest.correct, currentBest.total), formatClock(currentBest.roundMs))}
         </p>
       ) : null}
-
-      <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
-        {t.start}
-      </button>
 
       {setupFamily ? (
         <ModeSetupModal
@@ -218,6 +215,12 @@ export function ThemeScreen({
           </ul>
         </section>
       ) : null}
+
+      <div className="hub-start-dock">
+        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
+          {t.start}
+        </button>
+      </div>
     </div>
   )
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { DigitsScreen } from "@/components/DigitsScreen";
 import { WorldAlbumScreen } from "@/components/WorldAlbumScreen";
 import { CollectionsScreen } from "@/components/CollectionsScreen";
 import { MATH_HUB_TABS } from "@/components/HubNav";
@@ -22,9 +24,23 @@ import {
 import type { PlaySession } from "./session";
 
 export function MathPlay({ play }: { play: PlaySession }) {
+  const [digitsOpen, setDigitsOpen] = useState(false);
+  const showDigits = digitsOpen && play.screen === "home";
+
   return (
     <>
-      {play.screen === "home" && (
+      {showDigits && (
+        <DigitsScreen
+          lang={play.quizSettings.lang}
+          onBack={() => setDigitsOpen(false)}
+          onHub={(tab) => {
+            setDigitsOpen(false);
+            play.goHub(tab);
+          }}
+          onWorlds={play.goToWorlds}
+        />
+      )}
+      {play.screen === "home" && !showDigits && (
         <MathScreen
           settings={play.quizSettings}
           history={play.history.filter((item) => isMathMode(item.mode))}
@@ -34,6 +50,7 @@ export function MathPlay({ play }: { play: PlaySession }) {
           onHub={play.goHub}
           onWorlds={play.goToWorlds}
           onClearHistory={play.handleClearMathHistory}
+          onOpenDigits={() => setDigitsOpen(true)}
         />
       )}
       {play.screen === "levels" && (

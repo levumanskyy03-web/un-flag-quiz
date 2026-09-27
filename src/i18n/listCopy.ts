@@ -59,6 +59,31 @@ export const LIST_COPY: Record<Lang, Record<ListId, ListCopy>> = {
       lead: 'Пять стран с правом вето в Совете Безопасности ООН.',
       note: 'Состав не менялся с 1945 года, кроме замены Китайской Республики на КНР в 1971-м.',
     },
+    orthodox: {
+      title: 'Православные страны',
+      lead: 'Члены ООН, где крупнейшая группа — восточное или древневосточное православие.',
+      note: 'Россия и Эфиопия в одной группе: византийская и ориентальная церкви. Католики и протестанты сюда не входят.',
+    },
+    buddhist: {
+      title: 'Буддийские страны',
+      lead: 'Где буддизм — крупнейшая религия: от Шри-Ланки и Таиланда до Монголии.',
+      note: 'Вьетнам и Япония не здесь: там крупнейшая традиция — народные верования, не буддизм как отдельная группа.',
+    },
+    hindu: {
+      title: 'Индуистские страны',
+      lead: 'Всего три члена ООН, где индуизм — крупнейшая религия.',
+      note: 'Индия, Непал и Маврикий. В Тринидаде и Гайане индуистов много, но крупнейшая группа — протестанты.',
+    },
+    shia: {
+      title: 'Шиитские страны',
+      lead: 'Четыре члена ООН, где шиизм — крупнейшая ветвь ислама.',
+      note: 'Иран, Ирак, Азербайджан и Бахрейн. Оман не здесь: там ибадизм, отдельная ветвь.',
+    },
+    'no-religion': {
+      title: 'Без религии',
+      lead: 'Страны, где крупнейшая группа — люди без религиозной принадлежности.',
+      note: 'По свежим переписям и оценкам Pew. Церковь при этом может оставаться заметной: во Франции католики всё ещё самая большая конфессия, но «без религии» уже больше.',
+    },
   },
   en: {
     microstates: {
@@ -110,6 +135,31 @@ export const LIST_COPY: Record<Lang, Record<ListId, ListCopy>> = {
       title: 'UN Security Council P5',
       lead: 'The five permanent members with a veto in the UN Security Council.',
       note: 'The seats have been unchanged since 1945, except the 1971 switch from the ROC to the PRC.',
+    },
+    orthodox: {
+      title: 'Orthodox countries',
+      lead: 'UN members whose largest group is Eastern or Oriental Orthodox.',
+      note: 'Russia and Ethiopia share this list: Byzantine and Oriental churches. Catholics and Protestants are not included.',
+    },
+    buddhist: {
+      title: 'Buddhist countries',
+      lead: 'Where Buddhism is the largest religion, from Sri Lanka and Thailand to Mongolia.',
+      note: 'Vietnam and Japan are not here: their largest tradition is folk religion, not Buddhism as its own group.',
+    },
+    hindu: {
+      title: 'Hindu countries',
+      lead: 'Only three UN members where Hinduism is the largest religion.',
+      note: 'India, Nepal and Mauritius. Trinidad and Guyana have large Hindu communities, but Protestants are the largest group.',
+    },
+    shia: {
+      title: 'Shia countries',
+      lead: 'Four UN members where Shia Islam is the largest branch.',
+      note: 'Iran, Iraq, Azerbaijan and Bahrain. Oman is not here: Ibadi Islam is a separate branch.',
+    },
+    'no-religion': {
+      title: 'No religion',
+      lead: 'Countries where people with no religious affiliation are the largest group.',
+      note: 'From recent censuses and Pew estimates. A church can still be the biggest single denomination: in France Catholics remain the largest church, but “no religion” is larger.',
     },
   },
   de: {
@@ -163,6 +213,31 @@ export const LIST_COPY: Record<Lang, Record<ListId, ListCopy>> = {
       lead: 'Die fünf ständigen Mitglieder mit Vetorecht im UN-Sicherheitsrat.',
       note: 'Die Sitze sind seit 1945 unverändert, außer dem Wechsel von der Republik China zur VR China 1971.',
     },
+    orthodox: {
+      title: 'Orthodoxe Länder',
+      lead: 'UN-Mitglieder, deren größte Gruppe ost- oder orientalisch-orthodox ist.',
+      note: 'Russland und Äthiopien stehen zusammen: byzantinische und orientalische Kirchen. Katholiken und Protestanten fehlen.',
+    },
+    buddhist: {
+      title: 'Buddhistische Länder',
+      lead: 'Wo der Buddhismus die größte Religion ist, von Sri Lanka und Thailand bis zur Mongolei.',
+      note: 'Vietnam und Japan fehlen: dort ist Volksreligion die größte Tradition, nicht der Buddhismus als eigene Gruppe.',
+    },
+    hindu: {
+      title: 'Hinduistische Länder',
+      lead: 'Nur drei UN-Mitglieder, in denen der Hinduismus die größte Religion ist.',
+      note: 'Indien, Nepal und Mauritius. Trinidad und Guyana haben große hinduistische Gemeinden, die größte Gruppe sind aber Protestanten.',
+    },
+    shia: {
+      title: 'Schiitische Länder',
+      lead: 'Vier UN-Mitglieder, in denen der schiitische Islam die größte Richtung ist.',
+      note: 'Iran, Irak, Aserbaidschan und Bahrain. Oman fehlt: der Ibadismus ist eine eigene Richtung.',
+    },
+    'no-religion': {
+      title: 'Keine Religion',
+      lead: 'Länder, in denen Menschen ohne Religionszugehörigkeit die größte Gruppe sind.',
+      note: 'Nach neueren Volkszählungen und Pew-Schätzungen. Eine Kirche kann die größte einzelne Konfession bleiben: in Frankreich sind Katholiken noch die größte Kirche, „keine Religion“ ist aber größer.',
+    },
   },
   zh: {
     microstates: {
@@ -214,6 +289,31 @@ export const LIST_COPY: Record<Lang, Record<ListId, ListCopy>> = {
       title: '安理会常任理事国',
       lead: '在联合国安理会拥有否决权的五个常任理事国。',
       note: '席位自 1945 年起未变，仅 1971 年由中华民国改为中华人民共和国。',
+    },
+    orthodox: {
+      title: '东正教国家',
+      lead: '最大群体为东正教或东方正教的联合国会员国。',
+      note: '俄罗斯和埃塞俄比亚在同一组：拜占庭传统与东方教会。天主教和新教不在此列。',
+    },
+    buddhist: {
+      title: '佛教国家',
+      lead: '佛教为最大宗教的国家，从斯里兰卡、泰国到蒙古。',
+      note: '越南和日本不在此列：那里最大的传统是民间信仰，而不是作为单独群体的佛教。',
+    },
+    hindu: {
+      title: '印度教国家',
+      lead: '印度教为最大宗教的联合国会员国只有三个。',
+      note: '印度、尼泊尔和毛里求斯。特立尼达和圭亚那的印度教徒很多，但最大群体是新教。',
+    },
+    shia: {
+      title: '什叶派国家',
+      lead: '什叶派为伊斯兰教最大分支的四个联合国会员国。',
+      note: '伊朗、伊拉克、阿塞拜疆和巴林。阿曼不在此列：伊巴德派是另一支。',
+    },
+    'no-religion': {
+      title: '无宗教',
+      lead: '无宗教归属者是最大群体的国家。',
+      note: '依据较新的人口普查和皮尤估计。教会仍可以是最大的单一教派：在法国，天主教仍是最大教会，但「无宗教」已经更多。',
     },
   },
   es: {
@@ -267,6 +367,31 @@ export const LIST_COPY: Record<Lang, Record<ListId, ListCopy>> = {
       lead: 'Los cinco miembros permanentes con veto en el Consejo de Seguridad de la ONU.',
       note: 'Los asientos no han cambiado desde 1945, salvo el relevo de la ROC por la RPC en 1971.',
     },
+    orthodox: {
+      title: 'Países ortodoxos',
+      lead: 'Miembros de la ONU cuyo grupo mayor es el cristianismo ortodoxo, oriental u oriental antiguo.',
+      note: 'Rusia y Etiopía van juntas: iglesias bizantinas y orientales. Católicos y protestantes no entran.',
+    },
+    buddhist: {
+      title: 'Países budistas',
+      lead: 'Donde el budismo es la religión mayor, de Sri Lanka y Tailandia a Mongolia.',
+      note: 'Vietnam y Japón no están: su tradición mayor es la religión popular, no el budismo como grupo aparte.',
+    },
+    hindu: {
+      title: 'Países hinduistas',
+      lead: 'Solo tres miembros de la ONU donde el hinduismo es la religión mayor.',
+      note: 'India, Nepal y Mauricio. Trinidad y Guyana tienen comunidades hinduistas grandes, pero el grupo mayor es protestante.',
+    },
+    shia: {
+      title: 'Países chiíes',
+      lead: 'Cuatro miembros de la ONU donde el islam chií es la rama mayor.',
+      note: 'Irán, Irak, Azerbaiyán y Baréin. Omán no está: el ibadismo es otra rama.',
+    },
+    'no-religion': {
+      title: 'Sin religión',
+      lead: 'Países donde la gente sin afiliación religiosa es el grupo mayor.',
+      note: 'Según censos recientes y estimaciones de Pew. Una iglesia puede seguir siendo la mayor confesión: en Francia los católicos siguen siendo la iglesia mayor, pero «sin religión» ya es más grande.',
+    },
   },
   hi: {
     microstates: {
@@ -318,6 +443,31 @@ export const LIST_COPY: Record<Lang, Record<ListId, ListCopy>> = {
       title: 'सुरक्षा परिषद के स्थायी सदस्य',
       lead: 'संयुक्त राष्ट्र सुरक्षा परिषद में वीटो वाले पाँच स्थायी सदस्य।',
       note: 'सीटें 1945 से वही हैं, केवल 1971 में ROC की जगह PRC आई।',
+    },
+    orthodox: {
+      title: 'ऑर्थोडॉक्स देश',
+      lead: 'संयुक्त राष्ट्र के वे सदस्य जहाँ सबसे बड़ा समूह पूर्वी या ओरिएंटल ऑर्थोडॉक्स है।',
+      note: 'रूस और इथियोपिया एक सूची में हैं: बाइज़ेंटाइन और ओरिएंटल चर्च। कैथोलिक और प्रोटेस्टेंट नहीं हैं।',
+    },
+    buddhist: {
+      title: 'बौद्ध देश',
+      lead: 'जहाँ बौद्ध धर्म सबसे बड़ा है: श्रीलंका और थाईलैंड से मंगोलिया तक।',
+      note: 'वियतनाम और जापान यहाँ नहीं: वहाँ सबसे बड़ी परंपरा लोक धर्म है, अलग समूह के रूप में बौद्ध धर्म नहीं।',
+    },
+    hindu: {
+      title: 'हिन्दू देश',
+      lead: 'केवल तीन संयुक्त राष्ट्र सदस्य जहाँ हिन्दू धर्म सबसे बड़ा है।',
+      note: 'भारत, नेपाल और मॉरीशस। त्रिनिदाद और गुयाना में हिन्दू बहुत हैं, पर सबसे बड़ा समूह प्रोटेस्टेंट है।',
+    },
+    shia: {
+      title: 'शिया देश',
+      lead: 'चार संयुक्त राष्ट्र सदस्य जहाँ शिया इस्लाम सबसे बड़ी शाखा है।',
+      note: 'ईरान, इराक, अज़रबैजान और बहरीन। ओमान यहाँ नहीं: इबादी इस्लाम अलग शाखा है।',
+    },
+    'no-religion': {
+      title: 'बिना धर्म',
+      lead: 'देश जहाँ बिना धार्मिक पहचान वाले लोग सबसे बड़ा समूह हैं।',
+      note: 'हाल की जनगणना और प्यू के अनुमान। चर्च फिर भी सबसे बड़ा एक संप्रदाय हो सकता है: फ्रांस में कैथोलिक अब भी सबसे बड़ा चर्च हैं, पर «बिना धर्म» उनसे बड़ा है।',
     },
   },
   ar: {
@@ -371,6 +521,31 @@ export const LIST_COPY: Record<Lang, Record<ListId, ListCopy>> = {
       lead: 'الدول الخمس دائمة العضوية ذات حق النقض في مجلس الأمن.',
       note: 'المقاعد لم تتغير منذ 1945 إلا استبدال جمهورية الصين بجمهورية الصين الشعبية عام 1971.',
     },
+    orthodox: {
+      title: 'بلدان أرثوذكسية',
+      lead: 'أعضاء الأمم المتحدة الذين جماعتهم الكبرى مسيحية أرثوذكسية شرقية أو مشرقية.',
+      note: 'روسيا وإثيوبيا في قائمة واحدة: كنائس بيزنطية ومشرقية. الكاثوليك والبروتستانت ليسوا هنا.',
+    },
+    buddhist: {
+      title: 'بلدان بوذية',
+      lead: 'حيث البوذية هي الديانة الكبرى، من سريلانكا وتايلاند إلى منغوليا.',
+      note: 'فيتنام واليابان ليستا هنا: التقليد الأكبر ديانة شعبية، لا البوذية كجماعة مستقلة.',
+    },
+    hindu: {
+      title: 'بلدان هندوسية',
+      lead: 'ثلاثة أعضاء فقط في الأمم المتحدة الهندوسية هي ديانتهم الكبرى.',
+      note: 'الهند ونيبال وموريشيوس. في ترينيداد وغيانا جاليات هندوسية كبيرة، لكن الجماعة الكبرى بروتستانتية.',
+    },
+    shia: {
+      title: 'بلدان شيعية',
+      lead: 'أربعة أعضاء في الأمم المتحدة المذهب الشيعي هو فرع الإسلام الأكبر فيها.',
+      note: 'إيران والعراق وأذربيجان والبحرين. عُمان ليست هنا: الإباضية فرع مستقل.',
+    },
+    'no-religion': {
+      title: 'بلا دين',
+      lead: 'بلدان جماعتها الكبرى بلا انتماء ديني.',
+      note: 'حسب تعدادات حديثة وتقديرات بيو. قد تبقى كنيسة أكبر طائفة واحدة: في فرنسا الكاثوليك ما زالوا أكبر كنيسة، لكن «بلا دين» أكبر.',
+    },
   },
   bn: {
     microstates: {
@@ -422,6 +597,31 @@ export const LIST_COPY: Record<Lang, Record<ListId, ListCopy>> = {
       title: 'নিরাপত্তা পরিষদের স্থায়ী সদস্য',
       lead: 'জাতিসংঘ নিরাপত্তা পরিষদে ভেটো থাকা পাঁচ স্থায়ী সদস্য।',
       note: 'আসন ১৯৪৫ থেকে একই, শুধু ১৯৭১-এ ROC-এর জায়গায় PRC এসেছে।',
+    },
+    orthodox: {
+      title: 'অর্থোডক্স দেশ',
+      lead: 'জাতিসংঘের সদস্য যেখানে সবচেয়ে বড় দল পূর্ব বা প্রাচ্য অর্থোডক্স।',
+      note: 'রাশিয়া ও ইথিওপিয়া এক তালিকায়: বাইজেন্টাইন ও প্রাচ্য গির্জা। ক্যাথলিক ও প্রোটেস্ট্যান্ট নেই।',
+    },
+    buddhist: {
+      title: 'বৌদ্ধ দেশ',
+      lead: 'যেখানে বৌদ্ধধর্ম সবচেয়ে বড়, শ্রীলঙ্কা ও থাইল্যান্ড থেকে মঙ্গোলিয়া পর্যন্ত।',
+      note: 'ভিয়েতনাম ও জাপান এখানে নেই: সেখানে সবচেয়ে বড় ঐতিহ্য লোকধর্ম, আলাদা দল হিসেবে বৌদ্ধধর্ম নয়।',
+    },
+    hindu: {
+      title: 'হিন্দু দেশ',
+      lead: 'মাত্র তিন জাতিসংঘ সদস্য যেখানে হিন্দুধর্ম সবচেয়ে বড়।',
+      note: 'ভারত, নেপাল ও মরিশাস। ত্রিনিদাদ ও গায়ানায় হিন্দু অনেক, কিন্তু সবচেয়ে বড় দল প্রোটেস্ট্যান্ট।',
+    },
+    shia: {
+      title: 'শিয়া দেশ',
+      lead: 'চার জাতিসংঘ সদস্য যেখানে শিয়া ইসলাম সবচেয়ে বড় শাখা।',
+      note: 'ইরান, ইরাক, আজারবাইজান ও বাহরাইন। ওমান এখানে নেই: ইবাদি ইসলাম আলাদা শাখা।',
+    },
+    'no-religion': {
+      title: 'ধর্মহীন',
+      lead: 'যে দেশে ধর্মীয় পরিচয়হীন মানুষ সবচেয়ে বড় দল।',
+      note: 'সাম্প্রতিক আদমশুমারি ও পিউ অনুমান। একটি গির্জা এখনও সবচেয়ে বড় একক সম্প্রদায় হতে পারে: ফ্রান্সে ক্যাথলিকরা এখনও সবচেয়ে বড় গির্জা, কিন্তু «ধর্মহীন» তার চেয়ে বড়।',
     },
   },
   pt: {
@@ -475,6 +675,31 @@ export const LIST_COPY: Record<Lang, Record<ListId, ListCopy>> = {
       lead: 'Os cinco membros permanentes com veto no Conselho de Segurança da ONU.',
       note: 'Os lugares não mudaram desde 1945, salvo a troca da ROC pela RPC em 1971.',
     },
+    orthodox: {
+      title: 'Países ortodoxos',
+      lead: 'Membros da ONU cujo maior grupo é o cristianismo ortodoxo, oriental ou oriental antigo.',
+      note: 'Rússia e Etiópia estão juntas: igrejas bizantinas e orientais. Católicos e protestantes ficam de fora.',
+    },
+    buddhist: {
+      title: 'Países budistas',
+      lead: 'Onde o budismo é a maior religião, do Sri Lanka e da Tailândia à Mongólia.',
+      note: 'Vietname e Japão não entram: a maior tradição é religião popular, não o budismo como grupo à parte.',
+    },
+    hindu: {
+      title: 'Países hinduístas',
+      lead: 'Só três membros da ONU em que o hinduísmo é a maior religião.',
+      note: 'Índia, Nepal e Maurícia. Trindade e Guiana têm comunidades hinduístas grandes, mas o maior grupo é protestante.',
+    },
+    shia: {
+      title: 'Países xiitas',
+      lead: 'Quatro membros da ONU em que o islão xiita é o ramo maior.',
+      note: 'Irão, Iraque, Azerbaijão e Barém. Omã não entra: o ibadismo é outro ramo.',
+    },
+    'no-religion': {
+      title: 'Sem religião',
+      lead: 'Países em que as pessoas sem filiação religiosa são o maior grupo.',
+      note: 'Segundo censos recentes e estimativas Pew. Uma igreja pode continuar a ser a maior confissão: em França os católicos ainda são a maior igreja, mas «sem religião» já é maior.',
+    },
   },
   ja: {
     microstates: {
@@ -527,6 +752,31 @@ export const LIST_COPY: Record<Lang, Record<ListId, ListCopy>> = {
       lead: '国連安全保障理事会で拒否権をもつ常任理事国5か国。',
       note: '議席は1945年から変わらず、1971年に中華民国から中華人民共和国へ代わっただけ。',
     },
+    orthodox: {
+      title: '正教の国',
+      lead: '最大の集団が東方正教会または東方諸教会の国連加盟国。',
+      note: 'ロシアとエチオピアは同じ組。ビザンティン系とオリエント系。カトリックとプロテスタントは入らない。',
+    },
+    buddhist: {
+      title: '仏教の国',
+      lead: '仏教が最大の宗教の国。スリランカとタイからモンゴルまで。',
+      note: 'ベトナムと日本は入らない。最大の伝統は民俗宗教で、仏教を独立した集団としては数えない。',
+    },
+    hindu: {
+      title: 'ヒンドゥー教の国',
+      lead: 'ヒンドゥー教が最大の宗教である国連加盟国は三つだけ。',
+      note: 'インド、ネパール、モーリシャス。トリニダードとガイアナにもヒンドゥー教徒は多いが、最大集団はプロテスタント。',
+    },
+    shia: {
+      title: 'シーア派の国',
+      lead: 'シーア派がイスラム最大の分派である国連加盟国は四つ。',
+      note: 'イラン、イラク、アゼルバイジャン、バーレーン。オマーンは入らない。イバード派は別の分派。',
+    },
+    'no-religion': {
+      title: '無宗教',
+      lead: '宗教を持たない人が最大の集団である国。',
+      note: '最近の国勢調査とピューの推計。教会が最大の単一宗派であることはある。フランスではカトリックが今も最大の教会だが、「無宗教」の方が多い。',
+    },
   },
   he: {
     microstates: {
@@ -578,6 +828,31 @@ export const LIST_COPY: Record<Lang, Record<ListId, ListCopy>> = {
       title: 'חברות הקבע במועצת הביטחון',
       lead: 'חמש החברות הקבועות עם זכות וטו במועצת הביטחון של האו״ם.',
       note: 'המושבים לא השתנו מאז 1945, מלבד החלפת הרפובליקה הסינית בסין העממית ב־1971.',
+    },
+    orthodox: {
+      title: 'מדינות אורתודוקסיות',
+      lead: 'חברות האו״ם שהקבוצה הגדולה בהן היא נצרות אורתודוקסית מזרחית או מזרחית־עתיקה.',
+      note: 'רוסיה ואתיופיה באותה רשימה: כנסיות ביזנטיות ומזרחיות. קתולים ופרוטסטנטים לא נכללים.',
+    },
+    buddhist: {
+      title: 'מדינות בודהיסטיות',
+      lead: 'היכן שהבודהיזם הוא הדת הגדולה, מסרי לנקה ותאילנד עד מונגוליה.',
+      note: 'וייטנאם ויפן לא כאן: המסורת הגדולה היא דת עממית, לא בודהיזם כקבוצה נפרדת.',
+    },
+    hindu: {
+      title: 'מדינות הינדואיסטיות',
+      lead: 'רק שלוש חברות או״ם שבהן ההינדואיזם הוא הדת הגדולה.',
+      note: 'הודו, נפאל ומאוריציוס. בטרינידד ובגיאנה יש קהילות הינדואיסטיות גדולות, אבל הקבוצה הגדולה היא פרוטסטנטית.',
+    },
+    shia: {
+      title: 'מדינות שיעיות',
+      lead: 'ארבע חברות או״ם שבהן האסלאם השיעי הוא הזרם הגדול.',
+      note: 'איראן, עיראק, אזרבייג׳ן ובחריין. עומאן לא כאן: האסלאם האיבאדי הוא זרם נפרד.',
+    },
+    'no-religion': {
+      title: 'ללא דת',
+      lead: 'מדינות שבהן אנשים בלי השתייכות דתית הם הקבוצה הגדולה.',
+      note: 'לפי מפקדים אחרונים והערכות פיו. כנסייה עדיין יכולה להיות הזרם היחיד הגדול: בצרפת הקתולים עדיין הכנסייה הגדולה, אבל «ללא דת» גדול יותר.',
     },
   },
 }

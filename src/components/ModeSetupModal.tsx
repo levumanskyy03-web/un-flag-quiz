@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import type { Region } from '../data/countries'
 import type { LeaderKind } from '../data/leaders'
 import { REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
+import { HelpTip } from './HelpTip'
 import {
   EASY_FOOTBALL_MIX_MODES,
   EASY_MATH_MIX_MODES,
@@ -269,8 +270,6 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
         <h2 id="mode-setup-title" className="passport-title">
           {catalogNo != null ? `${catalogNo} · ${title}` : title}
         </h2>
-        <p className="duel-setup-hint">{rankingsInfo ? t.rankingSetup : t.modeSetup}</p>
-
         {family.world !== 'leaders' && family.id === 'mix' ? (
           <>
             <div className="choice-grid">
@@ -458,11 +457,11 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
             {difficultyGate ? <EmpireLock lang={settings.lang} feature={difficultyGate} title={t.gateDifficulty} compact /> : null}
 
             {family.world === 'football' && isPlayerFactsToName(settings.mode) && !settings.mix ? (
-              <p className="setting-hint">{t.playerFactsHint}</p>
+              <HelpTip text={t.playerFactsHint} />
             ) : null}
 
             {family.world === 'football' && family.id === 'players' && !settings.mix ? (
-              <p className="setting-hint">{t.playerClubNote}</p>
+              <HelpTip text={t.playerClubNote} />
             ) : null}
 
             {factsMode ? null : (

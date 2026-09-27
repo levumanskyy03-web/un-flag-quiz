@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { StudioEditor, StudioHelpButton, StudioHelpModal, markStudioHelpSeen, studioHelpUnseen } from "@/components/StudioEditor";
+import { HelpTip } from "@/components/HelpTip";
 import { PackQuizScreen } from "@/components/PackQuizScreen";
 import { PackFixWizard } from "@/components/PackFixWizard";
 import { StudioChromeNav, WorldsBack } from "@/components/WorldsBack";
@@ -171,7 +172,6 @@ function StudioPlayLive({ play }: { play: PlaySession }) {
         <header className="home-header">
           <WorldsBack lang={lang} onClick={play.goToWorlds} />
           <h1>{t.studio}</h1>
-          <p className="subtitle">{t.studioSubtitle}</p>
           <StudioHelpButton lang={lang} onClick={() => setHelp(true)} />
         </header>
         {studioLocked ? (
@@ -386,9 +386,7 @@ function StudioPlayLive({ play }: { play: PlaySession }) {
             {t.packCustomMix}
           </button>
         </div>
-        {mix === "custom" ? (
-          <p className="setting-hint">{t.studioFormatsHint}</p>
-        ) : null}
+        {mix === "custom" ? <HelpTip text={t.studioFormatsHint} /> : null}
         <h2>{t.roundSize}</h2>
         <div className="choice-grid is-3">
           {ROUND_SIZES.map((size) => (

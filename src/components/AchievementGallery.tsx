@@ -41,9 +41,7 @@ export function AchievementGallery({ lang, unlockedIds }: AchievementGalleryProp
           <p className="mode-stats-name">{achievementCopy(focus, lang).title}</p>
           <p className="setting-hint">{achievementCopy(focus, lang).hint}</p>
         </div>
-      ) : (
-        <p className="setting-hint">{t.achievementTap}</p>
-      )}
+      ) : null}
     </>
   )
 }

@@ -29,11 +29,13 @@ import { nearbyRankingCountries, rankingCountries, rankingPlaceOf, type RankingM
 import { correctLanguageIds, quizLanguageId } from '../../data/languages'
 import { govKindOf } from '../../data/governments'
 import { drivingSide } from '../../data/driving'
+import { religionOf } from '../../data/religion'
 import {
   isCodesMode,
   isDrivingMode,
   isLanguageMode,
   isNameToGov,
+  isReligionMode,
   isRankingMode,
   isSilhouetteMode,
   isWaterMapMode,
@@ -68,7 +70,7 @@ export function extraFitsMode(country: Country, mode: QuizMode): boolean {
     return false
   }
   if (!isExtraIso(country.iso)) return true
-  if (isWaterMode(mode) || isRankingMode(mode) || isLanguageMode(mode) || isDrivingMode(mode) || isNameToGov(mode)) return false
+  if (isWaterMode(mode) || isRankingMode(mode) || isLanguageMode(mode) || isDrivingMode(mode) || isReligionMode(mode) || isNameToGov(mode)) return false
   if (mode === 'neighborsToName') return canAskNeighbors(country.iso)
   if (
     mode === 'nameToCapital' ||
@@ -224,6 +226,9 @@ export function poolForMode(
   } else if (isDrivingMode(mode)) {
     next = pool
     if (next.length < 4) next = [...COUNTRIES]
+  } else if (isReligionMode(mode)) {
+    next = pool.filter((country) => religionOf(country.iso))
+    if (next.length < 4) next = COUNTRIES.filter((country) => religionOf(country.iso))
   } else if (isNameToGov(mode)) {
     next = pool.filter((country) => govKindOf(country.iso))
     if (next.length < 4) next = COUNTRIES.filter((country) => govKindOf(country.iso))
@@ -247,6 +252,7 @@ export function createRound(
   if (mode && isRankingMode(mode)) return createRankingRound(pool, count, mode)
   if (mode && isLanguageMode(mode)) return createLanguageRound(pool, count, mode)
   if (mode && isDrivingMode(mode)) return createDrivingRound(pool, count, mode)
+  if (mode && isReligionMode(mode)) return createReligionRound(pool, count, mode)
   if (mode && isNameToGov(mode)) return createGovRound(pool, count)
   const targets = shuffle(pool).slice(0, Math.min(count, pool.length))
   const questions: Question[] = []
@@ -464,6 +470,13 @@ function questionForMode(
       options: shuffle([country, ...pickDrivingNameDistractors(country, modePool)]),
     }
   }
+  if (isReligionMode(mode)) {
+    return {
+      country,
+      mode,
+      options: shuffle([country, ...pickReligionDistractors(country, modePool, 3)]),
+    }
+  }
   if (isNameToGov(mode)) {
     return {
       country,
@@ -559,6 +572,53 @@ function pickDrivingNameDistractors(correct: Country, pool: Country[]): Country[
   const opposite = pool.filter((country) => country.iso !== correct.iso && drivingSide(country.iso) !== side)
   const source = opposite.length >= 3 ? opposite : COUNTRIES.filter((country) => drivingSide(country.iso) !== side)
   return pickDistractors(correct, source, 3, (country) => country.iso)
+}
+
+function createReligionRound(pool: Country[], count: number, mode: QuizMode): Question[] {
+  const eligible = pool.filter((country) => religionOf(country.iso))
+  const targets = shuffle(eligible).slice(0, Math.min(count, eligible.length))
+  const questions: Question[] = []
+  const avoid: string[] = []
+  for (const country of targets) {
+    questions.push({
+      country,
+      mode,
+      options: shuffle([country, ...pickReligionDistractors(country, eligible, 3, avoid)]),
+    })
+    const id = religionOf(country.iso)
+    if (id) avoid.push(id)
+  }
+  return questions
+}
+
+function pickReligionDistractors(
+  correct: Country,
+  pool: Country[],
+  n: number,
+  avoidIds: readonly string[] = [],
+): Country[] {
+  const correctId = religionOf(correct.iso)
+  return pickFirstFit(n, avoidIds, (banned) => {
+    const pickedIso = new Set([correct.iso])
+    const pickedKey = new Set<string>([...(correctId ? [correctId] : []), ...banned])
+    const distractors: Country[] = []
+    const addFrom = (list: Country[]) => {
+      for (const country of shuffle(list)) {
+        if (distractors.length >= n) return
+        if (pickedIso.has(country.iso)) continue
+        const key = religionOf(country.iso)
+        if (!key || pickedKey.has(key)) continue
+        pickedIso.add(country.iso)
+        pickedKey.add(key)
+        distractors.push(country)
+      }
+    }
+    addFrom(pool.filter((country) => country.region === correct.region))
+    addFrom(COUNTRIES.filter((country) => country.region === correct.region))
+    addFrom(pool)
+    addFrom(COUNTRIES)
+    return distractors
+  })
 }
 
 function createLanguageRound(pool: Country[], count: number, mode: QuizMode = 'nameToLanguage'): Question[] {

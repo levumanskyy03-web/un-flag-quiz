@@ -1,6 +1,48 @@
 import { t11, type L11 } from '../math'
 import type { ThemeItem, ThemeTier } from '../theme'
 import { isThemeMode, type ThemeMode } from '../../lib/quiz/themeModes'
+import { foodCourse, foodCourseLabel } from './course'
+import { dishPhotoSrc } from './dishPhoto'
+import { extraFoodDishes } from './extraDishes'
+import { ING } from './ingredients'
+import { rawRecipe } from './recipe'
+import {
+  AR,
+  AT,
+  BR,
+  CA,
+  CH,
+  CN,
+  DE,
+  ES,
+  ET,
+  FR,
+  GB,
+  GE,
+  GR,
+  HU,
+  IN,
+  IT,
+  JP,
+  KR,
+  LB,
+  MA,
+  MX,
+  NG,
+  PE,
+  PL,
+  RU,
+  SE,
+  TH,
+  TR,
+  UA,
+  US,
+  UZ,
+  VN,
+} from './places'
+import type { FoodDish } from './types'
+
+export type { FoodDish }
 
 function item(
   id: string,
@@ -15,49 +57,7 @@ function item(
   return { id, mode: mode as ThemeMode, tier, prompt, answer, key, ...extra }
 }
 
-const JP = t11('Япония', 'Japan', 'Japan', '日本', 'Japón', 'जापान', 'اليابان', 'জাপান', 'Japão', '日本', 'יפן')
-const IT = t11('Италия', 'Italy', 'Italien', '意大利', 'Italia', 'इटली', 'إيطاليا', 'ইতালি', 'Itália', 'イタリア', 'איטליה')
-const MX = t11('Мексика', 'Mexico', 'Mexiko', '墨西哥', 'México', 'मेक्सिको', 'المكسيك', 'মেক্সিকো', 'México', 'メキシコ', 'מקסיקו')
-const ES = t11('Испания', 'Spain', 'Spanien', '西班牙', 'España', 'स्पेन', 'إسبانيا', 'স্পেন', 'Espanha', 'スペイン', 'ספרד')
-const TH = t11('Таиланд', 'Thailand', 'Thailand', '泰国', 'Tailandia', 'थाईलैंड', 'تايلاند', 'থাইল্যান্ড', 'Tailândia', 'タイ', 'תאילנד')
-const FR = t11('Франция', 'France', 'Frankreich', '法国', 'Francia', 'फ़्रांस', 'فرنسا', 'ফ্রান্স', 'França', 'フランス', 'צרפת')
-const US = t11('США', 'United States', 'USA', '美国', 'Estados Unidos', 'संयुक्त राज्य', 'الولايات المتحدة', 'মার্কিন যুক্তরাষ্ট্র', 'Estados Unidos', 'アメリカ', 'ארצות הברית')
-const VN = t11('Вьетнам', 'Vietnam', 'Vietnam', '越南', 'Vietnam', 'वियतनाम', 'فيتنام', 'ভিয়েতনাম', 'Vietname', 'ベトナム', 'וייטנאם')
-const KR = t11('Корея', 'Korea', 'Korea', '韩国', 'Corea', 'कोरिया', 'كوريا', 'কোরিয়া', 'Coreia', '韓国', 'קוריאה')
-const CN = t11('Китай', 'China', 'China', '中国', 'China', 'चीन', 'الصين', 'চীন', 'China', '中国', 'סין')
-const GB = t11('Великобритания', 'United Kingdom', 'Vereinigtes Königreich', '英国', 'Reino Unido', 'ब्रिटेन', 'بريطانيا', 'ব্রিটেন', 'Reino Unido', 'イギリス', 'בריטניה')
-const GR = t11('Греция', 'Greece', 'Griechenland', '希腊', 'Grecia', 'यूनान', 'اليونان', 'গ্রিস', 'Grécia', 'ギリシャ', 'יוון')
-const TR = t11('Турция', 'Turkey', 'Türkei', '土耳其', 'Turquía', 'तुर्की', 'تركيا', 'তুরস্ক', 'Turquia', 'トルコ', 'טורקיה')
-const CA = t11('Канада', 'Canada', 'Kanada', '加拿大', 'Canadá', 'कनाडा', 'كندا', 'কানাডা', 'Canadá', 'カナダ', 'קנדה')
-const BR = t11('Бразилия', 'Brazil', 'Brasilien', '巴西', 'Brasil', 'ब्राज़ील', 'البرازيل', 'ব্রাজিল', 'Brasil', 'ブラジル', 'ברזיל')
-const IN = t11('Индия', 'India', 'Indien', '印度', 'India', 'भारत', 'الهند', 'ভারত', 'Índia', 'インド', 'הודו')
-const UA = t11('Украина', 'Ukraine', 'Ukraine', '乌克兰', 'Ucrania', 'यूक्रेन', 'أوكرانيا', 'ইউক্রেন', 'Ucrânia', 'ウクライナ', 'אוקראינה')
-const HU = t11('Венгрия', 'Hungary', 'Ungarn', '匈牙利', 'Hungría', 'हंगरी', 'المجر', 'হাঙ্গেরি', 'Hungria', 'ハンガリー', 'הונגריה')
-const PE = t11('Перу', 'Peru', 'Peru', '秘鲁', 'Perú', 'पेरू', 'بيرو', 'পেরু', 'Peru', 'ペルー', 'פרו')
-const MA = t11('Марокко', 'Morocco', 'Marokko', '摩洛哥', 'Marruecos', 'मोरक्को', 'المغرب', 'মরক্কো', 'Marrocos', 'モロッコ', 'מרוקו')
-const PL = t11('Польша', 'Poland', 'Polen', '波兰', 'Polonia', 'पोलैंड', 'بولندا', 'পোল্যান্ড', 'Polónia', 'ポーランド', 'פולין')
-const CH = t11('Швейцария', 'Switzerland', 'Schweiz', '瑞士', 'Suiza', 'स्विट्ज़रलैंड', 'سويسرا', 'সুইজারল্যান্ড', 'Suíça', 'スイス', 'שווייץ')
-const DE = t11('Германия', 'Germany', 'Deutschland', '德国', 'Alemania', 'जर्मनी', 'ألمانيا', 'জার্মানি', 'Alemanha', 'ドイツ', 'גרמניה')
-const GE = t11('Грузия', 'Georgia', 'Georgien', '格鲁吉亚', 'Georgia', 'जॉर्जिया', 'جورجيا', 'জর্জিয়া', 'Geórgia', 'ジョージア', 'גאורגיה')
-const UZ = t11('Узбекистан', 'Uzbekistan', 'Usbekistan', '乌兹别克斯坦', 'Uzbekistán', 'उज़्बेकिस्तान', 'أوزبكستان', 'উজবেকিস্তান', 'Usbequistão', 'ウズベキスタン', 'אוזבקיסטן')
-const LB = t11('Ливан', 'Lebanon', 'Libanon', '黎巴嫩', 'Líbano', 'लेबनान', 'لبنان', 'লেবানন', 'Líbano', 'レバノン', 'לבנון')
-const NG = t11('Нигерия', 'Nigeria', 'Nigeria', '尼日利亚', 'Nigeria', 'नाइजीरिया', 'نيجيريا', 'নাইজেরিয়া', 'Nigéria', 'ナイジェリア', 'ניגריה')
-const RU = t11('Россия', 'Russia', 'Russland', '俄罗斯', 'Rusia', 'रूस', 'روسيا', 'রাশিয়া', 'Rússia', 'ロシア', 'רוסיה')
-const SE = t11('Швеция', 'Sweden', 'Schweden', '瑞典', 'Suecia', 'स्वीडन', 'السويد', 'সুইডেন', 'Suécia', 'スウェーデン', 'שוודיה')
-const AT = t11('Австрия', 'Austria', 'Österreich', '奥地利', 'Austria', 'ऑस्ट्रिया', 'النمسا', 'অস্ট্রিয়া', 'Áustria', 'オーストリア', 'אוסטריה')
-const ET = t11('Эфиопия', 'Ethiopia', 'Äthiopien', '埃塞俄比亚', 'Etiopía', 'इथियोपिया', 'إثيوبيا', 'ইথিওপিয়া', 'Etiópia', 'エチオピア', 'אתיופיה')
-const AR = t11('Аргентина', 'Argentina', 'Argentinien', '阿根廷', 'Argentina', 'अर्जेंटीना', 'الأرجنتين', 'আর্জেন্টিনা', 'Argentina', 'アルゼンチン', 'ארגנטינה')
-
-type Dish = {
-  id: string
-  tier: ThemeTier
-  name: L11
-  country: L11
-  ck: string
-  ing: L11
-  sig?: boolean
-  photo?: string
-}
+type Dish = FoodDish
 
 const DISHES: Dish[] = [
   {
@@ -454,21 +454,63 @@ const DISHES: Dish[] = [
   },
 ]
 
+const SKIP_MAIN = new Set(['water', 'stock', 'stockBeef', 'stockChicken', 'stockFish', 'oil', 'oliveOil', 'salt'])
+
+function mainIngredient(id: string): string | null {
+  const recipe = rawRecipe(id)
+  if (!recipe) return null
+  const ranked = [...recipe.parts].sort((a, b) => b.g - a.g)
+  const solid = ranked.find((part) => !SKIP_MAIN.has(part.id) && part.g >= 15)
+  return (solid ?? ranked[0])?.id ?? null
+}
+
 function emit(dish: Dish): Array<ThemeItem | null> {
-  const file = dish.photo ? { wikiFile: `/food/${dish.photo}.jpg` } : {}
+  const src = dishPhotoSrc(dish)
+  const file = src ? { wikiFile: src } : {}
+  const course = foodCourse(dish.id)
+  const mainId = mainIngredient(dish.id)
+  const main = mainId ? ING[mainId] : undefined
   const rows: Array<ThemeItem | null> = [
     item(`di-${dish.id}`, 'dishToCuisine', dish.tier, dish.name, dish.country, dish.ck),
     item(`or-${dish.id}`, 'foodToOrigin', dish.tier, dish.ing, dish.name, dish.id),
     item(`in-${dish.id}`, 'dishToIngredients', dish.tier, dish.name, dish.ing, `${dish.id}-ing`),
+    item(`dc-${dish.id}`, 'dishToCourse', dish.tier, dish.name, foodCourseLabel(course), course),
+    item(`ic-${dish.id}`, 'ingredientsToCountry', dish.tier, dish.ing, dish.country, dish.ck),
   ]
+  if (main) rows.push(item(`dm-${dish.id}`, 'dishToMain', dish.tier, dish.name, main, mainId!))
   if (dish.sig) rows.push(item(`cu-${dish.id}`, 'cuisineToDish', dish.tier, dish.country, dish.name, dish.id))
-  if (dish.photo) {
+  if (src) {
     rows.push(item(`ph-${dish.id}`, 'foodPhotoToDish', dish.tier, dish.name, dish.name, dish.id, file))
-    if (dish.sig) rows.push(item(`pc-${dish.id}`, 'foodPhotoToCuisine', dish.tier, dish.name, dish.country, dish.ck, file))
+    rows.push(item(`pc-${dish.id}`, 'foodPhotoToCuisine', dish.tier, dish.name, dish.country, dish.ck, file))
+    rows.push(item(`pi-${dish.id}`, 'foodPhotoToIngredients', dish.tier, dish.name, dish.ing, `${dish.id}-ing`, file))
+    rows.push(item(`pk-${dish.id}`, 'foodPhotoToCourse', dish.tier, dish.name, foodCourseLabel(course), course, file))
   }
   return rows
 }
 
+let cachedDishes: FoodDish[] | null = null
+
+export function allFoodDishes(): FoodDish[] {
+  if (cachedDishes) return cachedDishes
+  const dishes = DISHES.concat(extraFoodDishes())
+  const ids = new Set<string>()
+  for (const dish of dishes) {
+    if (ids.has(dish.id)) throw new Error(`duplicate food dish: ${dish.id}`)
+    ids.add(dish.id)
+  }
+  cachedDishes = dishes
+  return dishes
+}
+
+export function foodDishById(id: string): FoodDish | undefined {
+  return allFoodDishes().find((dish) => dish.id === id)
+}
+
+export function dishIdFromThemeItem(id: string): string | null {
+  const match = /^(?:di|or|in|cu|ph|pc|dc|dm|ic|pi|pk)-(.+)$/.exec(id)
+  return match?.[1] ?? null
+}
+
 export function foodGeneratedRows(): ThemeItem[] {
-  return DISHES.flatMap(emit).filter((row): row is ThemeItem => row !== null)
+  return allFoodDishes().flatMap(emit).filter((row): row is ThemeItem => row !== null)
 }

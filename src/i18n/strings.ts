@@ -1,5 +1,6 @@
 import { REGIONS } from '../data/countries'
 import { type GovKind } from '../data/governments'
+import { type ReligionId } from '../data/religion'
 import {
   CLUB_FOOTBALL_MATCH_MIX,
   CODES_MODES,
@@ -57,6 +58,22 @@ export type Strings = {
   mathFamilyGeometry: string
   mathFamilySymbols: string
   mathFamilyPeople: string
+  mathFamilyDigits: string
+  digitsPrompt: string
+  digitsWatch: string
+  digitsType: string
+  digitsBest: string
+  digitsGoal: string
+  digitsAgain: string
+  digitsHideHint: string
+  digitsHideAll: string
+  digitsShowAll: string
+  digitsMiss: string
+  digitsDone: string
+  digitsPi: string
+  digitsPhi: string
+  digitsE: string
+  digitsSqrt2: string
   mathEasyMixNote: string
   mathHardMixNote: string
   exprToValue: string
@@ -161,12 +178,29 @@ export type Strings = {
   bioExamplePrompt: string
   bioAnimalPrompt: string
   bioClassPrompt: string
+  bioFamilyWild: string
+  bioFamilyLabs: string
+  bioPhotoToName: string
+  bioPhotoToClass: string
+  speciesToHabitat: string
+  habitatToSpecies: string
+  bioScientistPhoto: string
+  bioScientistToIdea: string
+  bioIdeaToScientist: string
+  bioPhotoNamePrompt: string
+  bioPhotoClassPrompt: string
+  bioHabitatPrompt: string
+  bioHabitatSpeciesPrompt: string
+  bioScientistPhotoPrompt: string
+  bioScientistIdeaPrompt: string
+  bioIdeaScientistPrompt: string
   olympics: string
   olySubtitle: string
   olyFamilyHosts: string
   olyFamilySports: string
   olyFamilyNoc: string
   olyFamilyStars: string
+  olyFamilySymbols: string
   olyEasyMixNote: string
   olyHardMixNote: string
   olyYearToHost: string
@@ -175,6 +209,8 @@ export type Strings = {
   hostToCountry: string
   olyYearToCountry: string
   winterYearToHost: string
+  winterHostToYear: string
+  winterHostToCountry: string
   sportToCategory: string
   categoryToSport: string
   sportToDebut: string
@@ -189,17 +225,23 @@ export type Strings = {
   sportToVenue: string
   countryToOlySport: string
   seasonToSport: string
+  sportToSeason: string
   nocToName: string
   nameToNoc: string
   countryToGolds: string
   athleteToNoc: string
+  sportToAthlete: string
   olyPhotoToName: string
+  olySymbolToMeaning: string
+  olyMeaningToSymbol: string
   olyYearPrompt: string
   olyHostPrompt: string
   olyCountPrompt: string
   olyHostCountryPrompt: string
   olyYearCountryPrompt: string
   olyWinterPrompt: string
+  olyWinterHostPrompt: string
+  olyWinterCountryPrompt: string
   olySportPrompt: string
   olyCategoryPrompt: string
   olyDebutPrompt: string
@@ -214,11 +256,15 @@ export type Strings = {
   olySportVenuePrompt: string
   olyCountrySportPrompt: string
   olySeasonPrompt: string
+  olySportSeasonPrompt: string
   olyNocPrompt: string
   olyNameNocPrompt: string
   olyGoldsPrompt: string
   olyAthletePrompt: string
+  olySportAthletePrompt: string
   olyPhotoPrompt: string
+  olySymbolPrompt: string
+  olyMeaningSymbolPrompt: string
   cs: string
   csSubtitle: string
   csFamilyCode: string
@@ -261,12 +307,31 @@ export type Strings = {
   dishToIngredients: string
   foodPhotoToDish: string
   foodPhotoToCuisine: string
+  dishToCourse: string
+  dishToMain: string
+  ingredientsToCountry: string
+  foodPhotoToIngredients: string
+  foodPhotoToCourse: string
   foodDishPrompt: string
   foodCuisinePrompt: string
   foodOriginPrompt: string
   foodDishIngredientsPrompt: string
   foodPhotoPrompt: string
   foodPhotoCuisinePrompt: string
+  foodCoursePrompt: string
+  foodMainPrompt: string
+  foodIngCountryPrompt: string
+  foodPhotoIngredientsPrompt: string
+  foodPhotoCoursePrompt: string
+  dishCourse: string
+  dishCardKicker: string
+  dishIngredients: string
+  dishOrigin: string
+  dishPortion: string
+  dishPerKilo: string
+  dishMethod: string
+  dishGram: string
+  dishScaleNote: string
   transport: string
   transportSubtitle: string
   transFamilyVehicles: string
@@ -561,6 +626,22 @@ export type Strings = {
   drivingToNamePrompt: string
   drivingLeft: string
   drivingRight: string
+  nameToReligion: string
+  nameToReligionPrompt: string
+  religionToName: string
+  religionToNamePrompt: string
+  familyReligion: string
+  relCatholic: string
+  relProtestant: string
+  relOrthodox: string
+  relSunni: string
+  relShia: string
+  relIbadi: string
+  relBuddhist: string
+  relHindu: string
+  relJewish: string
+  relFolk: string
+  relUnaffiliated: string
   familySilhouette: string
   familyDriving: string
   silhouettePrompt: string
@@ -613,6 +694,7 @@ export type Strings = {
   mixAskMap: string
   mixAskSilhouette: string
   mixAskDriving: string
+  mixAskReligion: string
   mixAskLanguage: string
   mixAskSea: string
   mixAskRiver: string
@@ -823,6 +905,8 @@ export type Strings = {
   music: string
   audioAll: string
   audioAllOff: string
+  dailyRemind: string
+  dailyRemindHint: string
   accountCountry: string
   countrySearch: string
   settingsReport: string
@@ -910,6 +994,7 @@ export type Strings = {
   population: string
   currency: string
   government: string
+  religion: string
   fact: string
   neighbors: string
   noNeighbors: string
@@ -1654,6 +1739,22 @@ export const STRINGS: Record<Lang, Strings> = {
     drivingToNamePrompt: 'Какая страна ездит по этой стороне?',
     drivingLeft: 'Левая',
     drivingRight: 'Правая',
+    nameToReligion: 'Страна → религия',
+    nameToReligionPrompt: 'Какая религия здесь крупнейшая?',
+    religionToName: 'Религия → страна',
+    religionToNamePrompt: 'В какой стране эта религия крупнейшая?',
+    familyReligion: 'Религия',
+    relCatholic: 'Католицизм',
+    relProtestant: 'Протестантизм',
+    relOrthodox: 'Православие',
+    relSunni: 'Суннизм',
+    relShia: 'Шиизм',
+    relIbadi: 'Ибадизм',
+    relBuddhist: 'Буддизм',
+    relHindu: 'Индуизм',
+    relJewish: 'Иудаизм',
+    relFolk: 'Народные верования',
+    relUnaffiliated: 'Без религии',
     familySilhouette: 'Силуэт',
     familyDriving: 'Сторона движения',
     silhouettePrompt: 'Какая это страна?',
@@ -1707,6 +1808,7 @@ export const STRINGS: Record<Lang, Strings> = {
     mixAskMap: 'Найдите страну на карте',
     mixAskSilhouette: 'Назовите страну по силуэту',
     mixAskDriving: 'Назовите сторону движения',
+    mixAskReligion: 'Назовите религию',
     mixAskLanguage: 'Назовите страну по языку',
     mixAskSea: 'Назовите море или океан',
     mixAskRiver: 'Назовите реку или озеро',
@@ -1877,6 +1979,8 @@ export const STRINGS: Record<Lang, Strings> = {
     music: 'Мелодия',
     audioAll: 'Всё включено',
     audioAllOff: 'Выключить всё',
+    dailyRemind: 'Напоминание',
+    dailyRemindHint: 'Каждый день в 18:00 — челлендж дня.',
     accountCountry: 'Страна',
     countrySearch: 'Найти страну',
     settingsReport: 'Сообщить о проблеме',
@@ -1974,6 +2078,7 @@ export const STRINGS: Record<Lang, Strings> = {
     population: 'Население',
     currency: 'Валюта',
     government: 'Гос. устройство',
+    religion: 'Религия',
     fact: 'Факт',
     neighbors: 'Сухопутные соседи',
     noNeighbors: 'Нет сухопутных соседей',
@@ -2428,6 +2533,22 @@ export const STRINGS: Record<Lang, Strings> = {
     drivingToNamePrompt: 'Which country drives on this side?',
     drivingLeft: 'Left',
     drivingRight: 'Right',
+    nameToReligion: 'Country → religion',
+    nameToReligionPrompt: 'What is the largest religion here?',
+    religionToName: 'Religion → country',
+    religionToNamePrompt: 'Which country has this as its largest religion?',
+    familyReligion: 'Religion',
+    relCatholic: 'Catholicism',
+    relProtestant: 'Protestantism',
+    relOrthodox: 'Orthodox Christianity',
+    relSunni: 'Sunni Islam',
+    relShia: 'Shia Islam',
+    relIbadi: 'Ibadi Islam',
+    relBuddhist: 'Buddhism',
+    relHindu: 'Hinduism',
+    relJewish: 'Judaism',
+    relFolk: 'Folk religion',
+    relUnaffiliated: 'No religion',
     familySilhouette: 'Silhouette',
     familyDriving: 'Driving side',
     silhouettePrompt: 'Which country is this?',
@@ -2481,6 +2602,7 @@ export const STRINGS: Record<Lang, Strings> = {
     mixAskMap: 'Find the country on the map',
     mixAskSilhouette: 'Name the country from the silhouette',
     mixAskDriving: 'Name the driving side',
+    mixAskReligion: 'Name the religion',
     mixAskLanguage: 'Name the country from the language',
     mixAskSea: 'Name the sea or ocean',
     mixAskRiver: 'Name the river or lake',
@@ -2651,6 +2773,8 @@ export const STRINGS: Record<Lang, Strings> = {
     music: 'Music',
     audioAll: 'All on',
     audioAllOff: 'Mute all',
+    dailyRemind: 'Reminder',
+    dailyRemindHint: 'Every day at 18:00, the daily challenge.',
     accountCountry: 'Country',
     countrySearch: 'Find a country',
     settingsReport: 'Report a problem',
@@ -2742,6 +2866,7 @@ export const STRINGS: Record<Lang, Strings> = {
     population: 'Population',
     currency: 'Currency',
     government: 'Government',
+    religion: 'Religion',
     fact: 'Fact',
     neighbors: 'Land neighbors',
     noNeighbors: 'No land neighbors',
@@ -3167,6 +3292,7 @@ export function mixAskHint(mode: QuizMode, lang: Lang): string {
   if (mode === 'nameToMap') return t.mixAskMap
   if (mode === 'silhouetteToName' || mode === 'nameToSilhouette') return t.mixAskSilhouette
   if (mode === 'nameToDriving' || mode === 'drivingToName') return t.mixAskDriving
+  if (mode === 'nameToReligion' || mode === 'religionToName') return t.mixAskReligion
   if (mode === 'languageToName') return t.mixAskLanguage
   if (mode === 'mapToSea') return t.mixAskSea
   if (mode === 'mapToRiver') return t.mixAskRiver
@@ -3175,6 +3301,34 @@ export function mixAskHint(mode: QuizMode, lang: Lang): string {
 
 export function drivingLabel(side: 'left' | 'right', lang: Lang): string {
   return side === 'left' ? STRINGS[lang].drivingLeft : STRINGS[lang].drivingRight
+}
+
+export function religionLabel(id: ReligionId, lang: Lang): string {
+  const t = STRINGS[lang]
+  switch (id) {
+    case 'catholic':
+      return t.relCatholic
+    case 'protestant':
+      return t.relProtestant
+    case 'orthodox':
+      return t.relOrthodox
+    case 'sunni':
+      return t.relSunni
+    case 'shia':
+      return t.relShia
+    case 'ibadi':
+      return t.relIbadi
+    case 'buddhist':
+      return t.relBuddhist
+    case 'hindu':
+      return t.relHindu
+    case 'jewish':
+      return t.relJewish
+    case 'folk':
+      return t.relFolk
+    case 'unaffiliated':
+      return t.relUnaffiliated
+  }
 }
 
 export function governmentLabel(kind: GovKind, lang: Lang): string {

@@ -215,13 +215,20 @@ function astroCatalog(): StampCard[] {
 }
 
 function themeCatalog(world: QuizWorld): StampCard[] {
-  return THEME_ITEMS.filter((item) => themeWorldOf(item.mode) === world).map((item) => ({
-    id: item.id,
-    group: isThemePhotoMode(item.mode) && world !== 'food' ? 'people' : 'cards',
-    visual: item.wikiFile ? 'portrait' : 'text',
-    wiki: item.wiki,
-    wikiFile: item.wikiFile,
-  }))
+  return THEME_ITEMS.filter((item) => themeWorldOf(item.mode) === world).map((item) => {
+    const scientist =
+      item.mode === 'bioScientistPhoto' ||
+      item.mode === 'csPhotoToName' ||
+      (world === 'olympics' && isThemePhotoMode(item.mode) && Boolean(item.wiki || item.wikiFile))
+    const pictured = world === 'olympics' ? scientist : Boolean(item.wikiFile)
+    return {
+      id: item.id,
+      group: scientist ? 'people' : 'cards',
+      visual: pictured ? 'portrait' : 'text',
+      wiki: item.wiki,
+      wikiFile: item.wikiFile,
+    }
+  })
 }
 
 const CATALOG: Partial<Record<QuizWorld, StampCard[]>> = {}

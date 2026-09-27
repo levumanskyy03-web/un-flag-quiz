@@ -14,8 +14,8 @@ import {
 } from '../lib/stamps'
 import type { QuizSettings } from './HomeScreen'
 import { stampRarity } from '../lib/empire/album'
-import { AlbumLootHow } from './AlbumLootHow'
 import { Flag } from './Flag'
+import { HelpTip } from './HelpTip'
 import { FitText } from './FitText'
 import { HubNav, type HubTab } from './HubNav'
 import { PassportModal } from './PassportModal'
@@ -39,14 +39,14 @@ export function AlbumScreen({ settings, stamps, onHub, onWorlds }: AlbumScreenPr
     <div className="screen album-screen">
       <header className="home-header">
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
-        <h1>{t.album}</h1>
+        <h1>
+          {t.album}
+          <HelpTip text={t.albumHint} />
+        </h1>
         <p className="learn-copy">{t.albumCount(copies, countries, STAMP_TOTAL)}</p>
-        <p className="setting-hint">{t.albumHint}</p>
       </header>
 
       <HubNav lang={settings.lang} active="album" onSelect={onHub} />
-
-      <AlbumLootHow lang={settings.lang} world="geo" />
 
       {copies === 0 ? <p className="setting-hint">{t.albumEmpty}</p> : null}
 

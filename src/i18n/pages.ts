@@ -73,7 +73,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     aboutTitle: "О проекте",
     about: [
       "Паспорт страны — бесплатная викторина Льва Уманского по 193 государствам ООН. Регистрация не обязательна: играйте сразу. Аккаунт с именем и паролем нужен только чтобы попасть в общий рейтинг.",
-      "География: флаги, столицы, валюты, население, год основания, соседи, карты, силуэты, языки, сторона движения, моря и реки, телефонные, автомобильные и доменные коды. Есть кампания по уровням, свободная игра, обучение, карта мира, тренажёр ошибок и альбом марок — марки копятся за очки в географии.",
+      "География: флаги, столицы, валюты, население, год основания, соседи, карты, силуэты, языки, религию, сторона движения, моря и реки, телефонные, автомобильные и доменные коды. Есть кампания по уровням, свободная игра, обучение, карта мира, тренажёр ошибок и альбом марок — марки копятся за очки в географии.",
       "Футбол: игроки и тренеры, чемпионаты мира и Европы, хозяева, финалисты, бомбардиры, Кубок Америки и Кубок Африки. Те же режимы, что в географии: уровни, свободная игра, обучение и ошибки.",
       "Лидеры стран: нынешние главы и исторические правители, папы римские и монархи — по портрету, имени и фактам.",
       "Можно вызвать друга на дуэль 1 на 1. Опыт копится за игру; уровень аккаунта и ачивки видны в настройках. Кнопка динамика отдельно включает и выключает звуки, мелодию или всё сразу. Фоновая мелодия — своя, без стороннего авторства, и крутится по кругу.",
@@ -149,7 +149,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     aboutTitle: "About",
     about: [
       "Country Passport is Lev Umansky’s free quiz of all 193 UN members. You can play at once; an account is only needed to appear on the public ratings.",
-      "Geography: flags, capitals, currencies, population, founding years, neighbours, maps, silhouettes, languages, driving side, seas and rivers, plus phone, car and domain codes. There is a level campaign, free play, learn mode, a world map, a mistakes trainer, and a stamp album earned from scored geo play.",
+      "Geography: flags, capitals, currencies, population, founding years, neighbours, maps, silhouettes, languages, religion, driving side, seas and rivers, plus phone, car and domain codes. There is a level campaign, free play, learn mode, a world map, a mistakes trainer, and a stamp album earned from scored geo play.",
       "Football: players and managers, World Cup and Euros, hosts, finalists, top scorers, Copa América and AFCON. The same modes as geography: levels, free play, learn and mistakes.",
       "Country leaders: current heads of state and government, historical rulers, popes and monarchs — by portrait, name and facts.",
       "You can duel a friend 1v1. XP builds as you play; account level and achievements sit in settings. The speaker button mutes sounds, the loop, or everything. The background melody is original, copyright-free, and loops.",
@@ -225,7 +225,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     aboutTitle: "Über uns",
     about: [
       "Länderpass ist Lev Umanskys kostenloses Quiz zu allen 193 UN-Mitgliedern. Du kannst sofort spielen; ein Konto brauchst du nur für die öffentliche Rangliste.",
-      "Geografie: Flaggen, Hauptstädte, Währungen, Bevölkerung, Gründungsjahr, Nachbarn, Karten, Silhouetten, Sprachen, Fahrseite, Meere und Flüsse sowie Telefon-, Auto- und Domaincodes. Es gibt Kampagne, Freies Spiel, Lernen, Weltkarte, Fehlertrainer und ein Stempelalbum aus gewerteter Geografie.",
+      "Geografie: Flaggen, Hauptstädte, Währungen, Bevölkerung, Gründungsjahr, Nachbarn, Karten, Silhouetten, Sprachen, Religion, Fahrseite, Meere und Flüsse sowie Telefon-, Auto- und Domaincodes. Es gibt Kampagne, Freies Spiel, Lernen, Weltkarte, Fehlertrainer und ein Stempelalbum aus gewerteter Geografie.",
       "Fußball: Spieler und Trainer, WM und EM, Gastgeber, Finalisten, Torschützen, Copa América und Afrika-Cup. Dieselben Modi wie in der Geografie: Level, Freies Spiel, Lernen und Fehler.",
       "Staatschefs: heutige und historische Herrscher, Päpste und Monarchen — nach Porträt, Namen und Fakten.",
       "Du kannst einen Freund zum 1-gegen-1 fordern. Erfahrung sammelt sich im Spiel; Level und Erfolge stehen in den Einstellungen. Der Lautsprecher schaltet Töne, die Melodie oder alles getrennt. Die Hintergrundmelodie ist original, frei von Fremdrechten und läuft in einer Schleife.",
@@ -299,7 +299,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     aboutTitle: "关于",
     about: [
       "《国家护照》是 Lev Umansky 制作的免费问答游戏，覆盖全部 193 个联合国会员国。可以直接玩；只有上公开排行榜才需要账号。",
-      "地理：国旗、首都、货币、人口、建国年份、邻国、地图、轮廓、语言、通行方向、海洋与河流，以及电话、汽车和国际域名代码。有关卡、自由玩、学习、世界地图、错题训练，以及靠地理得分收集的邮票册。",
+      "地理：国旗、首都、货币、人口、建国年份、邻国、地图、轮廓、语言、宗教、通行方向、海洋与河流，以及电话、汽车和国际域名代码。有关卡、自由玩、学习、世界地图、错题训练，以及靠地理得分收集的邮票册。",
       "足球：球员与教练、世界杯与欧洲杯、主办国、决赛对手、射手、美洲杯与非洲杯。模式与地理相同：关卡、自由玩、学习与错题。",
       "国家领袖：现任与历史统治者、教宗与君主——按肖像、姓名和事实出题。",
       "可以和朋友一对一对决。经验随游戏累积；账号等级和成就在设置里。扬声器按钮可分别开关音效、背景乐或全部。背景乐为原创循环，无第三方版权。",
@@ -372,7 +372,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     aboutTitle: "Acerca de",
     about: [
       "Pasaporte del país es el quiz gratuito de Lev Umansky sobre los 193 Estados de la ONU. Se puede jugar al instante; la cuenta solo hace falta para el ranking público.",
-      "Geografía: banderas, capitales, monedas, población, año de fundación, vecinos, mapas, siluetas, lenguas, sentido de circulación, mares y ríos, y códigos de teléfono, coche y dominio. Hay campaña, juego libre, aprendizaje, mapa mundial, entrenador de errores y un álbum de sellos por puntos de geografía.",
+      "Geografía: banderas, capitales, monedas, población, año de fundación, vecinos, mapas, siluetas, lenguas, religión, sentido de circulación, mares y ríos, y códigos de teléfono, coche y dominio. Hay campaña, juego libre, aprendizaje, mapa mundial, entrenador de errores y un álbum de sellos por puntos de geografía.",
       "Fútbol: jugadores y entrenadores, Mundial y Euro, anfitriones, finalistas, goleadores, Copa América y Copa África. Los mismos modos que en geografía: niveles, libre, aprender y errores.",
       "Líderes: jefes actuales e históricos, papas y monarcas — por retrato, nombre y datos.",
       "Puedes retar a un amigo 1 contra 1. La experiencia sube al jugar; nivel y logros están en ajustes. El altavoz silencia sonidos, la melodía o todo. La melodía de fondo es original, sin derechos ajenos, y se repite.",
@@ -448,7 +448,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     aboutTitle: "परिचय",
     about: [
       "देश पासपोर्ट Lev Umansky की मुफ़्त क्विज़ है — 193 संयुक्त राष्ट्र सदस्य। तुरंत खेल सकते हैं; सार्वजनिक रैंकिंग के लिए ही खाता चाहिए।",
-      "भूगोल: झंडे, राजधानियाँ, मुद्रा, जनसंख्या, स्थापना वर्ष, पड़ोसी, नक्शे, आकृति, भाषाएँ, चलने की ओर, समुद्र और नदियाँ, फोन/कार/डोमेन कोड। अभियान, मुक्त खेल, सीख, विश्व मानचित्र, गलती ट्रेनर, और भूगोल अंकों से टिकट एल्बम।",
+      "भूगोल: झंडे, राजधानियाँ, मुद्रा, जनसंख्या, स्थापना वर्ष, पड़ोसी, नक्शे, आकृति, भाषाएँ, धर्म, चलने की ओर, समुद्र और नदियाँ, फोन/कार/डोमेन कोड। अभियान, मुक्त खेल, सीख, विश्व मानचित्र, गलती ट्रेनर, और भूगोल अंकों से टिकट एल्बम।",
       "फुटबॉल: खिलाड़ी और कोच, विश्व कप और यूरो, मेज़बान, फाइनलिस्ट, गोल करने वाले, कोपा अमेरिका और अफ्रीका कप। भूगोल जैसे ही मोड: स्तर, मुक्त, सीख और गलतियाँ।",
       "नेता: वर्तमान और ऐतिहासिक शासक, पोप और राजा — चित्र, नाम और तथ्यों से।",
       "दोस्त को 1v1 द्वंद्व में बुला सकते हैं। अनुभव खेल से बढ़ता है; स्तर और अचीवमेंट सेटिंग में हैं। स्पीकर से आवाज़ें, धुन या सब अलग-अलग बंद होते हैं। पृष्ठभूमि धुन मूल है, बिना बाहरी कॉपीराइट, और लूप में चलती है।",
@@ -523,7 +523,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     aboutTitle: "حول الموقع",
     about: [
       "جواز الدولة اختبار مجاني من Lev Umansky لـ193 عضوًا في الأمم المتحدة. يمكن اللعب فورًا؛ الحساب لازم فقط للترتيب العام.",
-      "الجغرافيا: أعلام وعواصم وعملات وسكان وسنة التأسيس وجيران وخرائط وظلال ولغات وجهة السير وبحار وأنهار ورموز الهاتف والسيارة والنطاق. فيه حملة ولعب حر وتعلّم وخريطة العالم ومدرب أخطاء وألبوم طوابع من نقاط الجغرافيا.",
+      "الجغرافيا: أعلام وعواصم وعملات وسكان وسنة التأسيس وجيران وخرائط وظلال ولغات ودين وجهة السير وبحار وأنهار ورموز الهاتف والسيارة والنطاق. فيه حملة ولعب حر وتعلّم وخريطة العالم ومدرب أخطاء وألبوم طوابع من نقاط الجغرافيا.",
       "كرة القدم: لاعبون ومدربون وكأس العالم ويورو ومستضيفون ونهائيون وهدافون وكوبا أمريكا وكأس أفريقيا. نفس أوضاع الجغرافيا: مستويات وحر وتعلّم وأخطاء.",
       "القادة: حكام حاليون وتاريخيون وبابوات وملوك — بالصورة والاسم والحقائق.",
       "يمكن تحدي صديق فرديًا. الخبرة تتراكم باللعب؛ المستوى والإنجازات في الإعدادات. زر السماعة يكتم الأصوات أو اللحن أو الكل. اللحن الأصلي بلا حقوق لطرف آخر ويعاد في حلقة.",
@@ -598,7 +598,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     aboutTitle: "সম্পর্কে",
     about: [
       "দেশের পাসপোর্ট Lev Umansky-এর বিনামূল্যে কুইজ — জাতিসংঘের ১৯৩ সদস্য। সঙ্গে সঙ্গে খেলা যায়; পাবলিক র‍্যাঙ্কিংয়ের জন্যই অ্যাকাউন্ট লাগে।",
-      "ভূগোল: পতাকা, রাজধানী, মুদ্রা, জনসংখ্যা, প্রতিষ্ঠার বছর, প্রতিবেশী, মানচিত্র, ছায়া, ভাষা, চালানোর দিক, সমুদ্র ও নদী, ফোন/গাড়ি/ডোমেইন কোড। ক্যাম্পেইন, মুক্ত খেলা, শেখা, বিশ্ব মানচিত্র, ভুল ট্রেনার, আর ভূগোল স্কোরের স্ট্যাম্প অ্যালবাম।",
+      "ভূগোল: পতাকা, রাজধানী, মুদ্রা, জনসংখ্যা, প্রতিষ্ঠার বছর, প্রতিবেশী, মানচিত্র, ছায়া, ভাষা, ধর্ম, চালানোর দিক, সমুদ্র ও নদী, ফোন/গাড়ি/ডোমেইন কোড। ক্যাম্পেইন, মুক্ত খেলা, শেখা, বিশ্ব মানচিত্র, ভুল ট্রেনার, আর ভূগোল স্কোরের স্ট্যাম্প অ্যালবাম।",
       "ফুটবল: খেলোয়াড় ও কোচ, বিশ্বকাপ ও ইউরো, আয়োজক, ফাইনালিস্ট, গোলদাতা, কোপা আমেরিকা ও আফ্রিকা কাপ। ভূগোলের মতো মোড: লেভেল, মুক্ত, শেখা ও ভুল।",
       "নেতা: বর্তমান ও ঐতিহাসিক শাসক, পোপ ও রাজা — ছবি, নাম ও তথ্যে।",
       "বন্ধুকে ১v১ দ্বন্দ্বে ডাকতে পারেন। অভিজ্ঞতা খেলে বাড়ে; লেভেল ও অ্যাচিভমেন্ট সেটিংসে। স্পিকার আলাদা করে শব্দ, সুর বা সব বন্ধ করে। পটভূমির সুর মৌলিক, বাইরের কপিরাইট ছাড়া, এবং লুপে চলে।",
@@ -674,7 +674,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     aboutTitle: "Sobre",
     about: [
       "Passaporte do país é o quiz grátis de Lev Umansky sobre os 193 Estados da ONU. Joga já; a conta só serve para o ranking público.",
-      "Geografia: bandeiras, capitais, moedas, população, ano de fundação, vizinhos, mapas, silhuetas, línguas, lado da via, mares e rios, códigos de telefone, matrícula e domínio. Há campanha, jogo livre, aprendizagem, mapa-múndi, treino de erros e um álbum de selos pelos pontos de geografia.",
+      "Geografia: bandeiras, capitais, moedas, população, ano de fundação, vizinhos, mapas, silhuetas, línguas, religião, lado da via, mares e rios, códigos de telefone, matrícula e domínio. Há campanha, jogo livre, aprendizagem, mapa-múndi, treino de erros e um álbum de selos pelos pontos de geografia.",
       "Futebol: jogadores e treinadores, Mundial e Euro, anfitriões, finalistas, goleadores, Copa América e CAN. Os mesmos modos da geografia: níveis, livre, aprender e erros.",
       "Líderes: governantes atuais e históricos, papas e monarcas — por retrato, nome e factos.",
       "Podes desafiar um amigo 1 contra 1. A experiência sobe a jogar; nível e conquistas estão nas definições. O altifalante silencia sons, a melodia ou tudo. A melodia de fundo é original, sem direitos de terceiros, e entra em ciclo.",
@@ -749,7 +749,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     aboutTitle: "このサイト",
     about: [
       "国のパスポートは Lev Umansky 作の無料クイズで、国連加盟193か国が対象です。すぐ遊べます。公開ランキングに出るときだけアカウントが必要です。",
-      "地理：国旗、首都、通貨、人口、建国年、隣国、地図、輪郭、言語、通行側、海と川、電話・車・ドメインのコード。キャンペーン、フリープレイ、学習、世界地図、間違い練習、地理の得点で貯まる切手アルバムがあります。",
+      "地理：国旗、首都、通貨、人口、建国年、隣国、地図、輪郭、言語、宗教、通行側、海と川、電話・車・ドメインのコード。キャンペーン、フリープレイ、学習、世界地図、間違い練習、地理の得点で貯まる切手アルバムがあります。",
       "サッカー：選手と監督、W杯とEURO、開催国、決勝進出、得点王、コパ・アメリカとアフリカネイションズカップ。地理と同じモード（レベル、フリー、学習、間違い）です。",
       "指導者：現職と歴史上の統治者、教皇と君主を、肖像・名前・事実で出題します。",
       "友人と1対1できます。経験値はプレイで増え、レベルと実績は設定にあります。スピーカーで効果音・メロディ・すべてを別々に切れます。背景メロディはオリジナルで第三者の著作権がなく、ループします。",
@@ -821,7 +821,7 @@ export const PAGE_COPY: Record<Lang, PageCopy> = {
     aboutTitle: "אודות",
     about: [
       "דרכון המדינה הוא חידון חינמי של Lev Umansky על 193 חברות האו״ם. אפשר לשחק מיד; חשבון נחוץ רק לדירוג הציבורי.",
-      "גיאוגרפיה: דגלים, בירות, מטבעות, אוכלוסייה, שנת ייסוד, שכנות, מפות, צלליות, שפות, צד נסיעה, ימים ונהרות, וקודי טלפון, רכב ודומיין. יש מסע, משחק חופשי, לימוד, מפת עולם, מאמן טעויות ואלבום בולים מנקודות גיאוגרפיה.",
+      "גיאוגרפיה: דגלים, בירות, מטבעות, אוכלוסייה, שנת ייסוד, שכנות, מפות, צלליות, שפות, דת, צד נסיעה, ימים ונהרות, וקודי טלפון, רכב ודומיין. יש מסע, משחק חופשי, לימוד, מפת עולם, מאמן טעויות ואלבום בולים מנקודות גיאוגרפיה.",
       "כדורגל: שחקנים ומאמנים, מונדיאל ויורו, מארחות, פיינליסטיות, כובשים, קופה אמריקה וגביע אפריקה. אותם מצבים כמו בגיאוגרפיה: שלבים, חופשי, לימוד וטעויות.",
       "מנהיגים: שליטים נוכחיים והיסטוריים, אפיפיורים ומלכים — לפי דיוקן, שם ועובדות.",
       "אפשר להזמין חבר לדו־קרב 1 מול 1. ניסיון נצבר במשחק; רמה והישגים בהגדרות. הרמקול משתיק צלילים, מנגינה או הכול בנפרד. המנגינה ברקע מקורית, בלי זכויות של אחרים, ובלופ.",

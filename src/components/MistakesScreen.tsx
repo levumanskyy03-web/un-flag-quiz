@@ -18,6 +18,7 @@ import { FitText } from './FitText'
 import { LeaderPortrait } from './LeaderPortrait'
 import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
 import { LeadersSetup } from './LeadersScreen'
+import { HelpTip } from './HelpTip'
 import { WorldsBack } from './WorldsBack'
 import { EmpireLock } from './EmpireLock'
 import { useEmpire } from '../lib/empireStore'
@@ -65,7 +66,9 @@ export function MistakesScreen({
         <HubNav lang={settings.lang} active="mistakes" tabs={hubTabs} onSelect={onHub} />
       </header>
 
-      <p className="setting-hint">{t.mistakesHint}</p>
+      <p className="learn-copy">
+        <HelpTip text={t.mistakesHint} />
+      </p>
 
       {leaders ? (
         <LeadersSetup settings={settings} onChange={(next) => onChange({ ...next, path: 'mistakes', mix: null })} />
@@ -180,9 +183,11 @@ export function MistakesScreen({
       )}
 
       {mistakesLocked && !empty ? <EmpireLock lang={settings.lang} feature={{ kind: 'mistakes' }} title={t.gateMistakes} compact /> : null}
-      <button type="button" className="btn-primary" disabled={empty || mistakesLocked} onClick={onPractice}>
-        {t.checkYourself}
-      </button>
+      <div className="hub-start-dock">
+        <button type="button" className="btn-primary hub-start-btn" disabled={empty || mistakesLocked} onClick={onPractice}>
+          {t.checkYourself}
+        </button>
+      </div>
       {!empty ? (
         <button type="button" className="btn-ghost" onClick={onClear}>
           {t.mistakesClear}

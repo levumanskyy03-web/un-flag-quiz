@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Country Passport</string>
+    <string name="title_activity_main">Country Passport</string>
+    <string name="package_name">online.geoguiz.app</string>
+    <string name="custom_url_scheme">online.geoguiz.app</string>
+</resources>

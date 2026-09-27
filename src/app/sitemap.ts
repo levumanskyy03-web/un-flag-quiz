@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { COUNTRIES } from '../data/countries'
+import { allFoodDishes } from '../data/food/rows'
 import { languagesIndex } from '../data/languages'
 import { COLLECTIONS } from '../data/collections'
 import { SITE_ORIGIN } from '../lib/site'
@@ -36,6 +37,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
   for (const country of COUNTRIES) {
     pages.push({ url: `${SITE_ORIGIN}/country/${country.iso}`, lastModified: now })
+  }
+  for (const dish of allFoodDishes()) {
+    pages.push({ url: `${SITE_ORIGIN}/dish/${dish.id}`, lastModified: now })
   }
   for (const item of languagesIndex()) {
     pages.push({ url: `${SITE_ORIGIN}/language/${item.id}`, lastModified: now })

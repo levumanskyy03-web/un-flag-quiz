@@ -1,4 +1,5 @@
 import { STRINGS } from '../i18n/strings'
+import { HelpTip } from './HelpTip'
 import { eraFitsMode } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
 
@@ -33,8 +34,8 @@ export function ExtrasToggle({
           <span className="region-dot" aria-hidden />
           {t.includeExtras}
         </button>
+        <HelpTip text={t.includeExtrasHint} />
       </div>
-      <p className="setting-hint extras-hint">{t.includeExtrasHint}</p>
       {showEra ? (
         <>
           <div className="choice-wrap extras-toggle-row">
@@ -47,8 +48,8 @@ export function ExtrasToggle({
               <span className="region-dot" aria-hidden />
               {t.includeEraStates}
             </button>
+            <HelpTip text={t.includeEraStatesHint} />
           </div>
-          <p className="setting-hint extras-hint">{t.includeEraStatesHint}</p>
         </>
       ) : null}
     </>

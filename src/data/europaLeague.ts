@@ -10,7 +10,7 @@ export const EUROPA_WINNERS: WorldCupWinner[] = [
   { year: 1978, winnerId: 'psv', runnerUpId: 'bastia' },
   { year: 1979, winnerId: 'gladbach', runnerUpId: 'redstar' },
   { year: 1980, winnerId: 'frankfurt', runnerUpId: 'gladbach' },
-  { year: 1981, winnerId: 'ipswich', runnerUpId: 'az' },
+  { year: 1981, winnerId: 'ipswich', runnerUpId: 'alkmaar' },
   { year: 1982, winnerId: 'goteborg', runnerUpId: 'hamburg' },
   { year: 1983, winnerId: 'anderlecht', runnerUpId: 'benfica' },
   { year: 1984, winnerId: 'tottenham', runnerUpId: 'anderlecht' },

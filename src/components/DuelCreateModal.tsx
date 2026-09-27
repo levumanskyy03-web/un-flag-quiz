@@ -6,6 +6,7 @@ import { MathModeGrids, isMathCatalog } from './MathModeGrids'
 import { AstroModeGrids, isAstroCatalog } from './AstroModeGrids'
 import { ThemeModeGrids, isThemeCatalog, themeCatalogWorld } from './ThemeModeGrids'
 import { ChoiceLabel, FitText } from './FitText'
+import { ChoiceWithHelp } from './HelpTip'
 import {
   EASY_FOOTBALL_MIX_MODES,
   EASY_MATH_MIX_MODES,
@@ -186,32 +187,30 @@ export function DuelCreateModal({
               </>
             ) : mixButtons ? (
             <div className="choice-grid">
+              <ChoiceWithHelp tip={football ? t.footballEasyMixNote : math ? t.mathEasyMixNote : astro ? t.astroEasyMixNote : theme && themeWorld === 'biology' ? t.bioEasyMixNote : theme && themeWorld === 'olympics' ? t.olyEasyMixNote : theme && themeWorld === 'cs' ? t.csEasyMixNote : theme && themeWorld === 'food' ? t.foodEasyMixNote : t.easyMixNote}>
               <button
                 type="button"
-                className={`choice has-note is-wide ${easyMix ? 'is-active' : ''}`}
+                className={`choice is-wide ${easyMix ? 'is-active' : ''}`}
                 aria-pressed={easyMix}
                 onClick={() =>
                   setSelected(football ? [...EASY_FOOTBALL_MIX_MODES] : math ? [...EASY_MATH_MIX_MODES] : astro ? [...EASY_ASTRO_MIX_MODES] : theme && themeWorld ? [...EASY_THEME_MIX[themeWorld]] : [...EASY_MIX_MODES])
                 }
               >
                 <FitText minPx={9}>{t.easyMix}</FitText>
-                <FitText className="choice-note" wrap minPx={7}>
-                  {football ? t.footballEasyMixNote : math ? t.mathEasyMixNote : astro ? t.astroEasyMixNote : theme && themeWorld === 'biology' ? t.bioEasyMixNote : theme && themeWorld === 'olympics' ? t.olyEasyMixNote : theme && themeWorld === 'cs' ? t.csEasyMixNote : theme && themeWorld === 'food' ? t.foodEasyMixNote : t.easyMixNote}
-                </FitText>
               </button>
+              </ChoiceWithHelp>
+              <ChoiceWithHelp tip={football ? t.footballHardMixNote : math ? t.mathHardMixNote : astro ? t.astroHardMixNote : theme && themeWorld === 'biology' ? t.bioHardMixNote : theme && themeWorld === 'olympics' ? t.olyHardMixNote : theme && themeWorld === 'cs' ? t.csHardMixNote : theme && themeWorld === 'food' ? t.foodHardMixNote : t.hardMixNote}>
               <button
                 type="button"
-                className={`choice has-note is-wide ${hardMix ? 'is-active' : ''}`}
+                className={`choice is-wide ${hardMix ? 'is-active' : ''}`}
                 aria-pressed={hardMix}
                 onClick={() =>
                   setSelected(football ? [...HARD_FOOTBALL_MIX_MODES] : math ? [...HARD_MATH_MIX_MODES] : astro ? [...HARD_ASTRO_MIX_MODES] : theme && themeWorld ? [...HARD_THEME_MIX[themeWorld]] : [...HARD_MIX_MODES])
                 }
               >
                 <FitText minPx={9}>{t.hardMix}</FitText>
-                <FitText className="choice-note" wrap minPx={7}>
-                  {football ? t.footballHardMixNote : math ? t.mathHardMixNote : astro ? t.astroHardMixNote : theme && themeWorld === 'biology' ? t.bioHardMixNote : theme && themeWorld === 'olympics' ? t.olyHardMixNote : theme && themeWorld === 'cs' ? t.csHardMixNote : theme && themeWorld === 'food' ? t.foodHardMixNote : t.hardMixNote}
-                </FitText>
               </button>
+              </ChoiceWithHelp>
             </div>
             ) : null}
             {intent === 'match' ? null : showMix ? (
@@ -307,10 +306,10 @@ export function DuelCreateModal({
                   ['maxFive', t.duelFactsMaxFive, ''],
                 ] as const
               ).map(([id, label, hint]) => (
+                <ChoiceWithHelp key={id} tip={hint || undefined}>
                 <button
-                  key={id}
                   type="button"
-                  className={`choice has-note is-wide ${factsEnd === id && !factsHardcore ? 'is-active' : ''}`}
+                  className={`choice is-wide ${factsEnd === id && !factsHardcore ? 'is-active' : ''}`}
                   aria-pressed={factsEnd === id && !factsHardcore}
                   onClick={() => {
                     setFactsHardcore(false)
@@ -318,18 +317,19 @@ export function DuelCreateModal({
                   }}
                 >
                   {label}
-                  {hint ? <span className="choice-note">{hint}</span> : null}
                 </button>
+                </ChoiceWithHelp>
               ))}
+              <ChoiceWithHelp tip={t.duelFactsHardcoreHint}>
               <button
                 type="button"
-                className={`choice has-note is-wide ${factsHardcore ? 'is-active' : ''}`}
+                className={`choice is-wide ${factsHardcore ? 'is-active' : ''}`}
                 aria-pressed={factsHardcore}
                 onClick={() => setFactsHardcore((prev) => !prev)}
               >
                 {t.duelFactsHardcore}
-                <span className="choice-note">{t.duelFactsHardcoreHint}</span>
               </button>
+              </ChoiceWithHelp>
             </div>
             <h2>{football ? t.duelFactsSeriesPlayers : t.duelFactsSeries}</h2>
             <div className="choice-grid is-3">
@@ -379,18 +379,15 @@ function MatchQueueButton({
 }) {
   const note = matchQueueNote(queue, lang)
   return (
-    <button
-      type="button"
-      className={`choice has-note is-wide ${active ? 'is-active' : ''}`}
-      aria-pressed={active}
-      onClick={onPick}
-    >
-      <FitText minPx={9}>{matchQueueTitle(queue, lang)}</FitText>
-      {note ? (
-        <FitText className="choice-note" wrap minPx={7}>
-          {note}
-        </FitText>
-      ) : null}
-    </button>
+    <ChoiceWithHelp tip={note}>
+      <button
+        type="button"
+        className={`choice is-wide ${active ? 'is-active' : ''}`}
+        aria-pressed={active}
+        onClick={onPick}
+      >
+        <FitText minPx={9}>{matchQueueTitle(queue, lang)}</FitText>
+      </button>
+    </ChoiceWithHelp>
   )
 }

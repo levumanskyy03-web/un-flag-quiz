@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { STRINGS } from '../i18n/strings'
 import { FitText } from './FitText'
+import { ChoiceWithHelp, HelpTip } from './HelpTip'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
 import {
@@ -63,7 +64,6 @@ export function ProfileScreen({
       <header className="home-header">
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
         <h1>{t.profile}</h1>
-        <p className="subtitle">{t.profileHint}</p>
       </header>
 
       {settingsReady ? (
@@ -83,8 +83,10 @@ export function ProfileScreen({
       )}
 
       <section className="card settings-card">
-        <h2>{t.playWithFriend}</h2>
-        <p className="setting-hint">{t.duelHint}</p>
+        <h2>
+          {t.playWithFriend}
+          <HelpTip text={t.duelHint} />
+        </h2>
         <div className="choice-grid">
           {queues.mixes.map((queue) => (
             <MatchQueueButton
@@ -142,19 +144,16 @@ function MatchQueueButton({
 }) {
   const note = matchQueueNote(queue, lang)
   return (
-    <button
-      type="button"
-      className={`choice has-note has-mode-no is-wide ${active ? 'is-active' : ''}`}
-      aria-pressed={active}
-      onClick={onPick}
-    >
-      <CatalogNo n={modesCatalogNo(queue.modes)} />
-      <FitText minPx={9}>{matchQueueTitle(queue, lang)}</FitText>
-      {note ? (
-        <FitText className="choice-note" wrap minPx={7}>
-          {note}
-        </FitText>
-      ) : null}
-    </button>
+    <ChoiceWithHelp tip={note}>
+      <button
+        type="button"
+        className={`choice has-mode-no is-wide ${active ? 'is-active' : ''}`}
+        aria-pressed={active}
+        onClick={onPick}
+      >
+        <CatalogNo n={modesCatalogNo(queue.modes)} />
+        <FitText minPx={9}>{matchQueueTitle(queue, lang)}</FitText>
+      </button>
+    </ChoiceWithHelp>
   )
 }

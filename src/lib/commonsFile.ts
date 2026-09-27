@@ -6,6 +6,16 @@ const THUMB_WIDTH = {
   thumb: 120,
 } as const
 
+/** Widths Wikimedia still renders. Other values return HTTP 400. */
+const COMMONS_THUMB_WIDTHS = [20, 40, 60, 120, 250, 330, 500, 960, 1280, 1920, 3840]
+
+export function commonsThumbWidth(px: number): number {
+  for (const size of COMMONS_THUMB_WIDTHS) {
+    if (size >= px) return size
+  }
+  return COMMONS_THUMB_WIDTHS[COMMONS_THUMB_WIDTHS.length - 1]
+}
+
 export type PortraitSize = keyof typeof THUMB_WIDTH
 
 export function portraitThumbWidth(size: PortraitSize = 'card'): number {
@@ -32,9 +42,10 @@ function commonsUploadThumb(fileName: string, width: number, project: 'commons' 
   return `https://upload.wikimedia.org/wikipedia/${project}/thumb/${hash[0]}/${hash.slice(0, 2)}/${encoded}/${encodeURIComponent(thumb)}`
 }
 
-export function commonsThumbCandidates(fileName: string, width = 480): string[] {
+export function commonsThumbCandidates(fileName: string, width = 500): string[] {
   const file = commonsFileName(fileName)
   if (!file) return []
+  width = commonsThumbWidth(width)
   const params = new URLSearchParams({ f: file, w: String(width) })
   return [
     commonsUploadThumb(file, width, 'commons'),

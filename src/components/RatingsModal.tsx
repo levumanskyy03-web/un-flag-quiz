@@ -24,6 +24,7 @@ import {
 } from '../lib/quiz'
 import { formatXp } from '../lib/xp'
 import { GeoIcon } from './GeoIcon'
+import { HelpTip } from './HelpTip'
 import { PlayerProfileModal } from './PlayerProfileModal'
 
 interface RatingsModalProps {
@@ -317,7 +318,9 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
           </>
         )}
 
-        <p className="setting-hint ratings-hint">{hint}</p>
+        <p className="ratings-hint">
+          <HelpTip text={hint} />
+        </p>
         {!signedIn && !showDuel ? <p className="setting-hint">{t.accountNeeded}</p> : null}
 
         {!boardReady ? (

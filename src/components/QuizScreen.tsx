@@ -2,6 +2,7 @@ import { useReducedMotion } from 'framer-motion'
 import { motion } from 'framer-motion'
 import { STRINGS, astroQuestionPrompt, themeQuestionPrompt, drivingLabel, footballQuestionPrompt, mathQuestionPrompt, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
 import { QuizClocks } from './QuizClocks'
+import { HelpTip } from './HelpTip'
 import { type Country } from '../data/countries'
 import { findCountry } from '../data/extras'
 import { landNeighbors } from '../data/neighbors'
@@ -185,7 +186,7 @@ export function QuizScreen({
     const n = hotkeyIds.indexOf(id)
     return n >= 0 && n < 4 ? n + 1 : 0
   }
-  const press = !reduceMotion ? { y: 6, scale: 0.98 } : undefined
+  const press = !reduceMotion ? { y: 3 } : undefined
 
   return (
     <div className={`screen quiz-screen${activeMode === 'nameToMap' ? ' is-map-find' : ''}`}>
@@ -262,9 +263,9 @@ export function QuizScreen({
 
       <motion.div
         key={`${index}-${question.country.iso}-${question.waterId ?? ''}-${question.year ?? ''}`}
-        initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.28, ease: 'easeOut' }}
+        initial={reduceMotion ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.12, ease: 'easeOut' }}
       >
       {activeMode === 'mapToName' || isWaterMapMode(activeMode) ? (
         <section className="card question-card is-map">
@@ -294,7 +295,7 @@ export function QuizScreen({
         <section className={`card question-card${mixHint ? ' has-mix-ask' : ''}`}>
           {mixHint ? <p className="mix-ask-hint">{mixHint}</p> : null}
           {activeMode === 'playerToClub' || activeMode === 'playerClubToName' ? (
-            <p className="mix-ask-hint">{t.playerClubNote}</p>
+            <HelpTip text={t.playerClubNote} />
           ) : null}
           {mathItem ? (
             <div className="code-prompt-block">
@@ -497,7 +498,12 @@ export function QuizScreen({
               {mixHint ? null : <p className="neighbors-prompt-label">{t.drivingToNamePrompt}</p>}
               <h2 className="prompt-name">{drivingLabel(drivingSide(question.country.iso), lang)}</h2>
             </div>
-          ) : activeMode === 'nameToLanguage' || activeMode === 'nameToGov' || activeMode === 'nameToDriving' ? (
+          ) : activeMode === 'religionToName' ? (
+            <div className="code-prompt-block">
+              {mixHint ? null : <p className="neighbors-prompt-label">{t.religionToNamePrompt}</p>}
+              <h2 className="prompt-name">{optionLabel(question.country, 'nameToReligion', lang, question)}</h2>
+            </div>
+          ) : activeMode === 'nameToLanguage' || activeMode === 'nameToGov' || activeMode === 'nameToDriving' || activeMode === 'nameToReligion' ? (
             <div className="code-prompt-block">
               {mixHint ? null : (
                 <p className="neighbors-prompt-label">
@@ -505,7 +511,9 @@ export function QuizScreen({
                     ? t.nameToGovPrompt
                     : activeMode === 'nameToDriving'
                       ? t.nameToDrivingPrompt
-                      : t.nameToLanguagePrompt}
+                      : activeMode === 'nameToReligion'
+                        ? t.nameToReligionPrompt
+                        : t.nameToLanguagePrompt}
                 </p>
               )}
               <Flag iso={question.country.iso} name={correctName} size="hero" />
@@ -555,9 +563,8 @@ export function QuizScreen({
                     disabled={answered}
                     onClick={() => onSelect(id)}
                     animate={answerMotion(reduceMotion, answered && isSelected && !isCorrectOption, answered && isCorrectOption)}
-                    whileHover={!answered && !reduceMotion ? { scale: 1.03 } : undefined}
                     whileTap={!answered ? press : undefined}
-                    transition={{ duration: 0.42 }}
+                    transition={{ duration: 0.12 }}
                   >
                     {hotkeyN(id) > 0 ? <AnswerKey n={hotkeyN(id)} label={t.answerKey(hotkeyN(id))} /> : null}
                     {waterName(id, lang)}
@@ -586,9 +593,8 @@ export function QuizScreen({
                     disabled={answered}
                     onClick={() => onSelect(key)}
                     animate={answerMotion(reduceMotion, answered && isSelected && !isCorrectOption, answered && isCorrectOption)}
-                    whileHover={!answered && !reduceMotion ? { scale: 1.03 } : undefined}
                     whileTap={!answered ? press : undefined}
-                    transition={{ duration: 0.42 }}
+                    transition={{ duration: 0.12 }}
                   >
                     {hotkeyN(key) > 0 ? <AnswerKey n={hotkeyN(key)} label={t.answerKey(hotkeyN(key))} /> : null}
                     {year}
@@ -617,9 +623,8 @@ export function QuizScreen({
                 disabled={answered}
                 onClick={() => onSelect(option.iso)}
                 animate={answerMotion(reduceMotion, answered && isSelected && !isCorrectOption, answered && isCorrectOption)}
-                whileHover={!answered && !reduceMotion ? { scale: 1.03 } : undefined}
                 whileTap={!answered ? press : undefined}
-                transition={{ duration: 0.42 }}
+                transition={{ duration: 0.12 }}
               >
                 {hotkeyN(option.iso) > 0 ? <AnswerKey n={hotkeyN(option.iso)} label={t.answerKey(hotkeyN(option.iso))} /> : null}
                 {activeMode === 'nameToFlag' ? (

@@ -144,7 +144,7 @@ export const FOOTBALL_CLUBS: Record<string, FootballClub> = {
   twente: { id: 'twente', nation: 'nl', nameEn: 'Twente', nameRu: 'Твенте', wiki: 'FC Twente' },
   athletic: { id: 'athletic', nation: 'es', nameEn: 'Athletic Bilbao', nameRu: 'Атлетик', wiki: 'Athletic Bilbao' },
   bastia: { id: 'bastia', nation: 'fr', nameEn: 'Bastia', nameRu: 'Бастия', wiki: 'SC Bastia' },
-  az: { id: 'az', nation: 'nl', nameEn: 'AZ', nameRu: 'АЗ', wiki: 'AZ Alkmaar' },
+  alkmaar: { id: 'alkmaar', nation: 'nl', nameEn: 'AZ', nameRu: 'АЗ', wiki: 'AZ Alkmaar' },
   koln: { id: 'koln', nation: 'de', nameEn: 'Köln', nameRu: 'Кёльн', wiki: '1. FC Köln' },
   espanyol: { id: 'espanyol', nation: 'es', nameEn: 'Espanyol', nameRu: 'Эспаньол', wiki: 'RCD Espanyol' },
   torino: { id: 'torino', nation: 'it', nameEn: 'Torino', nameRu: 'Торино', wiki: 'Torino FC' },

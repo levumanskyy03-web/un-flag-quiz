@@ -33,6 +33,7 @@ import { packFamilyLabel, packFormatLabel } from './PackFixWizard'
 import { StudioChromeNav } from './WorldsBack'
 import { PackFixWizard } from './PackFixWizard'
 import { GeoIcon } from './GeoIcon'
+import { HelpTip } from './HelpTip'
 
 const HELP_KEY = 'un-flag-quiz-studio-help'
 
@@ -222,7 +223,6 @@ export function StudioEditor({ lang, pack, onPack, onBack, onWorlds, onAccept, o
           onWorlds={onWorlds}
         />
         <h1>{t.studio}</h1>
-        <p className="subtitle">{t.studioSubtitle}</p>
         <StudioHelpButton lang={lang} onClick={() => setHelp(true)} />
       </header>
 
@@ -234,13 +234,13 @@ export function StudioEditor({ lang, pack, onPack, onBack, onWorlds, onAccept, o
             onChange={(event) => onPack({ ...pack, title: event.target.value })}
             placeholder={t.studioNew}
           />
-          <button type="button" className="btn-primary pack-photo-cta" onClick={() => photoRef.current?.click()}>
-            <GeoIcon name="stamp" size={28} />
-            <span>
+          <div className="settings-inline">
+            <button type="button" className="btn-primary pack-photo-cta" onClick={() => photoRef.current?.click()}>
+              <GeoIcon name="stamp" size={28} />
               <strong>{t.studioAddPhotos}</strong>
-              <em>{t.studioAddPhotosHint}</em>
-            </span>
-          </button>
+            </button>
+            <HelpTip text={t.studioAddPhotosHint} />
+          </div>
           <button
             type="button"
             className={`pack-drop${drag ? ' is-drag' : ''}`}
@@ -289,8 +289,10 @@ export function StudioEditor({ lang, pack, onPack, onBack, onWorlds, onAccept, o
               <li key={row.label}>{t.studioFound(row.label, row.n)}</li>
             ))}
           </ul>
-          <h2>{t.studioFormats}</h2>
-          <p className="setting-hint">{t.studioFormatsHint}</p>
+          <h2>
+            {t.studioFormats}
+            <HelpTip text={t.studioFormatsHint} />
+          </h2>
           {PACK_FAMILIES.map((family) => {
             const usable = PACK_FAMILY_FORMATS[family].some((format) => formatTone(pack, format) !== 'gray')
             if (!usable) return null
@@ -328,13 +330,13 @@ export function StudioEditor({ lang, pack, onPack, onBack, onWorlds, onAccept, o
       {step === 'draft' ? (
         <div className="settings-card">
           <h2>{t.studioDraft}</h2>
-          <button type="button" className="btn-primary pack-photo-cta" onClick={() => photoRef.current?.click()}>
-            <GeoIcon name="stamp" size={28} />
-            <span>
+          <div className="settings-inline">
+            <button type="button" className="btn-primary pack-photo-cta" onClick={() => photoRef.current?.click()}>
+              <GeoIcon name="stamp" size={28} />
               <strong>{t.studioAddPhotos}</strong>
-              <em>{t.studioAddPhotosHint}</em>
-            </span>
-          </button>
+            </button>
+            <HelpTip text={t.studioAddPhotosHint} />
+          </div>
           <UploadList lang={lang} pack={pack} onRemove={removeUpload} onRemoveItem={removeItem} />
           <div className="pack-draft-table">
             {visibleItems(pack).map((item) => (

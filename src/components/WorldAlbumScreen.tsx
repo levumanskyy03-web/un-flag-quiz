@@ -18,8 +18,8 @@ import {
 } from '../lib/stamps'
 import type { QuizSettings } from './HomeScreen'
 import { stampRarity } from '../lib/empire/album'
-import { AlbumLootHow } from './AlbumLootHow'
 import { TeamFlag } from './Flag'
+import { HelpTip } from './HelpTip'
 import { FitText } from './FitText'
 import { HubNav, type HubTab } from './HubNav'
 import { LeaderPortrait } from './LeaderPortrait'
@@ -119,14 +119,14 @@ export function WorldAlbumScreen({ settings, world, tabs, onHub, onWorlds }: Wor
     <div className="screen album-screen">
       <header className="home-header">
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
-        <h1>{t.album}</h1>
+        <h1>
+          {t.album}
+          <HelpTip text={t.albumHintWorld} />
+        </h1>
         <p className="learn-copy">{t.albumCountWorld(copies, owned, total)}</p>
-        <p className="setting-hint">{t.albumHintWorld}</p>
       </header>
 
       <HubNav lang={settings.lang} active="album" tabs={tabs} onSelect={onHub} />
-
-      <AlbumLootHow lang={settings.lang} world="world" />
 
       {copies === 0 ? <p className="setting-hint">{t.albumEmpty}</p> : null}
 

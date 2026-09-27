@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { HelpTip } from './HelpTip'
 import { STRINGS, localeTag, mixLabel, modeLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import {
@@ -129,10 +130,13 @@ export function FootballScreen({
           </FitGroup>
         </div>
         <div className="mode-aside">
-          <h2>{t.familyMix}</h2>
+          <h2>
+            {t.familyMix}
+            <HelpTip text={t.customMixNote} />
+          </h2>
           <button
             type="button"
-            className={`choice has-note has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
+            className={`choice has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
             aria-pressed={activeFamily === 'mix'}
             onClick={() => {
               applyFootballSettings({ ...settings, ...settingsForFootballFamily(settings, 'mix') })
@@ -141,9 +145,6 @@ export function FootballScreen({
           >
             <CatalogNo n={worldCatalogNo('football')} />
             <FitText minPx={9}>{mix ? mixLabel(mix, settings.lang) : t.familyMix}</FitText>
-            <FitText className="choice-note" wrap minPx={7}>
-              {t.customMixNote}
-            </FitText>
           </button>
         </div>
       </section>
@@ -159,10 +160,6 @@ export function FootballScreen({
           {t.bestOfSetup(t.score(currentBest.correct, currentBest.total), formatClock(currentBest.roundMs))}
         </p>
       ) : null}
-
-      <button type="button" className="btn-primary" disabled={poolSize === 0} onClick={onStart}>
-        {t.start}
-      </button>
 
       {setupFamily ? (
         <ModeSetupModal
@@ -192,6 +189,12 @@ export function FootballScreen({
           </ul>
         </section>
       ) : null}
+
+      <div className="hub-start-dock">
+        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
+          {t.start}
+        </button>
+      </div>
     </div>
   )
 }

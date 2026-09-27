@@ -229,7 +229,6 @@ export function LevelsScreen({
             <h2 id="level-pick-title" className="passport-title">
               {modeLabel(settings.mode, settings.lang)}
             </h2>
-            <p className="duel-setup-hint">{t.levels}</p>
             <FitGroup minPx={6} wrap={false}>
               <div className="choice-grid is-levels">
                 {levels.map((level) => {

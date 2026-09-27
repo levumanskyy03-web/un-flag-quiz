@@ -103,14 +103,16 @@ export function WorldPickScreen({
   return (
     <div className="screen world-pick-screen">
       <button type="button" className="world-pick is-daily" onClick={onDaily}>
-        <span className="world-pick-copy">
-          <FitText>{t.dailyChallenge}</FitText>
-        </span>
+        <span className="daily-kicker">{t.dailyChallenge}</span>
         <span className="daily-world">{worldTitle(daily.world, t)}</span>
         <span className="daily-title">{dailyCopy.title}</span>
         <span className="daily-meta">
-          {done && record ? t.dailyDone(record.correct, record.total) : t.dailyPlay}
-          {record && record.streak > 1 && record.day === utcDayStamp() ? ` · ${t.dailyStreak(record.streak)}` : ''}
+          <span className="daily-play">
+            {done && record ? t.dailyDone(record.correct, record.total) : t.dailyPlay}
+          </span>
+          {record && record.streak > 1 && record.day === utcDayStamp() ? (
+            <span className="daily-streak">{t.dailyStreak(record.streak)}</span>
+          ) : null}
         </span>
       </button>
       <FitGroup wrap minPx={8}>

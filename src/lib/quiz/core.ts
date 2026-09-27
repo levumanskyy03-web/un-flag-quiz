@@ -72,6 +72,8 @@ export const QUIZ_MODES = [
   'languageToName',
   'nameToDriving',
   'drivingToName',
+  'nameToReligion',
+  'religionToName',
   'nameToGov',
 ] as const
 export const WC_FOOTBALL_MODES = ['wcWinners', 'wcFinalists', 'wcHosts', 'wcTitleYears', 'wcScorers'] as const
@@ -182,6 +184,8 @@ export const LEVEL_MODES: QuizMode[] = [
       mode !== 'languageToName' &&
       mode !== 'nameToDriving' &&
       mode !== 'drivingToName' &&
+      mode !== 'nameToReligion' &&
+      mode !== 'religionToName' &&
       mode !== 'nameToGov',
   ),
   ...CODES_MODES,
@@ -451,6 +455,7 @@ export function isFactMode(mode: QuizMode): boolean {
     mode === 'nameToFounded' ||
     mode === 'nameToLanguage' ||
     mode === 'nameToDriving' ||
+    mode === 'nameToReligion' ||
     mode === 'nameToGov'
   )
 }
@@ -465,6 +470,10 @@ export function isSilhouetteMode(mode: QuizMode): boolean {
 
 export function isDrivingMode(mode: QuizMode): boolean {
   return mode === 'nameToDriving' || mode === 'drivingToName'
+}
+
+export function isReligionMode(mode: QuizMode): boolean {
+  return mode === 'nameToReligion' || mode === 'religionToName'
 }
 
 export function isLanguageMode(mode: QuizMode): boolean {
@@ -553,6 +562,8 @@ export function hasLevels(mode: QuizMode): boolean {
       mode !== 'languageToName' &&
       mode !== 'nameToDriving' &&
       mode !== 'drivingToName' &&
+      mode !== 'nameToReligion' &&
+      mode !== 'religionToName' &&
       mode !== 'nameToGov')
   )
 }
@@ -571,6 +582,8 @@ export function hasGeoFinale(mode: QuizMode): boolean {
     mode !== 'languageToName' &&
     mode !== 'nameToDriving' &&
     mode !== 'drivingToName' &&
+    mode !== 'nameToReligion' &&
+    mode !== 'religionToName' &&
     mode !== 'nameToGov'
   )
 }
@@ -855,7 +868,6 @@ export function flagUrl(iso: string): string {
   if (nation) return flagUrl(nation)
   const historical = polityFlagUrl(iso)
   if (historical) return historical
-  if (iso === 'af') return '/flags/af.svg'
   if (iso === 'su') return '/flags/su.svg'
   if (iso === 'yu') return '/flags/yu.svg'
   if (iso === 'eng') return 'https://flagcdn.com/gb-eng.svg'

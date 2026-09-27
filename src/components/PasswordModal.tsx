@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from 'react'
 import { STRINGS, type Lang } from '../i18n/strings'
+import { HelpTip } from './HelpTip'
 import { updateAccountProfile, type Account, type AuthError } from '../lib/account'
 import { PASSWORD_MIN } from '../lib/leaderboard'
 
@@ -110,7 +111,10 @@ export function PasswordModal({ lang, onClose, onDone }: PasswordModalProps) {
             />
           </label>
           <label className="player-name">
-            <span>{t.passwordNew}</span>
+            <span>
+              {t.passwordNew}
+              <HelpTip text={t.passwordHint} />
+            </span>
             <input
               type="password"
               name="new-password"
@@ -135,7 +139,6 @@ export function PasswordModal({ lang, onClose, onDone }: PasswordModalProps) {
               }}
             />
           </label>
-          <p className="setting-hint">{t.passwordHint}</p>
           {liveError ? <p className="account-error">{passwordErrorText(liveError, t)}</p> : null}
           <button type="submit" className="btn-primary" disabled={busy || !ready || same || mismatch}>
             {t.saveProfile}
