@@ -182,7 +182,7 @@ export function MistakesScreen({
         </>
       )}
 
-      {mistakesLocked && !empty ? <EmpireLock lang={settings.lang} feature={{ kind: 'mistakes' }} title={t.gateMistakes} compact /> : null}
+      {mistakesLocked && !empty ? <EmpireLock lang={settings.lang} feature={{ kind: 'mistakes' }} title={t.gateMistakes} /> : null}
       <div className="hub-start-dock">
         <button type="button" className="btn-primary hub-start-btn" disabled={empty || mistakesLocked} onClick={onPractice}>
           {t.checkYourself}

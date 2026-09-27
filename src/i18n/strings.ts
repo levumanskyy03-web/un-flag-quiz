@@ -268,6 +268,8 @@ export type Strings = {
   cs: string
   csSubtitle: string
   csFamilyCode: string
+  csFamilySlang: string
+  csFamilyFlows: string
   csFamilyLangs: string
   csFamilyStructs: string
   csFamilyBinary: string
@@ -276,6 +278,11 @@ export type Strings = {
   csHardMixNote: string
   csTermToMeaning: string
   meaningToCsTerm: string
+  slangToMeaning: string
+  meaningToSlang: string
+  stepToNext: string
+  nextToStep: string
+  stepToFlow: string
   codeToLang: string
   structToUse: string
   useToStruct: string
@@ -286,6 +293,11 @@ export type Strings = {
   workToPerson: string
   csTermPrompt: string
   csMeaningPrompt: string
+  csSlangPrompt: string
+  csSlangBackPrompt: string
+  csStepNextPrompt: string
+  csNextStepPrompt: string
+  csStepFlowPrompt: string
   csCodePrompt: string
   csStructPrompt: string
   csUsePrompt: string
@@ -1053,6 +1065,16 @@ export type Strings = {
   empireMaxLevel: string
   empireBusy: string
   empireNoFunds: string
+  empireShortCoins: (n: number) => string
+  empireShortRes: (n: number, name: string) => string
+  empireNeedLevel: (name: string, level: number) => string
+  empireFarm: string
+  empireFarmHint: string
+  empireFarmReady: (n: number, name: string) => string
+  empireFarmEmpty: string
+  empireHarvest: string
+  empireStorageFull: string
+  empireRewardFarm: (n: number, name: string) => string
   empireAdvanceEra: string
   empireEraMax: string
   empireEraNeedHall: (n: number) => string
@@ -1085,6 +1107,34 @@ export type Strings = {
   empireRewardResource: (n: number, name: string) => string
   empireRewardGem: (n: number) => string
   empireRewardCapped: string
+  empireMarket: string
+  empireDecree: string
+  empireDecreeBalanced: string
+  empireDecreeTax: string
+  empireDecreeScholarship: string
+  empireDecreeFocus: string
+  empireDecreeLocked: string
+  empireMastery: (n: number) => string
+  empireSupply: (name: string, pct: number) => string
+  empireTrade: string
+  empireTradeRate: (out: number, name: string, fee: number) => string
+  empireTradeCap: string
+  empireContracts: string
+  empireContractClaim: string
+  empireContractCorrect: (n: number, world: string) => string
+  empireContractPerfect: (n: number) => string
+  empireContractPath: (name: string) => string
+  empireContractDone: string
+  empireRewardMastery: (n: number) => string
+  empireRewardExpert: string
+  empireRewardScholar: string
+  empireRewardTax: string
+  empireRewardFocus: string
+  empireRewardContract: string
+  empirePath_levels: string
+  empirePath_list: string
+  empirePath_daily: string
+  empirePath_pool: string
   quizPowerFree: string
   empireDuelStreak: (n: number) => string
   quizPowerCoins: (n: number) => string

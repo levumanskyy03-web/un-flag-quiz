@@ -1,3 +1,6 @@
+import { csConceptRows } from './concepts'
+import { csFlowRows } from './flows'
+import { csSlangRows } from './slang'
 import { t11, type L11 } from '../math'
 import type { ThemeItem, ThemeTier } from '../theme'
 import { isThemeMode, type ThemeMode } from '../../lib/quiz/themeModes'
@@ -228,5 +231,8 @@ export function csGeneratedRows(): ThemeItem[] {
     ...pair('pw-per', 'wp-per', 'personToWork', 'workToPerson', 'hard', PERLMAN, W_PER, 'wper', 'per'),
     ...pair('pw-gui', 'wp-gui', 'personToWork', 'workToPerson', 'easy', GUIDO, W_GUI, 'wgpu', 'gui'),
     ...pair('pw-str', 'wp-str', 'personToWork', 'workToPerson', 'medium', STROU, W_STR, 'wstr', 'str'),
+    ...csConceptRows(),
+    ...csSlangRows(),
+    ...csFlowRows(),
   ].filter((row): row is ThemeItem => row !== null)
 }

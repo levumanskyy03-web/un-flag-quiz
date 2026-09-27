@@ -82,6 +82,8 @@ export const COLLECTIONS: Collection[] = [
   { world: 'olympics', id: 'sports', mode: 'sportToCategory', ids: itemIds(themeItemsOf('sportToCategory')) },
   { world: 'olympics', id: 'nocs', mode: 'nocToName', ids: itemIds(themeItemsOf('nocToName')) },
   { world: 'cs', id: 'terms', mode: 'csTermToMeaning', ids: itemIds(themeItemsOf('csTermToMeaning')) },
+  { world: 'cs', id: 'slang', mode: 'slangToMeaning', ids: itemIds(themeItemsOf('slangToMeaning')) },
+  { world: 'cs', id: 'flows', mode: 'stepToNext', ids: itemIds(themeItemsOf('stepToNext')) },
   { world: 'cs', id: 'langs', mode: 'codeToLang', ids: itemIds(themeItemsOf('codeToLang')) },
   { world: 'cs', id: 'structs', mode: 'structToUse', ids: itemIds(themeItemsOf('structToUse')) },
   {

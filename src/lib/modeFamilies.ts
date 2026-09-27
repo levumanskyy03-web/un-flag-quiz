@@ -213,6 +213,8 @@ export function themeFamilyLabel(world: ThemeWorld, id: ThemeFamilyId, lang: Lan
   if (id === 'stars') return t.olyFamilyStars
   if (id === 'emblems') return t.olyFamilySymbols
   if (id === 'code') return t.csFamilyCode
+  if (id === 'slang') return t.csFamilySlang
+  if (id === 'flows') return t.csFamilyFlows
   if (id === 'langs') return t.csFamilyLangs
   if (id === 'structs') return t.csFamilyStructs
   if (id === 'binary') return t.csFamilyBinary

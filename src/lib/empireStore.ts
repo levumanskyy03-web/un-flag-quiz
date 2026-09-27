@@ -16,9 +16,13 @@ import {
   skipBuild as skipBuildRule,
   emptyEmpire,
   equipCosmetic as equipRule,
+  harvestField as harvestRule,
   parseEmpire,
   rollDay,
   sellResource as sellRule,
+  setDecree as setDecreeRule,
+  claimContract as claimContractRule,
+  tradeResources as tradeRule,
   settlePending,
   tick,
   timeBonusMs,
@@ -44,6 +48,7 @@ import { albumReport } from './empire/album'
 import { ACHIEVEMENTS } from '../data/achievements'
 import { COLLECTIONS } from '../data/collections'
 import type { LegacyMissionId, LegacyTitleId } from '../data/empireLegacy'
+import type { EmpireDecree } from './empire/economy'
 import type { QuizMode, QuizWorld } from './quiz'
 
 export const EMPIRE_KEY = 'un-flag-quiz-empire'
@@ -312,11 +317,43 @@ export function empireAdvanceEra(): boolean {
   return true
 }
 
+export function empireHarvest(world: QuizWorld): boolean {
+  const next = harvestRule(empireTick(), world)
+  if (!next) return false
+  commit(next)
+  if (isServer()) void post({ action: 'harvest', world }).then(adopt)
+  return true
+}
+
 export function empireSell(key: EmpireResource, amount: number): boolean {
   const next = sellRule(empireTick(), key, amount)
   if (!next) return false
   commit(next)
   if (isServer()) void post({ action: 'sell', resource: key, amount }).then(adopt)
+  return true
+}
+
+export function empireTrade(from: EmpireResource, to: EmpireResource, amount: number): boolean {
+  const next = tradeRule(empireTick(), from, to, amount)
+  if (!next) return false
+  commit(next)
+  if (isServer()) void post({ action: 'trade', from, to, amount }).then(adopt)
+  return true
+}
+
+export function empireSetDecree(decree: EmpireDecree): boolean {
+  const next = setDecreeRule(empireTick(), decree)
+  if (!next) return false
+  commit(next)
+  if (isServer()) void post({ action: 'decree', decree }).then(adopt)
+  return true
+}
+
+export function empireClaimContract(id: string): boolean {
+  const next = claimContractRule(empireTick(), id)
+  if (!next) return false
+  commit(next)
+  if (isServer()) void post({ action: 'claimContract', id }).then(adopt)
   return true
 }
 

@@ -69,10 +69,13 @@ export function CollectionsScreen({
   const dailyCopy = collectionCopyOf(daily.id, settings.lang)
   const themeCopy = themeDaily ? collectionCopyOf(themeDaily.id, settings.lang) : null
   const [record, setRecord] = useState<ReturnType<typeof loadDailyRecord>>(null)
+  const [lockId, setLockId] = useState<string | null>(null)
 
   useEffect(() => {
     setRecord(loadDailyRecord())
   }, [])
+
+  const lockGate = lockId ? listGateOf(world, lockId) : null
 
   const done = Boolean(
     record && record.day === utcDayStamp() && record.id === daily.id && record.world === daily.world,
@@ -137,8 +140,7 @@ export function CollectionsScreen({
               <button
                 type="button"
                 className={`collections-card is-${world}${isDaily ? ' is-daily' : ''}${isTheme ? ' is-theme' : ''}${locked ? ' is-locked' : ''}`}
-                aria-disabled={locked}
-                onClick={() => (locked ? undefined : onPlay(item, isDaily ? 'daily' : 'list'))}
+                onClick={() => (locked && gate ? setLockId(item.id) : onPlay(item, isDaily ? 'daily' : 'list'))}
               >
                 {locked ? <span className="collections-badge is-lock">{t.gateLocked}</span> : null}
                 <span className="collections-card-art" aria-hidden="true">
@@ -154,11 +156,19 @@ export function CollectionsScreen({
               <a className="collections-page" href={collectionPath(world, item.id)}>
                 {t.collectionOpen}
               </a>
-              {locked && gate ? <EmpireLock lang={settings.lang} feature={gate} title={t.gateList} compact /> : null}
             </li>
           )
         })}
       </ul>
+      {lockGate ? (
+        <EmpireLock
+          lang={settings.lang}
+          feature={lockGate}
+          title={t.gateList}
+          open
+          onClose={() => setLockId(null)}
+        />
+      ) : null}
     </div>
   )
 }

@@ -20,6 +20,7 @@ export interface ThemeItem {
   key: string
   wiki?: string
   wikiFile?: string
+  note?: L11
 }
 
 function row(

@@ -42,13 +42,25 @@ export type GateInfo = {
 
 export const LEVELS_FREE_MAX = 10
 export const LEVELS_TIER2_MAX = 25
+/** Базовый бесплатный кусок learn, если каталог небольшой. */
 export const LEARN_FREE_ROWS = 30
+/** Темы (biology / olympics / cs / food) с каталогом больше 200 карточек. */
+export const LEARN_FREE_THEME = 60
+/** Режимы с каталогом от 400 карточек. */
+export const LEARN_FREE_HUGE = 100
 export const LIST_FREE_COUNT = 2
 export const MISTAKES_FREE_PER_DAY = 1
 export const BOARD_FREE_TOP = 10
 
 export function listRequiredLevel(index: number) {
   return 2 + 2 * (index - LIST_FREE_COUNT)
+}
+
+/** Сколько строк learn открыто без гейта. */
+export function learnFreeAllowance(total: number, theme: boolean): number {
+  if (total >= 400) return LEARN_FREE_HUGE
+  if (theme && total > 200) return LEARN_FREE_THEME
+  return LEARN_FREE_ROWS
 }
 
 const OPEN: GateInfo = { key: null, free: true, progress: null, price: null }

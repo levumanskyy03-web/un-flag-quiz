@@ -93,7 +93,7 @@ import { PassportModal } from './PassportModal'
 import { WorldsBack } from './WorldsBack'
 import { EmpireLock } from './EmpireLock'
 import { useEmpire } from '../lib/empireStore'
-import { LEARN_FREE_ROWS, access } from '../lib/empire/gates'
+import { access, learnFreeAllowance } from '../lib/empire/gates'
 import { worldOfMode } from '../lib/quiz'
 import { prefetchWikiPortraits, type PortraitRequest } from '../lib/wikiThumb'
 import { portraitFileForTerm } from '../data/leaderPortraitFiles'
@@ -149,7 +149,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   const rosterLearn = isFootballRosterMode(settings.mode) && !mixModes
   const empire = useEmpire()
   const learnWorld = worldOfMode(settings.mode)
-  // Learn закрыт выше первых строк (docs/economy.md 4.8); уровни кампании (learnFrom === 'level') не режем.
+  // Learn закрыт выше бесплатного куска; уровни кампании (learnFrom === 'level') не режем.
   const learnLocked = settings.learnFrom !== 'level' && access(empire, { kind: 'learn', world: learnWorld }) === 'locked'
   const allCountries = (settings.learnFrom === 'level' || football || leaders || math || astro || theme
     ? pool
@@ -163,8 +163,21 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
     if (leaderTier !== 'all' && term.tier !== leaderTier) return false
     return true
   })
-  const learnClamped = learnLocked && allCountries.length > LEARN_FREE_ROWS
-  const countries = learnClamped ? allCountries.slice(0, LEARN_FREE_ROWS) : allCountries
+  const freeRows = learnFreeAllowance(pool.length, theme)
+  const learnClamped = learnLocked && allCountries.length > freeRows
+  const countries = learnClamped ? allCountries.slice(0, freeRows) : allCountries
+  const cappedLearn = <T,>(rows: T[]) => {
+    if (!learnLocked) return rows
+    const free = learnFreeAllowance(rows.length, false)
+    return rows.length > free ? rows.slice(0, free) : rows
+  }
+  const mixLockRows = (mixModes ?? []).reduce((max, mode) => {
+    const count = footballLearnCountries(mode).length
+    const free = learnFreeAllowance(count, false)
+    return learnLocked && count > free ? Math.max(max, free) : max
+  }, 0)
+  const learnLockRows = Math.max(learnClamped ? freeRows : 0, mixLockRows)
+  const showLearnLock = learnLockRows > 0
   const rosterActive = rosterLearn
     ? pool.filter((country) => playerById(country.iso)?.era === 'active').length
     : 0
@@ -491,7 +504,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
               <h2>{modeLabel(mode, settings.lang)}</h2>
               {mode === 'wcTitleYears' || mode === 'euroTitleYears' ? (
                 <div className="learn-grid">
-                  {footballLearnCountries(mode).map((country) => {
+                  {cappedLearn(footballLearnCountries(mode)).map((country) => {
                     const name = countryName(country, settings.lang)
                     const years = footballLearnYears(mode, country.iso)
                     return (
@@ -507,7 +520,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 </div>
               ) : isPlayerFootballMode(mode) ? (
                 <div className="learn-grid is-leaders">
-                  {footballLearnCountries(mode).map((country) => (
+                  {cappedLearn(footballLearnCountries(mode)).map((country) => (
                     <PlayerLearnCard
                       key={`${mode}:${country.iso}`}
                       iso={country.iso}
@@ -549,8 +562,8 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         <ThemeLearnTable isos={countries.map((country) => country.iso)} lang={settings.lang} hideAnswers={hideAnswers} />
       ) : null}
 
-      {learnClamped ? (
-        <EmpireLock lang={settings.lang} feature={{ kind: 'learn', world: learnWorld }} title={t.gateLearn(LEARN_FREE_ROWS)} compact />
+      {showLearnLock ? (
+        <EmpireLock lang={settings.lang} feature={{ kind: 'learn', world: learnWorld }} title={t.gateLearn(learnLockRows)} />
       ) : null}
       {mixModes ? null : leaders && !isLeaderPhotoMode(settings.mode) ? (
         <LeadersLearnTable

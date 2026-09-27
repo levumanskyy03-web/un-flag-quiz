@@ -195,5 +195,6 @@ export function clampTrial(raw: unknown, now = Date.now()): EmpireState {
     specialists,
     createdAt: Math.min(now, parsed.createdAt || now),
     lastTickAt: now,
+    economy: parsed.economy,
   })
 }

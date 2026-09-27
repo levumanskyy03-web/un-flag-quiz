@@ -99,7 +99,7 @@ export function ProfileScreen({
           ))}
         </div>
         {roomLocked ? (
-          <EmpireLock lang={settings.lang} feature={{ kind: 'duelRoom' }} title={t.gateDuelRoom} compact />
+          <EmpireLock lang={settings.lang} feature={{ kind: 'duelRoom' }} title={t.gateDuelRoom} />
         ) : (
           <button type="button" className="btn-secondary" onClick={() => onCreate(selected)}>
             {t.duelCreate}

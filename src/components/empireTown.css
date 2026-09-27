@@ -38,34 +38,158 @@
   background: #67b84d;
 }
 
+.empire-screen.is-era-2 .empire-town-view { background: #c4b06a; }
+.empire-screen.is-era-3 .empire-town-view { background: #4f6a32; }
+.empire-screen.is-era-4 .empire-town-view { background: #5e8a42; }
+.empire-screen.is-era-5 .empire-town-view { background: #4e5840; }
+.empire-screen.is-era-6 .empire-town-view { background: #314433; }
+.empire-screen.is-era-7 .empire-town-view,
+.empire-screen.is-era-8 .empire-town-view,
+.empire-screen.is-night .empire-town-view { background: #143028; }
+
 .empire-town-map {
   position: absolute;
   left: 0;
   top: 0;
-  width: 1560px;
-  height: 1180px;
+  width: 2100px;
+  height: 1520px;
   transform-origin: 0 0;
-  background-color: #67b84d;
+  background-color: transparent;
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.16) 0 10px, transparent 11px),
-    radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.12) 0 8px, transparent 9px),
-    radial-gradient(circle at 40% 72%, rgba(0, 0, 0, 0.06) 0 14px, transparent 15px),
-    repeating-linear-gradient(90deg, transparent 0 46px, rgba(255, 255, 255, 0.05) 46px 47px),
-    repeating-linear-gradient(0deg, transparent 0 46px, rgba(0, 0, 0, 0.04) 46px 47px);
-}
-
-.empire-screen.is-night .empire-town-map {
-  background-color: #1d4a3c;
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.16) 0 80px, transparent 120px),
+    radial-gradient(circle at 72% 68%, rgba(0, 0, 0, 0.06) 0 90px, transparent 130px);
 }
 
 .empire-screen.is-era-7 .empire-town-map,
-.empire-screen.is-era-8 .empire-town-map {
-  background-color: #2f6d58;
+.empire-screen.is-era-8 .empire-town-map,
+.empire-screen.is-night .empire-town-map {
+  background-image:
+    radial-gradient(circle at 16% 18%, rgba(255, 255, 255, 0.9) 0 1px, transparent 2px),
+    radial-gradient(circle at 48% 12%, rgba(255, 255, 255, 0.75) 0 1px, transparent 2px),
+    radial-gradient(circle at 78% 24%, rgba(200, 220, 255, 0.8) 0 1.4px, transparent 2px);
+}
+
+.empire-scenery {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 2100px;
+  height: 1520px;
+  pointer-events: none;
+}
+
+.empire-sprite {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 132px;
+  height: 142px;
+  transform: translateX(-50%);
+  overflow: visible;
+  filter: drop-shadow(0 8px 0 rgba(40, 24, 8, 0.18));
+  pointer-events: none;
+}
+
+.empire-plot.is-near .empire-sprite {
+  filter: drop-shadow(0 0 0 #fff4d2) drop-shadow(0 10px 0 rgba(40, 24, 8, 0.2));
+}
+
+.empire-plot-badge {
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff8ee;
+  box-shadow: 0 0 0 2px #5c3a1e;
+}
+
+.empire-market h2,
+.empire-market h3 {
+  margin: 10px 0 6px;
+}
+
+.empire-decree-row,
+.empire-trade {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.empire-decree-row button,
+.empire-trade button,
+.empire-contracts button {
+  border: 2px solid #5c3a1e;
+  border-radius: 10px;
+  background: #fff8ee;
+  color: #24180f;
+  padding: 4px 8px;
+  font: inherit;
+}
+
+.empire-decree-row button.is-on {
+  background: #f0a202;
+}
+
+.empire-focus,
+.empire-trade select,
+.empire-focus select {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.empire-contracts,
+.empire-mastery {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.empire-contracts li,
+.empire-mastery li {
+  display: grid;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.empire-mastery i {
+  display: block;
+  height: 6px;
+  border-radius: 99px;
+  background: #3aa0e0;
+}
+
+.empire-market-note,
+.empire-card-album {
+  margin: 4px 0 0;
+}
+
+.score-empire {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.empire-screen.is-night .empire-town-view {
+  background: #0e1c28;
 }
 
 .empire-path {
   position: absolute;
-  z-index: 0;
+  z-index: 1;
   background: #e6c27a;
   box-shadow: inset 0 0 0 3px #c89a4a;
   border-radius: 999px;
@@ -98,6 +222,105 @@
 
 .empire-tree.is-b {
   background: #3aa24a;
+}
+
+.empire-lamp,
+.empire-well,
+.empire-flower,
+.empire-cart,
+.empire-flag,
+.empire-bench {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.empire-lamp {
+  width: 8px;
+  height: 28px;
+  margin: -28px 0 0 -4px;
+  background: #6b4423;
+  border-radius: 2px;
+  box-shadow: 0 -10px 0 6px #f0c14e;
+}
+
+.empire-well {
+  width: 28px;
+  height: 16px;
+  margin: -8px 0 0 -14px;
+  border: 3px solid #5c3a1e;
+  border-radius: 50%;
+  background: #3aa0d8;
+}
+
+.empire-flower {
+  width: 10px;
+  height: 10px;
+  margin: -8px 0 0 -5px;
+  border-radius: 50%;
+  background: #e05a3c;
+  box-shadow: 12px 4px 0 #e2b04a, 6px 14px 0 #f2efe4;
+}
+
+.empire-flower.is-b {
+  background: #e2b04a;
+}
+
+.empire-cart {
+  width: 26px;
+  height: 14px;
+  margin: -10px 0 0 -13px;
+  border-radius: 3px 3px 0 0;
+  background: #c47a3a;
+  box-shadow: 0 8px 0 -2px #5c3a1e, -6px 10px 0 -4px #24180f, 16px 10px 0 -4px #24180f;
+}
+
+.empire-flag {
+  width: 4px;
+  height: 32px;
+  margin: -32px 0 0 -2px;
+  background: #5c3a1e;
+  box-shadow: 4px -22px 0 0 #d4533c;
+}
+
+.empire-flag::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 16px;
+  height: 10px;
+  background: #d4533c;
+}
+
+.empire-bench {
+  width: 28px;
+  height: 8px;
+  margin: -4px 0 0 -14px;
+  border-radius: 3px;
+  background: #8d6a43;
+  box-shadow: 2px 6px 0 #5c3a1e, 20px 6px 0 #5c3a1e;
+}
+
+.empire-res-rail {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 2px 8px;
+  min-width: 0;
+}
+
+.empire-screen.is-town .empire-chip.is-res {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78rem;
+}
+
+.empire-plot.is-farm .empire-sprite {
+  width: 108px;
+  height: 116px;
 }
 
 .empire-plot {
@@ -474,7 +697,12 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: center;
   gap: 8px;
+  max-width: min(440px, calc(100vw - 64px));
+  padding: 6px 10px;
+  border-radius: 16px;
+  background: rgba(18, 24, 43, 0.72);
 }
 
 .empire-screen.is-town .empire-chip {
@@ -545,6 +773,7 @@
 .empire-dock.is-pantheon { --room: #f2efe4; }
 .empire-dock.is-board { --room: #f4f0e6; }
 .empire-dock.is-legacy { --room: #7a4e9a; }
+.empire-dock.is-market { --room: #e07a3a; }
 
 .empire-room {
   position: relative;

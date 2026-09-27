@@ -41,11 +41,21 @@ export const OLY_EMBLEM_MODES = ['olySymbolToMeaning', 'olyMeaningToSymbol'] as 
 export const OLY_MODES = [...OLY_HOST_MODES, ...OLY_SPORT_MODES, ...OLY_NOC_MODES, ...OLY_STAR_MODES, ...OLY_EMBLEM_MODES] as const
 
 export const CS_CODE_MODES = ['csTermToMeaning', 'meaningToCsTerm'] as const
+export const CS_SLANG_MODES = ['slangToMeaning', 'meaningToSlang'] as const
+export const CS_FLOW_MODES = ['stepToNext', 'nextToStep', 'stepToFlow'] as const
 export const CS_LANG_MODES = ['codeToLang'] as const
 export const CS_STRUCT_MODES = ['structToUse', 'useToStruct'] as const
 export const CS_BIN_MODES = ['decToBinary', 'binaryToDec'] as const
 export const CS_PEOPLE_MODES = ['csPhotoToName', 'personToWork', 'workToPerson'] as const
-export const CS_MODES = [...CS_CODE_MODES, ...CS_LANG_MODES, ...CS_STRUCT_MODES, ...CS_BIN_MODES, ...CS_PEOPLE_MODES] as const
+export const CS_MODES = [
+  ...CS_CODE_MODES,
+  ...CS_SLANG_MODES,
+  ...CS_FLOW_MODES,
+  ...CS_LANG_MODES,
+  ...CS_STRUCT_MODES,
+  ...CS_BIN_MODES,
+  ...CS_PEOPLE_MODES,
+] as const
 
 export const FOOD_DISH_MODES = ['dishToCuisine', 'cuisineToDish', 'dishToCourse', 'dishToMain'] as const
 export const FOOD_ORIGIN_MODES = ['foodToOrigin', 'dishToIngredients', 'ingredientsToCountry'] as const
@@ -67,6 +77,8 @@ export const THEME_TOPICS = [
   'stars',
   'emblems',
   'code',
+  'slang',
+  'flows',
   'langs',
   'structs',
   'binary',
@@ -102,7 +114,7 @@ export function themeModesOfWorld(world: ThemeWorld): readonly ThemeMode[] {
 export function themeTopicsOf(world: ThemeWorld): readonly ThemeTopic[] {
   if (world === 'biology') return ['cell', 'body', 'life', 'wild', 'labs']
   if (world === 'olympics') return ['hosts', 'sports', 'noc', 'stars', 'emblems']
-  if (world === 'cs') return ['code', 'langs', 'structs', 'binary', 'hackers']
+  if (world === 'cs') return ['code', 'slang', 'flows', 'langs', 'structs', 'binary', 'hackers']
   return ['dishes', 'origin', 'plates']
 }
 
@@ -118,6 +130,8 @@ export function themeModesOfTopic(topic: ThemeTopic): readonly ThemeMode[] {
   if (topic === 'stars') return OLY_STAR_MODES
   if (topic === 'emblems') return OLY_EMBLEM_MODES
   if (topic === 'code') return CS_CODE_MODES
+  if (topic === 'slang') return CS_SLANG_MODES
+  if (topic === 'flows') return CS_FLOW_MODES
   if (topic === 'langs') return CS_LANG_MODES
   if (topic === 'structs') return CS_STRUCT_MODES
   if (topic === 'binary') return CS_BIN_MODES
@@ -149,7 +163,7 @@ export const EASY_THEME_MIX: Record<ThemeWorld, ThemeMode[]> = {
     'nameToNoc',
     'olySymbolToMeaning',
   ],
-  cs: ['csTermToMeaning', 'codeToLang', 'structToUse', 'decToBinary'],
+  cs: ['csTermToMeaning', 'slangToMeaning', 'stepToNext', 'codeToLang', 'structToUse', 'decToBinary'],
   food: ['dishToCuisine', 'foodToOrigin', 'dishToCourse', 'foodPhotoToDish'],
 }
 

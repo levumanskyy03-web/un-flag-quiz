@@ -22,6 +22,7 @@ import {
   type ThemeMode,
   type ThemeWorld,
 } from './themeModes'
+import { pickL } from '../../data/math'
 import { pickFirstFit, QUESTIONS_PER_ROUND, shuffle, type Question, type QuizDifficulty } from './core'
 import type { Country } from '../../data/countries'
 
@@ -165,8 +166,12 @@ export function themePromptText(item: ThemeItem, lang: import('../../i18n/lang')
   return themePromptOf(item, lang)
 }
 
-export function themeLearnLine(item: ThemeItem, lang: import('../../i18n/lang').Lang): { prompt: string; answer: string } {
-  return { prompt: themePromptText(item, lang), answer: themeOptionLabel(item, lang) }
+export function themeLearnLine(item: ThemeItem, lang: import('../../i18n/lang').Lang): { prompt: string; answer: string; note?: string } {
+  return {
+    prompt: themePromptText(item, lang),
+    answer: themeOptionLabel(item, lang),
+    note: item.note ? pickL(item.note, lang) : undefined,
+  }
 }
 
 export function defaultThemeMode(world: ThemeWorld, mode: string): ThemeMode {

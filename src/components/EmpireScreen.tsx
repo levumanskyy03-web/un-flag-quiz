@@ -28,18 +28,19 @@ import {
   hasLegacy,
   legacyOverview,
   pantheonResPerHour,
-  canAfford,
   cosmeticOwned,
   cosmeticPrice,
   coinsPerHourOf,
   eraCheck,
   housingCap,
   resPerHour,
+  worldYield,
   sellRate,
   skipBuildCost,
   specialistsTotal,
   storageCap,
   upgradeCost,
+  upgradeGaps,
   type EmpireState,
 } from '../lib/empire/rules'
 import {
@@ -52,6 +53,7 @@ import {
   empireBuyPerk,
   empireBuyXpBoost,
   empireEquip,
+  empireHarvest,
   empireRename,
   empireSkipBuild,
   empireSyncAlbum,
@@ -65,6 +67,8 @@ import { type QuizWorld } from '../lib/quiz'
 import { LEGACY_MISSIONS, type LegacyReward, type LegacyTitleId } from '../data/empireLegacy'
 import { Flag } from './Flag'
 import { GeoIcon } from './GeoIcon'
+import { EmpireMarket } from './EmpireMarket'
+import { TownScenery, TownSprite } from './EmpireTownArt'
 
 export function worldTitle(world: QuizWorld, lang: Lang) {
   const t = STRINGS[lang]
@@ -181,15 +185,24 @@ function CostLine({ building, state, lang }: { building: EmpireBuilding; state: 
   return (
     <span className="empire-cost">
       <span className={state.coins < cost.coins ? 'is-short' : ''}>
+        <GeoIcon name="stamp" size={14} />
         {fmt(cost.coins, lang)} {t.empireCoins.toLowerCase()}
       </span>
       {(Object.entries(cost.res) as [EmpireResource, number][]).map(([key, need]) => (
         <span key={key} className={(state.res[key] ?? 0) < need ? 'is-short' : ''}>
+          <GeoIcon name={WORLD_ICON[EMPIRE_WORLD_BY_RESOURCE[key]]} size={14} />
           {fmt(need, lang)} {resourceTitle(key, t).toLowerCase()}
         </span>
       ))}
     </span>
   )
+}
+
+function gapLine(gap: ReturnType<typeof upgradeGaps>[number], lang: Lang) {
+  const t = STRINGS[lang]
+  if (gap.kind === 'coins') return t.empireShortCoins(gap.short)
+  if (gap.kind === 'res') return t.empireShortRes(gap.short, resourceTitle(gap.resource, t).toLowerCase())
+  return t.empireNeedLevel(buildingTitle(gap.building, lang), gap.level)
 }
 
 function BuildingCard({ building, state, lang, now }: { building: EmpireBuilding; state: EmpireState; lang: Lang; now: number }) {
@@ -198,21 +211,10 @@ function BuildingCard({ building, state, lang, now }: { building: EmpireBuilding
   const level = row.level
   const max = buildingMax(state, building)
   const maxed = level >= max
-  const cost = upgradeCost(state, building)
-  const affordable = canAfford(state, cost)
   const busy = row.buildUntil !== null
   const slotsFull = activeBuilds(state, now).length >= buildSlots(state, now)
+  const gaps = upgradeGaps(state, building)
   const world = isEmpireWorldBuilding(building) ? building : null
-  const [error, setError] = useState<string | null>(null)
-
-  function onBuild() {
-    const result = empireBuild(building)
-    if (result.ok) {
-      setError(null)
-      return
-    }
-    setError(result.reason === 'max' ? t.empireMaxLevel : result.reason === 'busy' ? t.empireBusy : t.empireNoFunds)
-  }
 
   return (
     <article className={`empire-card${world ? ` is-${world}` : ` is-${building}`}`}>
@@ -256,6 +258,18 @@ function BuildingCard({ building, state, lang, now }: { building: EmpireBuilding
       {world && albumMult(state, world) > 1 ? (
         <p className="empire-card-album">{t.empireAlbumBonus(((albumMult(state, world) - 1) * 100).toFixed(1))}</p>
       ) : null}
+      {world ? (
+        <p className="empire-card-album">
+          {t.empireMastery(Math.round(worldYield(state, world).mastery))}
+          {' · '}
+          {t.empireSupply(
+            resourceTitle(EMPIRE_RESOURCE_BY_WORLD[worldYield(state, world).partner], t),
+            worldYield(state, world).need > 0
+              ? Math.min(100, Math.round((worldYield(state, world).stock / worldYield(state, world).need) * 100))
+              : 100,
+          )}
+        </p>
+      ) : null}
       {busy ? (
         <div className="empire-card-busy">
           <p>
@@ -275,19 +289,26 @@ function BuildingCard({ building, state, lang, now }: { building: EmpireBuilding
       ) : (
         <div className="empire-card-buy">
           <CostLine building={building} state={state} lang={lang} />
-          <button type="button" className="btn-primary" disabled={!affordable || slotsFull} onClick={onBuild}>
+          {slotsFull || gaps.length > 0 ? (
+            <ul className="empire-gaps">
+              {slotsFull ? <li>{t.empireBusy}</li> : null}
+              {gaps.map((gap) => (
+                <li key={gap.kind === 'building' ? `b-${gap.building}` : gap.kind === 'res' ? gap.resource : 'coins'}>{gapLine(gap, lang)}</li>
+              ))}
+            </ul>
+          ) : null}
+          <button type="button" className="btn-primary" disabled={gaps.length > 0 || slotsFull} onClick={() => empireBuild(building)}>
             {level === 0 ? t.empireBuild : t.empireUpgrade}
           </button>
         </div>
       )}
-      {error ? <p className="empire-card-error">{error}</p> : null}
     </article>
   )
 }
 
-const MAP_W = 1560
-const MAP_H = 1180
-const TOWN_ZOOM = 0.55
+const MAP_W = 2100
+const MAP_H = 1520
+const TOWN_ZOOM = 0.82
 const WALK_SPEED = 250
 const PLAYER_R = 14
 const BLOCK_R = 48
@@ -295,30 +316,39 @@ const INTERACT_R = 112
 
 type TownSpot = {
   key: string
-  kind: 'build' | 'legacy' | 'board'
+  kind: 'build' | 'legacy' | 'board' | 'market' | 'farm'
   building?: EmpireBuilding
+  world?: QuizWorld
   x: number
   y: number
 }
 
+const WORLD_PLOTS: readonly QuizWorld[] = ['geo', 'leaders', 'football', 'olympics', 'biology', 'math', 'astronomy', 'cs', 'food']
+
 const TOWN_LAYOUT: readonly TownSpot[] = [
-  { key: 'board', kind: 'board', x: 280, y: 250 },
-  { key: 'hall', kind: 'build', building: 'hall', x: 540, y: 250 },
-  { key: 'housing', kind: 'build', building: 'housing', x: 800, y: 250 },
-  { key: 'storage', kind: 'build', building: 'storage', x: 1060, y: 250 },
-  { key: 'library', kind: 'build', building: 'library', x: 1320, y: 250 },
-  { key: 'geo', kind: 'build', building: 'geo', x: 280, y: 530 },
-  { key: 'leaders', kind: 'build', building: 'leaders', x: 540, y: 530 },
-  { key: 'football', kind: 'build', building: 'football', x: 800, y: 530 },
-  { key: 'olympics', kind: 'build', building: 'olympics', x: 1060, y: 530 },
-  { key: 'biology', kind: 'build', building: 'biology', x: 1320, y: 530 },
-  { key: 'math', kind: 'build', building: 'math', x: 280, y: 810 },
-  { key: 'astronomy', kind: 'build', building: 'astronomy', x: 540, y: 810 },
-  { key: 'cs', kind: 'build', building: 'cs', x: 800, y: 810 },
-  { key: 'food', kind: 'build', building: 'food', x: 1060, y: 810 },
-  { key: 'treasury', kind: 'build', building: 'treasury', x: 1320, y: 810 },
-  { key: 'legacy', kind: 'legacy', x: 540, y: 1040 },
-  { key: 'pantheon', kind: 'build', building: 'pantheon', x: 800, y: 1040 },
+  { key: 'board', kind: 'board', x: 220, y: 220 },
+  { key: 'hall', kind: 'build', building: 'hall', x: 520, y: 220 },
+  { key: 'housing', kind: 'build', building: 'housing', x: 820, y: 220 },
+  { key: 'storage', kind: 'build', building: 'storage', x: 1120, y: 220 },
+  { key: 'library', kind: 'build', building: 'library', x: 1420, y: 220 },
+  { key: 'treasury', kind: 'build', building: 'treasury', x: 1720, y: 220 },
+  ...WORLD_PLOTS.slice(0, 5).flatMap((world, i) => {
+    const x = 220 + i * 300
+    return [
+      { key: world, kind: 'build' as const, building: world, x, y: 520 },
+      { key: `farm-${world}`, kind: 'farm' as const, world, x, y: 760 },
+    ]
+  }),
+  ...WORLD_PLOTS.slice(5).flatMap((world, i) => {
+    const x = 220 + i * 300
+    return [
+      { key: world, kind: 'build' as const, building: world, x, y: 1040 },
+      { key: `farm-${world}`, kind: 'farm' as const, world, x, y: 1280 },
+    ]
+  }),
+  { key: 'legacy', kind: 'legacy', x: 1420, y: 1040 },
+  { key: 'pantheon', kind: 'build', building: 'pantheon', x: 1720, y: 1040 },
+  { key: 'market', kind: 'market', x: 1720, y: 1280 },
 ]
 
 type WalkKey = 'left' | 'right' | 'up' | 'down'
@@ -366,47 +396,38 @@ function spotLabel(spot: TownSpot, lang: Lang) {
   const t = STRINGS[lang]
   if (spot.kind === 'board') return t.empireBoard
   if (spot.kind === 'legacy') return t.empireLegacy
+  if (spot.kind === 'market') return t.empireMarket
+  if (spot.kind === 'farm' && spot.world) return `${t.empireFarm} · ${resourceTitle(EMPIRE_RESOURCE_BY_WORLD[spot.world], t)}`
   return buildingTitle(spot.building!, lang)
 }
 
 function TownPlot({ spot, state, lang, near }: { spot: TownSpot; state: EmpireState; lang: Lang; near: boolean }) {
   const building = spot.building
-  const level = building ? buildingLevel(state, building) : 1
+  const farmWorld = spot.kind === 'farm' ? spot.world : undefined
+  const ripe = farmWorld ? (state.economy.fields?.[farmWorld] ?? 0) : 0
+  const level = building ? buildingLevel(state, building) : farmWorld ? ripe : 1
   const busy = building ? (state.buildings[building]?.buildUntil ?? null) !== null : false
   const tier = building ? towerTier(level) : 1
   const icon = building
     ? isEmpireWorldBuilding(building)
       ? WORLD_ICON[building]
       : COMMON_ICON[building]
-    : spot.kind === 'board'
-      ? 'deck'
-      : 'laurel'
+    : farmWorld
+      ? WORLD_ICON[farmWorld]
+      : spot.kind === 'board'
+        ? 'deck'
+        : 'laurel'
   return (
     <div
-      className={`empire-plot is-${spot.key} is-tier-${tier}${level === 0 ? ' is-empty' : ''}${busy ? ' is-busy' : ''}${near ? ' is-near' : ''}`}
+      className={`empire-plot is-${spot.key} is-tier-${tier}${level === 0 ? ' is-empty' : ''}${busy ? ' is-busy' : ''}${near ? ' is-near' : ''}${farmWorld ? ' is-farm' : ''}${ripe > 0 ? ' is-ripe' : ''}`}
       style={{ left: spot.x, top: spot.y }}
     >
-      <div className="empire-yard">
-        <span className="empire-roof" />
-        <span className="empire-house">
-          <i />
-          <i />
-        </span>
-        {busy ? (
-          <>
-            <i className="empire-scaffold" />
-            <i className="empire-site-crane" />
-            <i className="empire-worker" />
-            <i className="empire-worker is-b" />
-          </>
-        ) : level > 0 ? (
-          <i className="empire-smoke" />
-        ) : (
-          <i className="empire-stake" />
-        )}
-        <GeoIcon name={icon} size={16} />
-      </div>
+      <TownSprite kind={farmWorld ? 'farm' : spot.key} era={state.era} tier={tier} level={level} busy={busy} />
+      <span className="empire-plot-badge">
+        <GeoIcon name={icon} size={14} />
+      </span>
       {building ? <strong className="empire-plot-lv">{level}</strong> : null}
+      {farmWorld && ripe > 0 ? <strong className="empire-plot-lv">{ripe}</strong> : null}
       <span className="empire-plot-name">{spotLabel(spot, lang)}</span>
     </div>
   )
@@ -564,16 +585,31 @@ function TownMap({
         className="empire-town-map"
         style={{ transform: `translate(${-frame.camX * TOWN_ZOOM}px, ${-frame.camY * TOWN_ZOOM}px) scale(${TOWN_ZOOM})` }}
       >
-        <div className="empire-path is-h" style={{ top: 250, left: 180, width: 1240 }} />
-        <div className="empire-path is-h" style={{ top: 530, left: 180, width: 1240 }} />
-        <div className="empire-path is-h" style={{ top: 810, left: 180, width: 1240 }} />
-        <div className="empire-path is-h" style={{ top: 1040, left: 420, width: 520 }} />
-        <div className="empire-path is-v" style={{ left: 540, top: 180, height: 920 }} />
-        <div className="empire-path is-v" style={{ left: 800, top: 180, height: 700 }} />
-        <i className="empire-tree" style={{ left: 140, top: 140 }} />
-        <i className="empire-tree is-b" style={{ left: 1460, top: 160 }} />
-        <i className="empire-tree" style={{ left: 150, top: 980 }} />
-        <i className="empire-tree is-b" style={{ left: 1420, top: 1000 }} />
+        <div className="empire-path is-h" style={{ top: 220, left: 140, width: 1680 }} />
+        <div className="empire-path is-h" style={{ top: 520, left: 140, width: 1280 }} />
+        <div className="empire-path is-h" style={{ top: 760, left: 140, width: 1280 }} />
+        <div className="empire-path is-h" style={{ top: 1040, left: 140, width: 1680 }} />
+        <div className="empire-path is-h" style={{ top: 1280, left: 140, width: 1680 }} />
+        <div className="empire-path is-v" style={{ left: 520, top: 160, height: 1200 }} />
+        <div className="empire-path is-v" style={{ left: 1120, top: 160, height: 700 }} />
+        <div className="empire-path is-v" style={{ left: 1720, top: 160, height: 1200 }} />
+        <TownScenery era={state.era} />
+        <i className="empire-tree" style={{ left: 90, top: 120 }} />
+        <i className="empire-tree is-b" style={{ left: 1960, top: 140 }} />
+        <i className="empire-tree" style={{ left: 80, top: 900 }} />
+        <i className="empire-tree is-b" style={{ left: 1980, top: 980 }} />
+        <i className="empire-tree" style={{ left: 1880, top: 420 }} />
+        <i className="empire-tree is-b" style={{ left: 120, top: 1420 }} />
+        <i className="empire-lamp" style={{ left: 370, top: 220 }} />
+        <i className="empire-lamp" style={{ left: 970, top: 220 }} />
+        <i className="empire-lamp" style={{ left: 1570, top: 520 }} />
+        <i className="empire-well" style={{ left: 1570, top: 760 }} />
+        <i className="empire-flower" style={{ left: 360, top: 400 }} />
+        <i className="empire-flower is-b" style={{ left: 680, top: 900 }} />
+        <i className="empire-flower" style={{ left: 980, top: 1180 }} />
+        <i className="empire-cart" style={{ left: 1570, top: 1280 }} />
+        <i className="empire-flag" style={{ left: 90, top: 220 }} />
+        <i className="empire-bench" style={{ left: 1570, top: 1040 }} />
         {spots.map((spot) => (
           <TownPlot key={spot.key} spot={spot} state={state} lang={lang} near={frame.near === spot.key} />
         ))}
@@ -711,13 +747,21 @@ export function EmpireScreen({ lang, onWorlds }: { lang: Lang; onWorlds: () => v
                 {specialistsTotal(state)}/{housingCap(state)}
               </strong>
             </span>
+            <span className="empire-res-rail">
+              {EMPIRE_RESOURCES.map((key) => (
+                <span key={key} className="empire-chip is-res" title={resourceTitle(key, t)}>
+                  <GeoIcon name={WORLD_ICON[EMPIRE_WORLD_BY_RESOURCE[key]]} size={14} />
+                  <strong>{fmt(state.res[key] ?? 0, lang)}</strong>
+                </span>
+              ))}
+            </span>
           </div>
         </header>
 
         <TownMap spots={spots} state={state} lang={lang} dockOpen={spot !== null} onNear={setNear} />
 
         {spot ? (
-          <aside className={`empire-dock is-${spot.key}`}>
+          <aside className={`empire-dock is-${spot.key}${spot.world ? ` is-${spot.world}` : ''}`}>
             <div className="empire-room" aria-hidden="true">
               <span className="empire-room-roof" />
               <span className="empire-room-window" />
@@ -725,6 +769,8 @@ export function EmpireScreen({ lang, onWorlds }: { lang: Lang; onWorlds: () => v
             <div className="empire-room-body">
             {spot.kind === 'board' ? <WorldTab lang={lang} state={state} /> : null}
             {spot.kind === 'legacy' ? <LegacyTab lang={lang} state={state} now={now} /> : null}
+            {spot.kind === 'market' ? <EmpireMarket lang={lang} state={state} /> : null}
+            {spot.kind === 'farm' && spot.world ? <FarmCard world={spot.world} state={state} lang={lang} /> : null}
             {spot.building ? <BuildingCard building={spot.building} state={state} lang={lang} now={now} /> : null}
             {spot.building === 'hall' ? (
               <section className="empire-era-box">
@@ -812,6 +858,33 @@ export function EmpireScreen({ lang, onWorlds }: { lang: Lang; onWorlds: () => v
         ) : null}
       </div>
     </div>
+  )
+}
+
+function FarmCard({ world, state, lang }: { world: QuizWorld; state: EmpireState; lang: Lang }) {
+  const t = STRINGS[lang]
+  const key = EMPIRE_RESOURCE_BY_WORLD[world]
+  const ripe = state.economy.fields?.[world] ?? 0
+  const room = storageCap(state) - (state.res[key] ?? 0)
+  const name = resourceTitle(key, t).toLowerCase()
+  return (
+    <article className={`empire-card is-${world} is-farm`}>
+      <header>
+        <GeoIcon name={WORLD_ICON[world]} size={20} />
+        <div>
+          <h3>
+            {t.empireFarm}
+            <HelpTip text={t.empireFarmHint} />
+          </h3>
+          <small>{worldTitle(world, lang)}</small>
+        </div>
+      </header>
+      <p className="empire-card-album">{ripe > 0 ? t.empireFarmReady(ripe, name) : t.empireFarmEmpty}</p>
+      {ripe > 0 && room <= 0 ? <p className="empire-card-error">{t.empireStorageFull}</p> : null}
+      <button type="button" className="btn-primary" disabled={ripe <= 0 || room <= 0} onClick={() => empireHarvest(world)}>
+        {t.empireHarvest}
+      </button>
+    </article>
   )
 }
 

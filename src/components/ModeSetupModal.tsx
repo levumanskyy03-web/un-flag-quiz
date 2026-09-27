@@ -454,7 +454,7 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
               hardcore={settings.levelHardcore}
               onChange={({ difficulty, hardcore }) => update({ path: 'pool', difficulty, levelHardcore: hardcore })}
             />
-            {difficultyGate ? <EmpireLock lang={settings.lang} feature={difficultyGate} title={t.gateDifficulty} compact /> : null}
+            {difficultyGate ? <EmpireLock lang={settings.lang} feature={difficultyGate} title={t.gateDifficulty} /> : null}
 
             {family.world === 'football' && isPlayerFactsToName(settings.mode) && !settings.mix ? (
               <HelpTip text={t.playerFactsHint} />

@@ -12,6 +12,30 @@ export function ThemeLearnTable({
   hideAnswers?: boolean
 }) {
   const t = STRINGS[lang]
+  const cards = isos.flatMap((iso) => {
+    const item = themeById(iso)
+    if (!item) return []
+    return [{ iso, line: themeLearnLine(item, lang) }]
+  })
+  if (cards.some((row) => row.line.note)) {
+    return (
+      <div className="learn-grid is-notes">
+        {cards.map(({ iso, line }) => (
+          <article key={iso} className="learn-card is-note">
+            <p className="learn-card-name">{line.prompt}</p>
+            {hideAnswers ? (
+              <p className="learn-card-meta">{t.leaderHiddenName}</p>
+            ) : (
+              <>
+                <p className="learn-card-meta">{line.answer}</p>
+                {line.note ? <p className="learn-card-bio">{line.note}</p> : null}
+              </>
+            )}
+          </article>
+        ))}
+      </div>
+    )
+  }
   return (
     <div className="football-learn-table-wrap">
       <table className="football-learn-table">

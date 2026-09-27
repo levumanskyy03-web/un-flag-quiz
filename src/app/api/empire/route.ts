@@ -29,6 +29,10 @@ import {
   type CosmeticId,
   rollDay,
   sellResource,
+  setDecree,
+  claimContract,
+  harvestField,
+  tradeResources,
   settlePending,
   tick,
   type EmpireState,
@@ -40,6 +44,7 @@ import { isCardFrameId, isShareThemeId } from '../../../data/cosmetics'
 import { isLegacyMissionId, isLegacyTitleId } from '../../../data/empireLegacy'
 import { COLLECTIONS } from '../../../data/collections'
 import { claimNonce, clampTrial, readEmpire, readRank, writeEmpire } from '../../../lib/empireServerStore'
+import { isEmpireDecree } from '../../../lib/empire/economy'
 import { isQuizDifficulty, isQuizWorld, type PlayPath } from '../../../lib/quiz'
 import { consumeRateLimit } from '../../../lib/rateLimit'
 import {
@@ -120,6 +125,15 @@ export async function POST(request: Request) {
     return json({ state: next })
   }
 
+  if (action === 'harvest') {
+    const world = record.world
+    if (!isQuizWorld(world)) return json({ error: 'invalid', state }, 400)
+    const next = harvestField(state, world)
+    if (!next) return json({ error: 'cost', state }, 409)
+    await writeEmpire(account.id, next)
+    return json({ state: next })
+  }
+
   if (action === 'sell') {
     const key = record.resource
     const amount = Number(record.amount)
@@ -128,6 +142,42 @@ export async function POST(request: Request) {
     }
     const next = sellResource(state, key as EmpireResource, amount)
     if (!next) return json({ error: 'cost', state }, 409)
+    await writeEmpire(account.id, next)
+    return json({ state: next })
+  }
+
+  if (action === 'trade') {
+    const from = record.from
+    const to = record.to
+    const amount = Number(record.amount)
+    if (
+      typeof from !== 'string' ||
+      typeof to !== 'string' ||
+      !(EMPIRE_RESOURCES as readonly string[]).includes(from) ||
+      !(EMPIRE_RESOURCES as readonly string[]).includes(to) ||
+      !Number.isFinite(amount)
+    ) {
+      return json({ error: 'invalid', state }, 400)
+    }
+    const next = tradeResources(state, from as EmpireResource, to as EmpireResource, amount)
+    if (!next) return json({ error: 'cost', state }, 409)
+    await writeEmpire(account.id, next)
+    return json({ state: next })
+  }
+
+  if (action === 'decree') {
+    if (!isEmpireDecree(record.decree)) return json({ error: 'invalid', state }, 400)
+    const next = setDecree(state, record.decree, now)
+    if (!next) return json({ error: 'locked', state }, 409)
+    if (next !== state) await writeEmpire(account.id, next)
+    return json({ state: next })
+  }
+
+  if (action === 'claimContract') {
+    const id = record.id
+    if (typeof id !== 'string' || id.length > 40) return json({ error: 'invalid', state }, 400)
+    const next = claimContract(state, id)
+    if (!next) return json({ error: 'locked', state }, 409)
     await writeEmpire(account.id, next)
     return json({ state: next })
   }

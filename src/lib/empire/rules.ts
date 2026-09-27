@@ -76,6 +76,31 @@ import {
   type LegacyReward,
   type LegacyTitleId,
 } from '../../data/empireLegacy'
+import {
+  decreeProduction,
+  emptyEconomy,
+  ensureContracts,
+  farmYield,
+  fieldCap,
+  growContracts,
+  growMastery,
+  masteryMult,
+  parseEconomy,
+  partnerResource,
+  partnerWorld,
+  rollEconomyDay,
+  roundMods,
+  sowField,
+  supplyMult,
+  supplyNeed,
+  tradeCap,
+  tradeFee,
+  tradeOut,
+  type EmpireContract,
+  type EmpireDecree,
+  type EmpireEconomy,
+  type EmpireRewardNote,
+} from './economy'
 
 export type EmpireBuildingState = { level: number; buildUntil: number | null }
 
@@ -112,6 +137,8 @@ export type EmpireState = {
   /** Полученные титулы и активный. */
   titles: LegacyTitleId[]
   title: LegacyTitleId | null
+  /** Указы, поставки, контракты и мастерство от викторин. */
+  economy: EmpireEconomy
   lastTickAt: number
   createdAt: number
   migratedAt: number | null
@@ -174,7 +201,14 @@ export type EmpireRoundReward = {
   resource: number
   gems: number
   capped: boolean
+  /** Насколько выросло мастерство мира этим раундом. */
+  masteryDelta?: number
+  notes?: EmpireRewardNote[]
+  /** Сколько ресурса мира легло на грядку, а не сразу на склад. */
+  farm?: number
 }
+
+export type { EmpireContract, EmpireDecree, EmpireEconomy, EmpireRewardNote }
 
 function zeroByWorld(): Record<QuizWorld, number> {
   return Object.fromEntries(QUIZ_WORLDS.map((w) => [w, 0])) as Record<QuizWorld, number>
@@ -222,6 +256,7 @@ export function emptyEmpire(now = Date.now()): EmpireState {
     legacy: { stage: zeroByMission(), claimed: [] },
     titles: [],
     title: null,
+    economy: emptyEconomy(),
     lastTickAt: now,
     createdAt: now,
     migratedAt: null,
@@ -275,6 +310,38 @@ export function upgradeCost(state: EmpireState, building: EmpireBuilding): Upgra
     return { coins: coinCost(level), res: { [EMPIRE_RESOURCE_BY_WORLD[building]]: resCost(level) } }
   }
   return { coins: coinCost(level), res: {} }
+}
+
+export type UpgradeGap =
+  | { kind: 'coins'; short: number }
+  | { kind: 'res'; resource: EmpireResource; short: number }
+  | { kind: 'building'; building: EmpireBuilding; level: number }
+
+/** Что должно быть прокачано до следующего уровня. Ратуша — потолок для всех остальных. */
+export function upgradeReqs(building: EmpireBuilding, next: number): Array<{ building: EmpireBuilding; level: number }> {
+  const reqs: Array<{ building: EmpireBuilding; level: number }> = []
+  if (building !== 'hall') reqs.push({ building: 'hall', level: next })
+  if (isEmpireWorldBuilding(building) || building === 'pantheon') {
+    if (next >= 3) reqs.push({ building: 'housing', level: Math.ceil(next / 4) })
+    if (next >= 5) reqs.push({ building: 'storage', level: Math.ceil(next / 6) })
+  }
+  if (building === 'treasury' && next >= 4) reqs.push({ building: 'storage', level: Math.ceil(next / 4) })
+  return reqs
+}
+
+export function upgradeGaps(state: EmpireState, building: EmpireBuilding): UpgradeGap[] {
+  const next = buildingLevel(state, building) + 1
+  const gaps: UpgradeGap[] = []
+  for (const req of upgradeReqs(building, next)) {
+    if (buildingLevel(state, req.building) < req.level) gaps.push({ kind: 'building', building: req.building, level: req.level })
+  }
+  const cost = upgradeCost(state, building)
+  if (state.coins < cost.coins) gaps.push({ kind: 'coins', short: cost.coins - state.coins })
+  for (const [key, need] of Object.entries(cost.res) as [EmpireResource, number][]) {
+    const have = state.res[key] ?? 0
+    if (have < need) gaps.push({ kind: 'res', resource: key, short: need - have })
+  }
+  return gaps
 }
 
 export function canAfford(state: EmpireState, cost: UpgradeCost) {
@@ -458,19 +525,51 @@ export function pantheonResPerHour(state: EmpireState) {
   return EMPIRE_RES_PER_LEVEL_HOUR * level * workerMult(specialistsTotal(state) / QUIZ_WORLDS.length) * eraMult(state.era) * legacyResMult(state)
 }
 
+/** Множители здания мира: склад поставщика, мастерство квиза и указ. */
+export function worldYield(state: EmpireState, world: QuizWorld) {
+  const level = buildingLevel(state, world)
+  const partner = partnerWorld(world)
+  const stock = state.res[partnerResource(world)] ?? 0
+  const supply = supplyMult(stock, level)
+  const mastery = state.economy.mastery[world] ?? 0
+  const decree = decreeProduction(state.economy.decree, world)
+  const skill = masteryMult(mastery)
+  return {
+    partner,
+    stock,
+    need: supplyNeed(level),
+    supply,
+    mastery,
+    res: supply * skill * decree.res,
+    coins: supply * skill * decree.coins,
+  }
+}
+
 export function resPerHour(state: EmpireState, world: QuizWorld) {
   const level = buildingLevel(state, world)
   const own =
     level <= 0
       ? 0
-      : EMPIRE_RES_PER_LEVEL_HOUR * level * workerMult(state.specialists[world] ?? 0) * eraMult(state.era) * albumMult(state, world) * legacyResMult(state)
+      : EMPIRE_RES_PER_LEVEL_HOUR *
+        level *
+        workerMult(state.specialists[world] ?? 0) *
+        eraMult(state.era) *
+        albumMult(state, world) *
+        legacyResMult(state) *
+        worldYield(state, world).res
   return own + pantheonResPerHour(state)
 }
 
 export function coinsPerHourOf(state: EmpireState, world: QuizWorld) {
   const level = buildingLevel(state, world)
   if (level <= 0) return 0
-  return EMPIRE_COINS_PER_LEVEL_HOUR * level * workerMult(state.specialists[world] ?? 0) * eraMult(state.era)
+  return (
+    EMPIRE_COINS_PER_LEVEL_HOUR *
+    level *
+    workerMult(state.specialists[world] ?? 0) *
+    eraMult(state.era) *
+    worldYield(state, world).coins
+  )
 }
 
 export function coinsPerHour(state: EmpireState) {
@@ -522,7 +621,7 @@ function finishBuilds(state: EmpireState, now: number): EmpireState {
 
 // ---------- Действия ----------
 
-export type BuildResult = { ok: true; state: EmpireState } | { ok: false; reason: 'max' | 'busy' | 'cost' }
+export type BuildResult = { ok: true; state: EmpireState } | { ok: false; reason: 'max' | 'busy' | 'cost' | 'req' }
 
 export function build(state: EmpireState, building: EmpireBuilding, now = Date.now()): BuildResult {
   if (!buildingsOf(state).includes(building)) return { ok: false, reason: 'max' }
@@ -530,6 +629,8 @@ export function build(state: EmpireState, building: EmpireBuilding, now = Date.n
   if (row.buildUntil !== null) return { ok: false, reason: 'busy' }
   if (row.level >= buildingMax(state, building)) return { ok: false, reason: 'max' }
   if (activeBuilds(state, now).length >= buildSlots(state, now)) return { ok: false, reason: 'busy' }
+  const gaps = upgradeGaps(state, building)
+  if (gaps.some((gap) => gap.kind === 'building')) return { ok: false, reason: 'req' }
   const cost = upgradeCost(state, building)
   if (!canAfford(state, cost)) return { ok: false, reason: 'cost' }
   const res = { ...state.res }
@@ -579,6 +680,21 @@ export function advanceEra(state: EmpireState): EmpireState | null {
   const res = { ...state.res }
   for (const r of EMPIRE_RESOURCES) res[r] -= check.eachResourceMin
   return withScore({ ...state, era: check.next, res, gems: state.gems + EMPIRE_ERA_GEMS, lifetime: { ...state.lifetime, gemsEarned: state.lifetime.gemsEarned + EMPIRE_ERA_GEMS } })
+}
+
+/** Забирает урожай грядки на склад. Пустая грядка или полный склад — ничего не меняет. */
+export function harvestField(state: EmpireState, world: QuizWorld): EmpireState | null {
+  const ripe = state.economy.fields?.[world] ?? 0
+  if (ripe <= 0) return null
+  const key = EMPIRE_RESOURCE_BY_WORLD[world]
+  const room = storageCap(state) - (state.res[key] ?? 0)
+  if (room <= 0) return null
+  const take = Math.min(ripe, room)
+  return withScore({
+    ...state,
+    res: { ...state.res, [key]: (state.res[key] ?? 0) + take },
+    economy: { ...state.economy, fields: { ...state.economy.fields, [world]: ripe - take } },
+  })
 }
 
 export function sellResource(state: EmpireState, key: EmpireResource, amount: number): EmpireState | null {
@@ -682,13 +798,21 @@ export function roundReward(state: EmpireState, ctx: RoundContext): EmpireRoundR
   }
 
   const room = Math.max(0, roundCoinCap(state) - state.daily.coinsFromRounds)
-  if (reward.coins > room) reward = { ...reward, coins: room, capped: true }
-  return reward
+  const mods = roundMods(state.economy, buildingLevel(state, ctx.world), ctx)
+  const scaledCoins = Math.round(reward.coins * mods.coinMult)
+  const coins = Math.min(room, scaledCoins)
+  return {
+    ...reward,
+    coins,
+    resource: Math.round(reward.resource * mods.resMult),
+    specialists: reward.specialists + mods.specialists,
+    capped: reward.capped || scaledCoins > room,
+  }
 }
 
 export function applyRoundReward(state: EmpireState, ctx: RoundContext, now = Date.now()): { state: EmpireState; reward: EmpireRoundReward } {
   let next = rollDay(tick(state, now), now)
-  const reward = roundReward(next, ctx)
+  let reward = roundReward(next, ctx)
   const key = EMPIRE_RESOURCE_BY_WORLD[ctx.world]
   let daily = {
     ...next.daily,
@@ -710,7 +834,15 @@ export function applyRoundReward(state: EmpireState, ctx: RoundContext, now = Da
   }
   const counted = reward.coins > 0 || reward.specialists > 0 || reward.resource > 0
   const extraSpecialist = counted && ctx.endedBy === 'complete' && hasLegacy(next, 'legacy:specialist') ? 1 : 0
-  next = addSpecialists(next, ctx.world, reward.specialists + extraSpecialist)
+  const grown = growMastery(next.economy, ctx)
+  const contracts = growContracts(grown.economy, ctx)
+  const before = contracts.economy.fields?.[ctx.world] ?? 0
+  const economy = sowField(contracts.economy, ctx.world, farmYield(ctx), fieldCap(buildingLevel(next, ctx.world)))
+  const farm = (economy.fields[ctx.world] ?? 0) - before
+  const notes = [...(reward.notes ?? []), ...(roundMods(next.economy, buildingLevel(next, ctx.world), ctx).notes)]
+  if (contracts.completed) notes.push('contract')
+  reward = { ...reward, masteryDelta: grown.delta, farm, notes }
+  next = addSpecialists({ ...next, economy }, ctx.world, reward.specialists + extraSpecialist)
   next = { ...next, lifetime: lifetimeAfterRound(next, ctx, reward, streakGems, counted, now) }
   return { state: withScore(next), reward: streakGems > 0 ? { ...reward, gems: reward.gems + streakGems } : reward }
 }
@@ -877,8 +1009,70 @@ export function setTitle(state: EmpireState, title: LegacyTitleId | null): Empir
 
 export function rollDay(state: EmpireState, now = Date.now()): EmpireState {
   const day = localDayStamp(now)
-  if (state.daily.day === day) return state
-  return { ...state, daily: { ...state.daily, day, coinsFromRounds: 0, hintsUsed: 0, gemClaimed: false, mistakesRuns: 0 } }
+  const economy = state.economy ?? emptyEconomy()
+  if (state.daily.day === day) {
+    const filled = ensureContracts(economy, day, state.era)
+    if (filled === economy) return state
+    return { ...state, economy: filled }
+  }
+  return {
+    ...state,
+    daily: { ...state.daily, day, coinsFromRounds: 0, hintsUsed: 0, gemClaimed: false, mistakesRuns: 0 },
+    economy: rollEconomyDay(economy, day, state.era),
+  }
+}
+
+export function setDecree(state: EmpireState, decree: EmpireDecree, now = Date.now()): EmpireState | null {
+  const day = localDayStamp(now)
+  if (state.economy.decree === decree) return state
+  if (state.economy.decreeDay === day) return null
+  return { ...state, economy: { ...state.economy, decree, decreeDay: day } }
+}
+
+export function tradeResources(state: EmpireState, from: EmpireResource, to: EmpireResource, amount: number): EmpireState | null {
+  const n = Math.floor(amount)
+  if (from === to || n < 5 || n > 200) return null
+  const cap = tradeCap(state.era)
+  if (state.economy.tradeSpent + n > cap) return null
+  const out = tradeOut(n, buildingLevel(state, 'treasury'))
+  const fee = tradeFee(n)
+  if (out < 1 || (state.res[from] ?? 0) < n || state.coins < fee) return null
+  const capRes = storageCap(state)
+  return withScore({
+    ...state,
+    coins: state.coins - fee,
+    res: {
+      ...state.res,
+      [from]: (state.res[from] ?? 0) - n,
+      [to]: Math.min(capRes, (state.res[to] ?? 0) + out),
+    },
+    economy: { ...state.economy, tradeSpent: state.economy.tradeSpent + n },
+  })
+}
+
+export function claimContract(state: EmpireState, id: string): EmpireState | null {
+  const row = state.economy.contracts.find((c) => c.id === id)
+  if (!row || row.claimed || row.progress < row.goal) return null
+  const res = { ...state.res }
+  if (row.resource > 0 && row.world) {
+    const key = EMPIRE_RESOURCE_BY_WORLD[row.world]
+    res[key] = Math.min(storageCap(state), (res[key] ?? 0) + row.resource)
+  }
+  return withScore({
+    ...state,
+    coins: Math.min(treasuryCap(state), state.coins + row.coins),
+    gems: state.gems + row.gems,
+    res,
+    economy: {
+      ...state.economy,
+      contracts: state.economy.contracts.map((c) => (c.id === id ? { ...c, claimed: true } : c)),
+    },
+    lifetime: {
+      ...state.lifetime,
+      coinsEarned: state.lifetime.coinsEarned + row.coins,
+      gemsEarned: state.lifetime.gemsEarned + row.gems,
+    },
+  })
 }
 
 // ---------- Счёт ----------
@@ -1169,6 +1363,7 @@ export function parseEmpire(raw: unknown, now = Date.now()): EmpireState | null 
     legacy: parseLegacy(row.legacy),
     titles: strings(row.titles).filter(isLegacyTitleId),
     title: isLegacyTitleId(row.title) ? row.title : null,
+    economy: parseEconomy(row.economy),
     lastTickAt: num(row.lastTickAt, now) || now,
     createdAt: num(row.createdAt, now) || now,
     migratedAt: row.migratedAt === null || row.migratedAt === undefined ? null : num(row.migratedAt) || null,

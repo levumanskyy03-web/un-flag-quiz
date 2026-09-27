@@ -47,6 +47,8 @@ export function themeTopicLabel(topic: ThemeTopic, lang: Lang): string {
   if (topic === 'stars') return t.olyFamilyStars
   if (topic === 'emblems') return t.olyFamilySymbols
   if (topic === 'code') return t.csFamilyCode
+  if (topic === 'slang') return t.csFamilySlang
+  if (topic === 'flows') return t.csFamilyFlows
   if (topic === 'langs') return t.csFamilyLangs
   if (topic === 'structs') return t.csFamilyStructs
   if (topic === 'binary') return t.csFamilyBinary

@@ -307,7 +307,6 @@ export function LevelsScreen({
                 lang={settings.lang}
                 feature={pickedGate}
                 title={pickedGate.kind === 'levelHardcore' ? t.gateLevelHardcore : t.gateLevels}
-                compact
               />
             ) : null}
             <button
