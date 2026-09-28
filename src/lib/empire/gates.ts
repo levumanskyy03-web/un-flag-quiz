@@ -104,7 +104,8 @@ export function gateInfo(f: GateFeature): GateInfo {
       }
     }
     case 'duelRoom':
-      return { key: 'duelRoom', free: false, progress: { type: 'era', era: 2 }, price: { type: 'coins', amount: 400 } }
+      // Временно открыто всем. Вернуть: эпоха 2 или 400 монет.
+      return OPEN
     case 'studio':
       return {
         key: 'studio',

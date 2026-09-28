@@ -181,13 +181,16 @@ export function SettingsModal({
       onClose()
     }
     window.addEventListener('keydown', onKey)
+    if (embedded) {
+      return () => window.removeEventListener('keydown', onKey)
+    }
     const previous = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
       window.removeEventListener('keydown', onKey)
       document.body.style.overflow = previous
     }
-  }, [onClose, pickerOpen, passwordOpen])
+  }, [embedded, onClose, pickerOpen, passwordOpen])
 
   useEffect(() => {
     if (!account) {
