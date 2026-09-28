@@ -766,6 +766,8 @@ export type Strings = {
   map: string
   explore: string
   freePlay: string
+  modeSelector: string
+  modeSelectorMeta: (level: number, mode: string) => string
   mapHint: string
   mapSearch: string
   mapLoading: string
@@ -1918,6 +1920,8 @@ export const STRINGS: Record<Lang, Strings> = {
     map: 'Карта',
     explore: 'Разделы',
     freePlay: 'Вольное',
+    modeSelector: 'Выбор режима',
+    modeSelectorMeta: (level, mode) => `Уровень ${level} · ${mode}`,
     mapHint: 'Нажмите страну — откроется паспорт',
     mapSearch: 'Найти страну',
     mapLoading: 'Загрузка карты…',
@@ -2712,6 +2716,8 @@ export const STRINGS: Record<Lang, Strings> = {
     map: 'Map',
     explore: 'Explore',
     freePlay: 'Free play',
+    modeSelector: 'Mode selector',
+    modeSelectorMeta: (level, mode) => `Level ${level} · ${mode}`,
     mapHint: 'Tap a country to open its passport',
     mapSearch: 'Find a country',
     mapLoading: 'Loading the map…',

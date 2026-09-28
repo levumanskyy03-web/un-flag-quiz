@@ -10,21 +10,21 @@ import {
   isThemeMode,
   themeMixPoolSize,
   themePoolSize,
-  themeTopicOf,
-  themeTopicsOf,
   type ThemeWorld,
 } from '../lib/quiz'
 import { GeoIcon } from './GeoIcon'
 import { HubNav, THEME_HUB_TABS, type HubTab } from './HubNav'
+import { ModeArrowSelect } from './ModeArrowSelect'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
-import { FitGroup, FitText } from './FitText'
+import { FitText } from './FitText'
 import { CatalogNo } from './ModeChoice'
 import { setupDifficultyText } from './DifficultyPicker'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
-import { difficultyForMode, modesOfThemeFamily, settingsForThemeFamily, themeFamilyLabel } from '../lib/modeFamilies'
-import { modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
+import { difficultyForMode, settingsForThemeFamily, themeFamilyOf } from '../lib/modeFamilies'
+import { themeModeLinks } from '../lib/modePairs'
+import { worldCatalogNo } from '../lib/modeCatalog'
 
 interface ThemeScreenProps {
   world: ThemeWorld
@@ -66,8 +66,6 @@ export function ThemeScreen({
       : 0
   const currentBest = findBest(bests, settings)
   const [setupFamily, setSetupFamily] = useState<SetupFamily | null>(null)
-  const families = themeTopicsOf(world)
-  const activeFamily = mix ? 'mix' : isThemeMode(mode) ? themeTopicOf(mode) : families[0]
 
   useEffect(() => {
     prefetchWikiPortraits(
@@ -134,26 +132,27 @@ export function ThemeScreen({
       <HubNav lang={settings.lang} active="free" tabs={THEME_HUB_TABS} onSelect={onHub} />
 
       <section className="card settings-card">
-        <h2>{t.mode}</h2>
-        <div className="choice-grid is-modes">
-          <FitGroup wrap minPx={8}>
-            {families.map((id) => (
-              <button
-                key={id}
-                type="button"
-                className={`choice has-mode-no ${!mix && activeFamily === id ? 'is-active' : ''}`}
-                aria-pressed={!mix && activeFamily === id}
-                onClick={() => {
-                  applyThemeSettings({ ...settings, ...settingsForThemeFamily(world, settings, id) })
-                  setSetupFamily({ world, id })
-                }}
-              >
-                <CatalogNo n={modesCatalogNo(modesOfThemeFamily(id))} />
-                <FitText>{themeFamilyLabel(world, id, settings.lang)}</FitText>
-              </button>
-            ))}
-          </FitGroup>
-        </div>
+        <ModeArrowSelect
+          links={themeModeLinks(world)}
+          mode={mode}
+          lang={settings.lang}
+          level={settings.level}
+          hardcore={settings.levelHardcore || settings.difficulty === 'hardcore'}
+          startLabel={t.start}
+          startDisabled={poolSize === 0}
+          caption={mix ? mixLabel(mix, settings.lang) : undefined}
+          onMode={(next) =>
+            applyThemeSettings({
+              ...settings,
+              path: 'pool',
+              mix: null,
+              mode: next,
+              difficulty: difficultyForMode(next, settings.difficulty),
+            })
+          }
+          onHardcore={(on) => applyThemeSettings({ ...settings, levelHardcore: on })}
+          onStart={onStart}
+        />
         <div className="mode-aside">
           <h2>
             {t.familyMix}
@@ -174,10 +173,14 @@ export function ThemeScreen({
         </div>
       </section>
 
-      <p className="current-best home-setup-line">
+      <button
+        type="button"
+        className="current-best home-setup-line"
+        onClick={() => setSetupFamily({ world, id: themeFamilyOf(world, mode, mix) ?? 'mix' })}
+      >
         {mix ? mixLabel(mix, settings.lang) : modeLabel(mode, settings.lang)} ·{' '}
         {setupDifficultyText(settings.difficulty, settings.levelHardcore, settings.lang)} · {settings.roundSize}
-      </p>
+      </button>
 
       {currentBest ? (
         <p className="current-best">
@@ -216,11 +219,6 @@ export function ThemeScreen({
         </section>
       ) : null}
 
-      <div className="hub-start-dock">
-        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
-          {t.start}
-        </button>
-      </div>
     </div>
   )
 }

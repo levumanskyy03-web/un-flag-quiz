@@ -21,21 +21,17 @@ import {
   type RegionFilter,
   type RoundSize,
 } from '../lib/quiz'
-import { modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
+import { worldCatalogNo } from '../lib/modeCatalog'
 import { HubNav, type HubTab } from './HubNav'
 import { CatalogNo } from './ModeChoice'
+import { ModeArrowSelect } from './ModeArrowSelect'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { geoOpts } from './ExtrasToggle'
 import { WorldsBack } from './WorldsBack'
-import { FitGroup, FitText } from './FitText'
+import { FitText } from './FitText'
 import { setupDifficultyText } from './DifficultyPicker'
-import {
-  GEO_PLAY_FAMILIES,
-  geoFamilyLabel,
-  geoFamilyOf,
-  modesOfGeoFamily,
-  settingsForGeoFamily,
-} from '../lib/modeFamilies'
+import { difficultyForMode, geoFamilyOf, settingsForGeoFamily } from '../lib/modeFamilies'
+import { geoModeLinks } from '../lib/modePairs'
 
 export interface QuizSettings {
   lang: Lang
@@ -111,26 +107,26 @@ export function HomeScreen({
       <HubNav lang={settings.lang} active="free" onSelect={onHub} />
 
       <section className="card settings-card">
-        <h2>{t.mode}</h2>
-        <div className="choice-grid is-modes">
-          <FitGroup wrap minPx={8}>
-            {GEO_PLAY_FAMILIES.map((id) => (
-              <button
-                key={id}
-                type="button"
-                className={`choice has-mode-no ${activeFamily === id ? 'is-active' : ''}`}
-                aria-pressed={activeFamily === id}
-                onClick={() => {
-                  update(settingsForGeoFamily(settings, id))
-                  setSetupFamily({ world: 'geo', id })
-                }}
-              >
-                <CatalogNo n={modesCatalogNo(modesOfGeoFamily(id))} />
-                <FitText>{geoFamilyLabel(id, settings.lang)}</FitText>
-              </button>
-            ))}
-          </FitGroup>
-        </div>
+        <ModeArrowSelect
+          links={geoModeLinks()}
+          mode={settings.mode}
+          lang={settings.lang}
+          level={settings.level}
+          hardcore={settings.levelHardcore || settings.difficulty === 'hardcore'}
+          startLabel={t.start}
+          startDisabled={poolSize === 0}
+          caption={settings.mix ? mixLabel(settings.mix, settings.lang) : undefined}
+          onMode={(mode) =>
+            update({
+              path: 'pool',
+              mix: null,
+              mode,
+              difficulty: difficultyForMode(mode, settings.difficulty),
+            })
+          }
+          onHardcore={(on) => update({ path: 'pool', levelHardcore: on })}
+          onStart={onStart}
+        />
         <div className="mode-aside">
           <h2>
             {t.familyMix}
@@ -151,11 +147,15 @@ export function HomeScreen({
         </div>
       </section>
 
-      <p className="current-best home-setup-line">
+      <button
+        type="button"
+        className="current-best home-setup-line"
+        onClick={() => setSetupFamily({ world: 'geo', id: geoFamilyOf(settings.mode, settings.mix) })}
+      >
         {settings.mix ? mixLabel(settings.mix, settings.lang) : modeLabel(settings.mode, settings.lang)} ·{' '}
         {regionLabel(settings.region, settings.lang)} · {setupDifficultyText(settings.difficulty, settings.levelHardcore, settings.lang)}
         {factsMode ? '' : ` · ${settings.roundSize}`}
-      </p>
+      </button>
 
       {currentBest && (
         <p className="current-best">
@@ -203,11 +203,6 @@ export function HomeScreen({
         </section>
       )}
 
-      <div className="hub-start-dock">
-        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
-          {t.start}
-        </button>
-      </div>
     </div>
   )
 }

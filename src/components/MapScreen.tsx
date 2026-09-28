@@ -520,6 +520,7 @@ export function MapScreen({ settings, onChange, onHub, onWorlds }: MapScreenProp
             min={HISTORY_YEAR_MIN}
             max={historyYearMax()}
             value={eraYear}
+            style={{ '--year-pct': `${((eraYear - HISTORY_YEAR_MIN) / Math.max(1, historyYearMax() - HISTORY_YEAR_MIN)) * 100}%` }}
             onChange={(event) => onChange({ ...settings, eraYear: Number(event.target.value) })}
           />
           <strong>{eraYear}</strong>

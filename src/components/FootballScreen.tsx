@@ -13,23 +13,24 @@ import {
 } from '../lib/quiz'
 import { GeoIcon } from './GeoIcon'
 import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
+import { ModeArrowSelect } from './ModeArrowSelect'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
-import { modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
-import { FitGroup, FitText } from './FitText'
+import { worldCatalogNo } from '../lib/modeCatalog'
+import { FitText } from './FitText'
 import { CatalogNo } from './ModeChoice'
 import { setupDifficultyText } from './DifficultyPicker'
 import { footballPlayerPool } from '../data/footballPlayers'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
 import {
-  FOOTBALL_PLAY_FAMILIES,
   difficultyForMode,
   footballFamilyLabel,
   footballFamilyOf,
-  modesOfFootballFamily,
   settingsForFootballFamily,
+  type FootballFamilyId,
 } from '../lib/modeFamilies'
+import { footballModeLinks } from '../lib/modePairs'
 
 interface FootballScreenProps {
   settings: QuizSettings
@@ -109,26 +110,28 @@ export function FootballScreen({
       <HubNav lang={settings.lang} active="free" tabs={WORLD_HUB_TABS} onSelect={onHub} />
 
       <section className="card settings-card">
-        <h2>{t.mode}</h2>
-        <div className="choice-grid is-modes">
-          <FitGroup wrap minPx={8}>
-            {FOOTBALL_PLAY_FAMILIES.map((id) => (
-              <button
-                key={id}
-                type="button"
-                className={`choice has-mode-no ${activeFamily === id ? 'is-active' : ''}`}
-                aria-pressed={activeFamily === id}
-                onClick={() => {
-                  applyFootballSettings({ ...settings, ...settingsForFootballFamily(settings, id) })
-                  setSetupFamily({ world: 'football', id })
-                }}
-              >
-                <CatalogNo n={modesCatalogNo(modesOfFootballFamily(id))} />
-                <FitText>{footballFamilyLabel(id, settings.lang)}</FitText>
-              </button>
-            ))}
-          </FitGroup>
-        </div>
+        <ModeArrowSelect
+          links={footballModeLinks()}
+          mode={settings.mode}
+          lang={settings.lang}
+          level={settings.level}
+          hardcore={settings.levelHardcore || settings.difficulty === 'hardcore'}
+          startLabel={t.start}
+          startDisabled={poolSize === 0}
+          caption={mix ? mixLabel(mix, settings.lang) : undefined}
+          familyLabel={(id) => footballFamilyLabel(id as FootballFamilyId, settings.lang)}
+          onMode={(mode) =>
+            applyFootballSettings({
+              ...settings,
+              path: 'pool',
+              mix: null,
+              mode,
+              difficulty: difficultyForMode(mode, settings.difficulty),
+            })
+          }
+          onHardcore={(on) => applyFootballSettings({ ...settings, levelHardcore: on })}
+          onStart={onStart}
+        />
         <div className="mode-aside">
           <h2>
             {t.familyMix}
@@ -149,11 +152,17 @@ export function FootballScreen({
         </div>
       </section>
 
-      <p className="current-best home-setup-line">
+      <button
+        type="button"
+        className="current-best home-setup-line"
+        onClick={() =>
+          setSetupFamily({ world: 'football', id: footballFamilyOf(settings.mode, settings.mix) ?? 'players' })
+        }
+      >
         {mix ? mixLabel(mix, settings.lang) : modeLabel(settings.mode, settings.lang)} ·{' '}
         {setupDifficultyText(settings.difficulty, settings.levelHardcore, settings.lang)}
         {isPlayerFactsToName(settings.mode) && !mix ? '' : ` · ${settings.roundSize}`}
-      </p>
+      </button>
 
       {currentBest ? (
         <p className="current-best">
@@ -190,11 +199,6 @@ export function FootballScreen({
         </section>
       ) : null}
 
-      <div className="hub-start-dock">
-        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
-          {t.start}
-        </button>
-      </div>
     </div>
   )
 }

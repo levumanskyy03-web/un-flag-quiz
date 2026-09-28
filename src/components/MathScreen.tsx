@@ -11,23 +11,18 @@ import {
 } from '../lib/quiz'
 import { GeoIcon } from './GeoIcon'
 import { HubNav, MATH_HUB_TABS, type HubTab } from './HubNav'
+import { ModeArrowSelect } from './ModeArrowSelect'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
-import { modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
-import { FitGroup, FitText } from './FitText'
+import { worldCatalogNo } from '../lib/modeCatalog'
+import { FitText } from './FitText'
 import { CatalogNo } from './ModeChoice'
 import { setupDifficultyText } from './DifficultyPicker'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
 import { MATH_PEOPLE } from '../data/math'
-import {
-  MATH_PLAY_FAMILIES,
-  difficultyForMode,
-  mathFamilyLabel,
-  mathFamilyOf,
-  modesOfMathFamily,
-  settingsForMathFamily,
-} from '../lib/modeFamilies'
+import { difficultyForMode, mathFamilyLabel, mathFamilyOf, settingsForMathFamily } from '../lib/modeFamilies'
+import { mathModeLinks } from '../lib/modePairs'
 
 interface MathScreenProps {
   settings: QuizSettings
@@ -116,30 +111,30 @@ export function MathScreen({
       <HubNav lang={settings.lang} active="free" tabs={MATH_HUB_TABS} onSelect={onHub} />
 
       <section className="card settings-card">
-        <h2>{t.mode}</h2>
-        <div className="choice-grid is-modes">
-          <FitGroup wrap minPx={8}>
-            {MATH_PLAY_FAMILIES.map((id) => (
-              <button
-                key={id}
-                type="button"
-                className={`choice has-mode-no ${activeFamily === id ? 'is-active' : ''}`}
-                aria-pressed={activeFamily === id}
-                onClick={() => {
-                  if (id === 'digits') {
-                    onOpenDigits()
-                    return
-                  }
-                  applyMathSettings({ ...settings, ...settingsForMathFamily(settings, id) })
-                  setSetupFamily({ world: 'math', id })
-                }}
-              >
-                <CatalogNo n={modesCatalogNo(modesOfMathFamily(id))} />
-                <FitText>{mathFamilyLabel(id, settings.lang)}</FitText>
-              </button>
-            ))}
-          </FitGroup>
-        </div>
+        <ModeArrowSelect
+          links={mathModeLinks()}
+          mode={mode}
+          lang={settings.lang}
+          level={settings.level}
+          hardcore={settings.levelHardcore || settings.difficulty === 'hardcore'}
+          startLabel={t.start}
+          startDisabled={poolSize === 0}
+          caption={mix ? mixLabel(mix, settings.lang) : undefined}
+          onMode={(next) =>
+            applyMathSettings({
+              ...settings,
+              path: 'pool',
+              mix: null,
+              mode: next,
+              difficulty: difficultyForMode(next, settings.difficulty),
+            })
+          }
+          onHardcore={(on) => applyMathSettings({ ...settings, levelHardcore: on })}
+          onStart={onStart}
+        />
+        <button type="button" className="choice is-wide" onClick={onOpenDigits}>
+          <FitText>{mathFamilyLabel('digits', settings.lang)}</FitText>
+        </button>
         <div className="mode-aside">
           <h2>
             {t.familyMix}
@@ -160,10 +155,14 @@ export function MathScreen({
         </div>
       </section>
 
-      <p className="current-best home-setup-line">
+      <button
+        type="button"
+        className="current-best home-setup-line"
+        onClick={() => setSetupFamily({ world: 'math', id: mathFamilyOf(mode, mix) ?? 'arithmetic' })}
+      >
         {mix ? mixLabel(mix, settings.lang) : modeLabel(mode, settings.lang)} ·{' '}
         {setupDifficultyText(settings.difficulty, settings.levelHardcore, settings.lang)} · {settings.roundSize}
-      </p>
+      </button>
 
       {currentBest ? (
         <p className="current-best">
@@ -202,11 +201,6 @@ export function MathScreen({
         </section>
       ) : null}
 
-      <div className="hub-start-dock">
-        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
-          {t.start}
-        </button>
-      </div>
     </div>
   )
 }

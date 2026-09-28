@@ -24,11 +24,13 @@ import type { LeaderKind } from '../data/leaders'
 import { GeoIcon } from './GeoIcon'
 import { HubNav, WORLD_HUB_TABS, type HubTab } from './HubNav'
 import { ModeChoice } from './ModeChoice'
+import { ModeArrowSelect } from './ModeArrowSelect'
 import { DifficultyPicker, setupDifficultyText } from './DifficultyPicker'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
+import { leaderModeLinks } from '../lib/modePairs'
 
 interface LeadersScreenProps {
   settings: QuizSettings
@@ -82,38 +84,33 @@ export function LeadersScreen({
       <HubNav lang={settings.lang} active="free" tabs={WORLD_HUB_TABS} onSelect={onHub} />
 
       <section className="card settings-card">
-        <h2>{t.leaderTopic}</h2>
-        <div className="choice-grid is-4">
-          {LEADERS_TOPICS.map((kind) => {
-            const label =
-              kind === 'pope'
-                ? t.popesLeaders
-                : kind === 'rus'
-                  ? t.askoldToUnion
-                  : kind === 'uk'
-                    ? t.ukMonarchs
-                    : t.usPresidents
-            return (
-              <ModeChoice
-                key={kind}
-                label={label}
-                no={modeCatalogNo(leadersModeOf(kind, leadersAskOf(mode)))}
-                active={leaderKindOf(mode) === kind}
-                onClick={() => {
-                  const ask = leadersAskOf(mode)
-                  const nextMode = leadersModeOf(kind, ask)
-                  update({ path: 'pool', mix: null, mode: nextMode })
-                  setSetupFamily({ world: 'leaders', id: kind })
-                }}
-              />
-            )
-          })}
-        </div>
+        <ModeArrowSelect
+          links={leaderModeLinks()}
+          mode={mode}
+          lang={settings.lang}
+          level={settings.level}
+          hardcore={settings.levelHardcore || settings.difficulty === 'hardcore'}
+          startLabel={t.start}
+          startDisabled={poolSize === 0}
+          formatSide={(side, id) => {
+            if (side === 'right') {
+              return id === 'photo' ? t.leaderAskPhoto : id === 'number' ? t.leaderAskNumber : t.leaderAskYears
+            }
+            return id === 'pope' ? t.popesLeaders : id === 'rus' ? t.askoldToUnion : id === 'uk' ? t.ukMonarchs : t.usPresidents
+          }}
+          onMode={(next) => update({ path: 'pool', mix: null, mode: next })}
+          onHardcore={(on) => update({ path: 'pool', levelHardcore: on })}
+          onStart={onStart}
+        />
       </section>
 
-      <p className="current-best home-setup-line">
+      <button
+        type="button"
+        className="current-best home-setup-line"
+        onClick={() => setSetupFamily({ world: 'leaders', id: leaderKindOf(mode) ?? 'us' })}
+      >
         {modeLabel(mode, settings.lang)} · {setupDifficultyText(settings.difficulty, settings.levelHardcore, settings.lang)} · {settings.roundSize}
-      </p>
+      </button>
 
       {currentBest ? (
         <p className="current-best">
@@ -150,11 +147,6 @@ export function LeadersScreen({
         </section>
       ) : null}
 
-      <div className="hub-start-dock">
-        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
-          {t.start}
-        </button>
-      </div>
     </div>
   )
 }

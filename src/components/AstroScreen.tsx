@@ -11,23 +11,18 @@ import {
 } from '../lib/quiz'
 import { GeoIcon } from './GeoIcon'
 import { HubNav, ASTRO_HUB_TABS, type HubTab } from './HubNav'
+import { ModeArrowSelect } from './ModeArrowSelect'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
-import { modesCatalogNo, worldCatalogNo } from '../lib/modeCatalog'
-import { FitGroup, FitText } from './FitText'
+import { worldCatalogNo } from '../lib/modeCatalog'
+import { FitText } from './FitText'
 import { CatalogNo } from './ModeChoice'
 import { setupDifficultyText } from './DifficultyPicker'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
 import { ASTRO_PEOPLE } from '../data/astro'
-import {
-  ASTRO_PLAY_FAMILIES,
-  astroFamilyLabel,
-  astroFamilyOf,
-  difficultyForMode,
-  modesOfAstroFamily,
-  settingsForAstroFamily,
-} from '../lib/modeFamilies'
+import { astroFamilyOf, difficultyForMode, settingsForAstroFamily } from '../lib/modeFamilies'
+import { astroModeLinks } from '../lib/modePairs'
 
 interface AstroScreenProps {
   settings: QuizSettings
@@ -114,26 +109,27 @@ export function AstroScreen({
       <HubNav lang={settings.lang} active="free" tabs={ASTRO_HUB_TABS} onSelect={onHub} />
 
       <section className="card settings-card">
-        <h2>{t.mode}</h2>
-        <div className="choice-grid is-modes">
-          <FitGroup wrap minPx={8}>
-            {ASTRO_PLAY_FAMILIES.map((id) => (
-              <button
-                key={id}
-                type="button"
-                className={`choice has-mode-no ${activeFamily === id ? 'is-active' : ''}`}
-                aria-pressed={activeFamily === id}
-                onClick={() => {
-                  applyAstroSettings({ ...settings, ...settingsForAstroFamily(settings, id) })
-                  setSetupFamily({ world: 'astronomy', id })
-                }}
-              >
-                <CatalogNo n={modesCatalogNo(modesOfAstroFamily(id))} />
-                <FitText>{astroFamilyLabel(id, settings.lang)}</FitText>
-              </button>
-            ))}
-          </FitGroup>
-        </div>
+        <ModeArrowSelect
+          links={astroModeLinks()}
+          mode={mode}
+          lang={settings.lang}
+          level={settings.level}
+          hardcore={settings.levelHardcore || settings.difficulty === 'hardcore'}
+          startLabel={t.start}
+          startDisabled={poolSize === 0}
+          caption={mix ? mixLabel(mix, settings.lang) : undefined}
+          onMode={(next) =>
+            applyAstroSettings({
+              ...settings,
+              path: 'pool',
+              mix: null,
+              mode: next,
+              difficulty: difficultyForMode(next, settings.difficulty),
+            })
+          }
+          onHardcore={(on) => applyAstroSettings({ ...settings, levelHardcore: on })}
+          onStart={onStart}
+        />
         <div className="mode-aside">
           <h2>
             {t.familyMix}
@@ -154,10 +150,14 @@ export function AstroScreen({
         </div>
       </section>
 
-      <p className="current-best home-setup-line">
+      <button
+        type="button"
+        className="current-best home-setup-line"
+        onClick={() => setSetupFamily({ world: 'astronomy', id: astroFamilyOf(mode, mix) ?? 'planets' })}
+      >
         {mix ? mixLabel(mix, settings.lang) : modeLabel(mode, settings.lang)} ·{' '}
         {setupDifficultyText(settings.difficulty, settings.levelHardcore, settings.lang)} · {settings.roundSize}
-      </p>
+      </button>
 
       {currentBest ? (
         <p className="current-best">
@@ -196,11 +196,6 @@ export function AstroScreen({
         </section>
       ) : null}
 
-      <div className="hub-start-dock">
-        <button type="button" className="btn-primary hub-start-btn" disabled={poolSize === 0} onClick={onStart}>
-          {t.start}
-        </button>
-      </div>
     </div>
   )
 }

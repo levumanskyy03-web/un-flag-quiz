@@ -5318,6 +5318,116 @@ body:has(.club-card-overlay) .state-hud {
   background: none;
 }
 
+.mode-arrow-card h2 {
+  text-align: center;
+}
+
+.mode-arrow-meta {
+  margin: 0 0 12px;
+  text-align: center;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted, #9aa6c2);
+}
+
+.mode-arrow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.mode-arrow-side {
+  position: relative;
+  min-width: 0;
+}
+
+.mode-arrow-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, #8b7cff 70%, white);
+  background: rgba(18, 16, 42, 0.9);
+  color: inherit;
+  box-shadow: 0 0 16px rgba(120, 90, 255, 0.28);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.mode-arrow-btn.is-open {
+  border-color: #c4b5ff;
+}
+
+.mode-arrow-btn span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mode-arrow-caret {
+  flex: none;
+  opacity: 0.7;
+}
+
+.mode-arrow-mark {
+  align-self: center;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: #d7d2ff;
+}
+
+.mode-arrow-menu {
+  position: absolute;
+  z-index: 8;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: 12px;
+  background: #1b1730;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  max-height: 240px;
+  overflow: auto;
+}
+
+.mode-arrow-menu button {
+  width: 100%;
+  text-align: start;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  text-transform: uppercase;
+  font-weight: 650;
+}
+
+.mode-arrow-menu button.is-active,
+.mode-arrow-menu button:hover {
+  background: rgba(139, 124, 255, 0.22);
+}
+
+.mode-arrow-hardcore {
+  display: flex;
+  justify-content: center;
+  margin: 14px 0 8px;
+}
+
+.mode-arrow-start {
+  width: 100%;
+  margin-top: 8px;
+}
+
 .hub-start-btn,
 .learn-quiz-btn {
   pointer-events: auto;
@@ -5453,6 +5563,16 @@ body:has(.club-card-overlay) .state-hud {
 .home-setup-line {
   margin: 4px 0 8px;
   text-align: center;
+}
+
+button.home-setup-line {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 
 .home-launch {
@@ -5959,8 +6079,15 @@ body:has(.club-card-overlay) .state-hud {
 }
 
 .world-pick.is-geo {
-  background: color-mix(in srgb, #8a2a38 9%, var(--paper));
-  border-color: color-mix(in srgb, #8a2a38 22%, var(--paper-edge));
+  background: color-mix(in srgb, #2f74ad 14%, var(--paper));
+  border-color: color-mix(in srgb, #2f74ad 28%, var(--paper-edge));
+}
+
+.world-pick.is-geo .wp-cover {
+  background:
+    radial-gradient(circle at 50% 38%, #d4b45a 0 7px, transparent 8px),
+    linear-gradient(180deg, #3d8fd4, #1d5f99);
+  box-shadow: 4px 4px 0 #143e66;
 }
 
 .world-pick.is-football {
@@ -6342,8 +6469,56 @@ a.worlds-back {
 }
 
 .map-year input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
   flex: 1;
   min-width: 80px;
+  height: 8px;
+  margin: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  accent-color: #3d8fd4;
+}
+
+.map-year input[type='range']::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 999px;
+  background:
+    linear-gradient(#3d8fd4, #3d8fd4) 0 / var(--year-pct, 0%) 100% no-repeat,
+    rgba(255, 255, 255, 0.14);
+}
+
+.map-year input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -5px;
+  border: 2px solid #f4f8fc;
+  border-radius: 50%;
+  background: #3d8fd4;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.map-year input[type='range']::-moz-range-track {
+  height: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.map-year input[type='range']::-moz-range-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: #3d8fd4;
+}
+
+.map-year input[type='range']::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #f4f8fc;
+  border-radius: 50%;
+  background: #3d8fd4;
 }
 
 .map-snapshot {
@@ -6529,6 +6704,10 @@ a.worlds-back {
   -webkit-touch-callout: none;
 }
 
+.map-screen .map-frame {
+  background: #2f74ad;
+}
+
 .map-frame.is-panning {
   cursor: grabbing;
 }
@@ -6696,6 +6875,19 @@ a.worlds-back {
   cursor: pointer;
 }
 
+.map-screen .world-map:not(.is-history) .map-country {
+  fill: #f4e7c8;
+  stroke: rgba(255, 255, 255, 0.92);
+}
+
+.map-screen .world-map:not(.is-history) .map-country.is-other {
+  fill: #e4d5b4;
+}
+
+.map-screen .world-map:not(.is-history) .map-country.is-hover {
+  fill: #f6d56a;
+}
+
 .map-country.is-other {
   fill: #d3deea;
   cursor: default;
@@ -6704,6 +6896,10 @@ a.worlds-back {
 
 .map-country.is-holdout {
   fill: #e6d7a2;
+}
+
+.map-screen .world-map:not(.is-history) .map-country.is-holdout {
+  fill: #c9a227;
 }
 
 .map-country.is-hover {
@@ -6732,14 +6928,14 @@ a.worlds-back {
   stroke-width: 0.6px;
 }
 
-.map-country.hc-0 { fill: #e3a891; }
-.map-country.hc-1 { fill: #aecb9a; }
-.map-country.hc-2 { fill: #ecd07f; }
-.map-country.hc-3 { fill: #9dbedc; }
-.map-country.hc-4 { fill: #cfaed6; }
-.map-country.hc-5 { fill: #f0bb8e; }
-.map-country.hc-6 { fill: #92c9bf; }
-.map-country.hc-7 { fill: #d3c592; }
+.map-country.hc-0 { fill: #f0a48a; }
+.map-country.hc-1 { fill: #8fce7a; }
+.map-country.hc-2 { fill: #f3d36b; }
+.map-country.hc-3 { fill: #d6e9f7; }
+.map-country.hc-4 { fill: #d7b0e4; }
+.map-country.hc-5 { fill: #f5b87a; }
+.map-country.hc-6 { fill: #6ecfc0; }
+.map-country.hc-7 { fill: #e0c98a; }
 
 .map-country.is-people {
   fill: #e4ddcc;
@@ -6813,11 +7009,11 @@ a.worlds-back {
 }
 
 .map-legend-swatch.is-state {
-  background: linear-gradient(90deg, #e3a891 0 33%, #aecb9a 33% 66%, #9dbedc 66%);
+  background: linear-gradient(90deg, #f0a48a 0 33%, #8fce7a 33% 66%, #d6e9f7 66%);
 }
 
 .map-legend-swatch.is-dep {
-  background: repeating-linear-gradient(45deg, #e3a891 0 3px, #f6e3da 3px 5px);
+  background: repeating-linear-gradient(45deg, #f0a48a 0 3px, #f8e4dc 3px 5px);
 }
 
 .map-legend-swatch.is-people {
