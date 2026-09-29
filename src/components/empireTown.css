@@ -91,7 +91,7 @@
 }
 
 .empire-plot.is-near .empire-sprite {
-  filter: drop-shadow(0 0 0 #fff4d2) drop-shadow(0 10px 0 rgba(40, 24, 8, 0.2));
+  filter: drop-shadow(0 0 6px #fff36a) drop-shadow(0 10px 0 rgba(40, 24, 8, 0.2));
 }
 
 .empire-plot-badge {
@@ -187,121 +187,6 @@
   background: #0e1c28;
 }
 
-.empire-path {
-  position: absolute;
-  z-index: 1;
-  background: #e6c27a;
-  box-shadow: inset 0 0 0 3px #c89a4a;
-  border-radius: 999px;
-  pointer-events: none;
-}
-
-.empire-path.is-h {
-  height: 36px;
-  margin-top: -18px;
-}
-
-.empire-path.is-v {
-  width: 36px;
-  margin-left: -18px;
-}
-
-.empire-tree {
-  position: absolute;
-  z-index: 1;
-  width: 36px;
-  height: 36px;
-  margin: -28px 0 0 -18px;
-  border-radius: 50%;
-  background: #2f8a3a;
-  box-shadow:
-    0 0 0 4px #1e6a28,
-    0 16px 0 -6px #6b4423;
-  pointer-events: none;
-}
-
-.empire-tree.is-b {
-  background: #3aa24a;
-}
-
-.empire-lamp,
-.empire-well,
-.empire-flower,
-.empire-cart,
-.empire-flag,
-.empire-bench {
-  position: absolute;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.empire-lamp {
-  width: 8px;
-  height: 28px;
-  margin: -28px 0 0 -4px;
-  background: #6b4423;
-  border-radius: 2px;
-  box-shadow: 0 -10px 0 6px #f0c14e;
-}
-
-.empire-well {
-  width: 28px;
-  height: 16px;
-  margin: -8px 0 0 -14px;
-  border: 3px solid #5c3a1e;
-  border-radius: 50%;
-  background: #3aa0d8;
-}
-
-.empire-flower {
-  width: 10px;
-  height: 10px;
-  margin: -8px 0 0 -5px;
-  border-radius: 50%;
-  background: #e05a3c;
-  box-shadow: 12px 4px 0 #e2b04a, 6px 14px 0 #f2efe4;
-}
-
-.empire-flower.is-b {
-  background: #e2b04a;
-}
-
-.empire-cart {
-  width: 26px;
-  height: 14px;
-  margin: -10px 0 0 -13px;
-  border-radius: 3px 3px 0 0;
-  background: #c47a3a;
-  box-shadow: 0 8px 0 -2px #5c3a1e, -6px 10px 0 -4px #24180f, 16px 10px 0 -4px #24180f;
-}
-
-.empire-flag {
-  width: 4px;
-  height: 32px;
-  margin: -32px 0 0 -2px;
-  background: #5c3a1e;
-  box-shadow: 4px -22px 0 0 #d4533c;
-}
-
-.empire-flag::after {
-  content: '';
-  position: absolute;
-  left: 4px;
-  top: 0;
-  width: 16px;
-  height: 10px;
-  background: #d4533c;
-}
-
-.empire-bench {
-  width: 28px;
-  height: 8px;
-  margin: -4px 0 0 -14px;
-  border-radius: 3px;
-  background: #8d6a43;
-  box-shadow: 2px 6px 0 #5c3a1e, 20px 6px 0 #5c3a1e;
-}
-
 .empire-res-rail {
   display: flex;
   flex: 1 1 100%;
@@ -332,104 +217,6 @@
   pointer-events: none;
 }
 
-.empire-yard {
-  position: absolute;
-  inset: 10px 14px 22px;
-  border-radius: 16px;
-  background: #f4d7a2;
-  box-shadow:
-    0 8px 0 #b8884a,
-    0 0 0 3px #5c3a1e;
-}
-
-.empire-plot.is-empty .empire-yard {
-  background: repeating-linear-gradient(135deg, #d7b27a 0 8px, #c89a58 8px 16px);
-}
-
-.empire-roof {
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  top: -16px;
-  height: 28px;
-  background: #e25b45;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  filter: drop-shadow(0 2px 0 #5c3a1e);
-}
-
-.empire-plot.is-empty .empire-roof,
-.empire-plot.is-empty .empire-house {
-  display: none;
-}
-
-.empire-house {
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: 8px;
-  height: 36px;
-  border-radius: 8px 8px 4px 4px;
-  background: #fff8ee;
-  box-shadow: inset 0 -6px 0 rgba(90, 50, 20, 0.12);
-}
-
-.empire-house i {
-  position: absolute;
-  bottom: 6px;
-  width: 8px;
-  height: 10px;
-  border-radius: 2px;
-  background: #7ec8e8;
-  box-shadow: 0 0 0 2px #5c3a1e;
-}
-
-.empire-house i:first-child {
-  left: 6px;
-}
-
-.empire-house i:last-child {
-  right: 6px;
-}
-
-.empire-plot.is-tier-2 .empire-house {
-  height: 48px;
-}
-
-.empire-plot.is-tier-3 .empire-house {
-  height: 58px;
-}
-
-.empire-plot.is-tier-3 .empire-roof {
-  top: -28px;
-  height: 36px;
-}
-
-.empire-plot.is-geo .empire-roof { background: #3aa0e0; }
-.empire-plot.is-leaders .empire-roof { background: #d4a017; }
-.empire-plot.is-football .empire-roof { background: #2f9e44; }
-.empire-plot.is-olympics .empire-roof { background: #e07a2f; }
-.empire-plot.is-biology .empire-roof { background: #3aaa6a; }
-.empire-plot.is-math .empire-roof { background: #5b6ee1; }
-.empire-plot.is-astronomy .empire-roof { background: #6a4ad4; }
-.empire-plot.is-cs .empire-roof { background: #2a9d8f; }
-.empire-plot.is-food .empire-roof { background: #e05a3c; }
-.empire-plot.is-hall .empire-roof { background: #c4493a; }
-.empire-plot.is-housing .empire-roof { background: #e0a050; }
-.empire-plot.is-storage .empire-roof { background: #8d6a43; }
-.empire-plot.is-library .empire-roof { background: #3d6ea8; }
-.empire-plot.is-treasury .empire-roof { background: #e0b03a; }
-.empire-plot.is-pantheon .empire-roof { background: #f2efe4; }
-.empire-plot.is-board .empire-roof { background: #f4f0e6; }
-.empire-plot.is-legacy .empire-roof { background: #7a4e9a; }
-
-.empire-yard svg {
-  position: absolute;
-  left: 50%;
-  top: 46%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-}
-
 .empire-plot-lv {
   position: absolute;
   right: 6px;
@@ -458,33 +245,6 @@
   font-weight: 800;
   color: #fff;
   text-shadow: 0 1px 0 #24180f, 0 0 4px #24180f;
-}
-
-.empire-plot.is-near .empire-yard {
-  outline: 3px solid #fff36a;
-  outline-offset: 3px;
-}
-
-.empire-stake {
-  position: absolute;
-  left: 50%;
-  top: 18px;
-  width: 8px;
-  height: 28px;
-  margin-left: -4px;
-  background: #6b4423;
-  border-radius: 2px;
-}
-
-.empire-stake::after {
-  content: '';
-  position: absolute;
-  left: 8px;
-  top: 2px;
-  width: 22px;
-  height: 14px;
-  background: #fff6d8;
-  box-shadow: 0 0 0 2px #5c3a1e;
 }
 
 .empire-scaffold {
@@ -584,66 +344,38 @@
 .empire-hero {
   position: absolute;
   z-index: 6;
-  width: 28px;
-  height: 36px;
+  width: 40px;
+  height: 52px;
   pointer-events: none;
 }
 
-.empire-hero-shadow {
-  position: absolute;
-  left: 2px;
-  bottom: 0;
-  width: 24px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(20, 40, 20, 0.35);
-}
-
-.empire-hero-bob {
-  position: absolute;
-  inset: 0;
+.empire-hero-fig {
+  display: block;
+  width: 40px;
+  height: 52px;
+  overflow: visible;
 }
 
 .empire-hero.is-moving .empire-hero-bob {
   animation: empire-bob 0.28s ease-in-out infinite;
 }
 
+.empire-hero.is-moving .empire-hero-leg {
+  animation: empire-step 0.28s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center top;
+}
+
+.empire-hero.is-moving .empire-hero-leg.is-b {
+  animation-delay: -0.14s;
+}
+
 @keyframes empire-bob {
   50% { transform: translateY(-3px); }
 }
 
-.empire-hero-head {
-  position: absolute;
-  left: 4px;
-  top: 0;
-  width: 20px;
-  height: 18px;
-  border-radius: 50%;
-  background: #ffd7b5;
-  box-shadow: 0 0 0 2px #24180f;
-}
-
-.empire-hero-body {
-  position: absolute;
-  left: 5px;
-  top: 16px;
-  width: 18px;
-  height: 14px;
-  border-radius: 8px 8px 6px 6px;
-  background: #3aa0e0;
-  box-shadow: 0 0 0 2px #24180f;
-}
-
-.empire-hero-body::after {
-  content: '';
-  position: absolute;
-  left: 4px;
-  bottom: -6px;
-  width: 4px;
-  height: 7px;
-  border-radius: 2px;
-  background: #24180f;
-  box-shadow: 6px 0 0 #24180f;
+@keyframes empire-step {
+  50% { transform: rotate(12deg); }
 }
 
 .empire-hud {

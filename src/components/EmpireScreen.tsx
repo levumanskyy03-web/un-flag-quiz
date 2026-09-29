@@ -68,7 +68,7 @@ import { LEGACY_MISSIONS, type LegacyReward, type LegacyTitleId } from '../data/
 import { Flag } from './Flag'
 import { GeoIcon } from './GeoIcon'
 import { EmpireMarket } from './EmpireMarket'
-import { TownScenery, TownSprite } from './EmpireTownArt'
+import { TownHero, TownScenery, TownSprite } from './EmpireTownArt'
 
 export function worldTitle(world: QuizWorld, lang: Lang) {
   const t = STRINGS[lang]
@@ -438,12 +438,14 @@ function TownMap({
   state,
   lang,
   dockOpen,
+  night,
   onNear,
 }: {
   spots: readonly TownSpot[]
   state: EmpireState
   lang: Lang
   dockOpen: boolean
+  night: boolean
   onNear: (key: string | null) => void
 }) {
   const viewRef = useRef<HTMLDivElement>(null)
@@ -585,31 +587,7 @@ function TownMap({
         className="empire-town-map"
         style={{ transform: `translate(${-frame.camX * TOWN_ZOOM}px, ${-frame.camY * TOWN_ZOOM}px) scale(${TOWN_ZOOM})` }}
       >
-        <div className="empire-path is-h" style={{ top: 220, left: 140, width: 1680 }} />
-        <div className="empire-path is-h" style={{ top: 520, left: 140, width: 1280 }} />
-        <div className="empire-path is-h" style={{ top: 760, left: 140, width: 1280 }} />
-        <div className="empire-path is-h" style={{ top: 1040, left: 140, width: 1680 }} />
-        <div className="empire-path is-h" style={{ top: 1280, left: 140, width: 1680 }} />
-        <div className="empire-path is-v" style={{ left: 520, top: 160, height: 1200 }} />
-        <div className="empire-path is-v" style={{ left: 1120, top: 160, height: 700 }} />
-        <div className="empire-path is-v" style={{ left: 1720, top: 160, height: 1200 }} />
-        <TownScenery era={state.era} />
-        <i className="empire-tree" style={{ left: 90, top: 120 }} />
-        <i className="empire-tree is-b" style={{ left: 1960, top: 140 }} />
-        <i className="empire-tree" style={{ left: 80, top: 900 }} />
-        <i className="empire-tree is-b" style={{ left: 1980, top: 980 }} />
-        <i className="empire-tree" style={{ left: 1880, top: 420 }} />
-        <i className="empire-tree is-b" style={{ left: 120, top: 1420 }} />
-        <i className="empire-lamp" style={{ left: 370, top: 220 }} />
-        <i className="empire-lamp" style={{ left: 970, top: 220 }} />
-        <i className="empire-lamp" style={{ left: 1570, top: 520 }} />
-        <i className="empire-well" style={{ left: 1570, top: 760 }} />
-        <i className="empire-flower" style={{ left: 360, top: 400 }} />
-        <i className="empire-flower is-b" style={{ left: 680, top: 900 }} />
-        <i className="empire-flower" style={{ left: 980, top: 1180 }} />
-        <i className="empire-cart" style={{ left: 1570, top: 1280 }} />
-        <i className="empire-flag" style={{ left: 90, top: 220 }} />
-        <i className="empire-bench" style={{ left: 1570, top: 1040 }} />
+        <TownScenery era={state.era} night={night} />
         {spots.map((spot) => (
           <TownPlot key={spot.key} spot={spot} state={state} lang={lang} near={frame.near === spot.key} />
         ))}
@@ -617,11 +595,7 @@ function TownMap({
           className={`empire-hero${frame.moving ? ' is-moving' : ''}`}
           style={{ left: frame.x, top: frame.y, transform: `translate(-50%, -82%) scaleX(${frame.face})` }}
         >
-          <i className="empire-hero-shadow" />
-          <span className="empire-hero-bob">
-            <i className="empire-hero-head" />
-            <i className="empire-hero-body" />
-          </span>
+          <TownHero moving={frame.moving} />
         </div>
       </div>
       <div className="empire-pad">
@@ -758,7 +732,7 @@ export function EmpireScreen({ lang, onWorlds }: { lang: Lang; onWorlds: () => v
           </div>
         </header>
 
-        <TownMap spots={spots} state={state} lang={lang} dockOpen={spot !== null} onNear={setNear} />
+        <TownMap spots={spots} state={state} lang={lang} dockOpen={spot !== null} night={night} onNear={setNear} />
 
         {spot ? (
           <aside className={`empire-dock is-${spot.key}${spot.world ? ` is-${spot.world}` : ''}`}>

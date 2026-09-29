@@ -237,6 +237,40 @@ function Scaffold() {
   )
 }
 
+function EraCap({ era, p }: { era: number; p: Ink }) {
+  if (era >= 7) {
+    return <rect x="26" y="100" width="68" height="7" rx="2" fill={p.glass} stroke={p.trim} strokeWidth="2" />
+  }
+  if (era >= 6) {
+    return (
+      <g>
+        <path d="M86 78 V28" stroke={p.trim} strokeWidth="3" />
+        <path d="M86 36 h18" stroke={p.trim} strokeWidth="3" />
+        <circle cx="104" cy="36" r="3.5" fill={p.glow} stroke={p.trim} strokeWidth="1.5" />
+      </g>
+    )
+  }
+  if (era >= 5) {
+    return (
+      <g>
+        <rect x="84" y="36" width="10" height="28" fill={p.trim} />
+        <rect x="82" y="32" width="14" height="6" fill="#3a4048" />
+        <circle cx="89" cy="24" r="5" fill="rgba(230,230,230,0.85)" />
+      </g>
+    )
+  }
+  if (era >= 3) {
+    return (
+      <g>
+        {[28, 42, 56, 70, 84].map((x) => (
+          <rect key={x} x={x} y="30" width="8" height="12" fill={p.roof} stroke={p.trim} strokeWidth="2" />
+        ))}
+      </g>
+    )
+  }
+  return <path d="M36 78 l14 -18 M64 78 l-14 -18" stroke={p.trim} strokeWidth="2.5" opacity="0.75" />
+}
+
 export function TownSprite({
   kind,
   era,
@@ -255,7 +289,8 @@ export function TownSprite({
   const empty = level <= 0 && kind !== 'board' && kind !== 'legacy' && kind !== 'market' && kind !== 'farm'
   return (
     <svg className={`empire-sprite${busy ? ' is-busy' : ''}`} viewBox="0 0 120 130" aria-hidden="true">
-      <ellipse cx="60" cy="114" rx="42" ry="8" fill="rgba(36,24,12,0.28)" />
+      <ellipse cx="60" cy="116" rx="48" ry="11" fill="#c4a574" stroke={p.trim} strokeWidth="2" />
+      <ellipse cx="60" cy="116" rx="36" ry="6" fill="rgba(36,24,12,0.18)" />
       {empty ? (
         <g>
           <rect x="34" y="88" width="52" height="16" fill="#c9a36a" stroke={p.trim} strokeWidth="2" />
@@ -296,20 +331,316 @@ export function TownSprite({
       ) : (
         <MapHouse p={p} />
       )}
+      {empty ? null : <EraCap era={era} p={p} />}
       {busy ? <Scaffold /> : null}
     </svg>
   )
 }
 
-export function TownScenery({ era }: { era: number }) {
-  const night = era >= 7
+export function TownHero({ moving }: { moving: boolean }) {
+  return (
+    <svg className="empire-hero-fig" viewBox="0 0 40 52" aria-hidden="true">
+      <ellipse cx="20" cy="48" rx="12" ry="4" fill="rgba(20,40,20,0.35)" />
+      <g className={moving ? 'empire-hero-bob' : undefined}>
+        <path className="empire-hero-leg" d="M15 36 v11" stroke="#24180f" strokeWidth="3" strokeLinecap="round" />
+        <path className="empire-hero-leg is-b" d="M25 36 v11" stroke="#24180f" strokeWidth="3" strokeLinecap="round" />
+        <path d="M9 22 h22 l-2 16 H11 z" fill="#3aa0e0" stroke="#24180f" strokeWidth="2" />
+        <path d="M14 24 h12 v6 H14 z" fill="#f0c14e" />
+        <circle cx="20" cy="14" r="8" fill="#ffd7b5" stroke="#24180f" strokeWidth="2" />
+        <path d="M12 12 q8 -12 16 1 v3 q-8 -8 -16 -1 z" fill="#5c341c" />
+      </g>
+    </svg>
+  )
+}
+
+type Ground = {
+  sky: string
+  sky2: string
+  grass: string
+  grass2: string
+  hill: string
+  path: string
+  edge: string
+  water: string
+  tree: string
+  trunk: string
+  trim: string
+}
+
+function groundOf(era: number, night: boolean): Ground {
+  if (night || era >= 7) {
+    return {
+      sky: '#071422',
+      sky2: '#16324f',
+      grass: '#143028',
+      grass2: '#1c4636',
+      hill: '#0e241c',
+      path: '#2c3c46',
+      edge: '#18242c',
+      water: '#1d6a8a',
+      tree: '#1a5c34',
+      trunk: '#3a2a1c',
+      trim: '#0d1b26',
+    }
+  }
+  if (era >= 5) {
+    return {
+      sky: '#8aa4ae',
+      sky2: '#d5ddd6',
+      grass: '#3e4c36',
+      grass2: '#526246',
+      hill: '#2c3828',
+      path: '#6e685c',
+      edge: '#3a342c',
+      water: '#3a7890',
+      tree: '#2a5a30',
+      trunk: '#3a2a18',
+      trim: '#262b31',
+    }
+  }
+  if (era >= 3) {
+    return {
+      sky: '#6eafdf',
+      sky2: '#d7eeff',
+      grass: '#4f7a34',
+      grass2: '#67a044',
+      hill: '#3d6230',
+      path: '#8d7a62',
+      edge: '#5c4630',
+      water: '#3aa0d8',
+      tree: '#2f7a34',
+      trunk: '#5c341c',
+      trim: '#3a2618',
+    }
+  }
+  if (era === 2) {
+    return {
+      sky: '#7eb6e6',
+      sky2: '#f3e2b0',
+      grass: '#c4b06a',
+      grass2: '#d4c48a',
+      hill: '#a89048',
+      path: '#e6c27a',
+      edge: '#b8884a',
+      water: '#3aa0d8',
+      tree: '#6a8a32',
+      trunk: '#6b4423',
+      trim: '#53483c',
+    }
+  }
+  return {
+    sky: '#79b7ea',
+    sky2: '#e7f6ff',
+    grass: '#67b84d',
+    grass2: '#86d064',
+    hill: '#4f9a3c',
+    path: '#e6c27a',
+    edge: '#c89a4a',
+    water: '#3aa0d8',
+    tree: '#2f8a3a',
+    trunk: '#6b4423',
+    trim: '#5c341c',
+  }
+}
+
+const ROADS: readonly { x: number; y: number; w: number; h: number }[] = [
+  { x: 140, y: 202, w: 1680, h: 36 },
+  { x: 140, y: 502, w: 1280, h: 36 },
+  { x: 140, y: 742, w: 1280, h: 36 },
+  { x: 140, y: 1022, w: 1680, h: 36 },
+  { x: 140, y: 1262, w: 1680, h: 36 },
+  { x: 502, y: 160, w: 36, h: 1200 },
+  { x: 1102, y: 160, w: 36, h: 700 },
+  { x: 1702, y: 160, w: 36, h: 1200 },
+]
+
+const STARS: readonly [number, number][] = [
+  [80, 36],
+  [220, 78],
+  [410, 28],
+  [640, 64],
+  [880, 22],
+  [1120, 70],
+  [1380, 34],
+  [1640, 58],
+  [1880, 24],
+  [2000, 86],
+]
+
+function Tree({ g, x, y, scale = 1 }: { g: Ground; x: number; y: number; scale?: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${scale})`}>
+      <rect x="-5" y="-6" width="10" height="28" rx="2" fill={g.trunk} />
+      <circle cx="-12" cy="-16" r="16" fill={g.tree} stroke={g.trim} strokeWidth="3" />
+      <circle cx="12" cy="-14" r="15" fill={g.tree} stroke={g.trim} strokeWidth="3" />
+      <circle cx="0" cy="-28" r="16" fill={g.grass2} stroke={g.trim} strokeWidth="3" />
+    </g>
+  )
+}
+
+function Bush({ g, x, y }: { g: Ground; x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <ellipse cx="0" cy="0" rx="16" ry="10" fill={g.tree} stroke={g.trim} strokeWidth="2" />
+      <ellipse cx="12" cy="2" rx="10" ry="8" fill={g.grass2} stroke={g.trim} strokeWidth="2" />
+    </g>
+  )
+}
+
+function Lamp({ g, x, y, lit }: { g: Ground; x: number; y: number; lit: boolean }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <rect x="-3" y="-28" width="6" height="32" rx="1" fill={g.trunk} />
+      <rect x="-8" y="-36" width="16" height="10" rx="2" fill={lit ? '#ffe08a' : '#f0c14e'} stroke={g.trim} strokeWidth="2" />
+      {lit ? <circle cx="0" cy="-31" r="12" fill="rgba(255,224,138,0.35)" /> : null}
+    </g>
+  )
+}
+
+function Well({ g, x, y }: { g: Ground; x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <ellipse cx="0" cy="4" rx="18" ry="8" fill={g.edge} />
+      <ellipse cx="0" cy="0" rx="16" ry="8" fill={g.water} stroke={g.trim} strokeWidth="3" />
+      <path d="M-14 -2 v-16 h28 v16" fill="none" stroke={g.trunk} strokeWidth="3" />
+      <path d="M-16 -18 h32" stroke={g.trim} strokeWidth="3" />
+    </g>
+  )
+}
+
+function Flower({ g, x, y, gold }: { g: Ground; x: number; y: number; gold?: boolean }) {
+  const petal = gold ? '#e2b04a' : '#e05a3c'
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <path d="M0 8 v-16" stroke={g.tree} strokeWidth="2" />
+      <circle cx="0" cy="-10" r="5" fill={petal} stroke={g.trim} strokeWidth="1.5" />
+      <circle cx="10" cy="-4" r="4" fill={gold ? '#e05a3c' : '#e2b04a'} />
+    </g>
+  )
+}
+
+function Cart({ g, x, y }: { g: Ground; x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <rect x="-16" y="-12" width="32" height="14" rx="2" fill="#c47a3a" stroke={g.trim} strokeWidth="2" />
+      <circle cx="-8" cy="6" r="5" fill={g.trim} />
+      <circle cx="10" cy="6" r="5" fill={g.trim} />
+    </g>
+  )
+}
+
+function Flag({ g, x, y }: { g: Ground; x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <rect x="-2" y="-36" width="4" height="40" fill={g.trim} />
+      <path d="M2 -36 h18 l-4 7 h-14 z" fill="#d4533c" stroke={g.trim} strokeWidth="1.5" />
+    </g>
+  )
+}
+
+function Bench({ g, x, y }: { g: Ground; x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <rect x="-16" y="-6" width="32" height="6" rx="2" fill="#8d6a43" stroke={g.trim} strokeWidth="2" />
+      <path d="M-12 0 v8 M12 0 v8" stroke={g.trim} strokeWidth="3" />
+    </g>
+  )
+}
+
+function Columns({ g, x, y }: { g: Ground; x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <polygon points="-4,0 52,0 46,8 -10,8" fill="#f6e7c8" stroke={g.trim} strokeWidth="2" />
+      {[2, 16, 30].map((cx) => (
+        <rect key={cx} x={cx} y="8" width="7" height="26" fill="#f3ecdc" stroke={g.trim} strokeWidth="2" />
+      ))}
+      <rect x="-8" y="34" width="56" height="6" fill="#e2b04a" stroke={g.trim} strokeWidth="2" />
+    </g>
+  )
+}
+
+function Stack({ g, x, y }: { g: Ground; x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <rect x="-8" y="-48" width="16" height="52" fill="#4c555e" stroke={g.trim} strokeWidth="2" />
+      <rect x="-11" y="-54" width="22" height="8" fill="#3a4048" />
+      <circle cx="4" cy="-66" r="7" fill="rgba(220,224,226,0.75)" />
+      <circle cx="14" cy="-78" r="5" fill="rgba(220,224,226,0.45)" />
+    </g>
+  )
+}
+
+export function TownScenery({ era, night = false }: { era: number; night?: boolean }) {
+  const g = groundOf(era, night)
+  const dark = night || era >= 7
+  const cobble = era >= 3
+  const lit = era >= 5 || dark
   return (
     <svg className="empire-scenery" viewBox="0 0 2100 1520" aria-hidden="true">
-      <path d="M0 520 C 220 460 340 640 560 580 C 820 510 980 680 1240 600 C 1520 520 1740 640 2100 560 L2100 680 C 1760 760 1500 640 1220 720 C 920 810 700 640 460 720 C 240 790 80 640 0 700 Z" fill={night ? '#1d6a8a' : '#3aa0d8'} opacity="0.85" />
-      <path d="M80 580 q90 24 40 48" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="4" />
-      <ellipse cx="220" cy="140" rx="80" ry="24" fill="rgba(255,255,255,0.18)" />
-      <ellipse cx="1680" cy="180" rx="110" ry="28" fill="rgba(255,255,255,0.14)" />
-      <ellipse cx="1100" cy="1380" rx="100" ry="24" fill="rgba(40,90,30,0.18)" />
+      <rect width="2100" height="1520" fill={g.grass} />
+      <rect width="2100" height="240" fill={g.sky} />
+      <rect y="120" width="2100" height="120" fill={g.sky2} opacity="0.85" />
+      <path d="M0 210 C 180 140 320 230 560 170 C 820 100 980 220 1280 160 C 1560 110 1780 200 2100 140 L2100 260 L0 260 Z" fill={g.hill} />
+      <path d="M0 250 C 240 210 420 280 700 240 C 980 200 1200 290 1500 230 C 1760 190 1940 250 2100 220 L2100 320 L0 320 Z" fill={g.grass} />
+      <ellipse cx="280" cy="420" rx="120" ry="36" fill={g.grass2} opacity="0.55" />
+      <ellipse cx="980" cy="900" rx="160" ry="40" fill={g.grass2} opacity="0.4" />
+      <ellipse cx="1680" cy="640" rx="140" ry="34" fill={g.hill} opacity="0.35" />
+      <ellipse cx="400" cy="1200" rx="150" ry="36" fill={g.grass2} opacity="0.45" />
+      <path d="M0 500 C 220 450 340 620 560 560 C 820 490 980 660 1240 580 C 1520 500 1740 620 2100 540 L2100 660 C 1760 740 1500 620 1220 700 C 920 790 700 620 460 700 C 240 770 80 620 0 680 Z" fill={g.water} opacity="0.9" />
+      <path d="M80 560 q90 24 40 48" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="4" />
+      {ROADS.map((road) => (
+        <g key={`${road.x}-${road.y}`}>
+          <rect x={road.x} y={road.y} width={road.w} height={road.h} rx="18" fill={g.path} stroke={g.edge} strokeWidth="4" />
+          {cobble ? (
+            <line
+              x1={road.w > road.h ? road.x + 16 : road.x + road.w / 2}
+              y1={road.w > road.h ? road.y + road.h / 2 : road.y + 16}
+              x2={road.w > road.h ? road.x + road.w - 16 : road.x + road.w / 2}
+              y2={road.w > road.h ? road.y + road.h / 2 : road.y + road.h - 16}
+              stroke={g.edge}
+              strokeWidth="2"
+              strokeDasharray="8 14"
+              opacity="0.55"
+            />
+          ) : null}
+        </g>
+      ))}
+      {dark
+        ? STARS.map(([x, y]) => <circle key={`${x}-${y}`} cx={x} cy={y} r={y % 3 === 0 ? 2.2 : 1.4} fill="#fff6d0" />)
+        : null}
+      {era < 3 && !dark ? (
+        <>
+          <Columns g={g} x={340} y={108} />
+          <Columns g={g} x={700} y={112} />
+        </>
+      ) : null}
+      {era >= 5 ? (
+        <>
+          <Stack g={g} x={1860} y={300} />
+          <Stack g={g} x={160} y={680} />
+          <path d="M370 184 H1570" fill="none" stroke={g.trim} strokeWidth="2" opacity="0.7" />
+          <path d="M520 150 V184 M1120 150 V184" stroke={g.trim} strokeWidth="2" opacity="0.7" />
+        </>
+      ) : null}
+      <Tree g={g} x={90} y={120} />
+      <Tree g={g} x={1960} y={140} scale={1.1} />
+      <Tree g={g} x={80} y={900} />
+      <Tree g={g} x={1980} y={980} scale={0.9} />
+      <Tree g={g} x={1880} y={420} />
+      <Tree g={g} x={120} y={1420} scale={1.05} />
+      <Bush g={g} x={240} y={360} />
+      <Bush g={g} x={900} y={980} />
+      <Bush g={g} x={1500} y={460} />
+      <Lamp g={g} x={370} y={220} lit={lit} />
+      <Lamp g={g} x={970} y={220} lit={lit} />
+      <Lamp g={g} x={1570} y={520} lit={lit} />
+      <Well g={g} x={1570} y={760} />
+      <Flower g={g} x={360} y={400} />
+      <Flower g={g} x={680} y={900} gold />
+      <Flower g={g} x={980} y={1180} />
+      <Cart g={g} x={1570} y={1280} />
+      <Flag g={g} x={90} y={220} />
+      <Bench g={g} x={1570} y={1040} />
     </svg>
   )
 }
