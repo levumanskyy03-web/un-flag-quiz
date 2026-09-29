@@ -1,4 +1,4 @@
-import type { Lang } from '../math'
+import type { Lang } from '../../i18n/lang'
 import { t11, type L11, pickL } from '../math'
 import { ING } from './ingredients'
 import { RECIPE_LINES } from './recipeLines'
@@ -838,7 +838,7 @@ export function assertRecipeBook(dishIds: string[]): string[] {
     if (recipe.steps.length < 2) errors.push(`${id} needs at least 2 steps`)
     for (const step of recipe.steps) {
       if (!STEP[step.op]) errors.push(`${id} unknown step ${step.op}`)
-      const ids = step.op === 'wrap' ? [...step.shell, ...step.fill] : step.ids
+      const ids = 'shell' in step ? [...step.shell, ...step.fill] : step.ids
       for (const item of ids) {
         if (!partIds.has(item)) errors.push(`${id} step uses ${item} not in the ingredient list`)
       }

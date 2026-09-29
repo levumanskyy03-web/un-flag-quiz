@@ -8,4 +8,4 @@ export const ING: Record<string, L11> = Object.fromEntries(
     id,
     Object.fromEntries(LANGS.map((lang, index) => [lang, names[index]])),
   ]),
-)
+) as Record<string, L11>
