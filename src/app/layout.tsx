@@ -1,5 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { cookies } from "next/headers";
 import { Nunito, Plus_Jakarta_Sans } from "next/font/google";
 import { AdScripts } from "../components/AdScripts";
@@ -43,6 +44,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={localeTag(lang)} dir={langDir(lang)} suppressHydrationWarning>
       <body className={`${plusJakarta.variable} ${plusJakarta.className} ${nunito.variable}`}>
+        <Script id="color-theme" strategy="beforeInteractive">
+          {`try{if(localStorage.getItem("un-flag-quiz-theme")==="light")document.documentElement.dataset.theme="light"}catch(e){}`}
+        </Script>
         <SiteAudio />
         <NativeShell />
         {children}

@@ -7,6 +7,7 @@ import { allFootballClubs } from './footballClubs'
 import { FOOTBALL_STADIUMS } from './footballStadiums'
 import { UCL_WINNERS } from './ucl'
 import { WC_SCORERS } from './wcScorers'
+import { penaltyYears } from './wcPenalties'
 import { WORLD_CUP_HOSTS, WORLD_CUP_WINNERS } from './worldCup'
 import { ASIAN_CUP_WINNERS, GOLD_CUP_WINNERS, NATIONS_LEAGUE_WINNERS } from './footballCups'
 import { EUROPA_WINNERS } from './europaLeague'
@@ -25,6 +26,7 @@ export function footballYearsForMode(mode: string): number[] {
   if (mode === 'copaHosts') return COPA_HOSTS.map((item) => item.year)
   if (mode === 'afconHosts') return AFCON_HOSTS.map((item) => item.year)
   if (mode === 'wcScorers') return WC_SCORERS.map((item) => item.year)
+  if (mode === 'wcPenalties') return penaltyYears()
   if (mode === 'uclWinners' || mode === 'uclFinalists' || mode === 'uclTitleYears') {
     return UCL_WINNERS.map((item) => item.year)
   }

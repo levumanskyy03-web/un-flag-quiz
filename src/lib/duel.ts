@@ -6,6 +6,7 @@ import { astroById, astroCountry } from '../data/astro'
 import { themeById, themeCountry } from '../data/theme'
 import { leaderCountry, termById } from '../data/leaders'
 import { footballTeamCountry, isNamedFootballTeam } from '../data/worldCup'
+import { penaltyTakerCountry } from '../data/wcPenalties'
 import type { DuelQuestionWire, DuelView } from './duelTypes'
 import type { FactsDuelConfig } from './factsRules'
 import { isPlayerId, loadPlayer } from './leaderboard'
@@ -47,6 +48,8 @@ function resolveDuelCountry(iso: string, mode?: string): Country | undefined {
   if (astro) return astroCountry(astro)
   const theme = themeById(iso)
   if (theme) return themeCountry(theme)
+  const taker = penaltyTakerCountry(iso)
+  if (taker) return taker
   return (
     findCountry(iso) ??
     (isFootballMode(mode) || isNamedFootballTeam(iso) || iso.includes('+') ? footballTeamCountry(iso) : undefined)
@@ -83,6 +86,7 @@ export function questionFromWire(wire: DuelQuestionWire | null): Question | null
     options: options.length > 0 ? options : [country],
     mode: isQuizMode(wire.mode) ? wire.mode : undefined,
     year: wire.year,
+    wcPenaltyId: wire.wcPenaltyId,
     waterId: wire.waterId,
     waterOptions: wire.waterOptions,
   }

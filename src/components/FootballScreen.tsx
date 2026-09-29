@@ -23,13 +23,7 @@ import { CatalogNo } from './ModeChoice'
 import { setupDifficultyText } from './DifficultyPicker'
 import { footballPlayerPool } from '../data/footballPlayers'
 import { prefetchWikiPortraits } from '../lib/wikiThumb'
-import {
-  difficultyForMode,
-  footballFamilyLabel,
-  footballFamilyOf,
-  settingsForFootballFamily,
-  type FootballFamilyId,
-} from '../lib/modeFamilies'
+import { difficultyForMode, footballFamilyOf, settingsForFootballFamily } from '../lib/modeFamilies'
 import { footballModeLinks } from '../lib/modePairs'
 
 interface FootballScreenProps {
@@ -119,7 +113,6 @@ export function FootballScreen({
           startLabel={t.start}
           startDisabled={poolSize === 0}
           caption={mix ? mixLabel(mix, settings.lang) : undefined}
-          familyLabel={(id) => footballFamilyLabel(id as FootballFamilyId, settings.lang)}
           onMode={(mode) =>
             applyFootballSettings({
               ...settings,

@@ -227,7 +227,11 @@ export function ResultsScreen({
                       (playerById(answer.selectedIso) ? playerCountry(playerById(answer.selectedIso)!) : null) ??
                       null
               const prompt =
-                isFootballYearChoice(itemMode)
+                itemMode === 'wcPenalties'
+                  ? footballQuestionPrompt(itemMode, answer.question.year ?? 0, countryName(correct, lang), lang, {
+                      wcPenaltyId: answer.question.wcPenaltyId,
+                    })
+                  : isFootballYearChoice(itemMode)
                   ? footballQuestionPrompt(itemMode, answer.question.year ?? 0, countryName(correct, lang), lang)
                   : isFootballTeamChoice(itemMode) && answer.question.year
                     ? footballQuestionPrompt(itemMode, answer.question.year, countryName(correct, lang), lang)
@@ -239,7 +243,7 @@ export function ResultsScreen({
                               ? waterName(answer.question.waterId, lang)
                               : null
               return (
-                <li key={`${correct.iso}-${answer.question.year ?? ''}-${answer.selectedIso ?? 'timeout'}`} className="mistake-row">
+                <li key={`${answer.question.wcPenaltyId ?? correct.iso}-${answer.question.year ?? ''}-${answer.selectedIso ?? 'timeout'}`} className="mistake-row">
                   {(itemMode === 'flagToName' ||
                     itemMode === 'neighborsToName' ||
                     isFootballTeamChoice(itemMode) ||

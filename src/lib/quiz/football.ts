@@ -54,6 +54,7 @@ import {
   wcScorerCountries,
   wcScorerRelatedIds,
 } from '../../data/wcScorers'
+import { WC_PENALTIES, penaltyCountry, penaltyYears, type WcPenalty } from '../../data/wcPenalties'
 import {
   footballTeamCountry,
   footballOptionClashes,
@@ -104,6 +105,7 @@ export function footballYearList(mode: QuizMode, difficulty: QuizDifficulty): nu
     return euroPool(difficulty).map((item) => item.year)
   }
   if (mode === 'wcScorers') return tournamentYearPool(WC_SCORERS, difficulty, WC_SCORER_EASY_FROM).map((item) => item.year)
+  if (mode === 'wcPenalties') return penaltyYears()
   if (mode === 'uclWinners' || mode === 'uclFinalists' || mode === 'uclTitleYears') {
     return tournamentYearPool(UCL_WINNERS, difficulty, UCL_EASY_FROM).map((item) => item.year)
   }
@@ -140,6 +142,7 @@ export function footballYearList(mode: QuizMode, difficulty: QuizDifficulty): nu
 }
 
 export function footballPoolSize(mode: QuizMode, difficulty: QuizDifficulty): number {
+  if (mode === 'wcPenalties') return WC_PENALTIES.length
   if (mode === 'clubCrestToName') return allFootballClubs().length
   if (mode === 'stadiumToClub') return FOOTBALL_STADIUMS.length
   if (isManagerFootballMode(mode)) return FOOTBALL_MANAGERS.length
@@ -165,6 +168,15 @@ export function footballLearnCountries(
   years?: readonly number[],
   playerIds?: readonly string[],
 ): Country[] {
+  if (mode === 'wcPenalties') {
+    const allow = years && years.length > 0 ? new Set(years) : null
+    const seen = new Set<string>()
+    return WC_PENALTIES.filter((item) => !allow || allow.has(item.year)).flatMap((item) => {
+      if (seen.has(item.takerId)) return []
+      seen.add(item.takerId)
+      return [penaltyCountry(item)]
+    })
+  }
   if (isPlayerFootballMode(mode)) {
     const allow = playerIds && playerIds.length > 0 ? new Set(playerIds) : null
     return FOOTBALL_PLAYERS.filter((player) => !allow || allow.has(player.id)).map(playerCountry)
@@ -237,6 +249,7 @@ export function footballLearnYears(mode: FootballMode, teamId: string, years?: r
   else if (mode === 'copaHosts') list = COPA_HOSTS.filter((item) => wcHostAnswerId(item.hostIds) === teamId).map((item) => item.year)
   else if (mode === 'afconHosts') list = AFCON_HOSTS.filter((item) => wcHostAnswerId(item.hostIds) === teamId).map((item) => item.year)
   else if (mode === 'wcScorers') list = WC_SCORERS.filter((item) => wcScorerAnswerId(item) === teamId).map((item) => item.year)
+  else if (mode === 'wcPenalties') list = [...new Set(WC_PENALTIES.filter((item) => item.takerId === teamId).map((item) => item.year))]
   else if (mode === 'uclWinners' || mode === 'uclTitleYears') list = uclWinYearsFor(teamId)
   else if (mode === 'uclFinalists') list = UCL_WINNERS.filter((item) => item.runnerUpId === teamId).map((item) => item.year)
   else if (mode === 'copaWinners') list = tournamentWinYears(COPA_WINNERS, teamId)
@@ -275,6 +288,9 @@ export function footballCountryForYear(mode: FootballMode, year: number): Countr
   if (mode === 'wcScorers') {
     const item = WC_SCORERS.find((row) => row.year === year)
     return item ? [footballTeamCountry(wcScorerAnswerId(item))] : []
+  }
+  if (mode === 'wcPenalties') {
+    return WC_PENALTIES.filter((row) => row.year === year).map(penaltyCountry)
   }
   if (mode === 'uclWinners' || mode === 'uclTitleYears') {
     const item = UCL_WINNERS.find((row) => row.year === year)
@@ -360,6 +376,7 @@ export function createFootballRound(
     return createTitleYearsRound('euroTitleYears', EURO_WINNERS, euroWinYearsFor, count, scoped, avoid)
   }
   if (mode === 'wcScorers') return createWcScorersRound(count, difficulty, scoped, avoid)
+  if (mode === 'wcPenalties') return createWcPenaltiesRound(count, scoped, avoid)
   if (mode === 'uclWinners') return createUclWinnersRound(count, difficulty, scoped, avoid)
   if (mode === 'uclFinalists') {
     return createWinnerYearRound(
@@ -695,6 +712,34 @@ function createEuroHostsRound(
       year: item.year,
     })
     avoid.keys.push(host.iso)
+  }
+  return questions
+}
+
+function createWcPenaltiesRound(count: number, years?: number[], avoid: OptionAvoid = { keys: [], years: [], waters: [] }): Question[] {
+  const blocked = new Set(avoid.keys)
+  const pool = WC_PENALTIES.filter((item) => {
+    if (years?.length && !years.includes(item.year)) return false
+    if (blocked.has(item.id) || blocked.has(item.takerId)) return false
+    return true
+  })
+  const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
+  const takers = new Map<string, WcPenalty>()
+  for (const item of WC_PENALTIES) {
+    if (!takers.has(item.takerId)) takers.set(item.takerId, item)
+  }
+  const questions: Question[] = []
+  for (const item of picked) {
+    const country = penaltyCountry(item)
+    const rest = shuffle([...takers.values()].filter((other) => other.takerId !== item.takerId)).slice(0, 3)
+    questions.push({
+      country,
+      options: shuffle([country, ...rest.map(penaltyCountry)]),
+      mode: 'wcPenalties',
+      year: item.year,
+      wcPenaltyId: item.id,
+    })
+    blocked.add(item.id)
   }
   return questions
 }

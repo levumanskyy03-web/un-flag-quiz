@@ -4,6 +4,7 @@ import { playerById, playerDisplayName } from '../../data/footballPlayers'
 import { managerById, managerDisplayName } from '../../data/footballManagers'
 import { leaderDisplayName, termById, type LeaderKind } from '../../data/leaders'
 import { footballTeamCountry, footballTeamName, isNamedFootballTeam } from '../../data/worldCup'
+import { penaltyTakerName } from '../../data/wcPenalties'
 import { mathById, mathDisplayName } from '../../data/math'
 import { astroById, astroDisplayName } from '../../data/astro'
 import { isHistoryId, polityById, polityFlagUrl, polityName } from '../../data/history'
@@ -76,7 +77,7 @@ export const QUIZ_MODES = [
   'religionToName',
   'nameToGov',
 ] as const
-export const WC_FOOTBALL_MODES = ['wcWinners', 'wcFinalists', 'wcHosts', 'wcTitleYears', 'wcScorers'] as const
+export const WC_FOOTBALL_MODES = ['wcWinners', 'wcFinalists', 'wcHosts', 'wcTitleYears', 'wcScorers', 'wcPenalties'] as const
 export const EURO_FOOTBALL_MODES = ['euroWinners', 'euroFinalists', 'euroHosts', 'euroTitleYears'] as const
 export const OTHER_FOOTBALL_MODES = [
   'copaWinners',
@@ -411,7 +412,8 @@ export function isFootballTeamChoice(mode: QuizMode): boolean {
     isFootballMode(mode) &&
     !isFootballYearChoice(mode) &&
     !isPlayerFootballMode(mode) &&
-    !isManagerFootballMode(mode)
+    !isManagerFootballMode(mode) &&
+    mode !== 'wcPenalties'
   )
 }
 
@@ -756,6 +758,7 @@ export interface Question {
   stadiumName?: string
   league?: 'pl' | 'laliga' | 'seriea' | 'bundesliga' | 'ligue1'
   goldenEvent?: 'wc' | 'euro'
+  wcPenaltyId?: string
   priorBan?: {
     years?: number[]
     populations?: number[]
@@ -852,6 +855,8 @@ export function countryName(country: Country, lang: Lang): string {
   if (astro) return astroDisplayName(astro, lang)
   const historical = polityName(country.iso, lang)
   if (historical) return historical
+  const penalty = penaltyTakerName(country.iso, lang)
+  if (penalty) return penalty
   if (lang === 'ru') return country.nameRu
   if (lang === 'en') return country.nameEn
   try {

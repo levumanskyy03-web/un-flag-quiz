@@ -51,7 +51,7 @@ function splitLabel(text: string): [string, string] | null {
   return null
 }
 
-export function linksFromModes(modes: readonly QuizMode[], familyOf?: (mode: QuizMode) => string): ModeLink[] {
+export function linksFromModes(modes: readonly QuizMode[]): ModeLink[] {
   const links: ModeLink[] = []
   for (const mode of modes) {
     const ends = englishEnds(mode)
@@ -59,7 +59,7 @@ export function linksFromModes(modes: readonly QuizMode[], familyOf?: (mode: Qui
       links.push({ mode, ...ends })
       continue
     }
-    links.push({ mode, left: familyOf?.(mode) ?? mode, right: mode, plain: true })
+    links.push({ mode, left: mode, right: mode, plain: true })
   }
   return links
 }
@@ -70,10 +70,7 @@ export function geoModeLinks(): ModeLink[] {
 
 export function footballModeLinks(): ModeLink[] {
   const modes = FOOTBALL_PLAY_FAMILIES.flatMap((id) => modesOfFootballFamily(id))
-  return linksFromModes(modes, (mode) => {
-    const family = FOOTBALL_PLAY_FAMILIES.find((id) => modesOfFootballFamily(id).includes(mode))
-    return family ?? 'players'
-  })
+  return linksFromModes(modes)
 }
 
 export function mathModeLinks(): ModeLink[] {
@@ -110,19 +107,10 @@ export function sideIds(links: readonly ModeLink[], side: 'left' | 'right'): str
   return ids
 }
 
-export function sideText(
-  links: readonly ModeLink[],
-  side: 'left' | 'right',
-  id: string,
-  lang: Lang,
-  familyLabel?: (id: string) => string,
-): string {
+export function sideText(links: readonly ModeLink[], side: 'left' | 'right', id: string, lang: Lang): string {
   const link = links.find((item) => item[side] === id)
   if (!link) return id
-  if (link.plain) {
-    if (side === 'left') return familyLabel?.(id) ?? id
-    return modeLabel(link.mode, lang)
-  }
+  if (link.plain) return modeLabel(link.mode, lang)
   const raw = STRINGS[lang][link.mode as keyof Strings]
   const text = typeof raw === 'string' ? raw : modeLabel(link.mode, lang)
   const parts = splitLabel(text)

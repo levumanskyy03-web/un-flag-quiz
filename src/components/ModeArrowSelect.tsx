@@ -7,7 +7,7 @@ import { pickLink, sideIds, sideText, linkForMode, type ModeLink } from '../lib/
 import { HardcoreToggle } from './DifficultyPicker'
 import { EmpireLock } from './EmpireLock'
 import { useEmpire } from '../lib/empireStore'
-import { access } from '../lib/empire/gates'
+import { access, type GateFeature } from '../lib/empire/gates'
 import type { QuizMode } from '../lib/quiz'
 
 interface ModeArrowSelectProps {
@@ -19,8 +19,10 @@ interface ModeArrowSelectProps {
   startLabel: string
   startDisabled?: boolean
   caption?: string
-  familyLabel?: (id: string) => string
   formatSide?: (side: 'left' | 'right', id: string) => string
+  showHardcore?: boolean
+  hardcoreGate?: GateFeature
+  hardcoreTitle?: string
   onMode: (mode: QuizMode) => void
   onHardcore: (on: boolean) => void
   onStart: () => void
@@ -35,8 +37,10 @@ export function ModeArrowSelect({
   startLabel,
   startDisabled,
   caption,
-  familyLabel,
   formatSide,
+  showHardcore = true,
+  hardcoreGate = { kind: 'difficulty', difficulty: 'hardcore' },
+  hardcoreTitle,
   onMode,
   onHardcore,
   onStart,
@@ -46,7 +50,7 @@ export function ModeArrowSelect({
   const rootRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState<'left' | 'right' | null>(null)
   const active = linkForMode(links, mode) ?? links[0]
-  const hardcoreLocked = hardcore && access(empire, { kind: 'difficulty', difficulty: 'hardcore' }) === 'locked'
+  const hardcoreLocked = showHardcore && hardcore && access(empire, hardcoreGate) === 'locked'
 
   useEffect(() => {
     if (!open) return
@@ -67,7 +71,7 @@ export function ModeArrowSelect({
   if (!active) return null
 
   function label(side: 'left' | 'right', id: string) {
-    return formatSide?.(side, id) ?? sideText(links, side, id, lang, familyLabel)
+    return formatSide?.(side, id) ?? sideText(links, side, id, lang)
   }
 
   function choose(side: 'left' | 'right', id: string) {
@@ -79,7 +83,7 @@ export function ModeArrowSelect({
     <div className="mode-arrow-card" ref={rootRef}>
       <h2>{t.modeSelector}</h2>
       <p className="mode-arrow-meta">{t.modeSelectorMeta(level, caption ?? modeLabel(mode, lang))}</p>
-      <div className="mode-arrow">
+      <div className={`mode-arrow${active.plain ? ' is-plain' : ''}`}>
         <SideMenu
           side="left"
           open={open === 'left'}
@@ -89,23 +93,29 @@ export function ModeArrowSelect({
           onToggle={() => setOpen(open === 'left' ? null : 'left')}
           onPick={(id) => choose('left', id)}
         />
-        <span className="mode-arrow-mark" aria-hidden>
-          {rtlModeArrows('→', lang)}
-        </span>
-        <SideMenu
-          side="right"
-          open={open === 'right'}
-          current={active.right}
-          ids={sideIds(links, 'right')}
-          label={(id) => label('right', id)}
-          onToggle={() => setOpen(open === 'right' ? null : 'right')}
-          onPick={(id) => choose('right', id)}
-        />
+        {active.plain ? null : (
+          <>
+            <span className="mode-arrow-mark" aria-hidden>
+              {rtlModeArrows('→', lang)}
+            </span>
+            <SideMenu
+              side="right"
+              open={open === 'right'}
+              current={active.right}
+              ids={sideIds(links, 'right')}
+              label={(id) => label('right', id)}
+              onToggle={() => setOpen(open === 'right' ? null : 'right')}
+              onPick={(id) => choose('right', id)}
+            />
+          </>
+        )}
       </div>
-      <div className="mode-arrow-hardcore">
-        <HardcoreToggle lang={lang} on={hardcore} onChange={onHardcore} />
-      </div>
-      {hardcoreLocked ? <EmpireLock lang={lang} feature={{ kind: 'difficulty', difficulty: 'hardcore' }} title={t.gateDifficulty} /> : null}
+      {showHardcore ? (
+        <div className="mode-arrow-hardcore">
+          <HardcoreToggle lang={lang} on={hardcore} onChange={onHardcore} />
+        </div>
+      ) : null}
+      {hardcoreLocked ? <EmpireLock lang={lang} feature={hardcoreGate} title={hardcoreTitle ?? t.gateDifficulty} /> : null}
       <button type="button" className="btn-primary mode-arrow-start" disabled={startDisabled} onClick={onStart}>
         {startLabel}
       </button>

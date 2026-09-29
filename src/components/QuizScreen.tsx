@@ -153,6 +153,7 @@ export function QuizScreen({
     league: question.league,
     stadiumName: question.stadiumName,
     goldenEvent: question.goldenEvent,
+    wcPenaltyId: question.wcPenaltyId,
   })
   const mathItem = isMathMode(activeMode) ? mathItemFromCountry(question.country, activeMode) : undefined
   const mathAsk = mathQuestionPrompt(activeMode, lang)

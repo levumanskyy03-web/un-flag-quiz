@@ -177,7 +177,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
     return learnLocked && count > free ? Math.max(max, free) : max
   }, 0)
   const learnLockRows = Math.max(learnClamped ? freeRows : 0, mixLockRows)
-  const showLearnLock = learnLockRows > 0
+  const showLearnLock = learnLockRows > 0 && settings.mode !== 'wcPenalties'
   const rosterActive = rosterLearn
     ? pool.filter((country) => playerById(country.iso)?.era === 'active').length
     : 0
@@ -287,6 +287,8 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         {learnPlace ? `${learnPlace}${mixModes ? '' : ' · '}` : ''}
         {mixModes
           ? ''
+          : settings.mode === 'wcPenalties'
+            ? t.footballRosterCount(footballLearnCountries('wcPenalties').length)
           : rosterLearn
             ? playerEra === 'all'
               ? t.footballRosterSplit(rosterActive, rosterLegends)
@@ -575,7 +577,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
           onReveal={(id) => setRevealed((prev) => new Set(prev).add(id))}
           onOpen={setOpenTermId}
         />
-      ) : mixModes || math || astro || theme ? null : (
+      ) : mixModes || math || astro || theme || settings.mode === 'wcPenalties' ? null : (
       <section className={`learn-grid${leaders ? ' is-leaders' : ''}`}>
         {countries.map((country) => {
           const name = countryName(country, settings.lang)

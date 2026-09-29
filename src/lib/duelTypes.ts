@@ -34,6 +34,7 @@ export interface DuelQuestionWire {
   facts?: Array<FactClue | PlayerFactClue>
   year?: number
   yearOptions?: number[]
+  wcPenaltyId?: string
   waterId?: string
   waterOptions?: string[]
 }

@@ -95,6 +95,7 @@ const FOOTBALL_MODE_XP: Record<FootballMode, number> = {
   wcHosts: 1,
   wcTitleYears: 2,
   wcScorers: 2,
+  wcPenalties: 2,
   euroWinners: 1,
   euroFinalists: 1,
   euroHosts: 1,

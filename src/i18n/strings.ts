@@ -1,4 +1,7 @@
 import { REGIONS } from '../data/countries'
+import { footballTeamCountry } from '../data/worldCup'
+import { penaltyById } from '../data/wcPenalties'
+import { countryName } from '../lib/quiz/core'
 import { type GovKind } from '../data/governments'
 import { type ReligionId } from '../data/religion'
 import {
@@ -374,6 +377,12 @@ export type Strings = {
   euroTitleYearPrompt: (name: string) => string
   wcScorers: string
   wcScorerPrompt: (year: number) => string
+  wcPenalties: string
+  wcPenaltyPrompt: (year: number, stage: string, match: string) => string
+  wcPenaltyR16: string
+  wcPenaltyQuarter: string
+  wcPenaltySemi: string
+  wcPenaltyFinal: string
   uclWinners: string
   uclWinnerPrompt: (year: number) => string
   copaWinners: string
@@ -605,6 +614,7 @@ export type Strings = {
   footballTableHost: string
   footballTableVenue: string
   footballTablePlayer: string
+  footballTableStage: string
   footballTableGoals: string
   footballTableCountry: string
   footballAet: string
@@ -947,6 +957,9 @@ export type Strings = {
   achievementTap: string
   profileName: string
   profileLanguage: string
+  colorTheme: string
+  colorThemeDark: string
+  colorThemeLight: string
   guestName: string
   duelAnonName: string
   guestHint: string
@@ -1526,6 +1539,12 @@ export const STRINGS: Record<Lang, Strings> = {
     euroTitleYearPrompt: (name) => `В каком году ${name} выиграла Евро?`,
     wcScorers: 'Бомбардиры ЧМ',
     wcScorerPrompt: (year) => `Лучший бомбардир ЧМ ${year} — из какой страны?`,
+    wcPenalties: 'Пенальти ЧМ',
+    wcPenaltyPrompt: (year, stage, match) => `Кто забил решающий пенальти: ЧМ ${year}, ${stage}, ${match}?`,
+    wcPenaltyR16: '1/8 финала',
+    wcPenaltyQuarter: 'четвертьфинал',
+    wcPenaltySemi: 'полуфинал',
+    wcPenaltyFinal: 'финал',
     uclWinners: 'Победители ЛЧ',
     uclWinnerPrompt: (year) => `Кто выиграл Кубок чемпионов ${year}?`,
     copaWinners: 'Копа Америка',
@@ -1758,6 +1777,7 @@ export const STRINGS: Record<Lang, Strings> = {
     footballTableHost: 'Хозяева',
     footballTableVenue: 'Где',
     footballTablePlayer: 'Игрок',
+    footballTableStage: 'Стадия',
     footballTableGoals: 'Голы',
     footballTableCountry: 'Страна',
     footballAet: 'д.в.',
@@ -2064,6 +2084,9 @@ export const STRINGS: Record<Lang, Strings> = {
     achievementTap: 'Нажмите ачивку — подпись снизу.',
     profileName: 'Имя',
     profileLanguage: 'Язык',
+    colorTheme: 'Тема',
+    colorThemeDark: 'Тёмная',
+    colorThemeLight: 'Светлая',
     guestName: 'Гость',
     duelAnonName: 'Игрок',
     guestHint: 'Чтобы попасть в рейтинг, войдите по имени и паролю.',
@@ -2322,6 +2345,12 @@ export const STRINGS: Record<Lang, Strings> = {
     euroTitleYearPrompt: (name) => `Which year did ${name} win the Euro?`,
     wcScorers: 'World Cup scorers',
     wcScorerPrompt: (year) => `Which country had the top scorer at the ${year} World Cup?`,
+    wcPenalties: 'World Cup penalties',
+    wcPenaltyPrompt: (year, stage, match) => `Who scored the decisive penalty: ${year} World Cup, ${stage}, ${match}?`,
+    wcPenaltyR16: 'round of 16',
+    wcPenaltyQuarter: 'quarter-final',
+    wcPenaltySemi: 'semi-final',
+    wcPenaltyFinal: 'final',
     uclWinners: 'Champions League',
     uclWinnerPrompt: (year) => `Who won the ${year} European Cup / Champions League?`,
     copaWinners: 'Copa América',
@@ -2554,6 +2583,7 @@ export const STRINGS: Record<Lang, Strings> = {
     footballTableHost: 'Host',
     footballTableVenue: 'Where',
     footballTablePlayer: 'Player',
+    footballTableStage: 'Stage',
     footballTableGoals: 'Goals',
     footballTableCountry: 'Country',
     footballAet: 'a.e.t.',
@@ -2860,6 +2890,9 @@ export const STRINGS: Record<Lang, Strings> = {
     achievementTap: 'Tap an achievement to read it.',
     profileName: 'Name',
     profileLanguage: 'Language',
+    colorTheme: 'Theme',
+    colorThemeDark: 'Dark',
+    colorThemeLight: 'Light',
     guestName: 'Guest',
     duelAnonName: 'Player',
     guestHint: 'Sign in with your name and password to appear on the leaderboard.',
@@ -3214,7 +3247,12 @@ export function footballQuestionPrompt(
   year: number,
   name: string,
   lang: Lang,
-  extra?: { league?: 'pl' | 'laliga' | 'seriea' | 'bundesliga' | 'ligue1'; stadiumName?: string; goldenEvent?: 'wc' | 'euro' },
+  extra?: {
+    league?: 'pl' | 'laliga' | 'seriea' | 'bundesliga' | 'ligue1'
+    stadiumName?: string
+    goldenEvent?: 'wc' | 'euro'
+    wcPenaltyId?: string
+  },
 ): string | null {
   const t = STRINGS[lang]
   const leagueName =
@@ -3241,6 +3279,22 @@ export function footballQuestionPrompt(
       return t.wcTitleYearPrompt(name)
     case 'wcScorers':
       return t.wcScorerPrompt(year)
+    case 'wcPenalties': {
+      const item = extra?.wcPenaltyId ? penaltyById(extra.wcPenaltyId) : undefined
+      const stage = item
+        ? item.stage === 'r16'
+          ? t.wcPenaltyR16
+          : item.stage === 'quarter'
+            ? t.wcPenaltyQuarter
+            : item.stage === 'semi'
+              ? t.wcPenaltySemi
+              : t.wcPenaltyFinal
+        : ''
+      const match = item
+        ? `${countryName(footballTeamCountry(item.winnerId), lang)} — ${countryName(footballTeamCountry(item.loserId), lang)}`
+        : ''
+      return t.wcPenaltyPrompt(year, stage, match)
+    }
     case 'euroWinners':
       return t.euroWinnerPrompt(year)
     case 'euroFinalists':

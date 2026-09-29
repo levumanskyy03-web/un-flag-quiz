@@ -45,6 +45,7 @@ import { AvatarPicker } from './AvatarPicker'
 import { CountryMark, CountryPicker } from './CountryPicker'
 import { IntellectRankPlaque } from './IntellectRankPlaque'
 import { LanguageToggle } from './LanguageToggle'
+import { ThemeToggle } from './ThemeToggle'
 import { PasswordModal } from './PasswordModal'
 import { DeleteAccountModal } from './DeleteAccountModal'
 import { downloadPlayerExport } from '../lib/dataExport'
@@ -443,6 +444,9 @@ export function SettingsModal({
                 </button>
               </div>
             </div>
+
+            <h3 className="settings-sub">{t.colorTheme}</h3>
+            <ThemeToggle lang={lang} variant="choices" />
 
             <h3 className="settings-sub">{t.profileLanguage}</h3>
             <LanguageToggle lang={lang} onChange={onLangChange} />

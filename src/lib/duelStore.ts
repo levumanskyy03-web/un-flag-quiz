@@ -673,6 +673,7 @@ function buildQuestions(
         mode: question.mode ?? footballModes[0],
         year: question.year,
         yearOptions: question.yearOptions,
+        wcPenaltyId: question.wcPenaltyId,
         facts: question.facts,
       }))
     }
@@ -682,6 +683,7 @@ function buildQuestions(
       mode: question.mode ?? footballModes[0],
       year: question.year,
       yearOptions: question.yearOptions,
+      wcPenaltyId: question.wcPenaltyId,
     }))
   }
   const leaderModes = modes.filter(isLeadersMode)

@@ -1,29 +1,35 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { LEVEL_NUMBERS, isFinalLevel } from '../data/levels'
-import { STRINGS, modeLabel } from '../i18n/strings'
+import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import type { LevelClear } from '../lib/levelProgress'
 import { findLevelClear, isLevelUnlocked } from '../lib/levelProgress'
 import { fetchLevelBests, type LevelBest } from '../lib/leaderboard'
-import { MAX_LIVES, ASTRO_MODES, LEVEL_MODES, MATH_MODES, THEME_DEFAULT_MODE, astroHasCampaign, formatClock, hasGeoFinale, isLeadersMode, isThemeMode, mathHasCampaign, themeHasCampaign, themeModesOfWorld, themeWorldOf, type QuizMode } from '../lib/quiz'
+import { MAX_LIVES, LEVEL_MODES, campaignLevelCount, formatClock, hasGeoFinale, isLeadersMode, type QuizMode } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
 import { HubNav, type HubTab } from './HubNav'
-import { FootballSetup, isFootballCatalog } from './FootballModeGrids'
-import { MathSetup, isMathCatalog } from './MathModeGrids'
-import { AstroSetup, isAstroCatalog } from './AstroModeGrids'
-import { ThemeSetup, isThemeCatalog, themeCatalogWorld } from './ThemeModeGrids'
-import { modeCampaignPercent } from '../lib/campaignPercent'
-import { LeadersSetup } from './LeadersScreen'
-import { ModeChoice } from './ModeChoice'
-import { HardcoreToggle } from './DifficultyPicker'
+import { isFootballCatalog } from './FootballModeGrids'
+import { isMathCatalog } from './MathModeGrids'
+import { isAstroCatalog } from './AstroModeGrids'
+import { isThemeCatalog, themeCatalogWorld } from './ThemeModeGrids'
 import { Lives } from './Lives'
 import { WorldsBack } from './WorldsBack'
 import { FitGroup } from './FitText'
 import { EmpireLock } from './EmpireLock'
+import { ModeArrowSelect } from './ModeArrowSelect'
 import { useEmpire } from '../lib/empireStore'
 import { access, type GateFeature } from '../lib/empire/gates'
 import { worldOfMode } from '../lib/quiz'
+import {
+  astroModeLinks,
+  footballModeLinks,
+  geoModeLinks,
+  leaderModeLinks,
+  mathModeLinks,
+  themeModeLinks,
+  type ModeLink,
+} from '../lib/modePairs'
 
 interface LevelsScreenProps {
   settings: QuizSettings
@@ -52,6 +58,8 @@ export function LevelsScreen({
   const [worldBests, setWorldBests] = useState<Record<number, LevelBest>>({})
   const [levelsOpen, setLevelsOpen] = useState(false)
   const [picked, setPicked] = useState<number | null>(null)
+  const links = useMemo(() => levelLinks(modes), [modes])
+  const activeLink = links.find((link) => link.mode === settings.mode) ?? links[0]
 
   useEffect(() => {
     setPicked(null)
@@ -65,25 +73,9 @@ export function LevelsScreen({
   }, [settings.mode, settings.levelHardcore])
 
   useEffect(() => {
-    if (!isFootballCatalog(modes) || settings.mode !== 'playerFactsToName') return
-    onChange({ ...settings, path: 'levels', mode: 'playerPhotoToName', mix: null })
-  }, [modes, settings.mode])
-
-  useEffect(() => {
-    if (!isMathCatalog(modes) || mathHasCampaign(settings.mode)) return
-    onChange({ ...settings, path: 'levels', mode: 'exprToValue', mix: null })
-  }, [modes, settings.mode])
-
-  useEffect(() => {
-    if (!isAstroCatalog(modes) || astroHasCampaign(settings.mode)) return
-    onChange({ ...settings, path: 'levels', mode: 'planetToOrder', mix: null })
-  }, [modes, settings.mode])
-
-  useEffect(() => {
-    if (!isThemeCatalog(modes) || themeHasCampaign(settings.mode)) return
-    const world = themeCatalogWorld(modes) ?? (isThemeMode(settings.mode) ? themeWorldOf(settings.mode) : 'biology')
-    onChange({ ...settings, path: 'levels', mode: THEME_DEFAULT_MODE[world], mix: null })
-  }, [modes, settings.mode])
+    if (!activeLink || activeLink.mode === settings.mode) return
+    onChange({ ...settings, path: 'levels', mode: activeLink.mode, mix: null })
+  }, [activeLink, settings.mode])
 
   useEffect(() => {
     if (!levelsOpen) return
@@ -133,70 +125,23 @@ export function LevelsScreen({
       </header>
 
       <section className="card settings-card">
-        {isLeadersMode(settings.mode) ? (
-          <LeadersSetup
-            settings={settings}
-            onChange={(next) => onChange({ ...next, path: 'levels', mix: null })}
-            campaignPercent={(mode) => modeCampaignPercent(levelClears, mode)}
-            onPickMode={openLevels}
+        {activeLink ? (
+          <ModeArrowSelect
+            links={links}
+            mode={activeLink.mode}
+            lang={settings.lang}
+            level={settings.level}
+            hardcore={settings.levelHardcore}
+            startLabel={t.levels}
+            showHardcore={!settings.levelLearn}
+            hardcoreGate={{ kind: 'levelHardcore' }}
+            hardcoreTitle={t.gateLevelHardcore}
+            formatSide={isLeadersMode(activeLink.mode) ? leaderSideLabel(settings.lang) : undefined}
+            onMode={(mode) => onChange({ ...settings, path: 'levels', mix: null, mode })}
+            onHardcore={(on) => onChange({ ...settings, path: 'levels', levelHardcore: on })}
+            onStart={openLevels}
           />
-        ) : isFootballCatalog(modes) ? (
-          <FootballSetup
-            settings={settings}
-            onChange={(next) => onChange({ ...next, path: 'levels', mix: null })}
-            hideModes={['playerFactsToName']}
-            campaignPercent={(mode) => modeCampaignPercent(levelClears, mode)}
-            onPickMode={openLevels}
-          />
-        ) : isMathCatalog(modes) ? (
-          <MathSetup
-            settings={settings}
-            onChange={(next) => onChange({ ...next, path: 'levels', mix: null })}
-            hideModes={MATH_MODES.filter((mode) => !mathHasCampaign(mode))}
-            onPickMode={openLevels}
-          />
-        ) : isAstroCatalog(modes) ? (
-          <AstroSetup
-            settings={settings}
-            onChange={(next) => onChange({ ...next, path: 'levels', mix: null })}
-            hideModes={ASTRO_MODES.filter((mode) => !astroHasCampaign(mode))}
-            onPickMode={openLevels}
-          />
-        ) : isThemeCatalog(modes) ? (
-          <ThemeSetup
-            world={themeCatalogWorld(modes) ?? 'biology'}
-            settings={settings}
-            onChange={(next) => onChange({ ...next, path: 'levels', mix: null })}
-            hideModes={themeModesOfWorld(themeCatalogWorld(modes) ?? 'biology').filter((mode) => !themeHasCampaign(mode))}
-            onPickMode={openLevels}
-          />
-        ) : (
-          <div className="choice-grid is-modes">
-            {modes.map((mode) => (
-              <ModeChoice
-                key={mode}
-                label={modeLabel(mode, settings.lang)}
-                mode={mode}
-                active={settings.mode === mode}
-                onClick={() => {
-                  onChange({ ...settings, path: 'levels', mode })
-                  openLevels()
-                }}
-                percent={modeCampaignPercent(levelClears, mode)}
-              />
-            ))}
-          </div>
-        )}
-
-        {settings.levelLearn ? null : (
-          <div className="levels-hardcore-row">
-            <HardcoreToggle
-              lang={settings.lang}
-              on={settings.levelHardcore}
-              onChange={(on) => onChange({ ...settings, path: 'levels', levelHardcore: on })}
-            />
-          </div>
-        )}
+        ) : null}
 
         <div className="levels-extra-row">
           <button
@@ -325,4 +270,31 @@ export function LevelsScreen({
       ) : null}
     </div>
   )
+}
+
+function levelLinks(modes: readonly QuizMode[]): ModeLink[] {
+  const allowed = new Set(modes.filter((mode) => campaignLevelCount(mode) > 0))
+  return linkSource(modes).filter((link) => allowed.has(link.mode))
+}
+
+function linkSource(modes: readonly QuizMode[]): ModeLink[] {
+  if (isFootballCatalog(modes)) return footballModeLinks()
+  if (isMathCatalog(modes)) return mathModeLinks()
+  if (isAstroCatalog(modes)) return astroModeLinks()
+  if (isThemeCatalog(modes)) {
+    const world = themeCatalogWorld(modes)
+    return world ? themeModeLinks(world) : []
+  }
+  if (modes.length > 0 && modes.every(isLeadersMode)) return leaderModeLinks()
+  return geoModeLinks()
+}
+
+function leaderSideLabel(lang: Lang) {
+  const t = STRINGS[lang]
+  return (side: 'left' | 'right', id: string) => {
+    if (side === 'right') {
+      return id === 'photo' ? t.leaderAskPhoto : id === 'number' ? t.leaderAskNumber : t.leaderAskYears
+    }
+    return id === 'pope' ? t.popesLeaders : id === 'rus' ? t.askoldToUnion : id === 'uk' ? t.ukMonarchs : t.usPresidents
+  }
 }

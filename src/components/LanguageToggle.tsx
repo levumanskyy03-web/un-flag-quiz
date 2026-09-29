@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { LANGS, LANG_NATIVE, type Lang } from '../i18n/lang'
 import { STRINGS } from '../i18n/strings'
+import { GeoIcon } from './GeoIcon'
 
 interface LanguageToggleProps {
   lang: Lang
@@ -31,30 +32,22 @@ export function LanguageToggle({ lang, onChange }: LanguageToggleProps) {
     }
   }, [open])
 
+  const label = `${t.profileLanguage}: ${LANG_NATIVE[lang]}`
+
   return (
     <div className="lang-toggle lang-select-wrap" ref={root}>
       <button
         type="button"
         className="lang-select"
-        aria-label={t.profileLanguage}
+        aria-label={label}
+        title={label}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listId}
         onClick={() => setOpen((value) => !value)}
       >
-        {LANG_NATIVE[lang]}
+        <GeoIcon name="globe" size={18} />
       </button>
-      <span className="lang-select-mark" aria-hidden="true">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <path
-            d="M2.5 4.25 6 7.75l3.5-3.5"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
       {open ? (
         <ul id={listId} className="lang-menu" role="listbox" aria-label={t.profileLanguage}>
           {LANGS.map((code) => (

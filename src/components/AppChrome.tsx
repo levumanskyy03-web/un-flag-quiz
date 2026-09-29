@@ -3,6 +3,7 @@ import type { LevelClear } from '../lib/levelProgress'
 import type { QuizSettings } from './HomeScreen'
 import { LanguageToggle } from './LanguageToggle'
 import { PlayerHud } from './PlayerHud'
+import { ThemeToggle } from './ThemeToggle'
 
 interface AppChromeProps {
   settings: QuizSettings
@@ -40,10 +41,13 @@ export function AppChrome({
         onLangChange={(lang) => onChange({ ...settings, lang })}
         onClearBests={onClearBests}
       />
-      <LanguageToggle
-        lang={settings.lang}
-        onChange={(lang) => onChange({ ...settings, lang })}
-      />
+      <div className="chrome-tools">
+        <ThemeToggle lang={settings.lang} />
+        <LanguageToggle
+          lang={settings.lang}
+          onChange={(lang) => onChange({ ...settings, lang })}
+        />
+      </div>
     </div>
   )
 }

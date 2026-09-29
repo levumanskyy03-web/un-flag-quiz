@@ -10,6 +10,7 @@ import {
 } from '../data/footballFinals'
 import { UCL_WINNERS } from '../data/ucl'
 import { WC_SCORERS, scorerName, wcScorerAnswerId } from '../data/wcScorers'
+import { WC_PENALTIES, penaltyCountry, type WcPenaltyStage } from '../data/wcPenalties'
 import {
   WORLD_CUP_HOSTS,
   WORLD_CUP_WINNERS,
@@ -27,12 +28,14 @@ interface FootballLearnTableProps {
 }
 
 interface Row {
+  id?: string
   year: number
   winnerId?: string
   runnerUpId?: string
   hostIds?: string[]
   clubId?: string
   player?: string
+  stage?: WcPenaltyStage
   goals?: number
   final?: FootballFinal
 }
@@ -84,6 +87,16 @@ function rowsFor(mode: FootballMode, lang: Lang, years?: readonly number[]): Row
       goals: item.goals,
     }))
   }
+  if (mode === 'wcPenalties') {
+    return WC_PENALTIES.filter((item) => yearOk(item.year, years)).map((item) => ({
+      id: item.id,
+      year: item.year,
+      stage: item.stage,
+      winnerId: item.winnerId,
+      runnerUpId: item.loserId,
+      player: countryName(penaltyCountry(item), lang),
+    }))
+  }
   if (mode === 'copaWinners' || mode === 'copaFinalists') {
     return COPA_WINNERS.filter((item) => yearOk(item.year, years)).map((item) => ({
       year: item.year,
@@ -110,6 +123,13 @@ function rowsFor(mode: FootballMode, lang: Lang, years?: readonly number[]): Row
     runnerUpId: item.runnerUpId,
     final: worldCupFinal(item.year),
   }))
+}
+
+function penaltyStageLabel(stage: WcPenaltyStage, t: (typeof STRINGS)['ru']) {
+  if (stage === 'r16') return t.wcPenaltyR16
+  if (stage === 'quarter') return t.wcPenaltyQuarter
+  if (stage === 'semi') return t.wcPenaltySemi
+  return t.wcPenaltyFinal
 }
 
 function TeamCell({ id, lang }: { id: string; lang: Lang }) {
@@ -168,8 +188,9 @@ export function FootballLearnTable({ mode, lang, years }: FootballLearnTableProp
   const showHost = mode === 'wcHosts' || mode === 'euroHosts'
   const showVenue = showHost
   const showScore = mode === 'wcWinners' || mode === 'wcFinalists' || mode === 'wcHosts' || mode === 'euroWinners' || mode === 'euroFinalists' || mode === 'euroHosts'
-  const showPlayer = mode === 'wcScorers'
+  const showPlayer = mode === 'wcScorers' || mode === 'wcPenalties'
   const showCountry = mode === 'wcScorers'
+  const showStage = mode === 'wcPenalties'
 
   return (
     <div className="football-learn-table-wrap">
@@ -182,16 +203,17 @@ export function FootballLearnTable({ mode, lang, years }: FootballLearnTableProp
             {showRunnerUp ? <th>{t.footballTableRunnerUp}</th> : null}
             {showMatch ? <th>{t.footballTableMatch}</th> : null}
             {showClub ? <th>{t.footballTableWinner}</th> : null}
+            {showStage ? <th>{t.footballTableStage}</th> : null}
             {showPlayer ? <th>{t.footballTablePlayer}</th> : null}
             {showCountry ? <th>{t.footballTableCountry}</th> : null}
-            {showPlayer ? <th>{t.footballTableGoals}</th> : null}
+            {showCountry ? <th>{t.footballTableGoals}</th> : null}
             {showScore ? <th>{t.footballTableScore}</th> : null}
             {showVenue ? <th>{t.footballTableVenue}</th> : null}
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.year}>
+            <tr key={row.id ?? row.year}>
               <td className="football-learn-year">{row.year}</td>
               {showHost ? (
                 <td>{row.hostIds ? <TeamCell id={wcHostAnswerId(row.hostIds)} lang={lang} /> : '—'}</td>
@@ -206,9 +228,15 @@ export function FootballLearnTable({ mode, lang, years }: FootballLearnTableProp
                 </td>
               ) : null}
               {showClub ? <td>{row.clubId ? <TeamCell id={row.clubId} lang={lang} /> : '—'}</td> : null}
+              {showStage ? (
+                <td>
+                  <div>{row.stage ? penaltyStageLabel(row.stage, t) : '—'}</div>
+                  <MatchCell winnerId={row.winnerId} runnerUpId={row.runnerUpId} lang={lang} />
+                </td>
+              ) : null}
               {showPlayer ? <td>{row.player ?? '—'}</td> : null}
               {showCountry ? <td>{row.winnerId ? <TeamCell id={row.winnerId} lang={lang} /> : '—'}</td> : null}
-              {showPlayer ? <td className="football-learn-score">{row.goals ?? '—'}</td> : null}
+              {showCountry ? <td className="football-learn-score">{row.goals ?? '—'}</td> : null}
               {showScore ? (
                 <td className="football-learn-score">
                   {row.final ? formatFinalScore(row.final, scoreLabels) : '—'}
