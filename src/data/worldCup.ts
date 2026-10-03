@@ -150,8 +150,20 @@ export function tournamentYearPool<T extends { year: number }>(
   difficulty: 'easy' | 'medium' | 'hard' | 'hardcore',
   easyFrom: number,
 ): T[] {
-  if (difficulty === 'easy') return list.filter((item) => item.year >= easyFrom)
-  return [...list]
+  const ordered = [...list].sort((a, b) => a.year - b.year)
+  if (difficulty === 'easy') return ordered.filter((item) => item.year >= easyFrom)
+  if (difficulty === 'medium') {
+    const cut = Math.floor(ordered.length * 0.25)
+    const next = ordered.slice(cut)
+    return next.length >= 4 ? next : ordered
+  }
+  if (difficulty === 'hardcore') {
+    const old = ordered.filter((item) => item.year < easyFrom)
+    if (old.length >= 4) return old
+    const half = ordered.slice(0, Math.ceil(ordered.length / 2))
+    return half.length >= 4 ? half : ordered
+  }
+  return ordered
 }
 
 export function tournamentWinYears(list: readonly WorldCupWinner[], winnerId: string): number[] {
@@ -197,13 +209,18 @@ export function hostRelatedIds(list: readonly WorldCupHost[], year: number): str
 }
 
 export function singleHostPool(list: readonly WorldCupHost[], difficulty: 'easy' | 'medium' | 'hard' | 'hardcore'): WorldCupHost[] {
-  if (difficulty === 'easy') return list.filter((item) => item.hostIds.length === 1)
+  const single = list.filter((item) => item.hostIds.length === 1)
+  if (difficulty === 'easy') return single
+  if (difficulty === 'medium') return single.length >= 4 ? single : [...list]
+  if (difficulty === 'hardcore') {
+    const shared = list.filter((item) => item.hostIds.length > 1)
+    return shared.length >= 4 ? shared : [...list]
+  }
   return [...list]
 }
 
 export function wcHostPool(difficulty: 'easy' | 'medium' | 'hard' | 'hardcore'): WorldCupHost[] {
-  if (difficulty === 'easy') return WORLD_CUP_HOSTS.filter((item) => item.hostIds.length === 1)
-  return WORLD_CUP_HOSTS
+  return singleHostPool(WORLD_CUP_HOSTS, difficulty)
 }
 
 export function wcRelatedTeamIds(year: number): string[] {

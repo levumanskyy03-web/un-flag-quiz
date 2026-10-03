@@ -1,5 +1,5 @@
 import { type Country, type Region } from '../data/countries'
-import { PASSPORTS, passportCurrency } from '../data/passports'
+import { getPassport, passportCurrency } from '../data/passports'
 import { localeTag, type Lang } from '../i18n/lang'
 import { pickText, type TextExtra } from '../i18n/text11'
 
@@ -86,16 +86,16 @@ export function currencyChoiceLabel(
   optionIsos: readonly string[],
   banned: readonly string[] = [],
 ): string {
-  const passport = PASSPORTS[prompt.iso]
+  const passport = getPassport(prompt.iso)
   if (!passport) return ''
   if (option.iso === prompt.iso || !usesCurrencyFakes(prompt.iso, passport.currencyEn)) {
-    const sourceIso = PASSPORTS[option.iso] ? option.iso : prompt.iso
-    const source = PASSPORTS[sourceIso] ?? passport
+    const sourceIso = getPassport(option.iso) ? option.iso : prompt.iso
+    const source = getPassport(sourceIso) ?? passport
     return passportCurrency(source, lang, sourceIso)
   }
   const label = distractorLabels(prompt, optionIsos, banned).get(option.iso)
   if (!label) {
-    const source = PASSPORTS[option.iso]
+    const source = getPassport(option.iso)
     return source ? passportCurrency(source, lang, option.iso) : ''
   }
   return pickText(lang, label.ru, label.en, extraFake(label, lang, prompt))
@@ -150,7 +150,7 @@ function distractorLabels(
   banned: readonly string[] = [],
 ): Map<string, { en: string; ru: string }> {
   const result = new Map<string, { en: string; ru: string }>()
-  const passport = PASSPORTS[prompt.iso]
+  const passport = getPassport(prompt.iso)
   if (!passport) return result
   const distractors = optionIsos.filter((iso) => iso !== prompt.iso).sort()
   if (distractors.length === 0) return result
@@ -194,7 +194,7 @@ function fakeLabels(
   banned: readonly string[] = [],
 ): Array<{ en: string; ru: string }> {
   const adj = adjectiveFor(prompt)
-  const passport = PASSPORTS[prompt.iso]
+  const passport = getPassport(prompt.iso)
   if (!adj || !passport || count <= 0) return []
 
   const realEn = passport.currencyEn.toLowerCase()
@@ -277,7 +277,7 @@ function unnamedCurrencies(): Array<{ en: string; ru: string; extra: TextExtra }
 
 function adjectiveFor(country: Country): Adj | null {
   if (ADJ[country.iso]) return ADJ[country.iso]
-  const passport = PASSPORTS[country.iso]
+  const passport = getPassport(country.iso)
   if (!passport) return null
   const ruFirst = passport.currencyRu.split(/\s+/)[0]
   if (!ruFirst || !isRuAdj(ruFirst)) return null

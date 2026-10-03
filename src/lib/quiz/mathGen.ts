@@ -59,12 +59,19 @@ function nearby(value: number, rng: Rng): number[] {
   return extras.filter((item) => Number.isFinite(item) && item !== value)
 }
 
+function numLabel(value: number): string {
+  if (!Number.isFinite(value)) return ''
+  if (Number.isInteger(value)) return String(value)
+  const rounded = Math.round(value * 1000) / 1000
+  return String(rounded)
+}
+
 function uniqueNums(correct: number, rng: Rng, extra: number[] = []): string[] {
-  const seen = new Set<string>([String(correct)])
+  const seen = new Set<string>([numLabel(correct)])
   const out: string[] = []
   for (const candidate of [...extra, ...nearby(correct, rng), ...nearby(correct, rng)]) {
-    const label = String(candidate)
-    if (seen.has(label)) continue
+    const label = numLabel(candidate)
+    if (!label || seen.has(label)) continue
     seen.add(label)
     out.push(label)
     if (out.length === 3) break
@@ -72,10 +79,26 @@ function uniqueNums(correct: number, rng: Rng, extra: number[] = []): string[] {
   let guard = 0
   while (out.length < 3 && guard < 40) {
     guard += 1
-    const label = String(correct + int(rng, 1, 25) * (rng() < 0.5 ? 1 : -1))
-    if (seen.has(label)) continue
+    const label = numLabel(correct + int(rng, 1, 25) * (rng() < 0.5 ? 1 : -1))
+    if (!label || seen.has(label)) continue
     seen.add(label)
     out.push(label)
+  }
+  return out
+}
+
+function fractionDistractors(n: number, d: number): string[] {
+  const answer = `${n}/${d}`
+  const candidates = [`${n + 1}/${d}`, `${n}/${d + 1}`, `${n + 1}/${d + 1}`, `${n}/${Math.max(2, d - 1)}`, `${n + 2}/${d}`]
+  const seen = new Set<string>([answer])
+  const out: string[] = []
+  for (const label of candidates) {
+    if (seen.has(label) || label === answer) continue
+    const [num, den] = label.split('/').map(Number)
+    if (!den || den < 1 || num < 1) continue
+    seen.add(label)
+    out.push(label)
+    if (out.length === 3) break
   }
   return out
 }
@@ -186,11 +209,7 @@ function buildFraction(tier: MathTier, rng: Rng): Built {
     prompt: dec,
     answer: frac,
     key: `d:${frac}`,
-    distractors: [
-      `${n + 1}/${d}`,
-      `${n}/${d + 1}`,
-      `${Math.max(1, n - 1)}/${d}`,
-    ],
+    distractors: fractionDistractors(n, d),
   }
 }
 

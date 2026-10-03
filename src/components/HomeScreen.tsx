@@ -3,6 +3,7 @@ import { HelpTip } from './HelpTip'
 import { STRINGS, localeTag, mixLabel, modeLabel, regionLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import {
+  askedDifficulty,
   fitRoundSize,
   formatClock,
   getPool,
@@ -80,7 +81,7 @@ export function HomeScreen({
       ? 0
       : settings.mix
         ? getRegionPool(settings.region, geoOpts(settings)).length
-        : getPool(settings.region, settings.difficulty, settings.mode, geoOpts(settings)).length
+        : getPool(settings.region, askedDifficulty(settings.difficulty, settings.levelHardcore), settings.mode, geoOpts(settings)).length
   const currentBest = findBest(bests, settings)
   const geoHistory = history.filter((item) => !isFootballMode(item.mode) && !isLeadersMode(item.mode) && !isMathMode(item.mode) && !isAstroMode(item.mode) && !isThemeMode(item.mode))
   const [setupFamily, setSetupFamily] = useState<SetupFamily | null>(null)
@@ -93,7 +94,7 @@ export function HomeScreen({
         ? 0
         : next.mix
           ? getRegionPool(next.region, geoOpts(next)).length
-          : getPool(next.region, next.difficulty, next.mode, geoOpts(next)).length
+          : getPool(next.region, askedDifficulty(next.difficulty, next.levelHardcore), next.mode, geoOpts(next)).length
     onChange({ ...next, roundSize: fitRoundSize(next.roundSize, nextPool) })
   }
 
@@ -168,7 +169,10 @@ export function HomeScreen({
           type="button"
           className={`choice home-launch-rankings ${setupFamily?.id === 'rankings' ? 'is-active' : ''}`}
           aria-pressed={setupFamily?.id === 'rankings'}
-          onClick={() => setSetupFamily({ world: 'geo', id: 'rankings' })}
+          onClick={() => {
+            update(settingsForGeoFamily(settings, 'rankings'))
+            setSetupFamily({ world: 'geo', id: 'rankings' })
+          }}
         >
           <FitText minPx={9}>{t.rankings}</FitText>
         </button>

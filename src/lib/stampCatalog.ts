@@ -40,6 +40,16 @@ export type StampGroupId =
   | 'pope'
   | 'rus'
   | 'uk'
+  | 'ott'
+  | 'jp'
+  | 'mc'
+  | 'bn'
+  | 'jo'
+  | 'ma'
+  | 'dk'
+  | 'nl'
+  | 'li'
+  | 'sz'
   | 'mathModes'
   | 'mathPeople'
   | 'mathCards'
@@ -124,10 +134,7 @@ function footballCatalog(): StampCard[] {
 }
 
 function leaderGroup(kind: LeaderKind): StampGroupId {
-  if (kind === 'us') return 'us'
-  if (kind === 'pope') return 'pope'
-  if (kind === 'rus') return 'rus'
-  return 'uk'
+  return kind
 }
 
 function leadersCatalog(): StampCard[] {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requestLang } from "@/i18n/requestLang";
 import { STRINGS } from "@/i18n/strings";
+import { PlayDocument } from "@/components/PlayDocument";
 import { publicMetadata } from "@/lib/pageMeta";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -9,6 +10,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return publicMetadata(lang, { title: t.studio, description: t.studioUnavailable, path: "/studio" });
 }
 
-export default function StudioPage() {
-  return null;
+export default async function StudioPage() {
+  return <PlayDocument lang={await requestLang()} hub="studio" />;
 }

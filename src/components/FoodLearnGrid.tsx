@@ -27,7 +27,7 @@ export function FoodLearnGrid({ isos, lang, returnTo }: { isos: string[]; lang: 
         return (
           <a key={dish.id} className="learn-card" href={`/dish/${dish.id}`} onClick={() => rememberDishReturn(returnTo)}>
             {photo ? (
-              <span className="flag flag-card">
+              <span className="food-plate">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img className="flag-img" src={photo} alt="" decoding="async" loading="lazy" />
               </span>

@@ -2,6 +2,7 @@ import { REGIONS } from '../data/countries'
 import { footballTeamCountry } from '../data/worldCup'
 import { penaltyById } from '../data/wcPenalties'
 import { countryName } from '../lib/quiz/core'
+import { type LeaderKind } from '../data/leaders'
 import { type GovKind } from '../data/governments'
 import { type ReligionId } from '../data/religion'
 import {
@@ -35,6 +36,7 @@ import {
   type QuizMode,
   type RegionFilter,
 } from '../lib/quiz'
+import { DYNASTY_COPY } from './dynastyCopy'
 import { EXTRA_STRINGS } from './extra'
 import { MATH_MODE_COPY } from './mathCopy'
 import { ASTRO_MODE_COPY } from './astroCopy'
@@ -359,6 +361,50 @@ export type Strings = {
   transVehiclePrompt: string
   transKindPrompt: string
   transInventorPrompt: string
+  physics: string
+  physicsSubtitle: string
+  physFamilyUnits: string
+  physFamilyLetters: string
+  physFamilyLaws: string
+  physFamilyNames: string
+  physFamilyConsts: string
+  physFamilyTools: string
+  physFamilyBits: string
+  physFamilyBands: string
+  physEasyMixNote: string
+  physHardMixNote: string
+  qtyToUnit: string
+  unitToQty: string
+  symbolToQty: string
+  qtyToSymbol: string
+  lawToFormula: string
+  formulaToLaw: string
+  effectToPerson: string
+  personToEffect: string
+  constToValue: string
+  valueToConst: string
+  meterToQty: string
+  qtyToMeter: string
+  particleToTrait: string
+  traitToParticle: string
+  bandToRole: string
+  roleToBand: string
+  physQtyPrompt: string
+  physUnitPrompt: string
+  physSymbolPrompt: string
+  physLetterPrompt: string
+  physLawPrompt: string
+  physFormulaPrompt: string
+  physEffectPrompt: string
+  physPersonPrompt: string
+  physConstPrompt: string
+  physValuePrompt: string
+  physMeterPrompt: string
+  physMeterQtyPrompt: string
+  physParticlePrompt: string
+  physTraitPrompt: string
+  physBandPrompt: string
+  physCluePrompt: string
   wcWinners: string
   wcWinnerPrompt: (year: number) => string
   wcFinalists: string
@@ -403,6 +449,22 @@ export type Strings = {
   goldCupWinnerPrompt: (year: number) => string
   nationsLeagueWinners: string
   nationsLeagueWinnerPrompt: (year: number) => string
+  asianCupFinalists: string
+  asianCupFinalistPrompt: (year: number) => string
+  asianCupHosts: string
+  asianCupHostPrompt: (year: number) => string
+  goldCupFinalists: string
+  goldCupFinalistPrompt: (year: number) => string
+  goldCupHosts: string
+  goldCupHostPrompt: (year: number) => string
+  nationsLeagueFinalists: string
+  nationsLeagueFinalistPrompt: (year: number) => string
+  nationsLeagueHosts: string
+  nationsLeagueHostPrompt: (year: number) => string
+  managerToNation: string
+  managerToNationPrompt: string
+  managerWcToName: string
+  managerWcPrompt: (year: number) => string
   uclFinalists: string
   uclFinalistPrompt: (year: number) => string
   uclTitleYears: string
@@ -543,10 +605,40 @@ export type Strings = {
   rusPhotoToName: string
   ukYearsToName: string
   ukPhotoToName: string
+  ottYearsToName: string
+  ottPhotoToName: string
+  jpYearsToName: string
+  jpPhotoToName: string
+  mcYearsToName: string
+  mcPhotoToName: string
+  bnYearsToName: string
+  bnPhotoToName: string
+  joYearsToName: string
+  joPhotoToName: string
+  maYearsToName: string
+  maPhotoToName: string
+  dkYearsToName: string
+  dkPhotoToName: string
+  nlYearsToName: string
+  nlPhotoToName: string
+  liYearsToName: string
+  liPhotoToName: string
+  szYearsToName: string
+  szPhotoToName: string
   usPresidents: string
   popesLeaders: string
   askoldToUnion: string
   ukMonarchs: string
+  ottomanRulers: string
+  japanEmperors: string
+  monacoPrinces: string
+  bruneiSultans: string
+  hashemiteRulers: string
+  alaouiteRulers: string
+  oldenburgRulers: string
+  liechtensteinPrinces: string
+  orangeRulers: string
+  dlaminiRulers: string
   leaderTopic: string
   leaderAsk: string
   leaderAskYears: string
@@ -567,6 +659,8 @@ export type Strings = {
   leaderEraUkMedieval: string
   leaderEraUkTudor: string
   leaderEraUkModern: string
+  leaderEraEarly: string
+  leaderEraLate: string
   leaderLearnName: string
   leaderFeat: string
   leaderNoteDeJure: string
@@ -580,8 +674,19 @@ export type Strings = {
   popeYearsPrompt: (range: string) => string
   popeNumberPrompt: (n: number) => string
   rusNumberPrompt: (n: number) => string
+  ukNumberPrompt: (n: number) => string
   askoldPrompt: (range: string) => string
   ukYearsPrompt: (range: string) => string
+  ottYearsPrompt: (range: string) => string
+  jpYearsPrompt: (range: string) => string
+  mcYearsPrompt: (range: string) => string
+  bnYearsPrompt: (range: string) => string
+  joYearsPrompt: (range: string) => string
+  maYearsPrompt: (range: string) => string
+  dkYearsPrompt: (range: string) => string
+  nlYearsPrompt: (range: string) => string
+  liYearsPrompt: (range: string) => string
+  szYearsPrompt: (range: string) => string
   leaderPhotoPrompt: string
   album: string
   albumHint: string
@@ -797,6 +902,9 @@ export type Strings = {
   checkYourself: string
   backToCards: string
   countriesCount: (n: number) => string
+  learnPeopleCount: (n: number) => string
+  learnDishCount: (n: number) => string
+  learnCardCount: (n: number) => string
   levelLabel: (n: number) => string
   livesLeft: (n: number) => string
   roundSize: string
@@ -1036,6 +1144,25 @@ export type Strings = {
   multiplayerHint: string
   profile: string
   profileHint: string
+  mine: string
+  mineHint: string
+  minePick: string
+  mineDone: string
+  mineEmpty: string
+  mineSearch: string
+  mineRemove: string
+  mineNone: string
+  mineRoute: string
+  mineNeed: (quizzes: number, themes: number) => string
+  mineStart: string
+  mineOnward: string
+  mineStation: (n: number, total: number) => string
+  mineCleared: string
+  mineReplayRoute: string
+  mineNext: string
+  mineBack: string
+  mineFinish: string
+  minePhase: (phase: number) => string
   playWithFriend: string
   empire: string
   empireHint: string
@@ -1057,6 +1184,7 @@ export type Strings = {
   empireRes_blueprints: string
   empireRes_stardust: string
   empireRes_chips: string
+  empireRes_coils: string
   empireRes_spices: string
   empireCoins: string
   empireGems: string
@@ -1514,6 +1642,7 @@ export const STRINGS: Record<Lang, Strings> = {
     worldsPick: 'Выберите тему',
     geography: 'География',
     football: 'Футбол',
+    ...DYNASTY_COPY.ru,
     ...MATH_MODE_COPY.ru,
     ...ASTRO_MODE_COPY.ru,
     ...PACK_MODE_COPY.ru,
@@ -1565,6 +1694,22 @@ export const STRINGS: Record<Lang, Strings> = {
     goldCupWinnerPrompt: (year) => `Кто выиграл Золотой кубок ${year}?`,
     nationsLeagueWinners: 'Лига наций',
     nationsLeagueWinnerPrompt: (year) => `Кто выиграл Лигу наций ${year}?`,
+    asianCupFinalists: 'Финалисты Кубка Азии',
+    asianCupFinalistPrompt: (year) => `Кто проиграл финал Кубка Азии ${year}?`,
+    asianCupHosts: 'Хозяева Кубка Азии',
+    asianCupHostPrompt: (year) => `Кто принимал Кубок Азии ${year}?`,
+    goldCupFinalists: 'Финалисты Золотого кубка',
+    goldCupFinalistPrompt: (year) => `Кто проиграл финал Золотого кубка ${year}?`,
+    goldCupHosts: 'Хозяева Золотого кубка',
+    goldCupHostPrompt: (year) => `Кто принимал Золотой кубок ${year}?`,
+    nationsLeagueFinalists: 'Финалисты Лиги наций',
+    nationsLeagueFinalistPrompt: (year) => `Кто проиграл финал Лиги наций ${year}?`,
+    nationsLeagueHosts: 'Хозяева Лиги наций',
+    nationsLeagueHostPrompt: (year) => `Кто принимал финал Лиги наций ${year}?`,
+    managerToNation: 'Тренер → страна',
+    managerToNationPrompt: 'Какую сборную тренировал этот тренер?',
+    managerWcToName: 'ЧМ → тренер',
+    managerWcPrompt: (year) => `Кто тренировал чемпионов мира ${year}?`,
     uclFinalists: 'Финалисты ЛЧ',
     uclFinalistPrompt: (year) => `Кто проиграл финал Кубка чемпионов ${year}?`,
     uclTitleYears: 'Год титула ЛЧ',
@@ -1750,6 +1895,7 @@ export const STRINGS: Record<Lang, Strings> = {
     popeYearsPrompt: (range) => `Кто был папой римским в ${range}?`,
     popeNumberPrompt: (n) => `Кто был ${n}-м папой римским?`,
     rusNumberPrompt: (n) => `Кто был ${n}-м правителем?`,
+    ukNumberPrompt: (n) => `Кто был ${n}-м монархом Англии?`,
     askoldPrompt: (range) => `Кто правил в ${range}?`,
     ukYearsPrompt: (range) => `Кто был королём Англии в ${range}?`,
     leaderPhotoPrompt: 'Кто на фото?',
@@ -1961,6 +2107,9 @@ export const STRINGS: Record<Lang, Strings> = {
     checkYourself: 'Проверить',
     backToCards: 'К карточкам',
     countriesCount: (n) => `${n} ${pluralRu(n, 'страна', 'страны', 'стран')}`,
+    learnPeopleCount: (n) => `${n} ${pluralRu(n, 'лидер', 'лидера', 'лидеров')}`,
+    learnDishCount: (n) => `${n} ${pluralRu(n, 'блюдо', 'блюда', 'блюд')}`,
+    learnCardCount: (n) => `${n} ${pluralRu(n, 'карточка', 'карточки', 'карточек')}`,
     levelLabel: (n) => `Уровень ${n}`,
     livesLeft: (n) => `${n} ${pluralRu(n, 'жизнь', 'жизни', 'жизней')}`,
     roundSize: 'Вопросы в блоке',
@@ -2199,6 +2348,31 @@ export const STRINGS: Record<Lang, Strings> = {
     multiplayerHint: 'Онлайн-миксы: одна очередь на несколько режимов.',
     profile: 'Профиль',
     profileHint: 'Настройки аккаунта и игра с другом.',
+    mine: 'Мои',
+    mineHint: 'Ваш маршрут: минимум пять викторин из трёх тем. Идёте по станциям, список остаётся на этом устройстве.',
+    minePick: 'Выбрать викторины',
+    mineDone: 'Готово',
+    mineEmpty: 'Маршрут пуст. Сначала выберите викторины.',
+    mineSearch: 'Найти викторину',
+    mineRemove: 'Убрать',
+    mineNone: 'Ничего не нашлось',
+    mineRoute: 'Маршрут',
+    mineNeed: (quizzes, themes) => `Нужно минимум 5 викторин и 3 темы. Сейчас ${quizzes} и ${themes}.`,
+    mineStart: 'Начать маршрут',
+    mineOnward: 'Дальше по маршруту',
+    mineStation: (n, total) => `Станция ${n} из ${total}`,
+    mineCleared: 'Маршрут пройден. Можно пройти его ещё раз.',
+    mineReplayRoute: 'Пройти сначала',
+    mineNext: 'Следующая станция',
+    mineBack: 'К маршруту',
+    mineFinish: 'Завершить маршрут',
+    minePhase: (phase) => {
+      if (phase === 1) return 'Выезд. Первая викторина задаёт темп всему маршруту.'
+      if (phase === 2) return 'Тема меняется. Правило то же: доиграть раунд до конца.'
+      if (phase === 4) return 'Другая полка. Тема другая, а глаз ещё помнит прошлую станцию.'
+      if (phase === 5) return 'Последний перегон. Ещё одна викторина — и маршрут кончается.'
+      return 'Перевал. Отсюда маршрут уже не пускает назад.'
+    },
     playWithFriend: 'Играть с другом',
     duelCreate: 'Создать комнату',
     duelJoin: 'Войти',
@@ -2215,10 +2389,10 @@ export const STRINGS: Record<Lang, Strings> = {
     hardMix: 'Сложный микс',
     customMix: 'Свой микс',
     easyMixNote: 'Флаг → страна · Страна → флаг · Страна → столица',
-    hardMixNote: 'Все режимы, кроме фактов: флаги, карта, соседи, моря и реки, коды стран',
-    customMixNote: 'Любые режимы, кроме фактов',
+    hardMixNote: 'Все режимы: флаги, карта, факты, язык, движение, религия, строй, моря и реки, коды',
+    customMixNote: 'Любые режимы, включая факты',
     footballEasyMixNote: 'Победители ЧМ · Победители Евро · Хозяева ЧМ · Победители ЛЧ',
-    footballHardMixNote: 'Все футбольные режимы, кроме фактов про игроков',
+    footballHardMixNote: 'Все футбольные режимы, включая факты об игроках',
     duelVs: (name) => `против ${name}`,
     duelWaitingOpponent: 'соперник ещё отвечает',
     duelOpponentDone: 'соперник ответил',
@@ -2320,6 +2494,7 @@ export const STRINGS: Record<Lang, Strings> = {
     worldsPick: 'Choose a topic',
     geography: 'Geography',
     football: 'Football',
+    ...DYNASTY_COPY.en,
     ...MATH_MODE_COPY.en,
     ...ASTRO_MODE_COPY.en,
     ...PACK_MODE_COPY.en,
@@ -2371,6 +2546,22 @@ export const STRINGS: Record<Lang, Strings> = {
     goldCupWinnerPrompt: (year) => `Who won the ${year} Gold Cup?`,
     nationsLeagueWinners: 'Nations League',
     nationsLeagueWinnerPrompt: (year) => `Who won the ${year} Nations League?`,
+    asianCupFinalists: 'Asian Cup finalists',
+    asianCupFinalistPrompt: (year) => `Who lost the ${year} Asian Cup final?`,
+    asianCupHosts: 'Asian Cup hosts',
+    asianCupHostPrompt: (year) => `Who hosted the ${year} Asian Cup?`,
+    goldCupFinalists: 'Gold Cup finalists',
+    goldCupFinalistPrompt: (year) => `Who lost the ${year} Gold Cup final?`,
+    goldCupHosts: 'Gold Cup hosts',
+    goldCupHostPrompt: (year) => `Who hosted the ${year} Gold Cup?`,
+    nationsLeagueFinalists: 'Nations League finalists',
+    nationsLeagueFinalistPrompt: (year) => `Who lost the ${year} Nations League final?`,
+    nationsLeagueHosts: 'Nations League hosts',
+    nationsLeagueHostPrompt: (year) => `Who hosted the ${year} Nations League final?`,
+    managerToNation: 'Manager → country',
+    managerToNationPrompt: 'Which national team did this manager coach?',
+    managerWcToName: 'World Cup → manager',
+    managerWcPrompt: (year) => `Who coached the ${year} World Cup winners?`,
     uclFinalists: 'UCL finalists',
     uclFinalistPrompt: (year) => `Who lost the ${year} European Cup / Champions League final?`,
     uclTitleYears: 'UCL title year',
@@ -2521,7 +2712,7 @@ export const STRINGS: Record<Lang, Strings> = {
     ukPhotoToName: 'Kings of England · photo',
     usPresidents: 'U.S. presidents',
     popesLeaders: 'Popes',
-    askoldToUnion: 'From Askold to the Union',
+    askoldToUnion: 'Leaders of Rus',
     ukMonarchs: 'Kings of England',
     leaderTopic: 'Topic',
     leaderAsk: 'Question',
@@ -2556,6 +2747,7 @@ export const STRINGS: Record<Lang, Strings> = {
     popeYearsPrompt: (range) => `Who was pope in ${range}?`,
     popeNumberPrompt: (n) => `Who was the ${ordinalEn(n)} pope?`,
     rusNumberPrompt: (n) => `Who was the ${ordinalEn(n)} ruler?`,
+    ukNumberPrompt: (n) => `Who was the ${ordinalEn(n)} English monarch?`,
     askoldPrompt: (range) => `Who ruled in ${range}?`,
     ukYearsPrompt: (range) => `Who was king of England in ${range}?`,
     leaderPhotoPrompt: 'Who is this?',
@@ -2767,6 +2959,9 @@ export const STRINGS: Record<Lang, Strings> = {
     checkYourself: 'Test yourself',
     backToCards: 'Back to cards',
     countriesCount: (n) => `${n} ${n === 1 ? 'country' : 'countries'}`,
+    learnPeopleCount: (n) => `${n} ${n === 1 ? 'leader' : 'leaders'}`,
+    learnDishCount: (n) => `${n} ${n === 1 ? 'dish' : 'dishes'}`,
+    learnCardCount: (n) => `${n} ${n === 1 ? 'card' : 'cards'}`,
     levelLabel: (n) => `Level ${n}`,
     livesLeft: (n) => `${n} ${n === 1 ? 'life' : 'lives'}`,
     roundSize: 'Questions in the round',
@@ -2999,6 +3194,31 @@ export const STRINGS: Record<Lang, Strings> = {
     multiplayerHint: 'Online mixes: one queue across several modes.',
     profile: 'Profile',
     profileHint: 'Account settings and a game with a friend.',
+    mine: 'Mine',
+    mineHint: 'Your route: at least 5 quizzes from 3 themes. You move station by station. The list stays on this device.',
+    minePick: 'Choose quizzes',
+    mineDone: 'Done',
+    mineEmpty: 'The route is empty. Choose quizzes first.',
+    mineSearch: 'Find a quiz',
+    mineRemove: 'Remove',
+    mineNone: 'No quizzes match',
+    mineRoute: 'Route',
+    mineNeed: (quizzes, themes) => `It takes at least 5 quizzes and 3 themes. Right now: ${quizzes} and ${themes}.`,
+    mineStart: 'Start the route',
+    mineOnward: 'Continue the route',
+    mineStation: (n, total) => `Station ${n} of ${total}`,
+    mineCleared: 'Route complete. You can walk it again.',
+    mineReplayRoute: 'Walk it again',
+    mineNext: 'Next station',
+    mineBack: 'Back to the route',
+    mineFinish: 'Finish the route',
+    minePhase: (phase) => {
+      if (phase === 1) return 'Departure. The first quiz sets the pace for the whole route.'
+      if (phase === 2) return 'The theme changes. Same rule: finish the round.'
+      if (phase === 4) return 'Another shelf. The theme is different, and the last station is still in your eye.'
+      if (phase === 5) return 'Last stretch. One more quiz and the route ends.'
+      return 'The pass. From here the route does not let you turn back.'
+    },
     playWithFriend: 'Play with a friend',
     duelCreate: 'Create room',
     duelJoin: 'Join',
@@ -3015,10 +3235,10 @@ export const STRINGS: Record<Lang, Strings> = {
     hardMix: 'Hard mix',
     customMix: 'Custom mix',
     easyMixNote: 'Flag → country · Country → flag · Country → capital',
-    hardMixNote: 'All modes except facts: flags, map, neighbours, seas and rivers, country codes',
-    customMixNote: 'Any modes except facts',
+    hardMixNote: 'All modes: flags, map, facts, language, driving side, religion, government, seas and rivers, codes',
+    customMixNote: 'Any modes, including facts',
     footballEasyMixNote: 'World Cup winners · Euro winners · World Cup hosts · Champions League',
-    footballHardMixNote: 'All football modes except player facts',
+    footballHardMixNote: 'All football modes, including player facts',
     duelVs: (name) => `vs ${name}`,
     duelWaitingOpponent: 'opponent is still answering',
     duelOpponentDone: 'opponent answered',
@@ -3133,18 +3353,53 @@ export function difficultyLabel(difficulty: QuizDifficulty, lang: Lang): string 
   return STRINGS[lang][difficulty]
 }
 
+export function leaderTopicName(kind: LeaderKind | null, t: Strings): string {
+  if (kind === 'pope') return t.popesLeaders
+  if (kind === 'rus') return t.askoldToUnion
+  if (kind === 'uk') return t.ukMonarchs
+  if (kind === 'ott') return t.ottomanRulers
+  if (kind === 'jp') return t.japanEmperors
+  if (kind === 'mc') return t.monacoPrinces
+  if (kind === 'bn') return t.bruneiSultans
+  if (kind === 'jo') return t.hashemiteRulers
+  if (kind === 'ma') return t.alaouiteRulers
+  if (kind === 'dk') return t.oldenburgRulers
+  if (kind === 'nl') return t.orangeRulers
+  if (kind === 'li') return t.liechtensteinPrinces
+  if (kind === 'sz') return t.dlaminiRulers
+  return t.usPresidents
+}
+
+export function leaderNumberPrompt(mode: QuizMode, n: number, t: Strings): string {
+  const kind = leaderKindOf(mode)
+  if (kind === 'pope') return t.popeNumberPrompt(n)
+  if (kind === 'rus') return t.rusNumberPrompt(n)
+  if (kind === 'uk') return t.ukNumberPrompt(n)
+  return t.usNumberPrompt(n)
+}
+
+export function leaderYearsPrompt(mode: QuizMode, range: string, t: Strings): string {
+  const kind = leaderKindOf(mode)
+  if (kind === 'pope') return t.popeYearsPrompt(range)
+  if (kind === 'rus') return t.askoldPrompt(range)
+  if (kind === 'uk') return t.ukYearsPrompt(range)
+  if (kind === 'ott') return t.ottYearsPrompt(range)
+  if (kind === 'jp') return t.jpYearsPrompt(range)
+  if (kind === 'mc') return t.mcYearsPrompt(range)
+  if (kind === 'bn') return t.bnYearsPrompt(range)
+  if (kind === 'jo') return t.joYearsPrompt(range)
+  if (kind === 'ma') return t.maYearsPrompt(range)
+  if (kind === 'dk') return t.dkYearsPrompt(range)
+  if (kind === 'nl') return t.nlYearsPrompt(range)
+  if (kind === 'li') return t.liYearsPrompt(range)
+  if (kind === 'sz') return t.szYearsPrompt(range)
+  return t.usYearsPrompt(range)
+}
+
 export function modeLabel(mode: QuizMode, lang: Lang): string {
   if (isLeadersMode(mode)) {
     const t = STRINGS[lang]
-    const kind = leaderKindOf(mode)
-    const topic =
-      kind === 'pope'
-        ? t.popesLeaders
-        : kind === 'rus'
-          ? t.askoldToUnion
-          : kind === 'uk'
-            ? t.ukMonarchs
-            : t.usPresidents
+    const topic = leaderTopicName(leaderKindOf(mode), t)
     const ask = leadersAskOf(mode)
     const askLabel = ask === 'photo' ? t.leaderAskPhoto : ask === 'number' ? t.leaderAskNumber : t.leaderAskYears
     return `${topic} · ${askLabel}`
@@ -3327,6 +3582,22 @@ export function footballQuestionPrompt(
       return t.goldCupWinnerPrompt(year)
     case 'nationsLeagueWinners':
       return t.nationsLeagueWinnerPrompt(year)
+    case 'asianCupFinalists':
+      return t.asianCupFinalistPrompt(year)
+    case 'asianCupHosts':
+      return t.asianCupHostPrompt(year)
+    case 'goldCupFinalists':
+      return t.goldCupFinalistPrompt(year)
+    case 'goldCupHosts':
+      return t.goldCupHostPrompt(year)
+    case 'nationsLeagueFinalists':
+      return t.nationsLeagueFinalistPrompt(year)
+    case 'nationsLeagueHosts':
+      return t.nationsLeagueHostPrompt(year)
+    case 'managerToNation':
+      return t.managerToNationPrompt
+    case 'managerWcToName':
+      return t.managerWcPrompt(year)
     case 'europaWinners':
       return t.europaWinnerPrompt(year)
     case 'libertadoresWinners':

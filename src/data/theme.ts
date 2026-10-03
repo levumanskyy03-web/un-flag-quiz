@@ -6,6 +6,7 @@ import { THEME_LEVEL_QUESTIONS } from '../lib/quiz/themeModes'
 import { olyGeneratedRows } from './olympics/rows'
 import { csGeneratedRows } from './cs/rows'
 import { foodGeneratedRows } from './food/rows'
+import { physicsGeneratedRows } from './physics/rows'
 import { BIO_CLASS_PHOTO, bioGeneratedRows } from './biology/rows'
 import { olyPortrait } from './olympics/portraits'
 
@@ -660,6 +661,7 @@ export const THEME_ITEMS: ThemeItem[] = [
   star('oph-blank', 'olyPhotoToName', 'hard', BLANK, BLANK, { key: 'blank' }),
 
   ...csGeneratedRows(),
+  ...physicsGeneratedRows(),
   ...foodGeneratedRows(),
 
   row('ve-car', 'vehicleToKind', 'easy', CAR, LAND, { key: 'land' }),

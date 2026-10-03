@@ -1,4 +1,4 @@
-export const THEME_WORLDS = ['biology', 'olympics', 'cs', 'food'] as const
+export const THEME_WORLDS = ['biology', 'olympics', 'cs', 'physics', 'food'] as const
 export type ThemeWorld = (typeof THEME_WORLDS)[number]
 
 export const BIO_CELL_MODES = ['organelleToRole', 'roleToOrganelle'] as const
@@ -62,7 +62,26 @@ export const FOOD_ORIGIN_MODES = ['foodToOrigin', 'dishToIngredients', 'ingredie
 export const FOOD_PHOTO_MODES = ['foodPhotoToDish', 'foodPhotoToCuisine', 'foodPhotoToIngredients', 'foodPhotoToCourse'] as const
 export const FOOD_MODES = [...FOOD_DISH_MODES, ...FOOD_ORIGIN_MODES, ...FOOD_PHOTO_MODES] as const
 
-export const THEME_MODES = [...BIO_MODES, ...OLY_MODES, ...CS_MODES, ...FOOD_MODES] as const
+export const PHYS_UNIT_MODES = ['qtyToUnit', 'unitToQty'] as const
+export const PHYS_LETTER_MODES = ['symbolToQty', 'qtyToSymbol'] as const
+export const PHYS_LAW_MODES = ['lawToFormula', 'formulaToLaw'] as const
+export const PHYS_NAME_MODES = ['effectToPerson', 'personToEffect'] as const
+export const PHYS_CONST_MODES = ['constToValue', 'valueToConst'] as const
+export const PHYS_TOOL_MODES = ['meterToQty', 'qtyToMeter'] as const
+export const PHYS_BIT_MODES = ['particleToTrait', 'traitToParticle'] as const
+export const PHYS_BAND_MODES = ['bandToRole', 'roleToBand'] as const
+export const PHYS_MODES = [
+  ...PHYS_UNIT_MODES,
+  ...PHYS_LETTER_MODES,
+  ...PHYS_LAW_MODES,
+  ...PHYS_NAME_MODES,
+  ...PHYS_CONST_MODES,
+  ...PHYS_TOOL_MODES,
+  ...PHYS_BIT_MODES,
+  ...PHYS_BAND_MODES,
+] as const
+
+export const THEME_MODES = [...BIO_MODES, ...OLY_MODES, ...CS_MODES, ...PHYS_MODES, ...FOOD_MODES] as const
 export type ThemeMode = (typeof THEME_MODES)[number]
 
 export const THEME_TOPICS = [
@@ -86,6 +105,14 @@ export const THEME_TOPICS = [
   'dishes',
   'origin',
   'plates',
+  'units',
+  'letters',
+  'laws',
+  'names',
+  'consts',
+  'tools',
+  'bits',
+  'bands',
 ] as const
 export type ThemeTopic = (typeof THEME_TOPICS)[number]
 
@@ -101,6 +128,7 @@ export function themeWorldOf(mode: ThemeMode): ThemeWorld {
   if ((BIO_MODES as readonly string[]).includes(mode)) return 'biology'
   if ((OLY_MODES as readonly string[]).includes(mode)) return 'olympics'
   if ((CS_MODES as readonly string[]).includes(mode)) return 'cs'
+  if ((PHYS_MODES as readonly string[]).includes(mode)) return 'physics'
   return 'food'
 }
 
@@ -108,6 +136,7 @@ export function themeModesOfWorld(world: ThemeWorld): readonly ThemeMode[] {
   if (world === 'biology') return BIO_MODES
   if (world === 'olympics') return OLY_MODES
   if (world === 'cs') return CS_MODES
+  if (world === 'physics') return PHYS_MODES
   return FOOD_MODES
 }
 
@@ -115,6 +144,7 @@ export function themeTopicsOf(world: ThemeWorld): readonly ThemeTopic[] {
   if (world === 'biology') return ['cell', 'body', 'life', 'wild', 'labs']
   if (world === 'olympics') return ['hosts', 'sports', 'noc', 'stars', 'emblems']
   if (world === 'cs') return ['code', 'slang', 'flows', 'langs', 'structs', 'binary', 'hackers']
+  if (world === 'physics') return ['units', 'letters', 'laws', 'names', 'consts', 'tools', 'bits', 'bands']
   return ['dishes', 'origin', 'plates']
 }
 
@@ -139,6 +169,14 @@ export function themeModesOfTopic(topic: ThemeTopic): readonly ThemeMode[] {
   if (topic === 'dishes') return FOOD_DISH_MODES
   if (topic === 'origin') return FOOD_ORIGIN_MODES
   if (topic === 'plates') return FOOD_PHOTO_MODES
+  if (topic === 'units') return PHYS_UNIT_MODES
+  if (topic === 'letters') return PHYS_LETTER_MODES
+  if (topic === 'laws') return PHYS_LAW_MODES
+  if (topic === 'names') return PHYS_NAME_MODES
+  if (topic === 'consts') return PHYS_CONST_MODES
+  if (topic === 'tools') return PHYS_TOOL_MODES
+  if (topic === 'bits') return PHYS_BIT_MODES
+  if (topic === 'bands') return PHYS_BAND_MODES
   return FOOD_ORIGIN_MODES
 }
 
@@ -164,13 +202,15 @@ export const EASY_THEME_MIX: Record<ThemeWorld, ThemeMode[]> = {
     'olySymbolToMeaning',
   ],
   cs: ['csTermToMeaning', 'slangToMeaning', 'stepToNext', 'codeToLang', 'structToUse', 'decToBinary'],
+  physics: ['qtyToUnit', 'symbolToQty', 'lawToFormula', 'effectToPerson', 'constToValue', 'meterToQty'],
   food: ['dishToCuisine', 'foodToOrigin', 'dishToCourse', 'foodPhotoToDish'],
 }
 
 export const HARD_THEME_MIX: Record<ThemeWorld, ThemeMode[]> = {
   biology: [...BIO_MODES],
-  olympics: OLY_MODES.filter((mode) => mode !== 'olyPhotoToName'),
-  cs: CS_MODES.filter((mode) => mode !== 'csPhotoToName'),
+  olympics: [...OLY_MODES],
+  cs: [...CS_MODES],
+  physics: [...PHYS_MODES],
   food: [...FOOD_MODES],
 }
 
@@ -178,6 +218,7 @@ export const MATCH_THEME_MODES: Record<ThemeWorld, ThemeMode[]> = {
   biology: ['organelleToRole', 'organToSystem', 'animalToClass', 'bioPhotoToName'],
   olympics: ['olyYearToHost', 'hostToCountry', 'nocToName', 'nameToNoc'],
   cs: ['csTermToMeaning', 'csPhotoToName'],
+  physics: ['qtyToUnit', 'lawToFormula'],
   food: ['dishToCuisine', 'foodPhotoToDish'],
 }
 
@@ -186,7 +227,8 @@ export const THEME_MATCH_MIX: Record<ThemeWorld, ThemeMode[]> = EASY_THEME_MIX
 export const THEME_CAMPAIGN_MODES: Record<ThemeWorld, ThemeMode[]> = {
   biology: [...BIO_MODES],
   olympics: [...OLY_MODES],
-  cs: CS_MODES.filter((mode) => mode !== 'csPhotoToName'),
+  cs: [...CS_MODES],
+  physics: [...PHYS_MODES],
   food: [...FOOD_MODES],
 }
 
@@ -194,6 +236,7 @@ export const THEME_DEFAULT_MODE: Record<ThemeWorld, ThemeMode> = {
   biology: 'organelleToRole',
   olympics: 'olyYearToHost',
   cs: 'csTermToMeaning',
+  physics: 'qtyToUnit',
   food: 'dishToCuisine',
 }
 

@@ -9,7 +9,14 @@ import { UCL_WINNERS } from './ucl'
 import { WC_SCORERS } from './wcScorers'
 import { penaltyYears } from './wcPenalties'
 import { WORLD_CUP_HOSTS, WORLD_CUP_WINNERS } from './worldCup'
-import { ASIAN_CUP_WINNERS, GOLD_CUP_WINNERS, NATIONS_LEAGUE_WINNERS } from './footballCups'
+import {
+  ASIAN_CUP_HOSTS,
+  ASIAN_CUP_WINNERS,
+  GOLD_CUP_HOSTS,
+  GOLD_CUP_WINNERS,
+  NATIONS_LEAGUE_HOSTS,
+  NATIONS_LEAGUE_WINNERS,
+} from './footballCups'
 import { EUROPA_WINNERS } from './europaLeague'
 import { LIBERTADORES_WINNERS } from './libertadores'
 import { LEAGUE_TITLES } from './topLeagues'
@@ -32,9 +39,13 @@ export function footballYearsForMode(mode: string): number[] {
   }
   if (mode === 'copaWinners' || mode === 'copaFinalists') return COPA_WINNERS.map((item) => item.year)
   if (mode === 'afconWinners' || mode === 'afconFinalists') return AFCON_WINNERS.map((item) => item.year)
-  if (mode === 'asianCupWinners') return ASIAN_CUP_WINNERS.map((item) => item.year)
-  if (mode === 'goldCupWinners') return GOLD_CUP_WINNERS.map((item) => item.year)
-  if (mode === 'nationsLeagueWinners') return NATIONS_LEAGUE_WINNERS.map((item) => item.year)
+  if (mode === 'asianCupWinners' || mode === 'asianCupFinalists') return ASIAN_CUP_WINNERS.map((item) => item.year)
+  if (mode === 'asianCupHosts') return ASIAN_CUP_HOSTS.map((item) => item.year)
+  if (mode === 'goldCupWinners' || mode === 'goldCupFinalists') return GOLD_CUP_WINNERS.map((item) => item.year)
+  if (mode === 'goldCupHosts') return GOLD_CUP_HOSTS.map((item) => item.year)
+  if (mode === 'nationsLeagueWinners' || mode === 'nationsLeagueFinalists') return NATIONS_LEAGUE_WINNERS.map((item) => item.year)
+  if (mode === 'nationsLeagueHosts') return NATIONS_LEAGUE_HOSTS.map((item) => item.year)
+  if (mode === 'managerWcToName') return FOOTBALL_MANAGERS.flatMap((item) => item.wcWins)
   if (mode === 'europaWinners') return EUROPA_WINNERS.map((item) => item.year)
   if (mode === 'libertadoresWinners') return LIBERTADORES_WINNERS.map((item) => item.year)
   if (mode === 'leagueWinners') return LEAGUE_TITLES.map((item) => item.year)
@@ -65,7 +76,7 @@ export function footballCampaignLevels(mode: string): number {
   if (mode === 'playerFactsToName') return 0
   if (mode === 'clubCrestToName') return chunksOf(allFootballClubs().map((club) => club.id)).length
   if (mode === 'stadiumToClub') return chunksOf(FOOTBALL_STADIUMS.map((item) => item.id)).length
-  if (mode === 'managerPhotoToName') return chunksOf(FOOTBALL_MANAGERS.map((item) => item.id)).length
+  if (mode === 'managerPhotoToName' || mode === 'managerToNation') return chunksOf(FOOTBALL_MANAGERS.map((item) => item.id)).length
   if (
     mode === 'playerPhotoToName' ||
     mode === 'playerToNation' ||
@@ -96,7 +107,9 @@ export function footballLevelPlayerIds(mode: string, level: number): string[] {
   ) {
     return footballPlayerChunks()[level - 1] ?? []
   }
-  if (mode === 'managerPhotoToName') return chunksOf(FOOTBALL_MANAGERS.map((item) => item.id))[level - 1] ?? []
+  if (mode === 'managerPhotoToName' || mode === 'managerToNation') {
+    return chunksOf(FOOTBALL_MANAGERS.map((item) => item.id))[level - 1] ?? []
+  }
   if (mode === 'clubCrestToName') return chunksOf(allFootballClubs().map((club) => club.id))[level - 1] ?? []
   if (mode === 'stadiumToClub') return chunksOf(FOOTBALL_STADIUMS.map((item) => item.id))[level - 1] ?? []
   return []

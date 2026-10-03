@@ -556,6 +556,18 @@ export function factsDifficultyOf(country: Country): FactsDifficulty {
   return FACTS_TIER[country.iso] ?? (country.difficulty === 'easy' ? 'easy' : 'hard')
 }
 
+const FACTS_HARDCORE = new Set(
+  Object.entries(FACTS_TIER)
+    .filter(([, tier]) => tier === 'hard')
+    .sort((a, b) => (FACTS_FAME.get(a[0]) ?? 999) - (FACTS_FAME.get(b[0]) ?? 999))
+    .slice(Math.floor(Object.values(FACTS_TIER).filter((tier) => tier === 'hard').length / 2))
+    .map(([iso]) => iso),
+)
+
+export function factsHardcore(country: Country): boolean {
+  return FACTS_HARDCORE.has(country.iso)
+}
+
 export type LanguageDifficulty = 'easy' | 'medium' | 'hard'
 
 const LANGUAGE_TIER = buildLanguageTiers()
@@ -579,4 +591,48 @@ function buildLanguageTiers(): Record<string, LanguageDifficulty> {
 
 export function languageDifficultyOf(country: Country): LanguageDifficulty {
   return LANGUAGE_TIER[country.iso] ?? (country.difficulty === 'easy' ? 'easy' : 'hard')
+}
+
+const LANGUAGE_HARDCORE = new Set(
+  Object.entries(LANGUAGE_TIER)
+    .filter(([, tier]) => tier === 'hard')
+    .sort((a, b) => (FACTS_FAME.get(a[0]) ?? 999) - (FACTS_FAME.get(b[0]) ?? 999))
+    .slice(Math.floor(Object.values(LANGUAGE_TIER).filter((tier) => tier === 'hard').length / 2))
+    .map(([iso]) => iso),
+)
+
+export function languageHardcore(country: Country): boolean {
+  return LANGUAGE_HARDCORE.has(country.iso)
+}
+
+export type GeoPlayTier = 'easy' | 'medium' | 'hard' | 'hardcore'
+
+const GEO_PLAY_TIER = new Map<string, Map<string, GeoPlayTier>>()
+
+function fameIndex(iso: string): number {
+  return FACTS_FAME.get(iso) ?? 999
+}
+
+/** Easy stays the short list. The rest splits into medium, hard, and a smaller hardcore band. */
+export function geoPlayTier(country: Country, mode: string): GeoPlayTier {
+  let table = GEO_PLAY_TIER.get(mode)
+  if (!table) {
+    table = new Map()
+    const rest = COUNTRIES.filter((item) => !isEasyForMode(item, mode)).sort(
+      (a, b) => fameIndex(a.iso) - fameIndex(b.iso),
+    )
+    const mid = Math.ceil(rest.length / 2)
+    const medium = new Set(rest.slice(0, mid).map((item) => item.iso))
+    const harder = rest.slice(mid)
+    const hardCut = Math.ceil(harder.length / 2)
+    const hard = new Set(harder.slice(0, hardCut).map((item) => item.iso))
+    for (const item of COUNTRIES) {
+      if (isEasyForMode(item, mode)) table.set(item.iso, 'easy')
+      else if (medium.has(item.iso)) table.set(item.iso, 'medium')
+      else if (hard.has(item.iso)) table.set(item.iso, 'hard')
+      else table.set(item.iso, 'hardcore')
+    }
+    GEO_PLAY_TIER.set(mode, table)
+  }
+  return table.get(country.iso) ?? 'hard'
 }

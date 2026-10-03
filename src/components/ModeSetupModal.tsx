@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import type { Region } from '../data/countries'
 import type { LeaderKind } from '../data/leaders'
-import { REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
+import { REGIONS, STRINGS, leaderTopicName, modeLabel, regionLabel } from '../i18n/strings'
 import { HelpTip } from './HelpTip'
 import {
   EASY_FOOTBALL_MIX_MODES,
@@ -19,6 +19,7 @@ import {
   LEADERS_DIFFICULTIES,
   PLAY_DIFFICULTIES,
   ROUND_SIZES,
+  askedDifficulty,
   fitRoundSize,
   footballMixPoolSize,
   footballPoolSize,
@@ -122,13 +123,7 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
           : family.world === 'astronomy'
             ? astroFamilyLabel(family.id, settings.lang)
         : family.world === 'leaders'
-        ? family.id === 'pope'
-          ? t.popesLeaders
-          : family.id === 'rus'
-            ? t.askoldToUnion
-            : family.id === 'uk'
-              ? t.ukMonarchs
-              : t.usPresidents
+        ? leaderTopicName(family.id, t)
         : themeFamilyLabel(family.world, family.id, settings.lang)
 
   const poolSize = poolOf(family, settings)
@@ -225,7 +220,6 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
   }
 
   function toggleMixMode(mode: QuizMode) {
-    if (isFactsToName(mode) || isPlayerFactsToName(mode) || mode === 'mathFactsToName' || mode === 'astroFactsToName') return
     const selected = settings.mixModes
     const mixModes = selected.includes(mode) ? selected.filter((item) => item !== mode) : [...selected, mode]
     update({
@@ -320,7 +314,6 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
                     lang={settings.lang}
                     activeMode={settings.mode}
                     selectedModes={settings.mixModes}
-                    hideModes={['factsToName']}
                     showRankings={false}
                     onPick={toggleMixMode}
                   />
@@ -329,7 +322,6 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
                     lang={settings.lang}
                     activeMode={settings.mode}
                     selectedModes={settings.mixModes}
-                    hideModes={['mathFactsToName']}
                     onPick={toggleMixMode}
                   />
                 ) : family.world === 'astronomy' ? (
@@ -337,7 +329,6 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
                     lang={settings.lang}
                     activeMode={settings.mode}
                     selectedModes={settings.mixModes}
-                    hideModes={['astroFactsToName']}
                     onPick={toggleMixMode}
                   />
                 ) : isThemeWorld(family.world) ? (
@@ -353,7 +344,6 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
                     lang={settings.lang}
                     activeMode={settings.mode}
                     selectedModes={settings.mixModes}
-                    hideModes={['playerFactsToName']}
                     onPick={toggleMixMode}
                   />
                 )}
@@ -378,7 +368,7 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
             activeMode={settings.mode}
             mix={false}
             hideHeading
-            onPick={() => {}}
+            onPick={pickMode}
           />
         ) : null}
 
@@ -445,7 +435,7 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
           </>
         ) : null}
 
-        {rankingsInfo ? null : (
+        {(
           <>
             <DifficultyPicker
               lang={settings.lang}
@@ -498,6 +488,7 @@ function themeMixNote(world: ThemeWorld, kind: 'easy' | 'hard', t: (typeof STRIN
   if (world === 'biology') return kind === 'easy' ? t.bioEasyMixNote : t.bioHardMixNote
   if (world === 'olympics') return kind === 'easy' ? t.olyEasyMixNote : t.olyHardMixNote
   if (world === 'cs') return kind === 'easy' ? t.csEasyMixNote : t.csHardMixNote
+  if (world === 'physics') return kind === 'easy' ? t.physEasyMixNote : t.physHardMixNote
   return kind === 'easy' ? t.foodEasyMixNote : t.foodHardMixNote
 }
 
@@ -560,5 +551,5 @@ function poolOf(family: SetupFamily, settings: QuizSettings): number {
   if (settings.mix === 'custom' && settings.mixModes.length === 0) return 0
   return settings.mix
     ? getRegionPool(settings.region, geoOpts(settings)).length
-    : getPool(settings.region, settings.difficulty, settings.mode, geoOpts(settings)).length
+    : getPool(settings.region, askedDifficulty(settings.difficulty, settings.levelHardcore), settings.mode, geoOpts(settings)).length
 }

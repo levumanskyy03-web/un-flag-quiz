@@ -1,4 +1,4 @@
-import { type WorldCupWinner } from './worldCup'
+import { type WorldCupHost, type WorldCupWinner } from './worldCup'
 
 export const ASIAN_CUP_WINNERS: WorldCupWinner[] = [
   { year: 1956, winnerId: 'kr', runnerUpId: 'il' },
@@ -55,4 +55,53 @@ export const NATIONS_LEAGUE_WINNERS: WorldCupWinner[] = [
   { year: 2021, winnerId: 'fr', runnerUpId: 'es' },
   { year: 2023, winnerId: 'es', runnerUpId: 'hr' },
   { year: 2025, winnerId: 'pt', runnerUpId: 'es' },
+]
+
+/** Finals hosts. 1956 Asian Cup was in Hong Kong, which is not a quiz country. */
+export const ASIAN_CUP_HOSTS: WorldCupHost[] = [
+  { year: 1960, hostIds: ['kr'] },
+  { year: 1964, hostIds: ['il'] },
+  { year: 1968, hostIds: ['ir'] },
+  { year: 1972, hostIds: ['th'] },
+  { year: 1976, hostIds: ['ir'] },
+  { year: 1980, hostIds: ['kw'] },
+  { year: 1984, hostIds: ['sg'] },
+  { year: 1988, hostIds: ['qa'] },
+  { year: 1992, hostIds: ['jp'] },
+  { year: 1996, hostIds: ['ae'] },
+  { year: 2000, hostIds: ['lb'] },
+  { year: 2004, hostIds: ['cn'] },
+  { year: 2007, hostIds: ['id', 'my', 'th', 'vn'] },
+  { year: 2011, hostIds: ['qa'] },
+  { year: 2015, hostIds: ['au'] },
+  { year: 2019, hostIds: ['ae'] },
+  { year: 2023, hostIds: ['qa'] },
+]
+
+export const GOLD_CUP_HOSTS: WorldCupHost[] = [
+  { year: 1991, hostIds: ['us'] },
+  { year: 1993, hostIds: ['us', 'mx'] },
+  { year: 1996, hostIds: ['us'] },
+  { year: 1998, hostIds: ['us'] },
+  { year: 2000, hostIds: ['us'] },
+  { year: 2002, hostIds: ['us'] },
+  { year: 2003, hostIds: ['us', 'mx'] },
+  { year: 2005, hostIds: ['us'] },
+  { year: 2007, hostIds: ['us'] },
+  { year: 2009, hostIds: ['us'] },
+  { year: 2011, hostIds: ['us'] },
+  { year: 2013, hostIds: ['us'] },
+  { year: 2015, hostIds: ['us', 'ca'] },
+  { year: 2017, hostIds: ['us'] },
+  { year: 2019, hostIds: ['us', 'cr', 'jm'] },
+  { year: 2021, hostIds: ['us'] },
+  { year: 2023, hostIds: ['us', 'ca'] },
+  { year: 2025, hostIds: ['us', 'ca'] },
+]
+
+export const NATIONS_LEAGUE_HOSTS: WorldCupHost[] = [
+  { year: 2019, hostIds: ['pt'] },
+  { year: 2021, hostIds: ['it'] },
+  { year: 2023, hostIds: ['nl'] },
+  { year: 2025, hostIds: ['de'] },
 ]

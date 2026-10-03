@@ -2,6 +2,7 @@ import type { Country } from './countries'
 import type { LeaderKind, LeaderTier } from './leaderFame'
 import { POPES } from './popes'
 import { US_PRESIDENTS } from './usPresidents'
+import { DYNASTY_TERMS, dynastyTerms, isDynastyKind } from './dynastyLeaders'
 import { UK_MONARCHS } from './englishMonarchs'
 import { RUS_LEADERS } from './varangianLeaders'
 import type { Lang } from '../i18n/lang'
@@ -24,7 +25,7 @@ export interface LeaderTerm {
   tier: LeaderTier
 }
 
-export const ALL_LEADER_TERMS: LeaderTerm[] = [...US_PRESIDENTS, ...POPES, ...RUS_LEADERS, ...UK_MONARCHS]
+export const ALL_LEADER_TERMS: LeaderTerm[] = [...US_PRESIDENTS, ...POPES, ...RUS_LEADERS, ...UK_MONARCHS, ...DYNASTY_TERMS]
 
 const BY_ID = new Map(ALL_LEADER_TERMS.map((term) => [term.id, term]))
 
@@ -78,13 +79,23 @@ export function uniquePersons(terms: LeaderTerm[]): LeaderTerm[] {
 
 export function neighborsByNumber(terms: LeaderTerm[], term: LeaderTerm, take = 2): LeaderTerm[] {
   const same = terms.filter((item) => item.kind === term.kind && item.personId !== term.personId)
-  return [...same].sort((a, b) => Math.abs(a.n - term.n) - Math.abs(b.n - term.n)).slice(0, take)
+  const sorted = [...same].sort((a, b) => Math.abs(a.n - term.n) - Math.abs(b.n - term.n))
+  const seen = new Set<string>()
+  const unique: LeaderTerm[] = []
+  for (const item of sorted) {
+    if (seen.has(item.personId)) continue
+    seen.add(item.personId)
+    unique.push(item)
+    if (unique.length >= take) break
+  }
+  return unique
 }
 
 export function termsForKind(kind: LeaderKind): LeaderTerm[] {
   if (kind === 'us') return US_PRESIDENTS
   if (kind === 'pope') return POPES
   if (kind === 'uk') return UK_MONARCHS
+  if (isDynastyKind(kind)) return dynastyTerms(kind)
   return RUS_LEADERS
 }
 

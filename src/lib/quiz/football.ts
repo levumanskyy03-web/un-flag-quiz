@@ -10,13 +10,16 @@ import { AFCON_EASY_FROM, AFCON_HOSTS, AFCON_WINNERS } from '../../data/afcon'
 import { COPA_EASY_FROM, COPA_HOSTS, COPA_WINNERS } from '../../data/copaAmerica'
 import {
   ASIAN_CUP_EASY_FROM,
+  ASIAN_CUP_HOSTS,
   ASIAN_CUP_WINNERS,
   EUROPA_EASY_FROM,
   GOLD_CUP_EASY_FROM,
+  GOLD_CUP_HOSTS,
   GOLD_CUP_WINNERS,
   LEAGUE_EASY_FROM,
   LIBERTADORES_EASY_FROM,
   NATIONS_LEAGUE_EASY_FROM,
+  NATIONS_LEAGUE_HOSTS,
   NATIONS_LEAGUE_WINNERS,
 } from '../../data/footballCups'
 import { EUROPA_WINNERS } from '../../data/europaLeague'
@@ -101,6 +104,9 @@ export function footballYearList(mode: QuizMode, difficulty: QuizDifficulty): nu
   if (mode === 'euroHosts') return euroHostPool(difficulty).map((item) => item.year)
   if (mode === 'copaHosts') return tournamentYearPool(COPA_HOSTS, difficulty, COPA_EASY_FROM).map((item) => item.year)
   if (mode === 'afconHosts') return tournamentYearPool(AFCON_HOSTS, difficulty, AFCON_EASY_FROM).map((item) => item.year)
+  if (mode === 'asianCupHosts') return tournamentYearPool(ASIAN_CUP_HOSTS, difficulty, ASIAN_CUP_EASY_FROM).map((item) => item.year)
+  if (mode === 'goldCupHosts') return tournamentYearPool(GOLD_CUP_HOSTS, difficulty, GOLD_CUP_EASY_FROM).map((item) => item.year)
+  if (mode === 'nationsLeagueHosts') return tournamentYearPool(NATIONS_LEAGUE_HOSTS, difficulty, NATIONS_LEAGUE_EASY_FROM).map((item) => item.year)
   if (mode === 'euroWinners' || mode === 'euroFinalists' || mode === 'euroTitleYears') {
     return euroPool(difficulty).map((item) => item.year)
   }
@@ -115,15 +121,16 @@ export function footballYearList(mode: QuizMode, difficulty: QuizDifficulty): nu
   if (mode === 'afconWinners' || mode === 'afconFinalists') {
     return tournamentYearPool(AFCON_WINNERS, difficulty, AFCON_EASY_FROM).map((item) => item.year)
   }
-  if (mode === 'asianCupWinners') {
+  if (mode === 'asianCupWinners' || mode === 'asianCupFinalists') {
     return tournamentYearPool(ASIAN_CUP_WINNERS, difficulty, ASIAN_CUP_EASY_FROM).map((item) => item.year)
   }
-  if (mode === 'goldCupWinners') {
+  if (mode === 'goldCupWinners' || mode === 'goldCupFinalists') {
     return tournamentYearPool(GOLD_CUP_WINNERS, difficulty, GOLD_CUP_EASY_FROM).map((item) => item.year)
   }
-  if (mode === 'nationsLeagueWinners') {
+  if (mode === 'nationsLeagueWinners' || mode === 'nationsLeagueFinalists') {
     return tournamentYearPool(NATIONS_LEAGUE_WINNERS, difficulty, NATIONS_LEAGUE_EASY_FROM).map((item) => item.year)
   }
+  if (mode === 'managerWcToName') return FOOTBALL_MANAGERS.flatMap((item) => item.wcWins)
   if (mode === 'europaWinners') {
     return tournamentYearPool(EUROPA_WINNERS, difficulty, EUROPA_EASY_FROM).map((item) => item.year)
   }
@@ -145,6 +152,7 @@ export function footballPoolSize(mode: QuizMode, difficulty: QuizDifficulty): nu
   if (mode === 'wcPenalties') return WC_PENALTIES.length
   if (mode === 'clubCrestToName') return allFootballClubs().length
   if (mode === 'stadiumToClub') return FOOTBALL_STADIUMS.length
+  if (mode === 'managerWcToName') return FOOTBALL_MANAGERS.reduce((sum, item) => sum + item.wcWins.length, 0)
   if (isManagerFootballMode(mode)) return FOOTBALL_MANAGERS.length
   if (mode === 'playerShirtToName') {
     const pool = footballPlayerPool(difficulty)
@@ -224,8 +232,20 @@ export function footballLearnCountries(
   else if (mode === 'afconWinners') addWinners(AFCON_WINNERS, 'winnerId')
   else if (mode === 'afconFinalists') addWinners(AFCON_WINNERS, 'runnerUpId')
   else if (mode === 'asianCupWinners') addWinners(ASIAN_CUP_WINNERS, 'winnerId')
-  else if (mode === 'goldCupWinners') addWinners(GOLD_CUP_WINNERS, 'winnerId')
-  else if (mode === 'nationsLeagueWinners') addWinners(NATIONS_LEAGUE_WINNERS, 'winnerId')
+  else if (mode === 'asianCupFinalists') addWinners(ASIAN_CUP_WINNERS, 'runnerUpId')
+  else if (mode === 'asianCupHosts') {
+    for (const item of ASIAN_CUP_HOSTS) if (yearOk(item.year)) ids.add(wcHostAnswerId(item.hostIds))
+  } else if (mode === 'goldCupWinners') addWinners(GOLD_CUP_WINNERS, 'winnerId')
+  else if (mode === 'goldCupFinalists') addWinners(GOLD_CUP_WINNERS, 'runnerUpId')
+  else if (mode === 'goldCupHosts') {
+    for (const item of GOLD_CUP_HOSTS) if (yearOk(item.year)) ids.add(wcHostAnswerId(item.hostIds))
+  } else if (mode === 'nationsLeagueWinners') addWinners(NATIONS_LEAGUE_WINNERS, 'winnerId')
+  else if (mode === 'nationsLeagueFinalists') addWinners(NATIONS_LEAGUE_WINNERS, 'runnerUpId')
+  else if (mode === 'nationsLeagueHosts') {
+    for (const item of NATIONS_LEAGUE_HOSTS) if (yearOk(item.year)) ids.add(wcHostAnswerId(item.hostIds))
+  } else if (mode === 'managerWcToName') {
+    for (const item of FOOTBALL_MANAGERS) ids.add(item.id)
+  }
   else if (mode === 'europaWinners') addWinners(EUROPA_WINNERS, 'winnerId')
   else if (mode === 'libertadoresWinners') addWinners(LIBERTADORES_WINNERS, 'winnerId')
   else if (mode === 'leagueWinners') {
@@ -235,7 +255,7 @@ export function footballLearnCountries(
 }
 
 export function footballLearnYears(mode: FootballMode, teamId: string, years?: readonly number[]): number[] {
-  if (isPlayerFootballMode(mode) || isManagerFootballMode(mode) || mode === 'clubCrestToName') return []
+  if (isPlayerFootballMode(mode) || (isManagerFootballMode(mode) && mode !== 'managerWcToName') || mode === 'clubCrestToName') return []
   if (mode === 'stadiumToClub') {
     return FOOTBALL_STADIUMS.filter((item) => item.clubId === teamId).length ? [1] : []
   }
@@ -257,8 +277,15 @@ export function footballLearnYears(mode: FootballMode, teamId: string, years?: r
   else if (mode === 'afconWinners') list = tournamentWinYears(AFCON_WINNERS, teamId)
   else if (mode === 'afconFinalists') list = AFCON_WINNERS.filter((item) => item.runnerUpId === teamId).map((item) => item.year)
   else if (mode === 'asianCupWinners') list = tournamentWinYears(ASIAN_CUP_WINNERS, teamId)
+  else if (mode === 'asianCupFinalists') list = ASIAN_CUP_WINNERS.filter((item) => item.runnerUpId === teamId).map((item) => item.year)
+  else if (mode === 'asianCupHosts') list = ASIAN_CUP_HOSTS.filter((item) => wcHostAnswerId(item.hostIds) === teamId).map((item) => item.year)
   else if (mode === 'goldCupWinners') list = tournamentWinYears(GOLD_CUP_WINNERS, teamId)
+  else if (mode === 'goldCupFinalists') list = GOLD_CUP_WINNERS.filter((item) => item.runnerUpId === teamId).map((item) => item.year)
+  else if (mode === 'goldCupHosts') list = GOLD_CUP_HOSTS.filter((item) => wcHostAnswerId(item.hostIds) === teamId).map((item) => item.year)
   else if (mode === 'nationsLeagueWinners') list = tournamentWinYears(NATIONS_LEAGUE_WINNERS, teamId)
+  else if (mode === 'nationsLeagueFinalists') list = NATIONS_LEAGUE_WINNERS.filter((item) => item.runnerUpId === teamId).map((item) => item.year)
+  else if (mode === 'nationsLeagueHosts') list = NATIONS_LEAGUE_HOSTS.filter((item) => wcHostAnswerId(item.hostIds) === teamId).map((item) => item.year)
+  else if (mode === 'managerWcToName') list = FOOTBALL_MANAGERS.find((item) => item.id === teamId)?.wcWins ?? []
   else if (mode === 'europaWinners') list = tournamentWinYears(EUROPA_WINNERS, teamId)
   else if (mode === 'libertadoresWinners') list = tournamentWinYears(LIBERTADORES_WINNERS, teamId)
   else if (mode === 'leagueWinners') list = LEAGUE_TITLES.filter((item) => item.clubId === teamId).map((item) => item.year)
@@ -283,6 +310,9 @@ export function footballCountryForYear(mode: FootballMode, year: number): Countr
   if (mode === 'euroHosts') return host(EURO_HOSTS)
   if (mode === 'copaHosts') return host(COPA_HOSTS)
   if (mode === 'afconHosts') return host(AFCON_HOSTS)
+  if (mode === 'asianCupHosts') return host(ASIAN_CUP_HOSTS)
+  if (mode === 'goldCupHosts') return host(GOLD_CUP_HOSTS)
+  if (mode === 'nationsLeagueHosts') return host(NATIONS_LEAGUE_HOSTS)
   if (mode === 'euroWinners' || mode === 'euroTitleYears') return cup(EURO_WINNERS, 'winnerId')
   if (mode === 'euroFinalists') return cup(EURO_WINNERS, 'runnerUpId')
   if (mode === 'wcScorers') {
@@ -305,8 +335,15 @@ export function footballCountryForYear(mode: FootballMode, year: number): Countr
   if (mode === 'afconWinners') return cup(AFCON_WINNERS, 'winnerId')
   if (mode === 'afconFinalists') return cup(AFCON_WINNERS, 'runnerUpId')
   if (mode === 'asianCupWinners') return cup(ASIAN_CUP_WINNERS, 'winnerId')
+  if (mode === 'asianCupFinalists') return cup(ASIAN_CUP_WINNERS, 'runnerUpId')
   if (mode === 'goldCupWinners') return cup(GOLD_CUP_WINNERS, 'winnerId')
+  if (mode === 'goldCupFinalists') return cup(GOLD_CUP_WINNERS, 'runnerUpId')
   if (mode === 'nationsLeagueWinners') return cup(NATIONS_LEAGUE_WINNERS, 'winnerId')
+  if (mode === 'nationsLeagueFinalists') return cup(NATIONS_LEAGUE_WINNERS, 'runnerUpId')
+  if (mode === 'managerWcToName') {
+    const manager = FOOTBALL_MANAGERS.find((item) => item.wcWins.includes(year))
+    return manager ? [managerCountry(manager)] : []
+  }
   if (mode === 'europaWinners') return cup(EUROPA_WINNERS, 'winnerId')
   if (mode === 'libertadoresWinners') return cup(LIBERTADORES_WINNERS, 'winnerId')
   if (mode === 'leagueWinners') {
@@ -333,7 +370,7 @@ export function createFootballRound(
   playerIds?: string[],
 ): Question[] {
   if (isPlayerFootballMode(mode)) return createPlayerRound(mode, count, difficulty, playerIds)
-  if (isManagerFootballMode(mode)) return createManagerRound(count, playerIds)
+  if (isManagerFootballMode(mode)) return createManagerRound(mode, count, playerIds, years)
   if (mode === 'clubCrestToName') return createClubCrestRound(count, playerIds)
   if (mode === 'stadiumToClub') return createStadiumRound(count, playerIds)
   const avoid: OptionAvoid = {
@@ -443,42 +480,57 @@ export function createFootballRound(
     )
   }
   if (mode === 'afconHosts') return createHostsRound('afconHosts', AFCON_HOSTS, count, scoped, avoid)
-  if (mode === 'asianCupWinners') {
+  if (mode === 'asianCupWinners' || mode === 'asianCupFinalists') {
+    const field = mode === 'asianCupFinalists' ? 'runnerUpId' : 'winnerId'
     return createWinnerYearRound(
-      'asianCupWinners',
+      mode,
       ASIAN_CUP_WINNERS,
-      (item) => footballTeamCountry(item.winnerId),
-      (year) => tournamentRelatedWinnerIds(ASIAN_CUP_WINNERS, year),
+      (item) => footballTeamCountry(item[field]),
+      (year) =>
+        field === 'winnerId'
+          ? tournamentRelatedWinnerIds(ASIAN_CUP_WINNERS, year)
+          : tournamentRelatedFinalistIds(ASIAN_CUP_WINNERS, year),
       tournamentTeamCountries(ASIAN_CUP_WINNERS),
       count,
       scoped,
       avoid,
     )
   }
-  if (mode === 'goldCupWinners') {
+  if (mode === 'asianCupHosts') return createHostsRound('asianCupHosts', ASIAN_CUP_HOSTS, count, scoped, avoid)
+  if (mode === 'goldCupWinners' || mode === 'goldCupFinalists') {
+    const field = mode === 'goldCupFinalists' ? 'runnerUpId' : 'winnerId'
     return createWinnerYearRound(
-      'goldCupWinners',
+      mode,
       GOLD_CUP_WINNERS,
-      (item) => footballTeamCountry(item.winnerId),
-      (year) => tournamentRelatedWinnerIds(GOLD_CUP_WINNERS, year),
+      (item) => footballTeamCountry(item[field]),
+      (year) =>
+        field === 'winnerId'
+          ? tournamentRelatedWinnerIds(GOLD_CUP_WINNERS, year)
+          : tournamentRelatedFinalistIds(GOLD_CUP_WINNERS, year),
       tournamentTeamCountries(GOLD_CUP_WINNERS),
       count,
       scoped,
       avoid,
     )
   }
-  if (mode === 'nationsLeagueWinners') {
+  if (mode === 'goldCupHosts') return createHostsRound('goldCupHosts', GOLD_CUP_HOSTS, count, scoped, avoid)
+  if (mode === 'nationsLeagueWinners' || mode === 'nationsLeagueFinalists') {
+    const field = mode === 'nationsLeagueFinalists' ? 'runnerUpId' : 'winnerId'
     return createWinnerYearRound(
-      'nationsLeagueWinners',
+      mode,
       NATIONS_LEAGUE_WINNERS,
-      (item) => footballTeamCountry(item.winnerId),
-      (year) => tournamentRelatedWinnerIds(NATIONS_LEAGUE_WINNERS, year),
+      (item) => footballTeamCountry(item[field]),
+      (year) =>
+        field === 'winnerId'
+          ? tournamentRelatedWinnerIds(NATIONS_LEAGUE_WINNERS, year)
+          : tournamentRelatedFinalistIds(NATIONS_LEAGUE_WINNERS, year),
       tournamentTeamCountries(NATIONS_LEAGUE_WINNERS),
       count,
       scoped,
       avoid,
     )
   }
+  if (mode === 'nationsLeagueHosts') return createHostsRound('nationsLeagueHosts', NATIONS_LEAGUE_HOSTS, count, scoped, avoid)
   if (mode === 'europaWinners') {
     return createWinnerYearRound(
       'europaWinners',
@@ -514,7 +566,7 @@ export function createFootballMixedRound(
   count: number,
   difficulty: QuizDifficulty,
 ): Question[] {
-  const playable = modes.filter((mode) => mode !== 'playerFactsToName')
+  const playable = [...modes]
   if (playable.length === 0 || count <= 0) return []
   const questions: Question[] = []
   const used = new Set<string>()
@@ -939,13 +991,45 @@ function managerCountry(manager: (typeof FOOTBALL_MANAGERS)[number]): Country {
   }
 }
 
-function createManagerRound(count: number, ids?: string[]): Question[] {
+function createManagerRound(mode: QuizMode, count: number, ids?: string[], years?: number[]): Question[] {
+  if (mode === 'managerWcToName') {
+    const wins = FOOTBALL_MANAGERS.flatMap((manager) => manager.wcWins.map((year) => ({ manager, year })))
+    const pool = years?.length ? wins.filter((item) => years.includes(item.year)) : wins
+    const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
+    return picked.map((item) => {
+      const country = managerCountry(item.manager)
+      const rest = shuffle(FOOTBALL_MANAGERS.filter((manager) => manager.id !== item.manager.id))
+        .slice(0, 3)
+        .map(managerCountry)
+      return {
+        country,
+        mode,
+        year: item.year,
+        options: shuffle([country, ...rest]),
+      }
+    })
+  }
   const pool = ids?.length ? FOOTBALL_MANAGERS.filter((item) => ids.includes(item.id)) : FOOTBALL_MANAGERS
   const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
   const questions: Question[] = []
   const avoid = new Set<string>()
   for (const manager of picked) {
     const country = managerCountry(manager)
+    if (mode === 'managerToNation') {
+      const nation = footballTeamCountry(manager.nation)
+      const other = shuffle(
+        [...new Set(FOOTBALL_MANAGERS.map((item) => item.nation).filter((id) => id !== manager.nation))],
+      )
+        .slice(0, 3)
+        .map((id) => footballTeamCountry(id))
+      questions.push({
+        country: nation,
+        mode,
+        options: shuffle([nation, ...other]),
+        promptEntity: country,
+      })
+      continue
+    }
     const rest = shuffle(FOOTBALL_MANAGERS.filter((item) => item.id !== manager.id && !avoid.has(item.id))).slice(0, 3)
     questions.push({
       country,

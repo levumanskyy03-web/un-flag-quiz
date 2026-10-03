@@ -80,6 +80,7 @@ export function worldTitle(world: QuizWorld, lang: Lang) {
   if (world === 'math') return t.math
   if (world === 'astronomy') return t.astronomy
   if (world === 'cs') return t.cs
+  if (world === 'physics') return t.physics
   return t.food
 }
 
@@ -92,6 +93,7 @@ const WORLD_ICON = {
   math: 'sigma',
   astronomy: 'orbit',
   cs: 'code',
+  physics: 'atom',
   food: 'bowl',
 } as const
 
@@ -127,6 +129,7 @@ export function resourceTitle(key: EmpireResource, t: T) {
   if (key === 'blueprints') return t.empireRes_blueprints
   if (key === 'stardust') return t.empireRes_stardust
   if (key === 'chips') return t.empireRes_chips
+  if (key === 'coils') return t.empireRes_coils
   return t.empireRes_spices
 }
 
@@ -323,7 +326,7 @@ type TownSpot = {
   y: number
 }
 
-const WORLD_PLOTS: readonly QuizWorld[] = ['geo', 'leaders', 'football', 'olympics', 'biology', 'math', 'astronomy', 'cs', 'food']
+const WORLD_PLOTS: readonly QuizWorld[] = ['geo', 'leaders', 'football', 'olympics', 'biology', 'math', 'astronomy', 'cs', 'physics', 'food']
 
 const TOWN_LAYOUT: readonly TownSpot[] = [
   { key: 'board', kind: 'board', x: 220, y: 220 },

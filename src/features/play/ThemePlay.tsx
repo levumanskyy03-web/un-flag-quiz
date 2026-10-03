@@ -135,16 +135,28 @@ export function ThemePlay({ world, play }: { world: ThemeWorld; play: PlaySessio
           empireReward={play.empireReward}
           totalXp={play.xp}
           saveNote={!play.isPractice}
-          menuLabel={play.isPractice ? STRINGS[play.quizSettings.lang].backToCards : undefined}
+          menuLabel={
+            play.mineRouteBack
+              ? STRINGS[play.quizSettings.lang].mineBack
+              : play.isPractice
+                ? STRINGS[play.quizSettings.lang].backToCards
+                : undefined
+          }
+          nextLabel={
+            play.mineNext
+              ? STRINGS[play.quizSettings.lang][play.mineLast ? "mineFinish" : "mineNext"]
+              : undefined
+          }
           onAgain={play.playAgain}
           onNextLevel={
-            play.endedBy === "complete" &&
+            play.mineNext ??
+            (play.endedBy === "complete" &&
             play.quizSettings.path === "levels" &&
             play.quizSettings.level < campaignLevelCount(play.quizSettings.mode)
               ? play.playNextLevel
-              : undefined
+              : undefined)
           }
-          onMenu={play.goBackFromPlay}
+          onMenu={play.mineRouteBack ?? play.goBackFromPlay}
         />
       )}
     </>

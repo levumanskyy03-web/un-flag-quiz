@@ -64,7 +64,7 @@ function useCountUp(target: number) {
   return value
 }
 
-function worldTitle(world: QuizWorld, t: { geography: string; football: string; leaders: string; math: string; astronomy: string; biology: string; olympics: string; cs: string; food: string }) {
+function worldTitle(world: QuizWorld, t: { geography: string; football: string; leaders: string; math: string; astronomy: string; biology: string; olympics: string; cs: string; physics: string; food: string }) {
   if (world === 'geo') return t.geography
   if (world === 'football') return t.football
   if (world === 'leaders') return t.leaders
@@ -73,6 +73,7 @@ function worldTitle(world: QuizWorld, t: { geography: string; football: string; 
   if (world === 'biology') return t.biology
   if (world === 'olympics') return t.olympics
   if (world === 'cs') return t.cs
+  if (world === 'physics') return t.physics
   return t.food
 }
 
@@ -91,6 +92,7 @@ interface ResultsScreenProps {
   totalXp?: number
   saveNote?: boolean
   menuLabel?: string
+  nextLabel?: string
   onAgain: () => void
   onNextLevel?: () => void
   onMenu: () => void
@@ -112,6 +114,7 @@ export function ResultsScreen({
   totalXp,
   saveNote = true,
   menuLabel,
+  nextLabel,
   onAgain,
   onNextLevel,
   onMenu,
@@ -283,7 +286,7 @@ export function ResultsScreen({
       <div className="results-actions">
         {success && onNextLevel && (
           <button type="button" className="btn-primary" onClick={onNextLevel}>
-            {t.nextLevel}
+            {nextLabel ?? t.nextLevel}
           </button>
         )}
         <button type="button" className={success && onNextLevel ? 'btn-secondary' : 'btn-primary'} onClick={onAgain}>

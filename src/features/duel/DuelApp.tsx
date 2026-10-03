@@ -116,7 +116,9 @@ export function DuelApp({ code: rawCode }: { code: string }) {
       document.documentElement.dataset.world = "math";
     } else if (astronomy) {
       document.documentElement.dataset.world = "astronomy";
-    } else if (themeWorld) {
+    } else if (playWorld === "geo") {
+      document.documentElement.dataset.world = "geo";
+    } else if (themeWorld && playWorld) {
       document.documentElement.dataset.world = playWorld;
     } else {
       delete document.documentElement.dataset.world;

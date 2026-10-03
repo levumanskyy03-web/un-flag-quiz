@@ -1,4 +1,4 @@
-export type LeaderKind = 'us' | 'pope' | 'rus' | 'uk'
+export type LeaderKind = 'us' | 'pope' | 'rus' | 'uk' | 'ott' | 'jp' | 'mc' | 'bn' | 'jo' | 'ma' | 'dk' | 'nl' | 'li' | 'sz'
 export type LeaderTier = 'easy' | 'medium' | 'hard'
 
 const US_EASY = new Set([
@@ -138,6 +138,7 @@ export function leaderFame(kind: LeaderKind, personId: string, n: number, from: 
     if (UK_MEDIUM.has(personId)) return 'medium'
     return 'hard'
   }
+  if (kind !== 'rus') return 'hard'
   if (RUS_EASY.has(personId)) return 'easy'
   if (RUS_MEDIUM.has(personId)) return 'medium'
   if (from < 1500) return 'hard'
@@ -145,5 +146,20 @@ export function leaderFame(kind: LeaderKind, personId: string, n: number, from: 
 }
 
 export function leaderShowsNumber(kind: LeaderKind): boolean {
-  return kind === 'us' || kind === 'pope'
+  return (
+    kind === 'us' ||
+    kind === 'pope' ||
+    kind === 'rus' ||
+    kind === 'uk' ||
+    kind === 'ott' ||
+    kind === 'jp' ||
+    kind === 'mc' ||
+    kind === 'bn' ||
+    kind === 'jo' ||
+    kind === 'ma' ||
+    kind === 'dk' ||
+    kind === 'nl' ||
+    kind === 'li' ||
+    kind === 'sz'
+  )
 }

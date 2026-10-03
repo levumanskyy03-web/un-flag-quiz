@@ -1,4 +1,4 @@
-import { FINAL_LIVES, isFinalLevel } from '../data/levels'
+import { FINAL_LIVES } from '../data/levels'
 import type { RatingBoard } from './leaderboard'
 import {
   ASTRO_MODES,
@@ -12,7 +12,7 @@ import {
   campaignLevelCount,
   campaignMaxForWorld,
   campaignModesForWorld,
-  hasGeoFinale,
+  isGeoFinaleLevel,
   hasLevels,
   isAstroMode,
   isFootballMode,
@@ -311,9 +311,10 @@ function livesOk(
   livesLeft: number,
 ): boolean {
   if (livesLeft < 1 || livesLeft > livesLimit || livesLimit > RATING_LIVES_MAX) return false
-  const expected = livesFor('levels', hardcore ? 'hardcore' : 'hard', hardcore, level, livesLimit, mode)
+  const finale = isGeoFinaleLevel(mode, level)
+  const expected = livesFor('levels', hardcore ? 'hardcore' : 'hard', hardcore, level, livesLimit, mode, finale)
   if (hardcore) return livesLimit === 1 && expected === 1
-  if (isFinalLevel(level) && hasGeoFinale(mode)) {
+  if (finale) {
     return (FINAL_LIVES as readonly number[]).includes(livesLimit) && livesLimit !== 1
   }
   return livesLimit === MAX_LIVES

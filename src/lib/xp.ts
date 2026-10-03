@@ -107,8 +107,14 @@ const FOOTBALL_MODE_XP: Record<FootballMode, number> = {
   afconFinalists: 2,
   afconHosts: 1,
   asianCupWinners: 2,
+  asianCupFinalists: 2,
+  asianCupHosts: 2,
   goldCupWinners: 2,
+  goldCupFinalists: 2,
+  goldCupHosts: 2,
   nationsLeagueWinners: 1,
+  nationsLeagueFinalists: 2,
+  nationsLeagueHosts: 2,
   uclWinners: 2,
   uclFinalists: 2,
   uclTitleYears: 2,
@@ -126,6 +132,8 @@ const FOOTBALL_MODE_XP: Record<FootballMode, number> = {
   ballonDorWinners: 2,
   goldenBallWinners: 2,
   managerPhotoToName: 2,
+  managerToNation: 2,
+  managerWcToName: 2,
 }
 
 const HARD_FREE_MODES = new Set<QuizMode>([

@@ -432,7 +432,7 @@ const DISHES: Dish[] = [
     name: t11('шницель', 'schnitzel', 'Schnitzel', '炸肉排', 'escalope', 'श्निट्सेल', 'شنيتسل', 'শ্নিটসেল', 'schnitzel', 'シュニッツェル', 'שניצל'),
     country: AT,
     ck: 'at',
-    ing: t11('отбивная в панировке', 'breaded cutlet', 'paniertes Schnitzel', '裹面包糠的肉排', 'filete empanado', 'ब्रेडेड कटलेट', 'شريحة مغطاة بالبقسماط', 'ব্রেডেড কাটলেট', 'costeleta panada', '衣をつけたカツ', 'קציצה בציפוי'),
+    ing: t11('венская телячья отбивная', 'Viennese breaded veal', 'Wiener Kalbsschnitzel', '维也纳炸小牛肉', 'escalope vienés de ternera', 'वियना की वील कटलेट', 'شريحة عجل فيينا', 'ভিয়েনার বাছুরের কাটলেট', 'escalope vienense de vitela', 'ウィーンの子牛カツ', 'שניצל עגל וינאי'),
   },
   {
     id: 'injera',

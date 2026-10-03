@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { STRINGS, type Lang } from '../i18n/strings'
+import { STRINGS, leaderTopicName, type Lang } from '../i18n/strings'
 import { type QuizWorld } from '../lib/quiz'
 import {
   albumCards,
@@ -42,6 +42,16 @@ const GROUP_ORDER: StampGroupId[] = [
   'pope',
   'rus',
   'uk',
+  'ott',
+  'jp',
+  'mc',
+  'bn',
+  'jo',
+  'ma',
+  'dk',
+  'nl',
+  'li',
+  'sz',
   'mathModes',
   'mathPeople',
   'mathCards',
@@ -59,10 +69,9 @@ function groupLabel(group: StampGroupId, lang: Lang): string {
   if (group === 'managers') return t.footballGroupManagers
   if (group === 'clubs') return t.footballGroupClubs
   if (group === 'nations') return t.footballTableCountry
-  if (group === 'us') return t.usPresidents
-  if (group === 'pope') return t.popesLeaders
-  if (group === 'rus') return t.askoldToUnion
-  if (group === 'uk') return t.ukMonarchs
+  if (group === 'us' || group === 'pope' || group === 'rus' || group === 'uk' || group === 'ott' || group === 'jp' || group === 'mc' || group === 'bn' || group === 'jo' || group === 'ma' || group === 'dk' || group === 'nl' || group === 'li' || group === 'sz') {
+    return leaderTopicName(group, t)
+  }
   if (group === 'mathModes') return t.math
   if (group === 'mathPeople') return t.mathFamilyPeople
   if (group === 'mathCards') return t.album

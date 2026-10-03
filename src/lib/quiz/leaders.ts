@@ -6,6 +6,7 @@ import {
   type LeaderTerm,
 } from '../../data/leaders'
 import {
+  hardcoreSlice,
   isLeaderPhotoMode,
   leaderKindOf,
   pickFirstFit,
@@ -124,6 +125,11 @@ export function createLeadersMixedRound(
 }
 
 function filterLeaderTerms(terms: LeaderTerm[], difficulty: QuizDifficulty): LeaderTerm[] {
+  if (difficulty === 'hardcore') {
+    const hard = terms.filter((term) => term.tier === 'hard')
+    const base = uniquePersons(hard).length >= 4 ? hard : terms.filter((term) => term.tier !== 'easy')
+    return hardcoreSlice(base)
+  }
   const wanted = difficulty === 'easy' ? 'easy' : difficulty === 'medium' ? 'medium' : 'hard'
   const match = terms.filter((term) => term.tier === wanted)
   if (uniquePersons(match).length >= 4) return match

@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { LEVEL_NUMBERS, isFinalLevel } from '../data/levels'
-import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
+import { LEVEL_NUMBERS } from '../data/levels'
+import { STRINGS, leaderTopicName, modeLabel, type Lang } from '../i18n/strings'
+import type { LeaderKind } from '../data/leaders'
 import type { LevelClear } from '../lib/levelProgress'
 import { findLevelClear, isLevelUnlocked } from '../lib/levelProgress'
 import { fetchLevelBests, type LevelBest } from '../lib/leaderboard'
-import { MAX_LIVES, LEVEL_MODES, campaignLevelCount, formatClock, hasGeoFinale, isLeadersMode, type QuizMode } from '../lib/quiz'
+import { MAX_LIVES, LEVEL_MODES, campaignLevelCount, formatClock, isGeoFinaleLevel, isLeadersMode, type QuizMode } from '../lib/quiz'
 import type { QuizSettings } from './HomeScreen'
 import { HubNav, type HubTab } from './HubNav'
 import { isFootballCatalog } from './FootballModeGrids'
@@ -201,10 +202,10 @@ export function LevelsScreen({
                               size="sm"
                             />
                           )}
-                          {isFinalLevel(level) && livesLimit > MAX_LIVES ? `${cleared.livesLeft}/${livesLimit} · ` : ''}
+                          {isGeoFinaleLevel(settings.mode, level) && livesLimit > MAX_LIVES ? `${cleared.livesLeft}/${livesLimit} · ` : ''}
                           {formatClock(cleared.roundMs)}
                         </span>
-                      ) : isFinalLevel(level) && hasGeoFinale(settings.mode) ? (
+                      ) : isGeoFinaleLevel(settings.mode, level) ? (
                         <span className="level-meta">193</span>
                       ) : null}
                     </button>
@@ -295,6 +296,6 @@ function leaderSideLabel(lang: Lang) {
     if (side === 'right') {
       return id === 'photo' ? t.leaderAskPhoto : id === 'number' ? t.leaderAskNumber : t.leaderAskYears
     }
-    return id === 'pope' ? t.popesLeaders : id === 'rus' ? t.askoldToUnion : id === 'uk' ? t.ukMonarchs : t.usPresidents
+    return leaderTopicName(id as LeaderKind, t)
   }
 }

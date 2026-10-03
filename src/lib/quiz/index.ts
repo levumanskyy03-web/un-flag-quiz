@@ -1,5 +1,4 @@
 import { footballCampaignLevels, footballLevelPlayerIds, footballLevelYears } from '../../data/footballLevels'
-import { LEVEL_COUNT } from '../../data/levels'
 import { quizLanguageId } from '../../data/languages'
 import { govKindOf } from '../../data/governments'
 import { religionOf } from '../../data/religion'
@@ -31,7 +30,7 @@ import {
   type QuizWorld,
   type RegionFilter,
 } from './core'
-import { extraFitsMode, getGeoLevelPool, getRegionPool } from './geo'
+import { extraFitsMode, geoCampaignLevels, getGeoLevelPool, getRegionPool } from './geo'
 import { footballCountryForYear, footballLearnCountries } from './football'
 import { leaderLearnCountries, leaderLevelChunks, leaderCampaignLevels } from './leaders'
 import { mathCampaignLevels, mathLearnCountries, mathLevelChunks } from './math'
@@ -54,7 +53,7 @@ export function campaignLevelCount(mode: QuizMode): number {
   if (isMathMode(mode)) return mathCampaignLevels(mode)
   if (isAstroMode(mode)) return astroCampaignLevels(mode)
   if (isThemeMode(mode)) return themeCampaignLevels(mode)
-  return LEVEL_COUNT
+  return geoCampaignLevels(mode)
 }
 
 export function campaignLevelNumbers(mode: QuizMode): number[] {

@@ -72,6 +72,7 @@ function queueWorldLabel(queue: MatchQueue, lang: Lang): string {
   if (world === 'biology') return t.biology
   if (world === 'olympics') return t.olympics
   if (world === 'cs') return t.cs
+  if (world === 'physics') return t.physics
   if (world === 'food') return t.food
   return t.geography
 }
@@ -102,6 +103,7 @@ export function matchQueueNote(queue: MatchQueue, lang: Lang): string {
     if (world === 'biology') return t.bioEasyMixNote
     if (world === 'olympics') return t.olyEasyMixNote
     if (world === 'cs') return t.csEasyMixNote
+    if (world === 'physics') return t.physEasyMixNote
     if (world === 'food') return t.foodEasyMixNote
   }
   if (queue.modes.length === 1) return ''

@@ -79,6 +79,9 @@ export type PlaySession = {
   playFinalLevel: (lives: number) => void;
   playAgain: () => void;
   playNextLevel: () => void;
+  mineNext: (() => void) | null;
+  mineLast: boolean;
+  mineRouteBack: (() => void) | null;
   leaveLearn: () => void;
   startPractice: (isos?: string[]) => void;
   startMistakesPractice: () => void;

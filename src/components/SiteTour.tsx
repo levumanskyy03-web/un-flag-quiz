@@ -81,13 +81,21 @@ export function SiteTour({ lang }: { lang: Lang }) {
   useEffect(() => {
     if (!ready) return
     const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
     document.documentElement.dataset.tour = 'on'
+    // Сначала отпускаем скролл, иначе цель ниже экрана не подъедет, а карточка останется за кадром.
+    document.body.style.overflow = ''
+    const el = document.querySelector<HTMLElement>(`[data-tour="${step}"]`)
+    const cardH = cardRef.current?.offsetHeight ?? 180
+    const targetH = el?.getBoundingClientRect().height ?? 0
+    const canLock = Boolean(el) && targetH + cardH + 36 <= window.innerHeight
+    if (el) el.scrollIntoView({ block: canLock ? 'center' : 'start', inline: 'nearest' })
+    if (canLock) document.body.style.overflow = 'hidden'
+    measure()
     return () => {
       document.body.style.overflow = prev
       delete document.documentElement.dataset.tour
     }
-  }, [ready])
+  }, [ready, step, measure])
 
   useEffect(() => {
     if (!ready) return
@@ -115,15 +123,17 @@ export function SiteTour({ lang }: { lang: Lang }) {
     const vw = window.innerWidth
     const vh = window.innerHeight
     const margin = 12
-    const minLeft = (bounds?.left ?? 0) + margin
-    const maxRight = (bounds?.right ?? vw) - margin
-    const minTop = (bounds?.top ?? 0) + margin
-    const maxBottom = (bounds?.bottom ?? vh) - margin
+    const minLeft = Math.max(margin, (bounds?.left ?? 0) + margin)
+    const maxRight = Math.min(vw - margin, (bounds?.right ?? vw) - margin)
+    // Карточка живёт в видимом окне. Низ .app часто ниже вьюпорта, и при overflow:hidden её не достать.
+    const minTop = Math.max(margin, bounds?.top ?? margin)
+    const maxBottom = Math.min(vh - margin, Math.max(minTop + 48, bounds?.bottom ?? vh))
     const cardW = Math.min(card?.offsetWidth ?? 320, Math.max(180, maxRight - minLeft))
     const cardH = card?.offsetHeight ?? 180
     const placeLeft = (raw: number) => Math.max(minLeft, Math.min(raw, maxRight - cardW))
     if (!hole) {
-      setCardBox({ top: Math.max(minTop, maxBottom - cardH), left: placeLeft((vw - cardW) / 2) })
+      const top = Math.max(margin, Math.min(Math.max(minTop, maxBottom - cardH), vh - margin - cardH))
+      setCardBox({ top, left: placeLeft((vw - cardW) / 2) })
       return
     }
     const pinBottom = hole.height > (maxBottom - minTop) * 0.42
@@ -132,6 +142,7 @@ export function SiteTour({ lang }: { lang: Lang }) {
     let top = pinBottom ? maxBottom - cardH : below
     if (top + cardH > maxBottom) top = above
     if (top < minTop) top = Math.max(minTop, maxBottom - cardH)
+    top = Math.max(margin, Math.min(top, vh - margin - cardH))
     setCardBox({ top, left: placeLeft(hole.left + hole.width / 2 - cardW / 2) })
   }, [ready, hole, index, lang])
 

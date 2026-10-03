@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
       { source: "/shop/:path*", destination: "/empire", permanent: true },
       { source: "/state", destination: "/empire", permanent: true },
       { source: "/state/:path*", destination: "/empire", permanent: true },
+      { source: "/transport", destination: "/", permanent: true },
+      { source: "/transport/:path*", destination: "/", permanent: true },
+      { source: "/codes", destination: "/geo", permanent: true },
+      { source: "/codes/:path*", destination: "/geo", permanent: true },
     ];
   },
   experimental: {

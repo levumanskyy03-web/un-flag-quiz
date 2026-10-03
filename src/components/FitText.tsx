@@ -14,6 +14,7 @@ interface FitTextProps {
   children: string
   className?: string
   minPx?: number
+  maxPx?: number
   wrap?: boolean
 }
 
@@ -33,14 +34,12 @@ function overflows(el: HTMLElement, wrap: boolean) {
   return el.scrollWidth > el.clientWidth + 0.5
 }
 
-function fitOne(el: HTMLElement, minPx: number, wrap: boolean) {
+function fitOne(el: HTMLElement, minPx: number, wrap: boolean, maxPx?: number) {
   el.style.fontSize = ''
-  const max = parseFloat(getComputedStyle(el).fontSize)
-  if (!Number.isFinite(max) || max <= minPx) {
-    el.style.fontSize = `${minPx}px`
-    return
-  }
+  const computed = parseFloat(getComputedStyle(el).fontSize)
+  const max = Math.max(minPx, maxPx ?? (Number.isFinite(computed) ? computed : minPx))
   if (el.clientWidth < 8) return
+  el.style.fontSize = `${max}px`
   if (!overflows(el, wrap)) return
 
   let lo = minPx
@@ -51,8 +50,12 @@ function fitOne(el: HTMLElement, minPx: number, wrap: boolean) {
     if (overflows(el, wrap)) hi = mid
     else lo = mid
   }
-  el.style.fontSize = `${lo}px`
-  if (overflows(el, wrap)) el.style.fontSize = `${minPx}px`
+  let size = lo
+  el.style.fontSize = `${size}px`
+  while (size > 12 && overflows(el, wrap)) {
+    size -= 1
+    el.style.fontSize = `${size}px`
+  }
 }
 
 export function FitGroup({
@@ -122,7 +125,7 @@ export function FitGroup({
   return <FitGroupContext.Provider value={api}>{children}</FitGroupContext.Provider>
 }
 
-export function FitText({ children, className, minPx = 9, wrap = false }: FitTextProps) {
+export function FitText({ children, className, minPx = 9, maxPx, wrap = false }: FitTextProps) {
   const ref = useRef<HTMLSpanElement>(null)
   const group = useContext(FitGroupContext)
   const useWrap = group?.wrap ?? wrap
@@ -133,12 +136,12 @@ export function FitText({ children, className, minPx = 9, wrap = false }: FitTex
     if (!el) return
     if (group) return group.register(el)
 
-    const fit = () => fitOne(el, useMin, useWrap)
+    const fit = () => fitOne(el, useMin, useWrap, maxPx)
     fit()
     const observer = new ResizeObserver(() => fit())
     observer.observe(el.parentElement ?? el)
     return () => observer.disconnect()
-  }, [children, group, useMin, useWrap])
+  }, [children, group, maxPx, useMin, useWrap])
 
   const cls = ['fit-text', useWrap ? 'is-wrap' : null, className].filter(Boolean).join(' ')
   return (
@@ -150,7 +153,7 @@ export function FitText({ children, className, minPx = 9, wrap = false }: FitTex
 
 export function ChoiceLabel({ children }: { children: string }) {
   return (
-    <FitText wrap minPx={8}>
+    <FitText wrap minPx={16} maxPx={30}>
       {children}
     </FitText>
   )

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { STRINGS, localeTag, modeLabel, type Lang } from '../i18n/strings'
+import { STRINGS, leaderTopicName, localeTag, modeLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import {
   LEADERS_DIFFICULTIES,
@@ -96,7 +96,7 @@ export function LeadersScreen({
             if (side === 'right') {
               return id === 'photo' ? t.leaderAskPhoto : id === 'number' ? t.leaderAskNumber : t.leaderAskYears
             }
-            return id === 'pope' ? t.popesLeaders : id === 'rus' ? t.askoldToUnion : id === 'uk' ? t.ukMonarchs : t.usPresidents
+            return leaderTopicName(id as LeaderKind, t)
           }}
           onMode={(next) => update({ path: 'pool', mix: null, mode: next })}
           onHardcore={(on) => update({ path: 'pool', levelHardcore: on })}
@@ -185,14 +185,7 @@ export function LeadersSetup({
       <div className="choice-grid is-4">
         {LEADERS_TOPICS.map((kind) => {
           const topicMode = leadersModeOf(kind, ask)
-          const label =
-            kind === 'pope'
-              ? t.popesLeaders
-              : kind === 'rus'
-                ? t.askoldToUnion
-                : kind === 'uk'
-                  ? t.ukMonarchs
-                  : t.usPresidents
+          const label = leaderTopicName(kind, t)
           return (
             <ModeChoice
               key={kind}
@@ -270,7 +263,7 @@ function formatPlayedAt(at: number, lang: Lang): string {
 }
 
 export function defaultLeadersMode(mode: string): LeadersMode {
-  if (mode === 'askoldToUnion' || mode === 'rusNumberToName') return 'rusYearsToName'
+  if (mode === 'askoldToUnion') return 'rusYearsToName'
   if (mode === 'usNameToYears') return 'usYearsToName'
   if (mode === 'popeNameToYears') return 'popeYearsToName'
   return LEADERS_MODES.includes(mode as LeadersMode) ? (mode as LeadersMode) : 'usYearsToName'

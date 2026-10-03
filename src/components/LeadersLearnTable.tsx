@@ -1,4 +1,4 @@
-import { formatTermNumber, termById, yearsLabel } from '../data/leaders'
+import { formatTermNumber, leaderShowsNumber, termById, yearsLabel } from '../data/leaders'
 import { portraitFileForTerm } from '../data/leaderPortraitFiles'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { countryName, type Country } from '../lib/quiz'
@@ -51,6 +51,9 @@ export function LeadersLearnTable({
                 <td className="leaders-learn-name-cell">
                   {open ? (
                     <button type="button" className="leaders-learn-name" onClick={() => onOpen(term.id)}>
+                      {leaderShowsNumber(term.kind) && !showNumber ? (
+                        <span className="leader-num">{formatTermNumber(term)}</span>
+                      ) : null}
                       {name}
                     </button>
                   ) : (

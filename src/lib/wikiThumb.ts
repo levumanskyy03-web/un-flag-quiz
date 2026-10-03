@@ -13,7 +13,7 @@ const STORE_KEY = 'unfq-wiki-portraits-v17'
 const PORTRAIT_API_VER = '17'
 const STORE_MS = 14 * 24 * 60 * 60 * 1000
 const NULL_STORE_MS = 30 * 60 * 1000
-const PREFETCH_WORKERS = 6
+const PREFETCH_WORKERS = 3
 const STORE_MAX = 480
 let activeFetches = 0
 const fetchWaiters: Array<() => void> = []
@@ -137,11 +137,9 @@ export async function fetchWikiPortrait(title: string, file?: string): Promise<W
         typeof body.portrait.url === 'string'
           ? (body.portrait as WikiPortrait)
           : null
-      if (portrait) {
-        cache.set(key, portrait)
-        writeStore(key, portrait)
-        preloadImage(portrait.url)
-      }
+      cache.set(key, portrait)
+      writeStore(key, portrait)
+      if (portrait?.url) preloadImage(portrait.url)
       return portrait
     } catch {
       return null

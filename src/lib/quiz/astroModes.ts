@@ -37,16 +37,11 @@ export function astroTopicOf(mode: AstroMode): AstroTopic {
 }
 
 export const EASY_ASTRO_MIX_MODES: AstroMode[] = ['planetToOrder', 'moonToPlanet', 'constelToName', 'missionToTarget']
-export const HARD_ASTRO_MIX_MODES: AstroMode[] = ASTRO_MODES.filter((mode) => mode !== 'astroFactsToName')
+export const HARD_ASTRO_MIX_MODES: AstroMode[] = [...ASTRO_MODES]
 export const MATCH_ASTRO_MODES: AstroMode[] = ['planetToOrder', 'moonFactsToName', 'missionToTarget', 'astroPhotoToName']
 export const ASTRO_MATCH_MIX: AstroMode[] = ['planetToOrder', 'moonToPlanet', 'constelToName', 'missionToTarget']
 
-export const ASTRO_CAMPAIGN_MODES: AstroMode[] = [
-  ...PLANET_ASTRO_MODES,
-  ...MOON_ASTRO_MODES,
-  ...SKY_ASTRO_MODES,
-  ...EXPLORATION_ASTRO_MODES,
-]
+export const ASTRO_CAMPAIGN_MODES: AstroMode[] = [...ASTRO_MODES]
 export const ASTRO_CAMPAIGN_LEVELS = 12
 export const ASTRO_LEVEL_QUESTIONS = 8
 

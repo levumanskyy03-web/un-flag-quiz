@@ -37,8 +37,8 @@ import {
   type ThemeMode,
   type ThemeWorld,
 } from './themeModes'
-import { isRankingEasy, isRankingMode, RANKING_MODES, type RankingMode } from '../../data/rankings'
-import { isEasyForMode, factsDifficultyOf, languageDifficultyOf } from '../../data/modeDifficulty'
+import { isRankingMode, RANKING_MODES, rankingCount, rankingEasyCount, rankingPlaceOf, type RankingMode } from '../../data/rankings'
+import { factsDifficultyOf, factsHardcore, geoPlayTier, languageDifficultyOf, languageHardcore } from '../../data/modeDifficulty'
 import { quizLanguageId } from '../../data/languages'
 import { isFinalLevel } from '../../data/levels'
 import { isWaterMapMode, isWaterMode } from '../../data/water'
@@ -87,8 +87,14 @@ export const OTHER_FOOTBALL_MODES = [
   'afconFinalists',
   'afconHosts',
   'asianCupWinners',
+  'asianCupFinalists',
+  'asianCupHosts',
   'goldCupWinners',
+  'goldCupFinalists',
+  'goldCupHosts',
   'nationsLeagueWinners',
+  'nationsLeagueFinalists',
+  'nationsLeagueHosts',
 ] as const
 export const CLUB_FOOTBALL_MODES = [
   'uclWinners',
@@ -110,7 +116,7 @@ export const PLAYER_FOOTBALL_MODES = [
   'ballonDorWinners',
   'goldenBallWinners',
 ] as const
-export const MANAGER_FOOTBALL_MODES = ['managerPhotoToName'] as const
+export const MANAGER_FOOTBALL_MODES = ['managerPhotoToName', 'managerToNation', 'managerWcToName'] as const
 export const CUP_FOOTBALL_MODES = [...WC_FOOTBALL_MODES, ...EURO_FOOTBALL_MODES, ...OTHER_FOOTBALL_MODES] as const
 export const FOOTBALL_TOPICS = ['players', 'managers', 'clubs', 'cups'] as const
 export type FootballTopic = (typeof FOOTBALL_TOPICS)[number]
@@ -129,14 +135,36 @@ export const LEADERS_MODES = [
   'popeNumberToName',
   'popePhotoToName',
   'rusYearsToName',
+  'rusNumberToName',
   'rusPhotoToName',
   'ukYearsToName',
+  'ukNumberToName',
   'ukPhotoToName',
+  'ottYearsToName',
+  'ottPhotoToName',
+  'jpYearsToName',
+  'jpPhotoToName',
+  'mcYearsToName',
+  'mcPhotoToName',
+  'bnYearsToName',
+  'bnPhotoToName',
+  'joYearsToName',
+  'joPhotoToName',
+  'maYearsToName',
+  'maPhotoToName',
+  'dkYearsToName',
+  'dkPhotoToName',
+  'nlYearsToName',
+  'nlPhotoToName',
+  'liYearsToName',
+  'liPhotoToName',
+  'szYearsToName',
+  'szPhotoToName',
 ] as const
 export type FootballMode = (typeof FOOTBALL_MODES)[number]
 export type CodesMode = (typeof CODES_MODES)[number]
 export type LeadersMode = (typeof LEADERS_MODES)[number]
-export const LEADERS_TOPICS = ['us', 'pope', 'rus', 'uk'] as const
+export const LEADERS_TOPICS = ['us', 'pope', 'rus', 'uk', 'ott', 'jp', 'mc', 'bn', 'jo', 'ma', 'dk', 'nl', 'li', 'sz'] as const
 export const LEADERS_ASKS = ['years', 'number', 'photo'] as const
 export type LeaderAsk = (typeof LEADERS_ASKS)[number]
 export type QuizMode = (typeof QUIZ_MODES)[number] | FootballMode | CodesMode | LeadersMode | RankingMode | MathMode | AstroMode | ThemeMode
@@ -177,18 +205,7 @@ export {
 } from './themeModes'
 export type { ThemeMode, ThemeTopic, ThemeWorld } from './themeModes'
 export const LEVEL_MODES: QuizMode[] = [
-  ...QUIZ_MODES.filter(
-    (mode) =>
-      mode !== 'neighborsToName' &&
-      mode !== 'factsToName' &&
-      mode !== 'nameToLanguage' &&
-      mode !== 'languageToName' &&
-      mode !== 'nameToDriving' &&
-      mode !== 'drivingToName' &&
-      mode !== 'nameToReligion' &&
-      mode !== 'religionToName' &&
-      mode !== 'nameToGov',
-  ),
+  ...QUIZ_MODES.filter((mode) => mode !== 'neighborsToName'),
   ...CODES_MODES,
 ]
 export const EASY_MIX_MODES: QuizMode[] = ['flagToName', 'nameToFlag', 'nameToCapital']
@@ -204,16 +221,22 @@ export const HARD_MIX_MODES: QuizMode[] = [
   'mapToName',
   'silhouetteToName',
   'nameToSilhouette',
+  'factsToName',
   'mapToSea',
   'mapToRiver',
   'seaToName',
   'riverToName',
+  'nameToLanguage',
+  'languageToName',
+  'nameToDriving',
+  'drivingToName',
+  'nameToReligion',
+  'religionToName',
+  'nameToGov',
   ...CODES_MODES,
 ]
 export const EASY_FOOTBALL_MIX_MODES: FootballMode[] = ['wcWinners', 'euroWinners', 'wcHosts', 'uclWinners']
-export const HARD_FOOTBALL_MIX_MODES: FootballMode[] = FOOTBALL_MODES.filter(
-  (mode) => mode !== 'playerFactsToName',
-)
+export const HARD_FOOTBALL_MIX_MODES: FootballMode[] = [...FOOTBALL_MODES]
 export const FLAGS_MIX_MODES: QuizMode[] = ['flagToName', 'nameToFlag']
 export const MAP_MIX_MODES: QuizMode[] = ['nameToMap', 'mapToName']
 export const PLAYER_FOOTBALL_MATCH_MIX: FootballMode[] = ['playerPhotoToName', 'playerToNation', 'playerToClub']
@@ -227,6 +250,16 @@ export const PHOTO_LEADERS_MATCH_MIX: LeadersMode[] = [
   'popePhotoToName',
   'rusPhotoToName',
   'ukPhotoToName',
+  'ottPhotoToName',
+  'jpPhotoToName',
+  'mcPhotoToName',
+  'bnPhotoToName',
+  'joPhotoToName',
+  'maPhotoToName',
+  'dkPhotoToName',
+  'nlPhotoToName',
+  'liPhotoToName',
+  'szPhotoToName',
 ]
 export const MATCH_LEADERS_MODES: LeadersMode[] = ['usPhotoToName', 'usYearsToName']
 export const MIX_KINDS = ['easy', 'hard', 'custom'] as const
@@ -238,7 +271,7 @@ export function isMixKind(value: unknown): value is MixKind {
 
 export function modesForFootballMix(mix: MixKind, custom: readonly QuizMode[] = []): FootballMode[] {
   if (mix === 'custom') {
-    return custom.filter(isFootballMode).filter((mode) => mode !== 'playerFactsToName')
+    return custom.filter(isFootballMode)
   }
   return mix === 'easy' ? [...EASY_FOOTBALL_MIX_MODES] : [...HARD_FOOTBALL_MIX_MODES]
 }
@@ -256,20 +289,19 @@ export function modesForMix(mix: MixKind, world: QuizWorld = 'geo', custom: read
         !isMathMode(mode) &&
         !isAstroMode(mode) &&
         !isThemeMode(mode) &&
-        !isRankingMode(mode) &&
-        mode !== 'factsToName',
+        !isRankingMode(mode),
     )
   }
   return mix === 'easy' ? [...EASY_MIX_MODES] : [...HARD_MIX_MODES]
 }
 
 export function modesForMathMix(mix: MixKind, custom: readonly QuizMode[] = []): MathMode[] {
-  if (mix === 'custom') return custom.filter(isMathMode).filter((mode) => mode !== 'mathFactsToName')
+  if (mix === 'custom') return custom.filter(isMathMode)
   return mix === 'easy' ? [...EASY_MATH_MIX_MODES] : [...HARD_MATH_MIX_MODES]
 }
 
 export function modesForAstroMix(mix: MixKind, custom: readonly QuizMode[] = []): AstroMode[] {
-  if (mix === 'custom') return custom.filter(isAstroMode).filter((mode) => mode !== 'astroFactsToName')
+  if (mix === 'custom') return custom.filter(isAstroMode)
   return mix === 'easy' ? [...EASY_ASTRO_MIX_MODES] : [...HARD_ASTRO_MIX_MODES]
 }
 
@@ -301,10 +333,7 @@ export function isCodesMode(value: unknown): value is CodesMode {
 }
 
 export function isLeadersMode(value: unknown): value is LeadersMode {
-  return (
-    typeof value === 'string' &&
-    ((LEADERS_MODES as readonly string[]).includes(value) || value === 'rusNumberToName')
-  )
+  return typeof value === 'string' && (LEADERS_MODES as readonly string[]).includes(value)
 }
 
 export const QUIZ_WORLDS = [
@@ -316,6 +345,7 @@ export const QUIZ_WORLDS = [
   'math',
   'astronomy',
   'cs',
+  'physics',
   'food',
 ] as const
 export type QuizWorld = (typeof QUIZ_WORLDS)[number]
@@ -333,12 +363,11 @@ export function worldOfMode(mode: QuizMode): QuizWorld {
   return 'geo'
 }
 
+const LEADER_KIND_PREFIXES: readonly LeaderKind[] = ['pope', 'rus', 'ott', 'uk', 'us', 'jp', 'mc', 'bn', 'jo', 'ma', 'dk', 'nl', 'li', 'sz']
+
 export function leaderKindOf(mode: QuizMode): LeaderKind | null {
-  if (mode.startsWith('rus')) return 'rus'
-  if (mode.startsWith('pope')) return 'pope'
-  if (mode.startsWith('uk')) return 'uk'
-  if (mode.startsWith('us')) return 'us'
-  return null
+  if (!isLeadersMode(mode)) return null
+  return LEADER_KIND_PREFIXES.find((kind) => mode.startsWith(kind)) ?? null
 }
 
 export function leadersAskOf(mode: QuizMode): LeaderAsk {
@@ -348,51 +377,27 @@ export function leadersAskOf(mode: QuizMode): LeaderAsk {
 }
 
 export function leadersAsksOf(kind: LeaderKind): LeaderAsk[] {
-  if (kind === 'rus' || kind === 'uk') return ['years', 'photo']
-  return ['years', 'number', 'photo']
+  if (kind === 'us' || kind === 'pope' || kind === 'rus' || kind === 'uk') return ['years', 'number', 'photo']
+  return ['years', 'photo']
 }
 
 export function leadersModeOf(kind: LeaderKind, ask: LeaderAsk): LeadersMode {
   const allowed = leadersAsksOf(kind)
   const safe: LeaderAsk = allowed.includes(ask) ? ask : 'years'
-  if (kind === 'us') {
-    if (safe === 'number') return 'usNumberToName'
-    if (safe === 'photo') return 'usPhotoToName'
-    return 'usYearsToName'
-  }
-  if (kind === 'pope') {
-    if (safe === 'number') return 'popeNumberToName'
-    if (safe === 'photo') return 'popePhotoToName'
-    return 'popeYearsToName'
-  }
-  if (kind === 'uk') {
-    if (safe === 'photo') return 'ukPhotoToName'
-    return 'ukYearsToName'
-  }
-  if (safe === 'photo') return 'rusPhotoToName'
-  return 'rusYearsToName'
+  const askPart = safe === 'number' ? 'Number' : safe === 'photo' ? 'Photo' : 'Years'
+  return `${kind}${askPart}ToName` as LeadersMode
 }
 
 export function isLeaderPhotoMode(mode: QuizMode): boolean {
-  return (
-    mode === 'usPhotoToName' ||
-    mode === 'popePhotoToName' ||
-    mode === 'rusPhotoToName' ||
-    mode === 'ukPhotoToName'
-  )
+  return isLeadersMode(mode) && mode.endsWith('PhotoToName')
 }
 
 export function isLeaderYearsPrompt(mode: QuizMode): boolean {
-  return (
-    mode === 'usYearsToName' ||
-    mode === 'popeYearsToName' ||
-    mode === 'rusYearsToName' ||
-    mode === 'ukYearsToName'
-  )
+  return isLeadersMode(mode) && mode.endsWith('YearsToName')
 }
 
 export function isLeaderNumberPrompt(mode: QuizMode): boolean {
-  return mode === 'usNumberToName' || mode === 'popeNumberToName'
+  return isLeadersMode(mode) && mode.endsWith('NumberToName')
 }
 
 export function isCodePromptMode(mode: QuizMode): boolean {
@@ -508,7 +513,7 @@ export function isFootballRosterMode(mode: QuizMode): boolean {
 }
 
 export function isManagerFootballMode(mode: QuizMode): boolean {
-  return mode === 'managerPhotoToName'
+  return (MANAGER_FOOTBALL_MODES as readonly string[]).includes(mode)
 }
 
 export function footballTopicOf(mode: QuizMode): FootballTopic {
@@ -556,17 +561,7 @@ export function hasLevels(mode: QuizMode): boolean {
     astroHasCampaign(mode) ||
     themeHasCampaign(mode) ||
     isCodesMode(mode) ||
-    (!isRankingMode(mode) &&
-      !isThemeMode(mode) &&
-      mode !== 'neighborsToName' &&
-      mode !== 'factsToName' &&
-      mode !== 'nameToLanguage' &&
-      mode !== 'languageToName' &&
-      mode !== 'nameToDriving' &&
-      mode !== 'drivingToName' &&
-      mode !== 'nameToReligion' &&
-      mode !== 'religionToName' &&
-      mode !== 'nameToGov')
+    (!isRankingMode(mode) && !isThemeMode(mode) && mode !== 'neighborsToName')
   )
 }
 
@@ -580,6 +575,7 @@ export function hasGeoFinale(mode: QuizMode): boolean {
     !isThemeMode(mode) &&
     !isCodesMode(mode) &&
     !isRankingMode(mode) &&
+    mode !== 'factsToName' &&
     mode !== 'nameToLanguage' &&
     mode !== 'languageToName' &&
     mode !== 'nameToDriving' &&
@@ -599,7 +595,7 @@ export type LearnFrom = 'region' | 'level'
 export type RegionFilter = string
 export type RoundEnd = 'complete' | 'timeout' | 'lives'
 export type QuizDifficulty = 'easy' | 'medium' | 'hard' | 'hardcore'
-export const PLAY_DIFFICULTIES: QuizDifficulty[] = ['easy', 'hard']
+export const PLAY_DIFFICULTIES: QuizDifficulty[] = ['easy', 'medium', 'hard']
 export const FACTS_DIFFICULTIES: QuizDifficulty[] = ['easy', 'medium', 'hard']
 export const LEADERS_DIFFICULTIES: QuizDifficulty[] = ['easy', 'medium', 'hard']
 export const LANGUAGE_DIFFICULTIES: QuizDifficulty[] = ['easy', 'medium', 'hard']
@@ -714,11 +710,12 @@ export function livesFor(
   level = 1,
   levelLives = MAX_LIVES,
   mode: QuizMode = 'flagToName',
+  finale = false,
 ): number {
   if (path === 'learn' || path === 'mistakes') return Number.MAX_SAFE_INTEGER
   const oneLife = levelHardcore || difficulty === 'hardcore'
   if (path !== 'levels') return oneLife ? 1 : MAX_LIVES
-  if (isFinalLevel(level) && hasGeoFinale(mode)) return oneLife ? 1 : levelLives
+  if (finale || (isFinalLevel(level) && hasGeoFinale(mode))) return oneLife ? 1 : levelLives
   return oneLife ? 1 : MAX_LIVES
 }
 
@@ -726,11 +723,22 @@ export function countryDifficultyOf(difficulty: QuizDifficulty): Difficulty {
   return difficulty === 'easy' ? 'easy' : 'hard'
 }
 
+/** Question pool for a round. Hardcore is stricter than hard; medium stays medium. */
+export function askedDifficulty(difficulty: QuizDifficulty, hardcore = false): QuizDifficulty {
+  return hardcore || difficulty === 'hardcore' ? 'hardcore' : difficulty
+}
+
+export function hardcoreSlice<T>(items: readonly T[], min = 4): T[] {
+  if (items.length < min * 2) return [...items]
+  return items.slice(Math.floor(items.length / 2))
+}
+
 export function matchesPlayDifficulty(country: Country, mode: QuizMode, difficulty: QuizDifficulty): boolean {
   if (isFactsToName(mode)) {
     const tier = factsDifficultyOf(country)
     if (difficulty === 'easy') return tier === 'easy'
     if (difficulty === 'medium') return tier === 'medium'
+    if (difficulty === 'hardcore') return factsHardcore(country)
     return tier === 'hard'
   }
   if (isNameToLanguage(mode)) {
@@ -738,10 +746,24 @@ export function matchesPlayDifficulty(country: Country, mode: QuizMode, difficul
     const tier = languageDifficultyOf(country)
     if (difficulty === 'easy') return tier === 'easy'
     if (difficulty === 'medium') return tier === 'medium'
+    if (difficulty === 'hardcore') return languageHardcore(country)
     return tier === 'hard'
   }
-  if (isRankingMode(mode)) return isRankingEasy(country.iso, mode) === (difficulty === 'easy')
-  return isEasyForMode(country, mode) === (difficulty === 'easy')
+  if (isRankingMode(mode)) {
+    const place = rankingPlaceOf(mode, country.iso)
+    const total = rankingCount(mode)
+    const easyN = rankingEasyCount(mode)
+    if (place === null || total <= 0) return false
+    if (difficulty === 'easy') return place <= easyN
+    if (difficulty === 'medium') return place <= Math.max(easyN, Math.round(total * 0.5))
+    if (difficulty === 'hardcore') return place > Math.round(total * 0.6)
+    return place > easyN
+  }
+  const tier = geoPlayTier(country, mode)
+  if (difficulty === 'easy') return tier === 'easy'
+  if (difficulty === 'medium') return tier === 'medium'
+  if (difficulty === 'hardcore') return tier === 'hardcore'
+  return tier === 'hard' || tier === 'hardcore'
 }
 
 export interface Question {
@@ -834,6 +856,20 @@ export function slowestAnswer(answers: RoundAnswer[]): RoundAnswer | null {
   return answers.reduce((slowest, answer) => (answer.timeMs > slowest.timeMs ? answer : slowest))
 }
 
+function catalogName(country: Country, lang: Lang): string | null {
+  const hits: Array<{ en: string; ru: string; label: string }> = []
+  const player = playerById(country.iso)
+  if (player) hits.push({ en: player.en, ru: player.ru, label: playerDisplayName(player, lang) })
+  const manager = managerById(country.iso)
+  if (manager) hits.push({ en: manager.en, ru: manager.ru, label: managerDisplayName(manager, lang) })
+  const term = termById(country.iso)
+  if (term) hits.push({ en: term.en, ru: term.ru, label: leaderDisplayName(term, lang) })
+  if (hits.length === 0) return null
+  if (hits.length === 1) return hits[0].label
+  const own = hits.find((hit) => hit.en === country.nameEn || hit.ru === country.nameRu)
+  return (own ?? hits[0]).label
+}
+
 export function countryName(country: Country, lang: Lang): string {
   if (country.iso.includes('+')) {
     const parts = country.iso.split('+').map((id) => countryName(footballTeamCountry(id), lang))
@@ -843,12 +879,8 @@ export function countryName(country: Country, lang: Lang): string {
       return parts.join(', ')
     }
   }
-  const player = playerById(country.iso)
-  if (player) return playerDisplayName(player, lang)
-  const manager = managerById(country.iso)
-  if (manager) return managerDisplayName(manager, lang)
-  const term = termById(country.iso)
-  if (term) return leaderDisplayName(term, lang)
+  const named = catalogName(country, lang)
+  if (named) return named
   const math = mathById(country.iso)
   if (math) return mathDisplayName(math, lang)
   const astro = astroById(country.iso)
@@ -919,6 +951,7 @@ export function pickDistractors(
   n: number,
   uniqueKey: (country: Country) => string,
   avoidKeys: readonly string[] = [],
+  universe: Country[] = COUNTRIES,
 ): Country[] {
   return pickFirstFit(n, avoidKeys, (banned) => {
     const pickedIso = new Set([correct.iso])
@@ -938,9 +971,9 @@ export function pickDistractors(
     }
 
     addFrom(pool.filter((country) => country.region === correct.region))
-    addFrom(COUNTRIES.filter((country) => country.region === correct.region))
+    addFrom(universe.filter((country) => country.region === correct.region))
     addFrom(pool)
-    addFrom(COUNTRIES)
+    addFrom(universe)
 
     return distractors
   })

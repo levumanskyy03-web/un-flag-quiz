@@ -5,9 +5,9 @@ import { foundedYear } from '../../data/founded'
 import { countriesForEraPool, isHistoryId, type GeoPoolOptions, normalizePoolOptions } from '../../data/history'
 import { getPassport } from '../../data/passports'
 import { HOLDOUT_BY_ISO, TERRITORY_BY_ISO } from '../../data/territories'
-import { LEVEL_ISOS, isFinalLevel, isLevelNumber } from '../../data/levels'
-import { isEasyForMode } from '../../data/modeDifficulty'
-import { canAskNeighbors } from '../../data/neighbors'
+import { LEVEL_ISOS } from '../../data/levels'
+import { geoPlayTier } from '../../data/modeDifficulty'
+import { canAskNeighbors, landNeighbors } from '../../data/neighbors'
 import {
   blockedWaterOptionIds,
   canAskWater,
@@ -31,6 +31,8 @@ import { govKindOf } from '../../data/governments'
 import { drivingSide } from '../../data/driving'
 import { religionOf } from '../../data/religion'
 import {
+  hasGeoFinale,
+  hasLevels,
   isCodesMode,
   isDrivingMode,
   isLanguageMode,
@@ -99,6 +101,18 @@ export function eraFitsMode(mode: QuizMode): boolean {
   )
 }
 
+function waterBodyMatches(id: string, ids: readonly string[], difficulty: QuizDifficulty): boolean {
+  const easy = isEasyWaterBody(id)
+  const hardIds = [...ids].filter((item) => !isEasyWaterBody(item)).sort()
+  const mid = Math.floor(hardIds.length / 2)
+  const medium = new Set(hardIds.slice(0, mid))
+  const hardest = new Set(hardIds.slice(mid))
+  if (difficulty === 'easy') return easy
+  if (difficulty === 'medium') return easy || medium.has(id)
+  if (difficulty === 'hardcore') return hardest.size >= 4 ? hardest.has(id) : !easy
+  return !easy
+}
+
 export function getPool(
   region: RegionFilter,
   difficulty: QuizDifficulty,
@@ -114,7 +128,7 @@ export function getPool(
         return Boolean(country && regions.includes(country.region))
       })
       if (!inRegion) return false
-      return isEasyWaterBody(id) === (difficulty === 'easy')
+      return waterBodyMatches(id, waterIdsForMode(mode), difficulty)
     })
     const fallback = ids.length > 0 ? ids : waterIdsForMode(mode).filter((id) =>
       isosForWater(id, waterDataMode(mode)).some((iso) => {
@@ -144,13 +158,25 @@ export function getRegionPool(region: RegionFilter, extrasOrOpts: boolean | GeoP
 
 const FAME_INDEX = new Map(LEVEL_ISOS.flat().map((iso, index) => [iso, index]))
 const LEVEL_CHUNKS = new Map<QuizMode, Country[][]>()
+const GEO_LEVEL_SIZE = 10
+const TIER_ORDER = { easy: 0, medium: 1, hard: 2, hardcore: 3 } as const
 
-function rankedForMode(mode: QuizMode): Country[] {
-  return [...COUNTRIES].sort((a, b) => {
-    const easyDelta = Number(isEasyForMode(a, mode)) - Number(isEasyForMode(b, mode))
-    if (easyDelta !== 0) return -easyDelta
-    return (FAME_INDEX.get(a.iso) ?? 999) - (FAME_INDEX.get(b.iso) ?? 999)
-  })
+function modeLadder(mode: QuizMode): Country[] {
+  return [...COUNTRIES]
+    .filter((country) => {
+      if (!extraFitsMode(country, mode)) return false
+      if (isLanguageMode(mode) && !quizLanguageId(country.iso)) return false
+      if (isReligionMode(mode) && !religionOf(country.iso)) return false
+      if (isNameToGov(mode) && !govKindOf(country.iso)) return false
+      if (mode === 'factsToName' && !getPassport(country.iso)) return false
+      if (mode === 'nameToFounded' && foundedYear(country.iso) === undefined) return false
+      return true
+    })
+    .sort((a, b) => {
+      const tierDelta = TIER_ORDER[geoPlayTier(a, mode)] - TIER_ORDER[geoPlayTier(b, mode)]
+      if (tierDelta !== 0) return tierDelta
+      return (FAME_INDEX.get(a.iso) ?? 999) - (FAME_INDEX.get(b.iso) ?? 999)
+    })
 }
 
 function levelChunksFor(mode: QuizMode): Country[][] {
@@ -158,17 +184,6 @@ function levelChunksFor(mode: QuizMode): Country[][] {
   if (cached) return cached
   if (isWaterMode(mode)) {
     const chunks = waterLevelChunks(mode)
-    LEVEL_CHUNKS.set(mode, chunks)
-    return chunks
-  }
-  if (isCodesMode(mode)) {
-    const ranked = rankedForMode(mode).filter((country) => COUNTRY_CODES[country.iso])
-    const chunks: Country[][] = []
-    let offset = 0
-    for (const group of LEVEL_ISOS) {
-      chunks.push(ranked.slice(offset, offset + group.length))
-      offset += group.length
-    }
     LEVEL_CHUNKS.set(mode, chunks)
     return chunks
   }
@@ -183,26 +198,76 @@ function levelChunksFor(mode: QuizMode): Country[][] {
     LEVEL_CHUNKS.set(mode, chunks)
     return chunks
   }
-  const ranked = rankedForMode(mode)
+  const ranked = modeLadder(mode)
   const chunks: Country[][] = []
-  let offset = 0
-  for (const group of LEVEL_ISOS) {
-    chunks.push(ranked.slice(offset, offset + group.length))
-    offset += group.length
+  for (let index = 0; index < ranked.length; index += GEO_LEVEL_SIZE) {
+    chunks.push(ranked.slice(index, index + GEO_LEVEL_SIZE))
   }
   LEVEL_CHUNKS.set(mode, chunks)
   return chunks
+}
+
+export function geoCampaignLevels(mode: QuizMode): number {
+  if (!hasLevels(mode) || isWaterMode(mode)) return 0
+  const chunks = levelChunksFor(mode)
+  return chunks.length + (hasGeoFinale(mode) ? 1 : 0)
+}
+
+export function isGeoFinaleLevel(mode: QuizMode, level: number): boolean {
+  return hasGeoFinale(mode) && level === geoCampaignLevels(mode)
 }
 
 export function getGeoLevelPool(level: number, mode: QuizMode = 'flagToName'): Country[] {
   if (isWaterMode(mode)) {
     return waterLevelChunks(mode)[level - 1] ?? []
   }
-  if (!isLevelNumber(level)) return []
-  if (isFinalLevel(level)) {
+  const chunks = levelChunksFor(mode)
+  if (isGeoFinaleLevel(mode, level)) {
     return isCodesMode(mode) ? COUNTRIES.filter((country) => COUNTRY_CODES[country.iso]) : [...COUNTRIES]
   }
-  return levelChunksFor(mode)[level - 1] ?? []
+  return chunks[level - 1] ?? []
+}
+
+function hasPassportFact(country: Country, kind: 'currency' | 'population'): boolean {
+  const passport = getPassport(country.iso)
+  if (!passport) return false
+  if (kind === 'population') return passport.population > 0
+  return Boolean(passport.currencyEn)
+}
+
+function passportUniverse(pool: Country[], mode?: QuizMode): Country[] {
+  if (mode !== 'nameToCurrency' && mode !== 'nameToPopulation') return pool
+  const kind = mode === 'nameToPopulation' ? 'population' : 'currency'
+  return pool.filter((country) => hasPassportFact(country, kind))
+}
+
+function sharedNeighbors(a: string, b: string): number {
+  const mine = new Set(landNeighbors(a))
+  let count = 0
+  for (const iso of landNeighbors(b)) if (mine.has(iso)) count += 1
+  return count
+}
+
+function pickNeighborDistractors(
+  correct: Country,
+  pool: Country[],
+  uniqueKey: (country: Country) => string,
+  avoidKeys: readonly string[],
+): Country[] {
+  return pickFirstFit(3, avoidKeys, (banned) => {
+    const correctKey = uniqueKey(correct)
+    const eligible = pool.filter((country) => {
+      if (country.iso === correct.iso) return false
+      const key = uniqueKey(country)
+      return key !== correctKey && !banned.has(key)
+    })
+    const close = shuffle(eligible.filter((country) => sharedNeighbors(correct.iso, country.iso) > 0)).slice(0, 2)
+    const used = new Set([correct.iso, ...close.map((country) => country.iso)])
+    const rest = shuffle(eligible.filter((country) => !used.has(country.iso)))
+    const sameRegion = rest.filter((country) => country.region === correct.region)
+    const filler = [...sameRegion, ...rest.filter((country) => country.region !== correct.region)]
+    return [...close, ...filler].slice(0, 3)
+  })
 }
 
 export function poolForMode(
@@ -235,6 +300,10 @@ export function poolForMode(
   } else if (isCodesMode(mode)) {
     next = pool.filter((country) => COUNTRY_CODES[country.iso])
     if (next.length < 4) next = COUNTRIES.filter((country) => COUNTRY_CODES[country.iso])
+  } else if (mode === 'nameToCurrency' || mode === 'nameToPopulation') {
+    const kind = mode === 'nameToPopulation' ? 'population' : 'currency'
+    next = pool.filter((country) => hasPassportFact(country, kind))
+    if (next.length < 4) next = COUNTRIES.filter((country) => hasPassportFact(country, kind))
   }
   if (!difficulty) return next
   const filtered = next.filter((country) => matchesPlayDifficulty(country, mode, difficulty))
@@ -254,17 +323,22 @@ export function createRound(
   if (mode && isDrivingMode(mode)) return createDrivingRound(pool, count, mode)
   if (mode && isReligionMode(mode)) return createReligionRound(pool, count, mode)
   if (mode && isNameToGov(mode)) return createGovRound(pool, count)
-  const targets = shuffle(pool).slice(0, Math.min(count, pool.length))
+  const source = passportUniverse(pool, mode)
+  const targets = shuffle(source).slice(0, Math.min(count, source.length))
   const questions: Question[] = []
   const avoidKeys: string[] = []
 
   for (const country of targets) {
+    const options =
+      mode === 'neighborsToName'
+        ? pickNeighborDistractors(country, pool, uniqueKey, avoidKeys)
+        : pickDistractors(country, source, 3, uniqueKey, avoidKeys, passportUniverse(COUNTRIES, mode))
     questions.push(
       withPriorBan(
         withFacts({
           country,
           mode,
-          options: shuffle([country, ...pickDistractors(country, pool, 3, uniqueKey, avoidKeys)]),
+          options: shuffle([country, ...options]),
         }),
         avoidKeys,
       ),
@@ -500,7 +574,16 @@ function questionForMode(
       mode,
       options: shuffle([
         country,
-        ...pickDistractors(country, modePool, 3, (item) => uniqueKey(item, mode), avoid.keys),
+        ...(mode === 'neighborsToName'
+          ? pickNeighborDistractors(country, modePool, (item) => uniqueKey(item, mode), avoid.keys)
+          : pickDistractors(
+              country,
+              passportUniverse(modePool, mode),
+              3,
+              (item) => uniqueKey(item, mode),
+              avoid.keys,
+              passportUniverse(COUNTRIES, mode),
+            )),
       ]),
     }),
     avoid.keys,

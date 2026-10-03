@@ -23,12 +23,12 @@ import {
   type ThemeWorld,
 } from './themeModes'
 import { pickL } from '../../data/math'
-import { pickFirstFit, QUESTIONS_PER_ROUND, shuffle, type Question, type QuizDifficulty } from './core'
+import { hardcoreSlice, pickFirstFit, QUESTIONS_PER_ROUND, shuffle, type Question, type QuizDifficulty } from './core'
 import type { Country } from '../../data/countries'
 
 export function themePoolItems(mode: ThemeMode, difficulty?: QuizDifficulty): ThemeItem[] {
-  const tier = difficulty === 'hardcore' ? 'hard' : difficulty
-  return themeItemsOf(mode, tier === 'easy' || tier === 'medium' || tier === 'hard' ? tier : undefined)
+  if (difficulty === 'hardcore') return hardcoreSlice(themeItemsOf(mode, 'hard'))
+  return themeItemsOf(mode, difficulty === 'easy' || difficulty === 'medium' || difficulty === 'hard' ? difficulty : undefined)
 }
 
 export function themePoolSize(mode: ThemeMode, difficulty?: QuizDifficulty): number {

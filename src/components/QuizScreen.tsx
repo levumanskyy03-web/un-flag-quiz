@@ -1,6 +1,7 @@
 import { useReducedMotion } from 'framer-motion'
 import { motion } from 'framer-motion'
-import { STRINGS, astroQuestionPrompt, themeQuestionPrompt, drivingLabel, footballQuestionPrompt, mathQuestionPrompt, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
+import { STRINGS, astroQuestionPrompt, themeQuestionPrompt, drivingLabel, footballQuestionPrompt, leaderNumberPrompt, leaderYearsPrompt, mathQuestionPrompt, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
+import { PiMark } from './PiMark'
 import { QuizClocks } from './QuizClocks'
 import { HelpTip } from './HelpTip'
 import { type Country } from '../data/countries'
@@ -148,7 +149,7 @@ export function QuizScreen({
   const leaderTerm = termById(question.country.iso)
   const promptPlayer = playerById(question.promptEntity?.iso ?? question.country.iso)
   const player = promptPlayer ?? playerById(question.country.iso)
-  const manager = FOOTBALL_MANAGERS.find((item) => item.id === question.country.iso)
+  const manager = FOOTBALL_MANAGERS.find((item) => item.id === (question.promptEntity?.iso ?? question.country.iso))
   const footballAsk = footballQuestionPrompt(activeMode, question.year ?? 0, String(question.shirtNumber ?? correctName), lang, {
     league: question.league,
     stadiumName: question.stadiumName,
@@ -263,6 +264,7 @@ export function QuizScreen({
       )}
 
       <motion.div
+        className="quiz-round"
         key={`${index}-${question.country.iso}-${question.waterId ?? ''}-${question.year ?? ''}`}
         initial={reduceMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -321,6 +323,8 @@ export function QuizScreen({
                     </li>
                   ))}
                 </ul>
+              ) : activeMode === 'symbolToMeaning' && mathItem.key === 'pi' ? (
+                <PiMark />
               ) : (
                 <h2 className={`prompt-name${activeMode === 'symbolToMeaning' || activeMode === 'siPrefixToFactor' ? ' code-prompt' : ''}`}>
                   {mathPrompt}
@@ -415,7 +419,7 @@ export function QuizScreen({
                   ? t.nameToCallingAsk(correctName)
                   : t.nameToCarAsk(correctName)}
             </h2>
-          ) : isLeaderPhotoMode(activeMode) || isPlayerPhotoMode(activeMode) ? (
+          ) : isLeaderPhotoMode(activeMode) || isPlayerPhotoMode(activeMode) || activeMode === 'managerToNation' ? (
             <div className="leader-prompt">
               <p className="neighbors-prompt-label">{footballAsk ?? t.leaderPhotoPrompt}</p>
               <LeaderPortrait
@@ -429,24 +433,12 @@ export function QuizScreen({
             </div>
           ) : isLeaderNumberPrompt(activeMode) ? (
             <div className="code-prompt-block">
-              <p className="neighbors-prompt-label">
-                {activeMode === 'popeNumberToName'
-                  ? t.popeNumberPrompt(leaderTerm?.n ?? 0)
-                  : t.usNumberPrompt(leaderTerm?.n ?? 0)}
-              </p>
+              <p className="neighbors-prompt-label">{leaderNumberPrompt(activeMode, leaderTerm?.n ?? 0, t)}</p>
               <h2 className="prompt-name code-prompt">{leaderTerm?.n ?? ''}</h2>
             </div>
           ) : isLeaderYearsPrompt(activeMode) ? (
             <div className="code-prompt-block">
-              <p className="neighbors-prompt-label">
-                {activeMode === 'popeYearsToName'
-                  ? t.popeYearsPrompt(leaderRange)
-                  : activeMode === 'rusYearsToName'
-                    ? t.askoldPrompt(leaderRange)
-                    : activeMode === 'ukYearsToName'
-                      ? t.ukYearsPrompt(leaderRange)
-                      : t.usYearsPrompt(leaderRange)}
-              </p>
+              <p className="neighbors-prompt-label">{leaderYearsPrompt(activeMode, leaderRange, t)}</p>
               <h2 className="prompt-name">{leaderRange}</h2>
             </div>
           ) : isRankingMode(activeMode) ? (

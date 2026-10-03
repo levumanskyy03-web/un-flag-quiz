@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { WIKI_PORTRAIT_FILES } from '../data/leaderPortraitFiles'
-import { commonsThumbCandidates, portraitFromFileHint, portraitThumbWidth } from '../lib/commonsFile'
+import { commonsThumbCandidates, portraitThumbWidth } from '../lib/commonsFile'
 import { flagUrl } from '../lib/quiz'
 import { fetchWikiPortrait, peekWikiPortrait, type WikiPortrait } from '../lib/wikiThumb'
 
@@ -90,6 +90,11 @@ function platePortrait(src: string): WikiPortrait {
   return { url: src, credit: '', compactCredit: '', filePage: src, license: '' }
 }
 
+function isDishFile(file?: string): boolean {
+  const name = file?.trim() ?? ''
+  return name.startsWith('/food/') || name.startsWith('http://') || name.startsWith('https://')
+}
+
 function portraitProxy(wiki: string, file?: string): string {
   const title = wiki.trim().replace(/_/g, ' ')
   if (!title) return ''
@@ -103,18 +108,19 @@ export function LeaderPortrait({ name, wiki, file, flagIso, size = 'card', compa
   const rootRef = useRef<HTMLSpanElement>(null)
   const hint = hintedFile(wiki, file)
   const plate = localPlate(hint)
+  const dish = isDishFile(file) || isDishFile(hint)
   const width = portraitThumbWidth(size)
   const fallbacks = useMemo(() => {
     if (plate) return []
-    const proxy = portraitProxy(wiki, hint)
     const direct = hint ? commonsThumbCandidates(hint, width)[0] : ''
-    return [proxy, direct].filter(Boolean)
+    const proxy = portraitProxy(wiki, hint)
+    return [direct, proxy].filter(Boolean)
   }, [hint, width, plate, wiki])
-  const [visible, setVisible] = useState(() => size === 'hero' || Boolean(plate) || Boolean(peekWikiPortrait(wiki, file ?? hint)))
+  const [visible, setVisible] = useState(() => size === 'hero' || Boolean(plate) || peekWikiPortrait(wiki, file ?? hint) !== undefined)
   const [portrait, setPortrait] = useState<WikiPortrait | null>(
-    () => (plate ? platePortrait(plate) : peekWikiPortrait(wiki, file ?? hint) ?? portraitFromFileHint(hint, width)),
+    () => (plate ? platePortrait(plate) : peekWikiPortrait(wiki, file ?? hint) ?? null),
   )
-  const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState(() => !plate && peekWikiPortrait(wiki, file ?? hint) === null)
   const [fetchTry, setFetchTry] = useState(0)
   const [imgTry, setImgTry] = useState(0)
   const srcRef = useRef('')
@@ -129,12 +135,11 @@ export function LeaderPortrait({ name, wiki, file, flagIso, size = 'card', compa
       return
     }
     const cached = peekWikiPortrait(wiki, file ?? hint)
-    const next = cached ?? portraitFromFileHint(hint, width)
-    setVisible(size === 'hero' || Boolean(cached))
-    setFailed(false)
+    setVisible(size === 'hero' || cached !== undefined)
+    setFailed(cached === null)
     setImgTry(0)
     setFetchTry(0)
-    setPortrait(next)
+    setPortrait(cached ?? null)
   }, [wiki, file, hint, size, width, plate])
 
   useEffect(() => {
@@ -152,23 +157,34 @@ export function LeaderPortrait({ name, wiki, file, flagIso, size = 'card', compa
       setPortrait(cached)
       setFailed(false)
     }
+    if (cached === null) {
+      setFailed(true)
+      return () => {
+        live = false
+      }
+    }
     if (!wiki || cached) {
       return () => {
         live = false
       }
     }
     void fetchWikiPortrait(wiki, file ?? hint).then((next) => {
-      if (!live || !next) {
-        if (!live) return
-        if (!hint && !next && fetchTry < 2) {
-          window.setTimeout(() => {
-            if (live) setFetchTry((n) => n + 1)
-          }, 800 * (fetchTry + 1))
-        }
+      if (!live) return
+      if (next) {
+        setPortrait(next)
+        setFailed(false)
+        setImgTry(0)
         return
       }
-      setPortrait(next)
-      setFailed(false)
+      if (peekWikiPortrait(wiki, file ?? hint) === null) {
+        setFailed(true)
+        return
+      }
+      if (fetchTry < 2) {
+        window.setTimeout(() => {
+          if (live) setFetchTry((n) => n + 1)
+        }, 800 * (fetchTry + 1))
+      }
     })
     return () => {
       live = false
@@ -176,12 +192,13 @@ export function LeaderPortrait({ name, wiki, file, flagIso, size = 'card', compa
   }, [wiki, file, hint, fetchTry, visible, plate, fallbacks])
 
   const credit = compact || size !== 'hero' ? portrait?.compactCredit : portrait?.credit
-  const src = plate ?? fallbacks[imgTry] ?? ''
+  const chain = plate ? [plate] : [portrait?.url ?? '', ...fallbacks].filter((url, index, all) => url && all.indexOf(url) === index)
+  const src = failed ? '' : (chain[imgTry] ?? '')
   srcRef.current = src
 
   if (!visible || !src || failed) {
     return (
-      <span ref={rootRef} className={`leader-fallback is-${size}${flagIso ? ' has-flag' : ''}`} aria-hidden="true">
+      <span ref={rootRef} className={`leader-fallback is-${size}${dish ? ' is-dish' : ''}${flagIso ? ' has-flag' : ''}`} aria-hidden="true">
         {flagIso ? <img className="leader-fallback-flag" src={flagUrl(flagIso)} alt="" /> : null}
         <span className="leader-fallback-initials">{initials(name)}</span>
       </span>
@@ -189,10 +206,10 @@ export function LeaderPortrait({ name, wiki, file, flagIso, size = 'card', compa
   }
 
   return (
-    <figure className={`leader-portrait is-${size}`}>
+    <figure className={`leader-portrait is-${size}${dish ? ' is-dish' : ''}`}>
       <img
         key={`${src}:${imgTry}`}
-        className={`leader-photo is-${size}`}
+        className={`leader-photo is-${size}${dish ? ' is-dish' : ''}`}
         src={src}
         alt=""
         decoding="async"

@@ -7,10 +7,7 @@ import {
   MANAGER_FOOTBALL_MODES,
   PLAYER_FOOTBALL_MODES,
   WC_FOOTBALL_MODES,
-  isDrivingMode,
-  isReligionMode,
   isFootballMode,
-  isLeadersMode,
   isMathMode,
   isAstroMode,
   isThemeMode,
@@ -48,7 +45,17 @@ interface FamilySettings {
 
 export const COPA_FOOTBALL_MODES = ['copaWinners', 'copaFinalists', 'copaHosts'] as const
 export const AFCON_FOOTBALL_MODES = ['afconWinners', 'afconFinalists', 'afconHosts'] as const
-export const OTHER_CUP_FOOTBALL_MODES = ['asianCupWinners', 'goldCupWinners', 'nationsLeagueWinners'] as const
+export const OTHER_CUP_FOOTBALL_MODES = [
+  'asianCupWinners',
+  'asianCupFinalists',
+  'asianCupHosts',
+  'goldCupWinners',
+  'goldCupFinalists',
+  'goldCupHosts',
+  'nationsLeagueWinners',
+  'nationsLeagueFinalists',
+  'nationsLeagueHosts',
+] as const
 
 export const GEO_FAMILIES = [
   'mix',
@@ -70,7 +77,7 @@ export const GEO_FAMILIES = [
   'rankings',
 ] as const
 
-export const GEO_PLAY_FAMILIES = GEO_FAMILIES.filter((id) => id !== 'mix' && id !== 'rankings')
+export const GEO_PLAY_FAMILIES = GEO_FAMILIES.filter((id) => id !== 'mix')
 
 export type GeoFamilyId = (typeof GEO_FAMILIES)[number]
 
@@ -91,7 +98,7 @@ export const FOOTBALL_PLAY_FAMILIES = FOOTBALL_FAMILIES.filter((id) => id !== 'm
 export type FootballFamilyId = (typeof FOOTBALL_FAMILIES)[number]
 
 export const MATH_FAMILIES = ['mix', 'arithmetic', 'geometry', 'symbols', 'people', 'digits'] as const
-export const MATH_PLAY_FAMILIES = MATH_FAMILIES.filter((id) => id !== 'mix')
+export const MATH_PLAY_FAMILIES = MATH_FAMILIES.filter((id) => id !== 'mix' && id !== 'digits')
 export type MathFamilyId = (typeof MATH_FAMILIES)[number]
 
 export const ASTRO_FAMILIES = ['mix', 'planets', 'moons', 'sky', 'exploration', 'people'] as const
@@ -219,6 +226,14 @@ export function themeFamilyLabel(world: ThemeWorld, id: ThemeFamilyId, lang: Lan
   if (id === 'structs') return t.csFamilyStructs
   if (id === 'binary') return t.csFamilyBinary
   if (id === 'hackers') return t.csFamilyPeople
+  if (id === 'units') return t.physFamilyUnits
+  if (id === 'letters') return t.physFamilyLetters
+  if (id === 'laws') return t.physFamilyLaws
+  if (id === 'names') return t.physFamilyNames
+  if (id === 'consts') return t.physFamilyConsts
+  if (id === 'tools') return t.physFamilyTools
+  if (id === 'bits') return t.physFamilyBits
+  if (id === 'bands') return t.physFamilyBands
   if (id === 'dishes') return t.foodFamilyDishes
   if (id === 'plates') return t.foodFamilyPlates
   return t.foodFamilyOrigin
@@ -242,13 +257,8 @@ export function pickModeInFamily(modes: readonly QuizMode[], current: QuizMode, 
   return modes.includes(current) ? current : (modes[0] ?? fallback)
 }
 
-export function difficultyForMode(mode: QuizMode, difficulty: QuizDifficulty): QuizDifficulty {
-  const pool = difficulty === 'hardcore' ? 'hard' : difficulty
-  if (mode === 'factsToName' || mode === 'playerFactsToName') return pool
-  if (mode === 'nameToLanguage' || mode === 'languageToName') return pool
-  if (isDrivingMode(mode) || isReligionMode(mode)) return pool
-  if (isLeadersMode(mode) || isMathMode(mode) || isAstroMode(mode) || isThemeMode(mode) || mode === 'playerPhotoToName' || mode === 'managerPhotoToName') return pool
-  return pool === 'medium' ? 'hard' : pool
+export function difficultyForMode(_mode: QuizMode, difficulty: QuizDifficulty): QuizDifficulty {
+  return difficulty
 }
 
 export function settingsForGeoFamily(settings: FamilySettings, id: GeoFamilyId): FamilySettings & { path: 'pool' } {
@@ -292,6 +302,9 @@ export function settingsForFootballFamily(settings: FamilySettings, id: Football
 }
 
 export function settingsForMathFamily(settings: FamilySettings, id: MathFamilyId): FamilySettings & { path: 'pool' } {
+  if (id === 'digits') {
+    return { path: 'pool', mix: null, mode: settings.mode, difficulty: settings.difficulty }
+  }
   if (id === 'mix') {
     const mix = settings.mix ?? 'easy'
     return {

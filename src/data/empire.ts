@@ -10,6 +10,7 @@ export const EMPIRE_RESOURCE_BY_WORLD = {
   math: 'blueprints',
   astronomy: 'stardust',
   cs: 'chips',
+  physics: 'coils',
   food: 'spices',
 } as const satisfies Record<QuizWorld, string>
 

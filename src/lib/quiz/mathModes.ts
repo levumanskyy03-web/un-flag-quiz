@@ -63,11 +63,11 @@ export const EASY_MATH_MIX_MODES: MathMode[] = [
   'shapeToName',
   'symbolToMeaning',
 ]
-export const HARD_MATH_MIX_MODES: MathMode[] = MATH_MODES.filter((mode) => mode !== 'mathFactsToName')
+export const HARD_MATH_MIX_MODES: MathMode[] = [...MATH_MODES]
 export const MATCH_MATH_MODES: MathMode[] = ['exprToValue', 'mathPhotoToName']
 export const MATH_MATCH_MIX: MathMode[] = ['exprToValue', 'percentToValue', 'shapeToName']
 
-export const MATH_CAMPAIGN_MODES: MathMode[] = [...ARITH_MATH_MODES]
+export const MATH_CAMPAIGN_MODES: MathMode[] = [...MATH_MODES]
 export const MATH_CAMPAIGN_LEVELS = 20
 export const MATH_LEVEL_QUESTIONS = 8
 export const MATH_VIRTUAL_POOL = 10_000
@@ -78,7 +78,7 @@ export function mathHasCampaign(mode: string): boolean {
 
 export function mathIsGenerated(mode: string): boolean {
   return (
-    mathHasCampaign(mode) ||
+    (ARITH_MATH_MODES as readonly string[]).includes(mode) ||
     mode === 'angleToKind' ||
     mode === 'unitsConvert' ||
     mode === 'powerToValue'

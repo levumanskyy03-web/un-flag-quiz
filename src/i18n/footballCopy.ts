@@ -18,6 +18,22 @@ type FootballCopy = Pick<
   | 'goldCupWinnerPrompt'
   | 'nationsLeagueWinners'
   | 'nationsLeagueWinnerPrompt'
+  | 'asianCupFinalists'
+  | 'asianCupFinalistPrompt'
+  | 'asianCupHosts'
+  | 'asianCupHostPrompt'
+  | 'goldCupFinalists'
+  | 'goldCupFinalistPrompt'
+  | 'goldCupHosts'
+  | 'goldCupHostPrompt'
+  | 'nationsLeagueFinalists'
+  | 'nationsLeagueFinalistPrompt'
+  | 'nationsLeagueHosts'
+  | 'nationsLeagueHostPrompt'
+  | 'managerToNation'
+  | 'managerToNationPrompt'
+  | 'managerWcToName'
+  | 'managerWcPrompt'
   | 'uclFinalists'
   | 'uclFinalistPrompt'
   | 'uclTitleYears'
@@ -53,6 +69,9 @@ type FootballCopy = Pick<
   | 'goldenBallWc'
   | 'goldenBallEuro'
   | 'managerPhotoToName'
+  | 'managerToNation'
+  | 'managerToNationPrompt'
+  | 'managerWcToName'
   | 'playerCardBorn'
   | 'playerCardLived'
   | 'playerCardNation'
@@ -100,6 +119,7 @@ type FootballHelpers = {
   ballonAsk: (year: number) => string
   goldenAsk: (event: string, year: number) => string
   whoYear: (comp: string, year: number) => string
+  coachYear: (year: number) => string
 }
 
 function copy(labels: FootballLabelStrings & FootballHelpers): FootballCopy {
@@ -120,6 +140,22 @@ function copy(labels: FootballLabelStrings & FootballHelpers): FootballCopy {
     goldCupWinnerPrompt: (year) => labels.whoYear(labels.goldCupWinners, year),
     nationsLeagueWinners: labels.nationsLeagueWinners,
     nationsLeagueWinnerPrompt: (year) => labels.whoYear(labels.nationsLeagueWinners, year),
+    asianCupFinalists: labels.asianCupFinalists,
+    asianCupFinalistPrompt: (year) => labels.lostYear(labels.asianCupFinalists, year),
+    asianCupHosts: labels.asianCupHosts,
+    asianCupHostPrompt: (year) => labels.hostedYear(labels.asianCupHosts, year),
+    goldCupFinalists: labels.goldCupFinalists,
+    goldCupFinalistPrompt: (year) => labels.lostYear(labels.goldCupFinalists, year),
+    goldCupHosts: labels.goldCupHosts,
+    goldCupHostPrompt: (year) => labels.hostedYear(labels.goldCupHosts, year),
+    nationsLeagueFinalists: labels.nationsLeagueFinalists,
+    nationsLeagueFinalistPrompt: (year) => labels.lostYear(labels.nationsLeagueFinalists, year),
+    nationsLeagueHosts: labels.nationsLeagueHosts,
+    nationsLeagueHostPrompt: (year) => labels.hostedYear(labels.nationsLeagueHosts, year),
+    managerToNation: labels.managerToNation,
+    managerToNationPrompt: labels.managerToNationPrompt,
+    managerWcToName: labels.managerWcToName,
+    managerWcPrompt: (year) => labels.coachYear(year),
     uclFinalists: labels.uclFinalists,
     uclFinalistPrompt: (year) => labels.lostYear(labels.uclFinalists, year),
     uclTitleYears: labels.uclTitleYears,
@@ -200,6 +236,15 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     asianCupWinners: '亚洲杯冠军',
     goldCupWinners: '金杯赛冠军',
     nationsLeagueWinners: '欧国联冠军',
+    asianCupFinalists: '亚洲杯亚军',
+    asianCupHosts: '亚洲杯主办',
+    goldCupFinalists: '金杯赛亚军',
+    goldCupHosts: '金杯赛主办',
+    nationsLeagueFinalists: '欧国联亚军',
+    nationsLeagueHosts: '欧国联主办',
+    managerToNation: '教练 → 国家队',
+    managerToNationPrompt: '这位教练带的是哪支国家队？',
+    managerWcToName: '世界杯 → 教练',
     uclFinalists: '欧冠亚军',
     uclTitleYears: '欧冠年份',
     europaWinners: '欧联杯冠军',
@@ -258,6 +303,7 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     clubCardAllClubsPlayers: '50 家俱乐部的独立球员数',
     clubCardStatsNote: '球员按球员 ID、Wikipedia 条目或规范化姓名匹配。效力过多家俱乐部的球员只计算一次。',
     whoYear: (comp, year) => `谁赢得了 ${year} 年${comp}？`,
+    coachYear: (year) => `谁是 ${year} 年世界杯冠军的教练？`,
     lostYear: (comp, year) => `${year} 年谁是${comp}？`,
     hostedYear: (comp, year) => `${year} 年${comp}在哪？`,
     titleYear: (name, comp) => `${name} 在哪一年赢得${comp}？`,
@@ -277,6 +323,15 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     asianCupWinners: 'Copa Asiática',
     goldCupWinners: 'Copa de Oro',
     nationsLeagueWinners: 'Liga de Naciones',
+    asianCupFinalists: 'final de la Copa Asiática',
+    asianCupHosts: 'sede de la Copa Asiática',
+    goldCupFinalists: 'final de la Copa de Oro',
+    goldCupHosts: 'sede de la Copa de Oro',
+    nationsLeagueFinalists: 'final de la Liga de Naciones',
+    nationsLeagueHosts: 'sede de la Liga de Naciones',
+    managerToNation: 'Entrenador → país',
+    managerToNationPrompt: '¿A qué selección entrenó?',
+    managerWcToName: 'Mundial → entrenador',
     uclFinalists: 'final de la Champions',
     uclTitleYears: 'la Champions',
     europaWinners: 'Europa League',
@@ -335,6 +390,7 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     clubCardAllClubsPlayers: 'Jugadores únicos en 50 clubes',
     clubCardStatsNote: 'Los jugadores se identifican por ID, artículo de Wikipedia o nombre normalizado. Un jugador que pasó por varios clubes cuenta una sola vez.',
     whoYear: (comp, year) => `¿Quién ganó ${comp} ${year}?`,
+    coachYear: (year) => `¿Quién entrenó a los campeones del mundo de ${year}?`,
     lostYear: (comp, year) => `¿Quién perdió ${comp} ${year}?`,
     hostedYear: (comp, year) => `¿Dónde se jugó ${comp} ${year}?`,
     titleYear: (name, comp) => `¿En qué año ganó ${name} ${comp}?`,
@@ -354,6 +410,15 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     asianCupWinners: 'Asien-Pokal',
     goldCupWinners: 'Gold Cup',
     nationsLeagueWinners: 'Nations League',
+    asianCupFinalists: 'Asien-Pokal-Finale',
+    asianCupHosts: 'Asien-Pokal-Gastgeber',
+    goldCupFinalists: 'Gold-Cup-Finale',
+    goldCupHosts: 'Gold-Cup-Gastgeber',
+    nationsLeagueFinalists: 'Nations-League-Finale',
+    nationsLeagueHosts: 'Nations-League-Gastgeber',
+    managerToNation: 'Trainer → Land',
+    managerToNationPrompt: 'Welche Nationalmannschaft trainierte er?',
+    managerWcToName: 'WM → Trainer',
     uclFinalists: 'Champions-League-Finale',
     uclTitleYears: 'die Champions League',
     europaWinners: 'Europa League',
@@ -412,6 +477,7 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     clubCardAllClubsPlayers: 'Einzigartige Spieler in 50 Vereinen',
     clubCardStatsNote: 'Spieler werden über Spieler-ID, Wikipedia-Artikel oder normalisierten Namen abgeglichen. Wer für mehrere Vereine spielte, wird einmal gezählt.',
     whoYear: (comp, year) => `Wer gewann ${comp} ${year}?`,
+    coachYear: (year) => `Wer trainierte die Weltmeister ${year}?`,
     lostYear: (comp, year) => `Wer verlor ${comp} ${year}?`,
     hostedYear: (comp, year) => `Wo fand ${comp} ${year} statt?`,
     titleYear: (name, comp) => `In welchem Jahr gewann ${name} ${comp}?`,
@@ -431,6 +497,15 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     asianCupWinners: 'Copa da Ásia',
     goldCupWinners: 'Gold Cup',
     nationsLeagueWinners: 'Nations League',
+    asianCupFinalists: 'final da Copa da Ásia',
+    asianCupHosts: 'sede da Copa da Ásia',
+    goldCupFinalists: 'final da Gold Cup',
+    goldCupHosts: 'sede da Gold Cup',
+    nationsLeagueFinalists: 'final da Nations League',
+    nationsLeagueHosts: 'sede da Nations League',
+    managerToNation: 'Treinador → país',
+    managerToNationPrompt: 'Que seleção este treinador comandou?',
+    managerWcToName: 'Mundial → treinador',
     uclFinalists: 'final da Champions',
     uclTitleYears: 'a Champions',
     europaWinners: 'Liga Europa',
@@ -489,6 +564,7 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     clubCardAllClubsPlayers: 'Jogadores únicos em 50 clubes',
     clubCardStatsNote: 'Os jogadores são associados por ID, artigo da Wikipedia ou nome normalizado. Quem atuou em vários clubes é contado uma vez.',
     whoYear: (comp, year) => `Quem ganhou ${comp} ${year}?`,
+    coachYear: (year) => `Quem treinou os campeões do mundo de ${year}?`,
     lostYear: (comp, year) => `Quem perdeu ${comp} ${year}?`,
     hostedYear: (comp, year) => `Onde foi ${comp} ${year}?`,
     titleYear: (name, comp) => `Em que ano ${name} ganhou ${comp}?`,
@@ -508,6 +584,15 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     asianCupWinners: 'アジアカップ',
     goldCupWinners: 'ゴールドカップ',
     nationsLeagueWinners: 'ネーションズリーグ',
+    asianCupFinalists: 'アジアカップ準優勝',
+    asianCupHosts: 'アジアカップ開催国',
+    goldCupFinalists: 'ゴールドカップ準優勝',
+    goldCupHosts: 'ゴールドカップ開催国',
+    nationsLeagueFinalists: 'ネーションズリーグ準優勝',
+    nationsLeagueHosts: 'ネーションズリーグ開催国',
+    managerToNation: '監督 → 国',
+    managerToNationPrompt: 'この監督はどの代表を率いた？',
+    managerWcToName: 'W杯 → 監督',
     uclFinalists: 'CL決勝',
     uclTitleYears: 'CL',
     europaWinners: 'ヨーロッパリーグ',
@@ -566,6 +651,7 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     clubCardAllClubsPlayers: '50クラブの重複なし選手数',
     clubCardStatsNote: '選手ID、Wikipedia記事、または正規化した名前で照合します。複数クラブに所属した選手は1人として数えます。',
     whoYear: (comp, year) => `${year}年の${comp}優勝は？`,
+    coachYear: (year) => `${year}年ワールドカップ優勝チームの監督は？`,
     lostYear: (comp, year) => `${year}年の${comp}は誰？`,
     hostedYear: (comp, year) => `${year}年の${comp}開催地は？`,
     titleYear: (name, comp) => `${name}が${comp}を取った年は？`,
@@ -585,6 +671,15 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     asianCupWinners: 'גביע אסיה',
     goldCupWinners: 'גביע הזהב',
     nationsLeagueWinners: 'ליגת האומות',
+    asianCupFinalists: 'גמר גביע אסיה',
+    asianCupHosts: 'מארחת גביע אסיה',
+    goldCupFinalists: 'גמר גביע הזהב',
+    goldCupHosts: 'מארחת גביע הזהב',
+    nationsLeagueFinalists: 'גמר ליגת האומות',
+    nationsLeagueHosts: 'מארחת ליגת האומות',
+    managerToNation: 'מאמן → נבחרת',
+    managerToNationPrompt: 'איזו נבחרת אימן המאמן?',
+    managerWcToName: 'מונדיאל → מאמן',
     uclFinalists: 'גמר ליגת האלופות',
     uclTitleYears: 'ליגת האלופות',
     europaWinners: 'הליגה האירופית',
@@ -643,6 +738,7 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     clubCardAllClubsPlayers: 'שחקנים ייחודיים ב־50 מועדונים',
     clubCardStatsNote: 'שחקנים מותאמים לפי מזהה, ערך בוויקיפדיה או שם מנורמל. שחקן ששיחק בכמה מועדונים נספר פעם אחת.',
     whoYear: (comp, year) => `מי זכה ב${comp} ${year}?`,
+    coachYear: (year) => `מי אימן את אלופות העולם של ${year}?`,
     lostYear: (comp, year) => `מי הפסיד ב${comp} ${year}?`,
     hostedYear: (comp, year) => `איפה נערך ${comp} ${year}?`,
     titleYear: (name, comp) => `באיזו שנה ${name} זכה ב${comp}?`,
@@ -662,6 +758,15 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     asianCupWinners: 'كأس آسيا',
     goldCupWinners: 'الكأس الذهبية',
     nationsLeagueWinners: 'دوري الأمم',
+    asianCupFinalists: 'نهائي كأس آسيا',
+    asianCupHosts: 'مضيف كأس آسيا',
+    goldCupFinalists: 'نهائي الكأس الذهبية',
+    goldCupHosts: 'مضيف الكأس الذهبية',
+    nationsLeagueFinalists: 'نهائي دوري الأمم',
+    nationsLeagueHosts: 'مضيف دوري الأمم',
+    managerToNation: 'مدرب → منتخب',
+    managerToNationPrompt: 'أي منتخب درّب هذا المدرب؟',
+    managerWcToName: 'كأس العالم → مدرب',
     uclFinalists: 'نهائي دوري الأبطال',
     uclTitleYears: 'دوري الأبطال',
     europaWinners: 'الدوري الأوروبي',
@@ -720,6 +825,7 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     clubCardAllClubsPlayers: 'اللاعبون الفريدون في 50 نادياً',
     clubCardStatsNote: 'تتم مطابقة اللاعبين حسب المعرّف أو مقالة Wikipedia أو الاسم الموحّد. يُحتسب من لعب لعدة أندية مرة واحدة.',
     whoYear: (comp, year) => `من فاز بـ ${comp} ${year}؟`,
+    coachYear: (year) => `من درّب أبطال العالم ${year}؟`,
     lostYear: (comp, year) => `من خسر ${comp} ${year}؟`,
     hostedYear: (comp, year) => `أين أقيم ${comp} ${year}؟`,
     titleYear: (name, comp) => `في أي عام فاز ${name} بـ ${comp}؟`,
@@ -739,6 +845,15 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     asianCupWinners: 'एशिया कप',
     goldCupWinners: 'गोल्ड कप',
     nationsLeagueWinners: 'नेशंस लीग',
+    asianCupFinalists: 'एशिया कप फाइनल',
+    asianCupHosts: 'एशिया कप मेज़बान',
+    goldCupFinalists: 'गोल्ड कप फाइनल',
+    goldCupHosts: 'गोल्ड कप मेज़बान',
+    nationsLeagueFinalists: 'नेशंस लीग फाइनल',
+    nationsLeagueHosts: 'नेशंस लीग मेज़बान',
+    managerToNation: 'कोच → देश',
+    managerToNationPrompt: 'इस कोच ने कौन सी टीम संभाली?',
+    managerWcToName: 'विश्व कप → कोच',
     uclFinalists: 'चैंपियंस लीग फ़ाइनल',
     uclTitleYears: 'चैंपियंस लीग',
     europaWinners: 'यूरोपा लीग',
@@ -797,6 +912,7 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     clubCardAllClubsPlayers: '50 क्लबों में अलग खिलाड़ी',
     clubCardStatsNote: 'खिलाड़ियों का मिलान आईडी, Wikipedia लेख या सामान्यीकृत नाम से होता है। कई क्लबों में खेले खिलाड़ी को एक बार गिना जाता है।',
     whoYear: (comp, year) => `${year} में ${comp} कौन जीता?`,
+    coachYear: (year) => `${year} विश्व कप विजेताओं के कोच कौन थे?`,
     lostYear: (comp, year) => `${year} में ${comp} कौन हारा?`,
     hostedYear: (comp, year) => `${year} का ${comp} कहाँ हुआ?`,
     titleYear: (name, comp) => `${name} ने ${comp} किस वर्ष जीता?`,
@@ -816,6 +932,15 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     asianCupWinners: 'এশিয়ান কাপ',
     goldCupWinners: 'গোল্ড কাপ',
     nationsLeagueWinners: 'নেশনস লিগ',
+    asianCupFinalists: 'এশিয়ান কাপ ফাইনাল',
+    asianCupHosts: 'এশিয়ান কাপ আয়োজক',
+    goldCupFinalists: 'গোল্ড কাপ ফাইনাল',
+    goldCupHosts: 'গোল্ড কাপ আয়োজক',
+    nationsLeagueFinalists: 'নেশনস লিগ ফাইনাল',
+    nationsLeagueHosts: 'নেশনস লিগ আয়োজক',
+    managerToNation: 'কোচ → দেশ',
+    managerToNationPrompt: 'এই কোচ কোন দল চালিয়েছেন?',
+    managerWcToName: 'বিশ্বকাপ → কোচ',
     uclFinalists: 'চ্যাম্পিয়নস লিগ ফাইনাল',
     uclTitleYears: 'চ্যাম্পিয়নস লিগ',
     europaWinners: 'ইউরোপা লিগ',
@@ -874,6 +999,7 @@ export const FOOTBALL_MODE_COPY: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' 
     clubCardAllClubsPlayers: '৫০ ক্লাবে স্বতন্ত্র খেলোয়াড়',
     clubCardStatsNote: 'খেলোয়াড় আইডি, Wikipedia নিবন্ধ বা স্বাভাবিকীকৃত নাম দিয়ে মিলানো হয়। একাধিক ক্লাবে খেলা খেলোয়াড়কে একবার গণনা করা হয়।',
     whoYear: (comp, year) => `${year}-এ ${comp} কে জিতেছে?`,
+    coachYear: (year) => `${year} বিশ্বকাপজয়ী দলের কোচ কে?`,
     lostYear: (comp, year) => `${year}-এ ${comp} কে হেরেছে?`,
     hostedYear: (comp, year) => `${year}-এর ${comp} কোথায়?`,
     titleYear: (name, comp) => `${name} কোন বছর ${comp} জিতেছে?`,

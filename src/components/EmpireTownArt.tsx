@@ -271,6 +271,18 @@ function EraCap({ era, p }: { era: number; p: Ink }) {
   return <path d="M36 78 l14 -18 M64 78 l-14 -18" stroke={p.trim} strokeWidth="2.5" opacity="0.75" />
 }
 
+function Atom({ p }: { p: Ink }) {
+  return (
+    <g>
+      <rect x="34" y="58" width="52" height="36" rx="4" fill={p.wall} stroke={p.trim} strokeWidth="3" />
+      <ellipse cx="60" cy="46" rx="28" ry="10" fill="none" stroke={p.accent} strokeWidth="2.4" />
+      <ellipse cx="60" cy="46" rx="28" ry="10" fill="none" stroke={p.accent} strokeWidth="2.4" transform="rotate(60 60 46)" />
+      <ellipse cx="60" cy="46" rx="28" ry="10" fill="none" stroke={p.accent} strokeWidth="2.4" transform="rotate(-60 60 46)" />
+      <circle cx="60" cy="46" r="5" fill={p.glow} stroke={p.trim} strokeWidth="2" />
+    </g>
+  )
+}
+
 export function TownSprite({
   kind,
   era,
@@ -318,6 +330,8 @@ export function TownSprite({
         <Academy p={p} />
       ) : kind === 'cs' ? (
         <Server p={p} />
+      ) : kind === 'physics' ? (
+        <Atom p={p} />
       ) : kind === 'food' || kind === 'market' ? (
         kind === 'market' ? <Market p={p} /> : <Stalls p={p} />
       ) : kind === 'pantheon' ? (

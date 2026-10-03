@@ -187,7 +187,7 @@ export function DuelCreateModal({
               </>
             ) : mixButtons ? (
             <div className="choice-grid">
-              <ChoiceWithHelp tip={football ? t.footballEasyMixNote : math ? t.mathEasyMixNote : astro ? t.astroEasyMixNote : theme && themeWorld === 'biology' ? t.bioEasyMixNote : theme && themeWorld === 'olympics' ? t.olyEasyMixNote : theme && themeWorld === 'cs' ? t.csEasyMixNote : theme && themeWorld === 'food' ? t.foodEasyMixNote : t.easyMixNote}>
+              <ChoiceWithHelp tip={football ? t.footballEasyMixNote : math ? t.mathEasyMixNote : astro ? t.astroEasyMixNote : theme && themeWorld === 'biology' ? t.bioEasyMixNote : theme && themeWorld === 'olympics' ? t.olyEasyMixNote : theme && themeWorld === 'cs' ? t.csEasyMixNote : theme && themeWorld === 'physics' ? t.physEasyMixNote : theme && themeWorld === 'food' ? t.foodEasyMixNote : t.easyMixNote}>
               <button
                 type="button"
                 className={`choice is-wide ${easyMix ? 'is-active' : ''}`}
@@ -199,7 +199,7 @@ export function DuelCreateModal({
                 <FitText minPx={9}>{t.easyMix}</FitText>
               </button>
               </ChoiceWithHelp>
-              <ChoiceWithHelp tip={football ? t.footballHardMixNote : math ? t.mathHardMixNote : astro ? t.astroHardMixNote : theme && themeWorld === 'biology' ? t.bioHardMixNote : theme && themeWorld === 'olympics' ? t.olyHardMixNote : theme && themeWorld === 'cs' ? t.csHardMixNote : theme && themeWorld === 'food' ? t.foodHardMixNote : t.hardMixNote}>
+              <ChoiceWithHelp tip={football ? t.footballHardMixNote : math ? t.mathHardMixNote : astro ? t.astroHardMixNote : theme && themeWorld === 'biology' ? t.bioHardMixNote : theme && themeWorld === 'olympics' ? t.olyHardMixNote : theme && themeWorld === 'cs' ? t.csHardMixNote : theme && themeWorld === 'physics' ? t.physHardMixNote : theme && themeWorld === 'food' ? t.foodHardMixNote : t.hardMixNote}>
               <button
                 type="button"
                 className={`choice is-wide ${hardMix ? 'is-active' : ''}`}
@@ -218,7 +218,6 @@ export function DuelCreateModal({
                 lang={lang}
                 activeMode={selected[0] ?? 'flagToName'}
                 selectedModes={selected}
-                showRankings={false}
                 onPick={toggleMode}
               />
             ) : football ? (

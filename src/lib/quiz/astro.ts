@@ -20,6 +20,7 @@ import {
   type AstroMode,
 } from './astroModes'
 import {
+  hardcoreSlice,
   pickFirstFit,
   QUESTIONS_PER_ROUND,
   shuffle,
@@ -29,8 +30,8 @@ import {
 import type { Country } from '../../data/countries'
 
 export function astroPoolItems(mode: AstroMode, difficulty?: QuizDifficulty): AstroItem[] {
-  const tier = difficulty === 'hardcore' ? 'hard' : difficulty
-  return astroItemsOf(mode, tier === 'easy' || tier === 'medium' || tier === 'hard' ? tier : undefined)
+  if (difficulty === 'hardcore') return hardcoreSlice(astroItemsOf(mode, 'hard'))
+  return astroItemsOf(mode, difficulty === 'easy' || difficulty === 'medium' || difficulty === 'hard' ? difficulty : undefined)
 }
 
 export function astroPoolSize(mode: AstroMode, difficulty?: QuizDifficulty): number {

@@ -224,6 +224,8 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
                           ? 'torch'
                         : item === 'cs'
                           ? 'code'
+                        : item === 'physics'
+                          ? 'atom'
                         : item === 'food'
                           ? 'bowl'
                         : 'laurel'
@@ -407,6 +409,7 @@ function scopeLabel(scope: RatingWorld, lang: Lang): string {
   if (scope === 'biology') return t.biology
   if (scope === 'olympics') return t.olympics
   if (scope === 'cs') return t.cs
+  if (scope === 'physics') return t.physics
   if (scope === 'food') return t.food
   return t.leaders
 }

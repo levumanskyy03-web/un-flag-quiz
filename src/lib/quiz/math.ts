@@ -21,6 +21,7 @@ import {
 } from './mathModes'
 import { generateMathLearnItems, generateMathLevelRound, generateMathQuestions } from './mathGen'
 import {
+  hardcoreSlice,
   pickFirstFit,
   QUESTIONS_PER_ROUND,
   shuffle,
@@ -29,8 +30,8 @@ import {
 } from './core'
 
 export function mathPoolItems(mode: MathMode, difficulty?: QuizDifficulty): MathItem[] {
-  const tier = difficulty === 'hardcore' ? 'hard' : difficulty
-  return mathItemsOf(mode, tier === 'easy' || tier === 'medium' || tier === 'hard' ? tier : undefined)
+  if (difficulty === 'hardcore') return hardcoreSlice(mathItemsOf(mode, 'hard'))
+  return mathItemsOf(mode, difficulty === 'easy' || difficulty === 'medium' || difficulty === 'hard' ? difficulty : undefined)
 }
 
 export function mathPoolSize(mode: MathMode, difficulty?: QuizDifficulty): number {
@@ -57,6 +58,14 @@ export function mathLearnCountries(mode: MathMode): Country[] {
 
 export function mathLevelChunks(mode: MathMode): Country[][] {
   if (!mathHasCampaign(mode)) return []
+  if (!mathIsGenerated(mode)) {
+    const catalog = mathItemsOf(mode)
+    const chunks: Country[][] = []
+    for (let index = 0; index < catalog.length; index += MATH_LEVEL_QUESTIONS) {
+      chunks.push(catalog.slice(index, index + MATH_LEVEL_QUESTIONS).map(mathCountry))
+    }
+    return chunks
+  }
   return Array.from({ length: MATH_CAMPAIGN_LEVELS }, (_, level) =>
     Array.from({ length: MATH_LEVEL_QUESTIONS }, (_, slot) => ({
       iso: `mgl-${mode}-${level + 1}-${slot}`,
@@ -69,7 +78,7 @@ export function mathLevelChunks(mode: MathMode): Country[][] {
 }
 
 export function mathCampaignLevels(mode: MathMode): number {
-  return mathHasCampaign(mode) ? MATH_CAMPAIGN_LEVELS : 0
+  return mathLevelChunks(mode).length
 }
 
 export function createMathRound(

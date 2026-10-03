@@ -1,5 +1,6 @@
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import type { Strings } from '../i18n/strings'
+import { RANKING_MODES } from '../data/rankings'
 import {
   ASTRO_MODES,
   CODES_MODES,
@@ -65,7 +66,10 @@ export function linksFromModes(modes: readonly QuizMode[]): ModeLink[] {
 }
 
 export function geoModeLinks(): ModeLink[] {
-  return linksFromModes([...QUIZ_MODES, ...CODES_MODES])
+  return [
+    ...linksFromModes([...QUIZ_MODES, ...CODES_MODES]),
+    ...RANKING_MODES.map((mode) => ({ mode, left: 'rankings', right: mode })),
+  ]
 }
 
 export function footballModeLinks(): ModeLink[] {
@@ -110,6 +114,7 @@ export function sideIds(links: readonly ModeLink[], side: 'left' | 'right'): str
 export function sideText(links: readonly ModeLink[], side: 'left' | 'right', id: string, lang: Lang): string {
   const link = links.find((item) => item[side] === id)
   if (!link) return id
+  if (id === 'rankings' && side === 'left') return STRINGS[lang].rankings
   if (link.plain) return modeLabel(link.mode, lang)
   const raw = STRINGS[lang][link.mode as keyof Strings]
   const text = typeof raw === 'string' ? raw : modeLabel(link.mode, lang)

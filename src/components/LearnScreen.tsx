@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { type Region } from '../data/countries'
 import { findCountry } from '../data/extras'
-import { isFinalLevel } from '../data/levels'
 import { difficultyLabel, drivingLabel, governmentLabel, religionLabel, REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
 import {
   QUIZ_MODES,
@@ -15,7 +14,7 @@ import {
   footballLearnYears,
   footballTopicOf,
   getLearnPool,
-  hasGeoFinale,
+  isGeoFinaleLevel,
   isCodesMode,
   isFootballMode,
   isLeadersMode,
@@ -188,7 +187,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
   const openTerm = openTermId ? termById(openTermId) : undefined
   const openPlayer = openPlayerId ? playerById(openPlayerId) : undefined
   const openClub = openClubId ? greatClub(openClubId) : undefined
-  const geoFinale = settings.learnFrom === 'level' && isFinalLevel(settings.level) && hasGeoFinale(settings.mode)
+  const geoFinale = settings.learnFrom === 'level' && isGeoFinaleLevel(settings.mode, settings.level)
   const title = settings.learnFrom === 'level' ? (geoFinale ? t.finalLevel : t.levelLabel(settings.level)) : t.learn
   const learnHelp =
     settings.learnFrom === 'level'
@@ -206,6 +205,8 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 ? t.olySubtitle
                 : themeWorld === 'cs'
                   ? t.csSubtitle
+                  : themeWorld === 'physics'
+                    ? t.physicsSubtitle
                   : themeWorld === 'food'
                     ? t.foodSubtitle
                     : t.bioSubtitle
@@ -293,7 +294,13 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
             ? playerEra === 'all'
               ? t.footballRosterSplit(rosterActive, rosterLegends)
               : t.footballRosterCount(countries.length)
-            : t.countriesCount(countries.length)}
+            : theme && themeWorld === 'food'
+              ? t.learnDishCount(countries.length)
+              : leaders
+                ? t.learnPeopleCount(countries.length)
+                : math || astro || theme
+                  ? t.learnCardCount(countries.length)
+                  : t.countriesCount(countries.length)}
         {learnHelp ? <HelpTip text={learnHelp} /> : null}
       </p>
 
@@ -429,7 +436,6 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
               activeMode={settings.mode}
               mix
               selectedModes={mixModes}
-              hideModes={settings.mix === 'custom' ? ['playerFactsToName'] : undefined}
               onPick={(mode) => {
                 if (settings.mix === 'custom') {
                   const selected = settings.mixModes
@@ -472,7 +478,6 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
         <GeoModeGrids
           lang={settings.lang}
           activeMode={settings.mode}
-          showRankings={false}
           onPick={(mode) => onChange({ ...settings, mode, mix: null })}
         />
       )}
@@ -802,7 +807,9 @@ function eraKey(era: LeaderEraId):
   | 'leaderEraRusSoviet'
   | 'leaderEraUkMedieval'
   | 'leaderEraUkTudor'
-  | 'leaderEraUkModern' {
+  | 'leaderEraUkModern'
+  | 'leaderEraEarly'
+  | 'leaderEraLate' {
   if (era === 'usEarly') return 'leaderEraUsEarly'
   if (era === 'us1800s') return 'leaderEraUs1800s'
   if (era === 'usModern') return 'leaderEraUsModern'
@@ -815,5 +822,8 @@ function eraKey(era: LeaderEraId):
   if (era === 'rusSoviet') return 'leaderEraRusSoviet'
   if (era === 'ukMedieval') return 'leaderEraUkMedieval'
   if (era === 'ukTudor') return 'leaderEraUkTudor'
+  if (era === 'ukModern') return 'leaderEraUkModern'
+  if (era.endsWith('Early')) return 'leaderEraEarly'
+  if (era.endsWith('Late')) return 'leaderEraLate'
   return 'leaderEraUkModern'
 }

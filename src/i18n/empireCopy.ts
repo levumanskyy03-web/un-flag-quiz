@@ -23,6 +23,7 @@ export type EmpireCopy = Pick<
   | 'empireRes_blueprints'
   | 'empireRes_stardust'
   | 'empireRes_chips'
+  | 'empireRes_coils'
   | 'empireRes_spices'
   | 'empireCoins'
   | 'empireGems'
@@ -253,6 +254,7 @@ export const EMPIRE_COPY: Record<Lang, EmpireCopy> = {
     empireRes_blueprints: 'Чертежи',
     empireRes_stardust: 'Звёздная пыль',
     empireRes_chips: 'Чипы',
+    empireRes_coils: 'Катушки',
     empireRes_spices: 'Специи',
     empireCoins: 'Монеты',
     empireGems: 'Кристаллы',
@@ -477,6 +479,7 @@ export const EMPIRE_COPY: Record<Lang, EmpireCopy> = {
     empireRes_blueprints: 'Blueprints',
     empireRes_stardust: 'Stardust',
     empireRes_chips: 'Chips',
+    empireRes_coils: 'Coils',
     empireRes_spices: 'Spices',
     empireCoins: 'Coins',
     empireGems: 'Gems',
@@ -701,6 +704,7 @@ export const EMPIRE_COPY: Record<Lang, EmpireCopy> = {
     empireRes_blueprints: 'Baupläne',
     empireRes_stardust: 'Sternenstaub',
     empireRes_chips: 'Chips',
+    empireRes_coils: 'Spulen',
     empireRes_spices: 'Gewürze',
     empireCoins: 'Münzen',
     empireGems: 'Kristalle',
@@ -925,6 +929,7 @@ export const EMPIRE_COPY: Record<Lang, EmpireCopy> = {
     empireRes_blueprints: '图纸',
     empireRes_stardust: '星尘',
     empireRes_chips: '芯片',
+    empireRes_coils: '线圈',
     empireRes_spices: '香料',
     empireCoins: '金币',
     empireGems: '宝石',
@@ -1149,6 +1154,7 @@ export const EMPIRE_COPY: Record<Lang, EmpireCopy> = {
     empireRes_blueprints: 'Planos',
     empireRes_stardust: 'Polvo estelar',
     empireRes_chips: 'Chips',
+    empireRes_coils: 'Bobinas',
     empireRes_spices: 'Especias',
     empireCoins: 'Monedas',
     empireGems: 'Gemas',
@@ -1373,6 +1379,7 @@ export const EMPIRE_COPY: Record<Lang, EmpireCopy> = {
     empireRes_blueprints: 'नक़्शा-चित्र',
     empireRes_stardust: 'तारों की धूल',
     empireRes_chips: 'चिप',
+    empireRes_coils: 'कुंडली',
     empireRes_spices: 'मसाले',
     empireCoins: 'सिक्के',
     empireGems: 'रत्न',
@@ -1597,6 +1604,7 @@ export const EMPIRE_COPY: Record<Lang, EmpireCopy> = {
     empireRes_blueprints: 'مخططات',
     empireRes_stardust: 'غبار النجوم',
     empireRes_chips: 'رقاقات',
+    empireRes_coils: 'ملفات',
     empireRes_spices: 'توابل',
     empireCoins: 'عملات',
     empireGems: 'جواهر',
@@ -1821,6 +1829,7 @@ export const EMPIRE_COPY: Record<Lang, EmpireCopy> = {
     empireRes_blueprints: 'নকশা',
     empireRes_stardust: 'তারার ধুলো',
     empireRes_chips: 'চিপ',
+    empireRes_coils: 'কুণ্ডলী',
     empireRes_spices: 'মশলা',
     empireCoins: 'মুদ্রা',
     empireGems: 'রত্ন',
@@ -2045,6 +2054,7 @@ export const EMPIRE_COPY: Record<Lang, EmpireCopy> = {
     empireRes_blueprints: 'Plantas',
     empireRes_stardust: 'Poeira estelar',
     empireRes_chips: 'Chips',
+    empireRes_coils: 'Bobinas',
     empireRes_spices: 'Especiarias',
     empireCoins: 'Moedas',
     empireGems: 'Gemas',
@@ -2269,6 +2279,7 @@ export const EMPIRE_COPY: Record<Lang, EmpireCopy> = {
     empireRes_blueprints: '設計図',
     empireRes_stardust: '星屑',
     empireRes_chips: 'チップ',
+    empireRes_coils: 'コイル',
     empireRes_spices: '香辛料',
     empireCoins: 'コイン',
     empireGems: 'ジェム',
@@ -2493,6 +2504,7 @@ export const EMPIRE_COPY: Record<Lang, EmpireCopy> = {
     empireRes_blueprints: 'תוכניות',
     empireRes_stardust: 'אבק כוכבים',
     empireRes_chips: 'שבבים',
+    empireRes_coils: 'סלילים',
     empireRes_spices: 'תבלינים',
     empireCoins: 'מטבעות',
     empireGems: 'אבני חן',

@@ -3,7 +3,7 @@ import { foundedYear } from '../data/founded'
 import { polityById, polityCapital } from '../data/history'
 import { neighborKey } from '../data/neighbors'
 import {
-  PASSPORTS,
+  getPassport,
   formatPopulation,
   passportCapital,
   passportCurrency,
@@ -62,7 +62,7 @@ export function answerKey(country: Country, mode: QuizMode): string {
   if (mode === 'languageToName' || mode === 'drivingToName' || mode === 'religionToName' || mode === 'silhouetteToName' || mode === 'nameToSilhouette') {
     return country.iso
   }
-  const passport = PASSPORTS[country.iso]
+  const passport = getPassport(country.iso)
   if (!passport) return country.iso
   if (mode === 'nameToCapital') return `capital:${passport.capitalEn}`
   if (mode === 'nameToCurrency') return `currency:${passport.currencyEn}`
@@ -110,7 +110,7 @@ export function optionLabel(country: Country, mode: QuizMode, lang: Lang, questi
     const id = religionOf(country.iso)
     return id ? religionLabel(id, lang) : countryName(country, lang)
   }
-  const passport = PASSPORTS[country.iso]
+  const passport = getPassport(country.iso)
   if (!passport) return countryName(country, lang)
   if (mode === 'nameToCapital') return passportCapital(passport, lang, country.iso)
   if (mode === 'nameToCurrency') {

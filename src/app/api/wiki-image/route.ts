@@ -2,7 +2,7 @@ import { WIKI_UA, isAllowedLeaderWiki, lookupWikiPortrait } from '../../../lib/w
 
 export const runtime = 'nodejs'
 
-const MAX_BYTES = 1_500_000
+const MAX_BYTES = 4_000_000
 
 export async function GET(request: Request) {
   const url = new URL(request.url)

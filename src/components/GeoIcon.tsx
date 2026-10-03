@@ -19,6 +19,7 @@ type GeoIconName =
   | 'leaf'
   | 'torch'
   | 'code'
+  | 'atom'
   | 'bowl'
   | 'hq'
   | 'notes'
@@ -33,6 +34,7 @@ const BOX_24: ReadonlySet<GeoIconName> = new Set([
   'leaf',
   'torch',
   'code',
+  'atom',
   'bowl',
   'hq',
   'notes',
@@ -258,6 +260,14 @@ export function GeoIcon({ name, size = 14 }: GeoIconProps) {
             strokeLinejoin="round"
           />
           <path d="M13.15 5.8 10.85 18.2" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" />
+        </>
+      ) : null}
+      {name === 'atom' ? (
+        <>
+          <ellipse cx="12" cy="12" rx="8.2" ry="3.1" fill="none" stroke="currentColor" strokeWidth="1.45" />
+          <ellipse cx="12" cy="12" rx="8.2" ry="3.1" fill="none" stroke="currentColor" strokeWidth="1.45" transform="rotate(60 12 12)" />
+          <ellipse cx="12" cy="12" rx="8.2" ry="3.1" fill="none" stroke="currentColor" strokeWidth="1.45" transform="rotate(-60 12 12)" />
+          <circle cx="12" cy="12" r="1.7" fill="currentColor" />
         </>
       ) : null}
       {name === 'bowl' ? (

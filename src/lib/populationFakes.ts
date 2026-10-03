@@ -1,5 +1,5 @@
 import { type Country } from '../data/countries'
-import { PASSPORTS, formatPopulation } from '../data/passports'
+import { getPassport, formatPopulation } from '../data/passports'
 import type { Lang } from '../i18n/strings'
 
 const SMALL_POPULATION = 10_000_000
@@ -20,12 +20,12 @@ export function populationChoiceLabel(
   optionIsos: readonly string[],
   banned: readonly number[] = [],
 ): string {
-  const passport = PASSPORTS[prompt.iso]
+  const passport = getPassport(prompt.iso)
   if (!passport) return ''
   if (option.iso === prompt.iso) return formatPopulation(passport.population, lang)
   const fake = fakesFor(prompt, optionIsos, banned).get(option.iso)
   if (fake == null) {
-    const other = PASSPORTS[option.iso]
+    const other = getPassport(option.iso)
     return other ? formatPopulation(other.population, lang) : ''
   }
   return formatPopulation(fake, lang)
@@ -37,7 +37,7 @@ function fakesFor(
   banned: readonly number[] = [],
 ): Map<string, number> {
   const result = new Map<string, number>()
-  const passport = PASSPORTS[prompt.iso]
+  const passport = getPassport(prompt.iso)
   if (!passport) return result
   const distractors = optionIsos.filter((iso) => iso !== prompt.iso).sort()
   const values = pickPopulations(passport.population, `${prompt.iso}:${distractors.join(',')}`, banned)

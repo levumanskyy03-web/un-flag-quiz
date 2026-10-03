@@ -38,6 +38,7 @@ const WORLD_ICON = {
   math: 'sigma',
   astronomy: 'orbit',
   cs: 'code',
+  physics: 'atom',
   food: 'bowl',
 } as const
 
@@ -50,6 +51,7 @@ function worldTitle(world: QuizWorld, t: (typeof STRINGS)[Lang]) {
   if (world === 'math') return t.math
   if (world === 'astronomy') return t.astronomy
   if (world === 'cs') return t.cs
+  if (world === 'physics') return t.physics
   return t.food
 }
 

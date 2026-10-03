@@ -87,7 +87,6 @@ export function MistakesScreen({
         <GeoModeGrids
           lang={settings.lang}
           activeMode={settings.mode}
-          showRankings={false}
           onPick={(mode) => onChange({ ...settings, mode, mix: null, path: 'mistakes' })}
         />
       )}

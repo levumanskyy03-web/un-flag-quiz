@@ -132,6 +132,10 @@ export function footballPlayerPool(difficulty: 'easy' | 'medium' | 'hard' | 'har
   if (difficulty === 'medium') {
     return FOOTBALL_PLAYERS.filter((player) => player.tier === 'easy' || player.tier === 'medium')
   }
+  if (difficulty === 'hardcore') {
+    const hard = FOOTBALL_PLAYERS.filter((player) => player.tier === 'hard')
+    return hard.length >= 8 ? hard : FOOTBALL_PLAYERS.filter((player) => player.tier !== 'easy')
+  }
   return FOOTBALL_PLAYERS
 }
 

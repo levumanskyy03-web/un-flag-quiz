@@ -42,6 +42,7 @@ const WORLD_ICON = {
   biology: 'leaf',
   olympics: 'torch',
   cs: 'code',
+  physics: 'atom',
   food: 'bowl',
 } as const
 
@@ -108,7 +109,9 @@ export function ThemeScreen({
         ? t.olympics
         : world === 'cs'
           ? t.cs
-          : t.food
+          : world === 'physics'
+            ? t.physics
+            : t.food
   const subtitle =
     world === 'biology'
       ? t.bioSubtitle
@@ -116,7 +119,9 @@ export function ThemeScreen({
         ? t.olySubtitle
         : world === 'cs'
           ? t.csSubtitle
-          : t.foodSubtitle
+          : world === 'physics'
+            ? t.physicsSubtitle
+            : t.foodSubtitle
 
   return (
     <div className="screen football-screen">
