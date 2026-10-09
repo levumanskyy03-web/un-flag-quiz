@@ -10,11 +10,9 @@ import {
   PLAYER_FOOTBALL_MODES,
   QUIZ_MODES,
   QUIZ_WORLDS,
-  RANKING_MODES,
   WC_FOOTBALL_MODES,
   isThemeWorld,
   themeModesOfWorld,
-  worldOfMode,
   type QuizMode,
   type QuizWorld,
 } from './quiz'
@@ -24,7 +22,7 @@ export const WORLD_CATALOG_NO = Object.fromEntries(
 ) as Record<QuizWorld, number>
 
 function catalogModesOf(world: QuizWorld): readonly QuizMode[] {
-  if (world === 'geo') return [...QUIZ_MODES, ...CODES_MODES, ...RANKING_MODES]
+  if (world === 'geo') return [...QUIZ_MODES, ...CODES_MODES]
   if (world === 'leaders') return LEADERS_MODES
   if (world === 'football') {
     return [
@@ -55,8 +53,8 @@ export function worldCatalogNo(world: QuizWorld): number {
   return WORLD_CATALOG_NO[world]
 }
 
-export function modeCatalogNo(mode: QuizMode): number {
-  return MODE_CATALOG_NO.get(mode) ?? WORLD_CATALOG_NO[worldOfMode(mode)] * 10 + 1
+export function modeCatalogNo(mode: QuizMode): number | undefined {
+  return MODE_CATALOG_NO.get(mode)
 }
 
 export function modesCatalogNo(modes: readonly QuizMode[]): number | undefined {

@@ -137,7 +137,7 @@ export function WorldAlbumScreen({ settings, world, tabs, onHub, onWorlds }: Wor
 
       <HubNav lang={settings.lang} active="album" tabs={tabs} onSelect={onHub} />
 
-      {copies === 0 ? <p className="setting-hint">{t.albumEmpty}</p> : null}
+      {copies === 0 ? <p className="setting-hint screen-empty">{t.albumEmpty}</p> : null}
 
       {groups.map(({ group, cards: list }) => (
         <section key={group} className="stamp-group">

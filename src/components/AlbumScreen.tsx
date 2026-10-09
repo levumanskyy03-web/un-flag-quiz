@@ -48,7 +48,7 @@ export function AlbumScreen({ settings, stamps, onHub, onWorlds }: AlbumScreenPr
 
       <HubNav lang={settings.lang} active="album" onSelect={onHub} />
 
-      {copies === 0 ? <p className="setting-hint">{t.albumEmpty}</p> : null}
+      {copies === 0 ? <p className="setting-hint screen-empty">{t.albumEmpty}</p> : null}
 
       <section className="stamp-grid">
         {COUNTRIES.map((country) => {

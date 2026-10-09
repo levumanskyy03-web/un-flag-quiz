@@ -29,6 +29,14 @@ import {
   saveMineCleared,
   writeMineLeg,
 } from "@/lib/mine";
+import {
+  ETEST_QUESTIONS,
+  clearEtestLeg,
+  etestRoute,
+  readEtestLeg,
+  saveEtestCleared,
+  writeEtestLeg,
+} from "@/lib/etest";
 import { loadLevelClears, saveLevelClear, findLevelClear, isLevelUnlocked, type LevelClear } from "@/lib/levelProgress";
 import { addPlayMs, bumpFootballLifetime, bumpLifetime, bumpRecordBreaks, countLifetimeSeed, seedLifetimeIfEmpty } from "@/lib/lifetime";
 import { campaignXpDelta, WORLD_RECORD_XP, xpForAnswers, xpForFreePlay } from "@/lib/xp";
@@ -121,17 +129,23 @@ import { ProfilePlay } from "./ProfilePlay";
 import { StudioPlay } from "./StudioPlay";
 import { EmpirePlay } from "./EmpirePlay";
 import { MinePlay } from "./MinePlay";
+import { EtestPlay } from "./EtestPlay";
 import { empireAccess, empireBuyPower, empireClaimAchievements, empireOnRound, empireStartMistakes, empireSyncAlbum, empireTimeBonusMs, empireXpMultiplier, startEmpireLoop, stopEmpireLoop } from "@/lib/empireStore";
 import type { EmpireRoundReward } from "@/lib/empire/rules";
 import { listGateOf } from "@/lib/empire/gates";
 
 type Screen = "home" | "levels" | "level20" | "learn" | "map" | "quiz" | "results" | "mistakes" | "album" | "lists";
 type ResultTone = "success" | "fail" | "gold";
-type Hub = World | "multiplayer" | "studio" | "empire" | "profile" | "mine";
+type Hub = World | "multiplayer" | "studio" | "empire" | "profile" | "mine" | "etest";
 
-function isMetaHub(hub: Hub | null | undefined): hub is "multiplayer" | "studio" | "empire" | "profile" | "mine" {
+function isMetaHub(hub: Hub | null | undefined): hub is "multiplayer" | "studio" | "empire" | "profile" | "mine" | "etest" {
   return (
-    hub === "multiplayer" || hub === "studio" || hub === "empire" || hub === "profile" || hub === "mine"
+    hub === "multiplayer" ||
+    hub === "studio" ||
+    hub === "empire" ||
+    hub === "profile" ||
+    hub === "mine" ||
+    hub === "etest"
   );
 }
 
@@ -179,6 +193,7 @@ export function hubFromPath(pathname: string): Hub | null {
   if (pathname === "/studio" || pathname.startsWith("/studio/")) return "studio";
   if (pathname === "/empire" || pathname.startsWith("/empire/")) return "empire";
   if (pathname === "/mine" || pathname.startsWith("/mine/")) return "mine";
+  if (pathname === "/etest" || pathname.startsWith("/etest/")) return "etest";
   return worldFromPath(pathname);
 }
 
@@ -279,6 +294,11 @@ export default function PlayApp() {
   const pendingMine = useRef<QuizSettings["mode"] | null>(null);
   const keepMineLeg = useRef(false);
   const [mineLeg, setMineLeg] = useState<number | null>(null);
+  const pendingEtest = useRef<QuizSettings["mode"] | null>(null);
+  const keepEtest = useRef(false);
+  const etestLegRef = useRef<number | null>(null);
+  const advanceEtestRef = useRef<() => void>(() => {});
+  const [etestLeg, setEtestLeg] = useState<number | null>(null);
 
   const quizSettings: QuizSettings = {
     ...settings,
@@ -288,7 +308,9 @@ export default function PlayApp() {
   const isLearn = quizSettings.path === "learn";
   const isPractice = isLearn || quizSettings.path === "mistakes";
   const livesLimit =
-    (isFootballMode(quizSettings.mode) && !footballHasDifficulty(quizSettings.mode)
+    (etestLeg != null
+      ? Number.MAX_SAFE_INTEGER
+      : isFootballMode(quizSettings.mode) && !footballHasDifficulty(quizSettings.mode)
       ? MAX_LIVES
       : livesFor(
           quizSettings.path,
@@ -320,6 +342,8 @@ export default function PlayApp() {
               ? STRINGS[quizSettings.lang].empire
             : hub === "mine"
               ? STRINGS[quizSettings.lang].mine
+              : hub === "etest"
+                ? STRINGS[quizSettings.lang].etest
             : STRINGS[quizSettings.lang].title;
   }, [quizSettings.lang, hub]);
 
@@ -533,7 +557,7 @@ export default function PlayApp() {
   }, [questions, quizSettings.mode]);
 
   useEffect(() => {
-    if (screen !== "quiz" || answered || isPractice) return;
+    if (screen !== "quiz" || answered || isPractice || etestLeg != null) return;
     if (isFactsToName(currentMode)) return;
     const started = Date.now();
     questionStartRef.current = started;
@@ -551,7 +575,7 @@ export default function PlayApp() {
       });
     }, limitMs);
     return () => window.clearTimeout(id);
-  }, [answered, index, isPractice, questions, currentMode, currentPath, currentRegion, screen]);
+  }, [answered, index, isPractice, etestLeg, questions, currentMode, currentPath, currentRegion, screen]);
 
   useEffect(() => {
     if (screen !== "quiz" || !answered || isPractice) return;
@@ -748,6 +772,10 @@ export default function PlayApp() {
         if (quizSettings.path === "levels" && endedBy !== "complete") {
           playSfx("fail");
         }
+        if (etestLeg != null) {
+          advanceEtestRef.current();
+          return;
+        }
         const gold = endedBy === "complete" && quizSettings.path === "levels" && quizSettings.levelHardcore;
         setResultTone(endedBy !== "complete" ? "fail" : gold ? "gold" : "success");
         setScreen("results");
@@ -766,6 +794,7 @@ export default function PlayApp() {
     endedBy,
     index,
     isPractice,
+    etestLeg,
     livesLimit,
     mistakes,
     questions.length,
@@ -859,6 +888,18 @@ export default function PlayApp() {
     setMineLeg(null);
   }
 
+  function releaseEtest() {
+    if (keepEtest.current) return;
+    if (readEtestLeg() == null && etestLegRef.current == null) return;
+    clearEtestLeg();
+    etestLegRef.current = null;
+    setEtestLeg(null);
+  }
+
+  function etestSize(fallback: number) {
+    return etestLegRef.current != null ? ETEST_QUESTIONS : fallback;
+  }
+
   function beginRound(
     pool: ReturnType<typeof getPool>,
     size: number,
@@ -867,6 +908,7 @@ export default function PlayApp() {
     extras?: Pick<QuizSettings, "levelHardcore" | "levelLives">,
   ) {
     releaseMineLeg();
+    releaseEtest();
     const mix = path === "pool" ? quizSettings.mix : null;
     const round = mix
       ? createMixedRound(
@@ -945,7 +987,7 @@ export default function PlayApp() {
     );
     beginRound(
       pool,
-      isFactsToName(quizSettings.mode) ? 1 : quizSettings.roundSize,
+      etestLegRef.current != null ? ETEST_QUESTIONS : isFactsToName(quizSettings.mode) ? 1 : quizSettings.roundSize,
       "pool",
       quizSettings.level,
     );
@@ -961,7 +1003,19 @@ export default function PlayApp() {
   }, [settings.mode, world]);
 
   useEffect(() => {
+    const mode = pendingEtest.current;
+    if (!mode || settings.mode !== mode || world !== worldOfMode(mode)) return;
+    pendingEtest.current = null;
+    keepEtest.current = true;
+    startRound();
+    keepEtest.current = false;
+  }, [settings.mode, world]);
+
+  useEffect(() => {
     setMineLeg(readMineLeg());
+    const leg = readEtestLeg();
+    etestLegRef.current = leg;
+    setEtestLeg(leg);
   }, []);
 
   useEffect(() => {
@@ -990,7 +1044,9 @@ export default function PlayApp() {
     const mode = isFootballMode(quizSettings.mode) ? quizSettings.mode : "playerPhotoToName";
     const facts = isPlayerFactsToName(mode);
     const count =
-      facts && path === "pool"
+      etestLegRef.current != null
+        ? ETEST_QUESTIONS
+        : facts && path === "pool"
         ? 1
         : playerIds?.length
           ? playerIds.length
@@ -1013,7 +1069,7 @@ export default function PlayApp() {
     const mode = defaultLeadersMode(quizSettings.mode);
     const round = createLeadersRound(
       mode,
-      isos ? isos.length : quizSettings.roundSize,
+      isos ? isos.length : etestSize(quizSettings.roundSize),
       path === "pool" ? askedDifficulty(quizSettings.difficulty, quizSettings.levelHardcore) : undefined,
       isos,
     );
@@ -1046,7 +1102,7 @@ export default function PlayApp() {
     if (!isMathMode(mode)) return;
     const round = createMathRound(
       mode,
-      isos ? isos.length : quizSettings.roundSize,
+      isos ? isos.length : etestSize(quizSettings.roundSize),
       path === "pool" ? askedDifficulty(quizSettings.difficulty, quizSettings.levelHardcore) : undefined,
       isos,
     );
@@ -1079,7 +1135,7 @@ export default function PlayApp() {
     if (!isAstroMode(mode)) return;
     const round = createAstroRound(
       mode,
-      isos ? isos.length : quizSettings.roundSize,
+      isos ? isos.length : etestSize(quizSettings.roundSize),
       path === "pool" ? askedDifficulty(quizSettings.difficulty, quizSettings.levelHardcore) : undefined,
       isos,
     );
@@ -1175,7 +1231,7 @@ export default function PlayApp() {
     if (!isThemeMode(mode)) return;
     const round = createThemeRound(
       mode,
-      isos ? isos.length : quizSettings.roundSize,
+      isos ? isos.length : etestSize(quizSettings.roundSize),
       path === "pool" ? askedDifficulty(quizSettings.difficulty, quizSettings.levelHardcore) : undefined,
       isos,
     );
@@ -1195,6 +1251,7 @@ export default function PlayApp() {
   ) {
     if (round.length === 0) return;
     releaseMineLeg();
+    releaseEtest();
     roundStartRef.current = Date.now();
     questionStartRef.current = Date.now();
     savedRoundRef.current = false;
@@ -1340,8 +1397,6 @@ export default function PlayApp() {
       mode === "factsToName" ||
       mode === "nameToLanguage" ||
       mode === "languageToName" ||
-      mode === "nameToDriving" ||
-      mode === "drivingToName" ||
       mode === "nameToReligion" ||
       mode === "religionToName" ||
       mode === "nameToGov" ||
@@ -1627,6 +1682,12 @@ export default function PlayApp() {
   }
 
   function goToWorlds() {
+    if (etestLegRef.current != null) {
+      pendingEtest.current = null;
+      clearEtestLeg();
+      etestLegRef.current = null;
+      setEtestLeg(null);
+    }
     roundStartRef.current = null;
     softNav(() => {
       syncWorldAttr(null);
@@ -1702,7 +1763,77 @@ export default function PlayApp() {
     startMineStation(next);
   }
 
+  function leaveEtest() {
+    pendingEtest.current = null;
+    clearEtestLeg();
+    etestLegRef.current = null;
+    setEtestLeg(null);
+    roundStartRef.current = null;
+    softNav(() => {
+      syncWorldAttr(null);
+      setWorldNav("etest");
+      screenRef.current = "home";
+      setScreenState("home");
+      router.push("/etest");
+    });
+  }
+
+  function startEtestStation(index: number) {
+    const route = etestRoute();
+    const safe = Math.max(0, Math.min(route.length - 1, Math.floor(index)));
+    saveEtestCleared(route, safe);
+    const mode = route[safe];
+    if (!mode) {
+      leaveEtest();
+      return;
+    }
+    const nextWorld = worldOfMode(mode);
+    softNav(() => {
+      pendingEtest.current = mode;
+      pendingMine.current = null;
+      clearMineLeg();
+      setMineLeg(null);
+      etestLegRef.current = safe;
+      writeEtestLeg(safe);
+      setEtestLeg(safe);
+      setSettings((prev) => ({
+        ...prev,
+        mode,
+        mix: null,
+        mixModes: [],
+        region: "all",
+        roundSize: ETEST_QUESTIONS,
+        difficulty: "easy",
+        levelHardcore: false,
+        path: "pool",
+      }));
+      syncWorldAttr(nextWorld);
+      setWorldNav(nextWorld);
+      screenRef.current = "home";
+      setScreenState("home");
+      router.push(worldHref(nextWorld));
+    });
+  }
+
+  function advanceEtest() {
+    const index = etestLegRef.current;
+    if (index == null) return;
+    const route = etestRoute();
+    const next = index + 1;
+    saveEtestCleared(route, next);
+    if (next >= route.length) {
+      leaveEtest();
+      return;
+    }
+    startEtestStation(next);
+  }
+  advanceEtestRef.current = advanceEtest;
+
   function goBackFromPlay() {
+    if (readEtestLeg() != null && (screenRef.current === "quiz" || screenRef.current === "results")) {
+      leaveEtest();
+      return;
+    }
     if (readMineLeg() != null && (screenRef.current === "quiz" || screenRef.current === "results")) {
       leaveMineRoute();
       return;
@@ -1888,6 +2019,9 @@ export default function PlayApp() {
     livesLeft,
     livesLimit,
     isPractice,
+    etest: etestLeg != null,
+    etestKicker:
+      etestLeg != null ? STRINGS[quizSettings.lang].etestStation(etestLeg + 1, etestRoute().length) : null,
     answered,
     currentMode,
     stamps,
@@ -2004,6 +2138,15 @@ export default function PlayApp() {
               router.push("/mine");
             });
           }}
+          onEtest={() => {
+            softNav(() => {
+              syncWorldAttr(null);
+              setWorldNav("etest");
+              screenRef.current = "home";
+              setScreenState("home");
+              router.push("/etest");
+            });
+          }}
           onProfile={() => {
             softNav(() => {
               syncWorldAttr(null);
@@ -2095,6 +2238,9 @@ export default function PlayApp() {
       {hub === "empire" ? <EmpirePlay play={play} /> : null}
       {hub === "mine" ? (
         <MinePlay lang={quizSettings.lang} onWorlds={goToWorlds} onPlay={startMineStation} />
+      ) : null}
+      {hub === "etest" ? (
+        <EtestPlay lang={quizSettings.lang} onWorlds={goToWorlds} onStart={startEtestStation} />
       ) : null}
       {world === "football" ? <FootballPlay play={play} /> : null}
       {world === "leaders" ? <LeadersPlay play={play} /> : null}

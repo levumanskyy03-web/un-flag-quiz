@@ -100,6 +100,8 @@ export function FootballPlay({ play }: { play: PlaySession }) {
           total={play.questions.length}
           roundMs={play.roundMs}
           practice={play.isPractice}
+          untimed={play.etest}
+          kicker={play.etestKicker}
           selectedIso={play.selectedIso}
           finished={play.answered}
           onFinish={(iso, timeMs) => play.finishFacts(iso, timeMs)}
@@ -122,8 +124,10 @@ export function FootballPlay({ play }: { play: PlaySession }) {
           remainingMs={play.remainingMs}
           roundMs={play.roundMs}
           livesLeft={play.livesLeft}
-          maxLives={play.isPractice ? 0 : play.livesLimit}
+          maxLives={play.isPractice || play.etest ? 0 : play.livesLimit}
           practice={play.isPractice}
+          untimed={play.etest}
+          kicker={play.etestKicker}
           mix={Boolean(play.quizSettings.mix && play.quizSettings.path === "pool")}
           power={play.quizPower}
           onSelect={play.selectAnswer}

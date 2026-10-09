@@ -12,7 +12,7 @@ import {
   type QuizWorld,
 } from '../lib/quiz'
 
-export type PlayHub = QuizWorld | 'home' | 'multiplayer' | 'mine' | 'studio' | 'empire' | 'profile'
+export type PlayHub = QuizWorld | 'home' | 'multiplayer' | 'mine' | 'etest' | 'studio' | 'empire' | 'profile'
 
 const HUB_PATH: Record<Exclude<PlayHub, 'home'>, string> = {
   geo: '/geo',
@@ -27,6 +27,7 @@ const HUB_PATH: Record<Exclude<PlayHub, 'home'>, string> = {
   food: '/food',
   multiplayer: '/multiplayer',
   mine: '/mine',
+  etest: '/etest',
   studio: '/studio',
   empire: '/empire',
   profile: '/profile',
@@ -46,6 +47,7 @@ function hubTitle(hub: PlayHub, t: (typeof STRINGS)['en']): string {
   if (hub === 'food') return t.food
   if (hub === 'multiplayer') return t.multiplayer
   if (hub === 'mine') return t.mine
+  if (hub === 'etest') return t.etest
   if (hub === 'studio') return t.studio
   if (hub === 'empire') return t.empire
   return t.profile

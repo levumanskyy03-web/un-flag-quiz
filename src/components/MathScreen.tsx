@@ -61,7 +61,9 @@ export function MathScreen({
       : 0
   const currentBest = findBest(bests, settings)
   const [setupFamily, setSetupFamily] = useState<SetupFamily | null>(null)
+  const [digitsOn, setDigitsOn] = useState(false)
   const activeFamily = mathFamilyOf(mode, mix)
+  const digitsLabel = mathFamilyLabel('digits', settings.lang)
 
   useEffect(() => {
     prefetchWikiPortraits(
@@ -118,9 +120,17 @@ export function MathScreen({
           level={settings.level}
           hardcore={settings.levelHardcore || settings.difficulty === 'hardcore'}
           startLabel={t.start}
-          startDisabled={poolSize === 0}
-          caption={mix ? mixLabel(mix, settings.lang) : undefined}
-          onMode={(next) =>
+          caption={digitsOn ? digitsLabel : mix ? mixLabel(mix, settings.lang) : undefined}
+          showHardcore={!digitsOn}
+          startDisabled={digitsOn ? false : poolSize === 0}
+          solo={{
+            id: 'digits',
+            label: digitsLabel,
+            active: digitsOn,
+            onPick: () => setDigitsOn(true),
+          }}
+          onMode={(next) => {
+            setDigitsOn(false)
             applyMathSettings({
               ...settings,
               path: 'pool',
@@ -128,13 +138,10 @@ export function MathScreen({
               mode: next,
               difficulty: difficultyForMode(next, settings.difficulty),
             })
-          }
+          }}
           onHardcore={(on) => applyMathSettings({ ...settings, levelHardcore: on })}
-          onStart={onStart}
+          onStart={digitsOn ? onOpenDigits : onStart}
         />
-        <button type="button" className="choice is-wide" onClick={onOpenDigits}>
-          <FitText>{mathFamilyLabel('digits', settings.lang)}</FitText>
-        </button>
         <div className="mode-aside">
           <h2>
             {t.familyMix}
@@ -145,6 +152,7 @@ export function MathScreen({
             className={`choice has-mode-no is-wide ${activeFamily === 'mix' ? 'is-active' : ''}`}
             aria-pressed={activeFamily === 'mix'}
             onClick={() => {
+              setDigitsOn(false)
               applyMathSettings({ ...settings, ...settingsForMathFamily(settings, 'mix') })
               setSetupFamily({ world: 'math', id: 'mix' })
             }}

@@ -602,6 +602,14 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     mineNext: '下一站',
     mineBack: '回到路线',
     mineFinish: '结束路线',
+    etest: 'ЭтестЭ',
+    etestHint: '所有模式连续进行。每个模式只有一关，五道题，不计时。本模式结束后立刻进入下一个。',
+    etestStart: '开始',
+    etestOnward: '继续',
+    etestStation: (n, total) => `第 ${n} 个模式，共 ${total} 个`,
+    etestCleared: '全部模式都完成了。可以再来一遍。',
+    etestReplay: '重新开始',
+    etestNumber: '模式编号',
     minePhase: (phase) => {
       if (phase === 1) return '出发。第一关定下整条路线的节奏。'
       if (phase === 2) return '换主题。规则不变：把这一轮打完。'
@@ -636,7 +644,7 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     duelWin: '你赢了',
     duelLose: '你输了',
     duelDraw: '平局',
-    duelScore: (you, them, total) => `${you} — ${them} / ${total}`,
+    duelScore: (you, them) => `${you} — ${them}`,
     duelRematch: '再来一局',
     duelRematchHint: '双方同意后，同一房间再开一局。',
     duelRematchWaiting: '等待对手接受再赛。',
@@ -1338,6 +1346,14 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     mineNext: 'Siguiente estación',
     mineBack: 'Volver a la ruta',
     mineFinish: 'Cerrar la ruta',
+    etest: 'ЭтестЭ',
+    etestHint: 'Todos los modos seguidos. Cada uno es un nivel de cinco preguntas, sin tiempo. Al terminar, empieza el siguiente.',
+    etestStart: 'Empezar',
+    etestOnward: 'Seguir',
+    etestStation: (n, total) => `Modo ${n} de ${total}`,
+    etestCleared: 'Todos los modos están hechos. Puedes empezar de nuevo.',
+    etestReplay: 'Otra vez',
+    etestNumber: 'Número de modo',
     minePhase: (phase) => {
       if (phase === 1) return 'Salida. El primer quiz marca el ritmo de toda la ruta.'
       if (phase === 2) return 'Cambia el tema. La regla es la misma: terminar la ronda.'
@@ -1372,7 +1388,7 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     duelWin: 'Has ganado',
     duelLose: 'Has perdido',
     duelDraw: 'Empate',
-    duelScore: (you, them, total) => `${you} — ${them} de ${total}`,
+    duelScore: (you, them) => `${you} — ${them}`,
     duelRematch: 'Revancha',
     duelRematchHint: 'Si ambos aceptan, la misma sala empieza otra ronda.',
     duelRematchWaiting: 'Esperando a que el rival acepte la revancha.',
@@ -2074,6 +2090,14 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     mineNext: 'अगला स्टेशन',
     mineBack: 'मार्ग पर वापस',
     mineFinish: 'मार्ग समाप्त करें',
+    etest: 'ЭтестЭ',
+    etestHint: 'सभी मोड एक के बाद एक। हर मोड में पाँच प्रश्नों का एक स्तर, बिना टाइमर। मोड खत्म होते ही अगला शुरू।',
+    etestStart: 'शुरू करें',
+    etestOnward: 'आगे बढ़ें',
+    etestStation: (n, total) => `मोड ${n} / ${total}`,
+    etestCleared: 'सारे मोड पूरे हो गए। फिर से शुरू कर सकते हैं।',
+    etestReplay: 'फिर से',
+    etestNumber: 'मोड नंबर',
     minePhase: (phase) => {
       if (phase === 1) return 'प्रस्थान। पहली क्विज़ पूरे मार्ग की गति तय करती है।'
       if (phase === 2) return 'विषय बदलता है। नियम वही: यह राउंड अंत तक खेलें।'
@@ -2108,7 +2132,7 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     duelWin: 'आप जीते',
     duelLose: 'आप हारे',
     duelDraw: 'ड्रॉ',
-    duelScore: (you, them, total) => `${you} — ${them} / ${total}`,
+    duelScore: (you, them) => `${you} — ${them}`,
     duelRematch: 'फिर से खेलें',
     duelRematchHint: 'दोनों मानें तो उसी कमरे में नया राउंड शुरू होगा।',
     duelRematchWaiting: 'प्रतिद्वंद्वी के स्वीकार करने की प्रतीक्षा।',
@@ -2809,6 +2833,14 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     mineNext: 'المحطة التالية',
     mineBack: 'إلى المسار',
     mineFinish: 'إنهاء المسار',
+    etest: 'ЭтестЭ',
+    etestHint: 'كل الأوضاع متتالية. كل وضع مستوى واحد من خمسة أسئلة بلا مؤقت. عند انتهاء الوضع يبدأ التالي.',
+    etestStart: 'ابدأ',
+    etestOnward: 'متابعة',
+    etestStation: (n, total) => `الوضع ${n} من ${total}`,
+    etestCleared: 'اكتملت كل الأوضاع. يمكن البدء من جديد.',
+    etestReplay: 'من جديد',
+    etestNumber: 'رقم الوضع',
     minePhase: (phase) => {
       if (phase === 1) return 'الانطلاق. الاختبار الأول يضبط إيقاع المسار كله.'
       if (phase === 2) return 'يتبدل الموضوع. القاعدة نفسها: أكملوا هذه الجولة.'
@@ -2843,7 +2875,7 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     duelWin: 'فزت',
     duelLose: 'خسرت',
     duelDraw: 'تعادل',
-    duelScore: (you, them, total) => `${you} — ${them} من ${total}`,
+    duelScore: (you, them) => `${you} — ${them}`,
     duelRematch: 'إعادة',
     duelRematchHint: 'إذا وافق الطرفان تبدأ الجولة التالية في الغرفة نفسها.',
     duelRematchWaiting: 'بانتظار قبول الخصم للإعادة.',
@@ -3545,6 +3577,14 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     mineNext: 'পরের স্টেশন',
     mineBack: 'পথে ফেরা',
     mineFinish: 'পথ শেষ করুন',
+    etest: 'ЭтестЭ',
+    etestHint: 'সব মোড একের পর এক। প্রতিটিতে পাঁচটি প্রশ্নের এক স্তর, টাইমার নেই। মোড শেষ হলেই পরেরটি।',
+    etestStart: 'শুরু',
+    etestOnward: 'চালিয়ে যান',
+    etestStation: (n, total) => `মোড ${n} / ${total}`,
+    etestCleared: 'সব মোড শেষ। আবার শুরু করা যায়।',
+    etestReplay: 'আবার',
+    etestNumber: 'মোড নম্বর',
     minePhase: (phase) => {
       if (phase === 1) return 'যাত্রা। প্রথম কুইজ পুরো পথের গতি ঠিক করে।'
       if (phase === 2) return 'বিষয় বদলায়। নিয়ম একই: এই রাউন্ড শেষ পর্যন্ত।'
@@ -3579,7 +3619,7 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     duelWin: 'আপনি জিতেছেন',
     duelLose: 'আপনি হেরেছেন',
     duelDraw: 'ড্র',
-    duelScore: (you, them, total) => `${you} — ${them} / ${total}`,
+    duelScore: (you, them) => `${you} — ${them}`,
     duelRematch: 'আবার খেলুন',
     duelRematchHint: 'দুজনে রাজি হলে একই রুমে নতুন রাউন্ড শুরু হবে।',
     duelRematchWaiting: 'প্রতিপক্ষ রাজি হওয়ার অপেক্ষা।',
@@ -4281,6 +4321,14 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     mineNext: 'Estação seguinte',
     mineBack: 'Voltar à rota',
     mineFinish: 'Fechar a rota',
+    etest: 'ЭтестЭ',
+    etestHint: 'Todos os modos seguidos. Cada um é um nível de cinco perguntas, sem tempo. Ao terminar, começa o seguinte.',
+    etestStart: 'Começar',
+    etestOnward: 'Continuar',
+    etestStation: (n, total) => `Modo ${n} de ${total}`,
+    etestCleared: 'Todos os modos estão feitos. Podes começar de novo.',
+    etestReplay: 'De novo',
+    etestNumber: 'Número do modo',
     minePhase: (phase) => {
       if (phase === 1) return 'Partida. O primeiro quiz marca o ritmo da rota inteira.'
       if (phase === 2) return 'O tema muda. A regra é a mesma: acabar a ronda.'
@@ -4315,7 +4363,7 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     duelWin: 'Ganhou',
     duelLose: 'Perdeu',
     duelDraw: 'Empate',
-    duelScore: (you, them, total) => `${you} — ${them} de ${total}`,
+    duelScore: (you, them) => `${you} — ${them}`,
     duelRematch: 'Desforra',
     duelRematchHint: 'Se ambos aceitarem, a mesma sala começa outra ronda.',
     duelRematchWaiting: 'À espera que o adversário aceite a desforra.',
@@ -5017,6 +5065,14 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     mineNext: '次の駅',
     mineBack: 'ルートへ戻る',
     mineFinish: 'ルートを終える',
+    etest: 'ЭтестЭ',
+    etestHint: 'すべてのモードを連続で。各モードは5問の1レベル、タイマーなし。終わると次のモードへ。',
+    etestStart: '開始',
+    etestOnward: '続ける',
+    etestStation: (n, total) => `モード ${n} / ${total}`,
+    etestCleared: 'すべてのモードを終えました。最初からやり直せます。',
+    etestReplay: '最初から',
+    etestNumber: 'モード番号',
     minePhase: (phase) => {
       if (phase === 1) return '出発。最初のクイズがルート全体のテンポを決めます。'
       if (phase === 2) return 'テーマが変わります。ルールは同じ。このラウンドを最後まで。'
@@ -5051,7 +5107,7 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     duelWin: '勝ち',
     duelLose: '負け',
     duelDraw: '引き分け',
-    duelScore: (you, them, total) => `${you} — ${them} / ${total}`,
+    duelScore: (you, them) => `${you} — ${them}`,
     duelRematch: '再戦',
     duelRematchHint: '双方が同意すると、同じルームでもう1ラウンド。',
     duelRematchWaiting: '相手の再戦承諾を待っています。',
@@ -5752,6 +5808,14 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     mineNext: 'התחנה הבאה',
     mineBack: 'חזרה למסלול',
     mineFinish: 'סיום המסלול',
+    etest: 'ЭтестЭ',
+    etestHint: 'כל המצבים ברצף. כל מצב הוא שלב אחד של חמש שאלות, בלי טיימר. בסיום מתחיל המצב הבא.',
+    etestStart: 'התחלה',
+    etestOnward: 'המשך',
+    etestStation: (n, total) => `מצב ${n} מתוך ${total}`,
+    etestCleared: 'כל המצבים הושלמו. אפשר להתחיל מחדש.',
+    etestReplay: 'מההתחלה',
+    etestNumber: 'מספר המצב',
     minePhase: (phase) => {
       if (phase === 1) return 'יציאה. החידון הראשון קובע את הקצב של כל המסלול.'
       if (phase === 2) return 'הנושא מתחלף. אותו כלל: מסיימים את הסיבוב.'
@@ -5786,7 +5850,7 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     duelWin: 'ניצחתם',
     duelLose: 'הפסדתם',
     duelDraw: 'תיקו',
-    duelScore: (you, them, total) => `${you} — ${them} מתוך ${total}`,
+    duelScore: (you, them) => `${you} — ${them}`,
     duelRematch: 'גומלין',
     duelRematchHint: 'אם שני הצדדים מסכימים, אותו חדר מתחיל סיבוב נוסף.',
     duelRematchWaiting: 'ממתינים שהיריב יאשר גומלין.',
@@ -6488,6 +6552,14 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     mineNext: 'Nächste Station',
     mineBack: 'Zur Route',
     mineFinish: 'Route beenden',
+    etest: 'ЭтестЭ',
+    etestHint: 'Alle Modi nacheinander. Jeder ist eine Stufe mit fünf Fragen, ohne Timer. Danach beginnt sofort der nächste Modus.',
+    etestStart: 'Starten',
+    etestOnward: 'Weiter',
+    etestStation: (n, total) => `Modus ${n} von ${total}`,
+    etestCleared: 'Alle Modi sind geschafft. Du kannst von vorn beginnen.',
+    etestReplay: 'Von vorn',
+    etestNumber: 'Modusnummer',
     minePhase: (phase) => {
       if (phase === 1) return 'Abfahrt. Das erste Quiz gibt der ganzen Route das Tempo.'
       if (phase === 2) return 'Themenwechsel. Dieselbe Regel: die Runde zu Ende spielen.'
@@ -6522,7 +6594,7 @@ export const EXTRA_STRINGS: Record<'de' | 'zh' | 'es' | 'hi' | 'ar' | 'bn' | 'pt
     duelWin: 'Du gewinnst',
     duelLose: 'Du verlierst',
     duelDraw: 'Unentschieden',
-    duelScore: (you, them, total) => `${you} — ${them} von ${total}`,
+    duelScore: (you, them) => `${you} — ${them}`,
     duelRematch: 'Revanche',
     duelRematchHint: 'Wenn beide zustimmen, startet derselbe Raum eine neue Runde.',
     duelRematchWaiting: 'Warten, bis der Gegner die Revanche annimmt.',

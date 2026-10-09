@@ -737,23 +737,23 @@ a.country-play:hover {
 .country-index {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 8px;
+  gap: 10px;
 }
 
 .country-index-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   min-width: 0;
-  min-height: 44px;
-  padding: 6px 8px 6px 6px;
+  min-height: 52px;
+  padding: 10px 14px;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--card);
   color: var(--text);
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 800;
   line-height: 1.2;
   text-decoration: none;
 }
@@ -773,6 +773,12 @@ a.country-play:hover {
   border-color: var(--accent);
   background: var(--accent-soft);
   text-decoration: none;
+}
+
+@media (max-width: 639px) {
+  .country-index {
+    grid-template-columns: 1fr;
+  }
 }
 
 .passport-neighbors h2 {
@@ -2505,8 +2511,20 @@ a.ranking-about-row {
   box-shadow: inset 0 0 0 1px #fff;
 }
 
+.choice-grid.is-hub-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.choice-grid.is-hub-1 {
+  grid-template-columns: 1fr;
+}
+
 .choice-grid.is-hub-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.choice-grid.is-hub-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .choice-grid.is-hub .choice {
@@ -2520,9 +2538,9 @@ a.ranking-about-row {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  height: 64px;
-  min-height: 64px;
-  max-height: 64px;
+  height: 48px;
+  min-height: 48px;
+  max-height: 48px;
   overflow: hidden;
 }
 
@@ -2535,14 +2553,11 @@ a.ranking-about-row {
 }
 
 .hub-nav {
-  width: 100%;
-  flex: 1 1 100%;
-}
-
-.hub-nav.has-map {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
+  flex: 1 1 100%;
 }
 
 .hub-map-aside {
@@ -2551,8 +2566,8 @@ a.ranking-about-row {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  height: 40px;
-  min-height: 40px;
+  height: 48px;
+  min-height: 48px;
   padding: 0 12px;
   border: 1px solid color-mix(in srgb, var(--text) 18%, var(--border));
   border-radius: 8px;
@@ -2727,14 +2742,13 @@ a.ranking-about-row {
   display: grid;
   grid-template-columns: 2rem 1fr auto;
   gap: 10px;
-  align-items: baseline;
+  align-items: center;
   width: 100%;
-  margin: 0;
-  padding: 10px 0;
-  border: 0;
-  border-top: 1px solid var(--border);
-  border-radius: 0;
-  background: transparent;
+  margin: 0 0 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
   color: inherit;
   font: inherit;
   text-align: start;
@@ -2819,19 +2833,16 @@ button.leaderboard-row:disabled {
   box-shadow: 0 0 0 2px var(--accent);
 }
 
-.levels-world-best {
+.level-start-sheet .levels-world-best {
   margin: 0;
-  min-height: 2.6em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
+  min-height: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  font-size: 0.95rem;
+  font-weight: 800;
   text-align: center;
-  font-size: 0.92rem;
-  font-weight: 700;
-  line-height: 1.25;
-  color: var(--text);
 }
 
 .levels-world-best:empty {
@@ -2862,11 +2873,25 @@ button.leaderboard-row:disabled {
   opacity: 0.45;
 }
 
+.choice.level-choice {
+  min-height: 48px;
+  border-radius: 12px;
+  border-bottom-width: 1px;
+  background: var(--card);
+  color: var(--text);
+}
+
+.choice.level-choice.is-picked:not(.is-cleared):not(.is-gold) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
 .choice.level-choice.is-cleared,
 .choice.level-choice.is-cleared.is-active {
-  background: var(--ok-bg);
-  border-color: var(--ok);
-  color: var(--ok);
+  background: #10b981;
+  border-color: #047857;
+  color: #042f1a;
 }
 
 .choice.level-choice.is-gold,
@@ -3186,9 +3211,14 @@ button.leaderboard-row:disabled {
 
 .duel-join {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr;
   gap: 8px;
   margin-top: 10px;
+}
+
+.duel-join .choice {
+  width: 100%;
+  min-height: 48px;
 }
 
 .duel-join input {
@@ -3203,11 +3233,17 @@ button.leaderboard-row:disabled {
   text-align: center;
 }
 
-.duel-code {
-  margin: 8px 0 12px;
-  font-size: clamp(2.2rem, 10vw, 3.4rem);
+.duel-lobby .duel-code {
+  margin: 8px 0 4px;
+  font-size: 2.25rem;
   font-weight: 800;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
+}
+
+.duel-lobby .score-kicker {
+  font-size: 0.82rem;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .duel-score {
@@ -3221,6 +3257,28 @@ button.leaderboard-row:disabled {
   color: var(--muted);
   font-size: 0.92rem;
   font-weight: 700;
+}
+
+.duel-status.is-waiting {
+  margin: 0 0 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  color: var(--text);
+  font-weight: 800;
+}
+
+.results-actions > * {
+  width: 100%;
+}
+
+.settings-account-actions .settings-inline {
+  width: 100%;
+}
+
+.settings-account-actions .settings-inline .btn-secondary {
+  flex: 1 1 auto;
 }
 
 .option.is-duel-opponent {
@@ -3249,6 +3307,15 @@ button.leaderboard-row:disabled {
   flex-direction: column;
   gap: 18px;
   min-width: 0;
+}
+
+.results-main .score-value {
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.results-screen.is-fail .results-main .score-value {
+  color: #fff;
 }
 
 .results-shot {
@@ -3870,14 +3937,22 @@ html[dir="rtl"] .timer-bar {
   list-style: none;
   padding: 0;
   margin: 1rem 0 1.5rem;
+  display: grid;
+  gap: 10px;
 }
 
 .lists-index a {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  text-decoration: none;
+  color: inherit;
+  font-weight: 800;
 }
 
 .lists-kicker {
@@ -4091,8 +4166,15 @@ html[dir="rtl"] .timer-bar {
 .options-names,
 .options-flags {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 12px;
+}
+
+.options-names {
+  grid-template-columns: 1fr;
+}
+
+.options-flags {
+  grid-template-columns: 1fr 1fr;
 }
 
 .option.is-tone-0,
@@ -4157,18 +4239,32 @@ html[dir="rtl"] .timer-bar {
 .options-names .option {
   position: relative;
   overflow: hidden;
-  height: 92px;
-  min-height: 92px;
-  max-height: 92px;
+  height: 48px;
+  min-height: 48px;
+  max-height: 48px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding: 10px 14px;
+  text-align: start;
+  border-radius: 14px;
+  border-bottom-width: 1px;
+  background: var(--card);
+  border-color: var(--border);
+  color: var(--text);
+  box-shadow: none;
+}
+
+.options-names .option-key {
+  display: none;
 }
 
 .options-names .option .fit-text {
-  width: 100%;
-  height: 100%;
-  max-height: 100%;
+  width: auto;
+  height: auto;
+  max-height: none;
+  flex: 1 1 auto;
+  text-align: start;
 }
 
 .options-flags .option {
@@ -4485,6 +4581,68 @@ button.learn-card:hover,
 a.learn-card:hover {
   border-color: var(--accent);
   transform: translateY(-1px);
+}
+
+.learn-grid:has(> .learn-card.is-row) {
+  grid-template-columns: 1fr;
+}
+
+.learn-card.is-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 2px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+.learn-card.is-row > :first-child {
+  grid-column: 1;
+  grid-row: 1 / -1;
+}
+
+.learn-card.is-row .learn-card-name,
+.learn-card.is-row .learn-card-meta {
+  grid-column: 2;
+  width: auto;
+  margin: 0;
+  text-align: start;
+}
+
+.learn-card.is-row .flag-card,
+.learn-card.is-row .flag-thumb {
+  width: 52px;
+  flex: 0 0 52px;
+}
+
+.learn-card.is-row .flag-img {
+  width: 52px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.learn-card.is-row .learn-card-name {
+  flex: 1 1 auto;
+  width: auto;
+  text-align: start;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.learn-card.is-row .learn-card-name .fit-text {
+  height: auto;
+  text-align: start;
+}
+
+.learn-card.is-row .learn-card-meta {
+  margin: 0;
+  text-align: start;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
 }
 
 .learn-card-name {
@@ -5634,6 +5792,26 @@ body:has(.club-card-overlay) .state-hud {
   width: min(476px, 100%);
 }
 
+.mode-setup-sheet .difficulty-row {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.mode-setup-sheet .choice-grid.is-difficulty,
+.mode-setup-sheet .choice-grid.is-round-size {
+  width: 100%;
+  grid-template-columns: 1fr;
+}
+
+.mode-setup-sheet .choice-grid.is-difficulty .choice,
+.mode-setup-sheet .choice-grid.is-round-size .choice,
+.mode-setup-sheet .btn-primary {
+  width: 100%;
+  min-height: 48px;
+  height: auto;
+  max-height: none;
+}
+
 .mode-setup-overlay {
   z-index: 50;
 }
@@ -5721,6 +5899,63 @@ button.home-setup-line {
   gap: 12px 16px;
   text-align: center;
   padding-left: 10px;
+}
+
+.country-passport .passport-fields {
+  grid-template-columns: 1fr;
+  gap: 0;
+  text-align: start;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+}
+
+.country-passport .passport-fields div {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.country-passport .passport-fields div:first-child {
+  border-top: 0;
+}
+
+.country-passport .passport-fields dt {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.92rem;
+}
+
+.country-passport .passport-fields dd {
+  text-align: end;
+  font-weight: 800;
+}
+
+.country-passport .dish-origin {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  text-align: start;
+}
+
+.country-passport .dish-origin span {
+  margin: 0;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.92rem;
 }
 
 .passport-fields div {
@@ -5991,10 +6226,64 @@ button.home-setup-line {
   grid-column: 1 / -1;
 }
 
+.screen-empty {
+  margin: 8px 0 0;
+  padding: 16px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  text-align: center;
+  font-weight: 700;
+}
+
+.world-pick-screen {
+  gap: 10px;
+}
+
 .world-pick-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 8px;
+}
+
+.world-pick-grid .world-pick {
+  min-height: 92px;
+  max-height: 92px;
+  gap: 6px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 10px;
+  text-align: start;
+  border-color: var(--border);
+  border-bottom-width: 1px;
+}
+
+.world-pick-grid .world-pick-art {
+  display: grid;
+  place-items: start;
+  min-height: 0;
+  height: auto;
+  margin-top: 0;
+}
+
+.world-pick-grid .world-mark {
+  width: 28px;
+  height: 28px;
+}
+
+.world-pick-grid .world-pick-no {
+  position: static;
+  display: block;
+  font-size: 0.6875rem;
+  opacity: 0.72;
+}
+
+.world-pick-grid .world-pick-copy {
+  height: auto;
+  min-height: 0;
+  justify-content: flex-start;
+  padding: 0;
+  font-size: 0.8125rem;
 }
 
 .world-pick.is-daily {
@@ -6002,13 +6291,14 @@ button.home-setup-line {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 4px;
-  min-height: auto;
-  margin-bottom: 10px;
-  padding: 12px 14px 10px;
+  gap: 2px;
+  min-height: 104px;
+  margin-bottom: 0;
+  padding: 12px 14px;
   text-decoration: none;
   text-align: start;
-  border-color: var(--gold);
+  border: 2px solid var(--gold);
+  border-radius: 18px;
 }
 
 .world-pick.is-daily .world-pick-copy {
@@ -6176,32 +6466,38 @@ button.home-setup-line {
   border: 1px solid #d7c7ae;
 }
 
-.world-pick.is-mine {
+.world-pick.is-mine,
+.world-pick.is-etest {
   --mark: #f472b6;
   width: 100%;
-  min-height: 64px;
-  margin-bottom: 12px;
+  min-height: 44px;
+  margin-bottom: 0;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  padding-block: 10px;
-  padding-inline: 14px;
+  padding: 10px 12px;
   font-size: 1.05rem;
   text-align: start;
   background: var(--card);
   border: 1px solid var(--border);
-  border-bottom-width: 4px;
+  border-bottom-width: 1px;
   box-shadow: none;
 }
 
-.world-pick.is-mine .world-pick-art {
+.world-pick.is-etest {
+  --mark: #3d5a99;
+}
+
+.world-pick.is-mine .world-pick-art,
+.world-pick.is-etest .world-pick-art {
   flex: 0 0 auto;
   width: 28px;
   min-height: 28px;
 }
 
-.world-pick.is-mine .world-pick-copy {
+.world-pick.is-mine .world-pick-copy,
+.world-pick.is-etest .world-pick-copy {
   flex: 1 1 auto;
   height: auto;
   min-height: 0;
@@ -6209,10 +6505,40 @@ button.home-setup-line {
   padding: 0;
 }
 
-.world-pick.is-mine .world-pick-copy .fit-text {
+.world-pick.is-mine .world-pick-copy .fit-text,
+.world-pick.is-etest .world-pick-copy .fit-text {
   height: auto;
   font-size: 1.05rem;
   line-height: 1.05;
+}
+
+.etest-number {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  font-weight: 700;
+}
+
+.etest-number input {
+  width: 6.5rem;
+  height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+}
+
+.quiz-kicker {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
 }
 
 .mine-hint,
@@ -6411,6 +6737,17 @@ button.home-setup-line {
   opacity: 0.62;
 }
 
+.mine-stop.is-geo .mine-ticket { border-color: #3f8f56; }
+.mine-stop.is-football .mine-ticket { border-color: #2f7a3e; }
+.mine-stop.is-leaders .mine-ticket { border-color: #e2c56a; }
+.mine-stop.is-math .mine-ticket { border-color: #3d5a99; }
+.mine-stop.is-astronomy .mine-ticket { border-color: #9fd4ff; }
+.mine-stop.is-biology .mine-ticket { border-color: #5fbf86; }
+.mine-stop.is-olympics .mine-ticket { border-color: #e25b2a; }
+.mine-stop.is-cs .mine-ticket { border-color: #2a6fdb; }
+.mine-stop.is-physics .mine-ticket { border-color: #7eb6ff; }
+.mine-stop.is-food .mine-ticket { border-color: #d45a2a; }
+
 .mine-kicker {
   display: flex;
   justify-content: space-between;
@@ -6534,7 +6871,7 @@ button.home-setup-line {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 0;
   padding: 0;
   border: 0;
   background: transparent;
@@ -6545,16 +6882,16 @@ button.home-setup-line {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
+  min-height: 44px;
   padding: 8px 10px;
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 0.75rem;
   font-weight: 800;
   color: var(--text);
   background: var(--card);
   border: 1px solid var(--border);
-  border-bottom-width: 4px;
-  border-radius: 16px;
+  border-bottom-width: 1px;
+  border-radius: 14px;
 }
 
 .world-dock-tab:hover,
@@ -6762,13 +7099,14 @@ a.worlds-back {
 
 .map-toolbar {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 10px;
-  align-items: stretch;
 }
 
-.map-toolbar .map-search {
-  flex: 1;
+.map-toolbar .map-search,
+.map-toolbar .map-year,
+.map-toolbar .map-region-btn {
+  width: 100%;
   min-width: 0;
 }
 
@@ -6776,12 +7114,22 @@ a.worlds-back {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: min(100%, 280px);
-  padding: 8px 12px;
+  min-width: 0;
+  padding: 12px 14px;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 16px;
   background: var(--card);
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.map-year span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.map-year strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95rem;
 }
 
 .map-year input[type='range'] {
@@ -6893,7 +7241,7 @@ a.worlds-back {
   min-height: 48px;
   padding: 12px 14px;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 16px;
   background: var(--card);
   color: var(--text);
   font: inherit;
@@ -7138,12 +7486,19 @@ a.worlds-back {
   filter: drop-shadow(0 0 1.4px rgba(20, 80, 180, 0.85));
 }
 
+.quiz-map-frame .map-water.is-lake {
+  stroke: #1e6ad4;
+  stroke-linejoin: round;
+  fill-opacity: 0.78;
+}
+
 .quiz-map-frame .map-water.is-revealed {
   animation: none;
   fill: var(--ok);
 }
 
-.quiz-map-frame .map-water.is-line.is-revealed {
+.quiz-map-frame .map-water.is-line.is-revealed,
+.quiz-map-frame .map-water.is-lake.is-revealed {
   stroke: var(--ok);
 }
 
@@ -7455,12 +7810,16 @@ a.worlds-back {
     font-size: clamp(1.15rem, 6.4vw, 1.65rem);
   }
 
-  .quiz-screen .options-names,
   .quiz-screen .options-flags {
     flex: 1 1 auto;
     min-height: 0;
     align-content: stretch;
     grid-auto-rows: minmax(44px, 1fr);
+  }
+
+  .quiz-screen .options-names {
+    flex: 0 0 auto;
+    grid-auto-rows: auto;
   }
 
   .options-flags {
@@ -7481,11 +7840,11 @@ a.worlds-back {
   }
 
   .options-names .option {
-    min-height: 72px;
-    height: 100%;
-    max-height: none;
-    padding: 8px 10px;
-    font-size: 0.9rem;
+    min-height: 48px;
+    height: 48px;
+    max-height: 48px;
+    padding: 10px 14px;
+    font-size: 1rem;
   }
 
   .neighbors-prompt {
@@ -8021,9 +8380,23 @@ html[dir="rtl"] .map-pan {
 
 .pi-mark {
   display: block;
-  width: min(220px, 64vw);
+  width: min(250px, 70vw);
   height: auto;
   margin-inline: auto;
+}
+
+.question-card.is-pi {
+  min-height: 288px;
+  padding: 18px;
+  border-radius: 24px;
+}
+
+.question-card.is-pi.is-answered {
+  min-height: 258px;
+}
+
+.question-card.is-pi.is-answered .pi-mark {
+  width: min(220px, 64vw);
 }
 
 .option-code {
@@ -8033,8 +8406,8 @@ html[dir="rtl"] .map-pan {
 
 .stamp-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 12px;
 }
 
 .stamp-group {
@@ -8105,19 +8478,20 @@ html[dir="rtl"] .map-pan {
   display: grid;
   min-width: 0;
   gap: 6px;
-  padding: 8px 6px 10px;
-  border: 0;
-  background: transparent;
+  padding: 10px 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
 }
 
 .stamp-frame {
   display: grid;
   place-items: center;
-  padding: 8px 6px;
-  background:
-    radial-gradient(circle at 0 0, transparent 6px, var(--card) 6.5px) 0 0 / 12px 12px,
-    var(--card);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 18%, var(--border));
+  padding: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg) 40%, var(--card));
+  box-shadow: none;
 }
 
 .stamp-card.is-locked {
@@ -8684,16 +9058,17 @@ html:has(.app.is-football) body::after {
 }
 
 .world-pick.is-state {
-  margin-top: 12px;
+  margin-top: 0;
   width: 100%;
-  min-height: 64px;
+  min-height: 44px;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  padding: 10px 14px;
-  background: var(--card);
+  padding: 10px 12px;
+  background: #2a2114;
   border-color: var(--gold);
+  border-bottom-width: 1px;
 }
 
 .world-pick.is-state .world-pick-art {
@@ -10264,9 +10639,15 @@ html:has(.app.is-football) body::after {
 
 .world-pick.is-empire {
   --mark: var(--gold);
+  min-height: 52px;
+  justify-content: center;
   background: var(--card);
   border-color: var(--gold);
   color: var(--gold);
+}
+
+.world-pick.is-empire .world-pick-art {
+  display: none;
 }
 
 .world-pick.is-empire .world-pick-copy {
@@ -10274,6 +10655,10 @@ html:has(.app.is-football) body::after {
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
+  height: auto;
+  min-height: 0;
+  padding: 12px 16px;
+  color: var(--gold);
 }
 
 .world-pick-sub {
@@ -11606,20 +11991,65 @@ html:has(.app.is-football) body::after {
 
 .digits-name {
   font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.digits-screen {
+  gap: 10px;
+}
+
+.digits-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+}
+
+.digits-controls .choice-grid {
+  margin: 0;
+}
+
+.digits-constants {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.digits-constants .choice {
+  min-width: 0;
+  height: 44px;
+  padding-inline: 8px;
+  font-size: 1rem;
 }
 
 .digits-milestones {
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
 }
 
-@media (max-width: 560px) {
-  .digits-milestones {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+.digits-milestones .choice {
+  min-width: 0;
+  height: 40px;
+  padding: 0 4px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+}
+
+.digits-milestones .choice:last-child {
+  grid-column: span 2;
 }
 
 .digits-lanes {
-  margin-top: 4px;
+  gap: 8px;
+}
+
+.digits-lanes .choice {
+  height: 46px;
+  border-radius: 14px;
 }
 
 .digits-watch-bar {
@@ -11627,14 +12057,23 @@ html:has(.app.is-football) body::after {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+  min-height: 36px;
+  padding-inline: 2px;
+}
+
+.digits-watch-bar .btn-ghost {
+  min-height: 34px;
+  padding: 6px 10px;
+  border-radius: 11px;
+  font-size: 0.78rem;
 }
 
 .digits-board {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 16px;
+  gap: 10px;
+  padding: 14px;
   border-radius: 20px;
   background: var(--card);
   border: 1px solid var(--border);
@@ -11668,13 +12107,13 @@ html:has(.app.is-football) body::after {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   width: max-content;
   min-width: 100%;
 }
 
 .digits-index {
-  flex: 0 0 2.75em;
+  flex: 0 0 2.25em;
   color: var(--muted);
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
@@ -11685,14 +12124,14 @@ html:has(.app.is-football) body::after {
   display: inline-flex;
   flex: 0 0 auto;
   gap: 0.28em;
-  min-width: 12.4ch;
-  min-height: 2.1em;
+  min-width: 11.6ch;
+  min-height: 2.4em;
   align-items: center;
   justify-content: center;
   padding: 4px 6px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: transparent;
+  background: color-mix(in srgb, var(--text) 4%, transparent);
   color: inherit;
   font: inherit;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -11705,7 +12144,7 @@ html:has(.app.is-football) body::after {
 }
 
 .digits-group.is-hidden {
-  background: color-mix(in srgb, var(--text) 14%, var(--card));
+  background: color-mix(in srgb, var(--accent) 14%, var(--card));
   color: transparent;
 }
 

@@ -92,7 +92,7 @@ export function MistakesScreen({
       )}
 
       {empty ? (
-        <p className="setting-hint">{t.mistakesEmpty}</p>
+        <p className="setting-hint screen-empty">{t.mistakesEmpty}</p>
       ) : (
         <>
           <p className="learn-copy">{t.countriesCount(list.length)}</p>
@@ -131,8 +131,9 @@ export function MistakesScreen({
                       ? countryName(country, settings.lang)
                       : item.iso
                   const codeLabel = isCodesMode(item.mode) && country ? codePromptLabel(country, item.mode) : ''
+                  const row = Boolean(country) && !leaders && !player && !math && !astro && !theme
                   return (
-                    <div key={`${item.mode}:${item.iso}:${item.year ?? ''}`} className="learn-card">
+                    <div key={`${item.mode}:${item.iso}:${item.year ?? ''}`} className={`learn-card${row ? ' is-row' : ''}`}>
                       {leaders && term ? (
                         <LeaderPortrait name={name} wiki={term.wiki} file={portraitFileForTerm(term.id)} size="card" />
                       ) : player ? (
@@ -169,7 +170,7 @@ export function MistakesScreen({
               : (list as ReturnType<typeof geoMistakeCountries>).map((country) => {
                   const name = countryName(country, settings.lang)
                   return (
-                    <div key={country.iso} className="learn-card">
+                    <div key={country.iso} className="learn-card is-row">
                       <Flag iso={country.iso} name={name} size="card" />
                       <p className="learn-card-name">
                         <FitText>{name}</FitText>

@@ -26,15 +26,13 @@ import {
   type WaterMode,
 } from '../../data/water'
 import { nearbyRankingCountries, rankingCountries, rankingPlaceOf, type RankingMode } from '../../data/rankings'
-import { correctLanguageIds, quizLanguageId } from '../../data/languages'
+import { correctLanguageIds, officialLanguageIds, quizLanguageId } from '../../data/languages'
 import { govKindOf } from '../../data/governments'
-import { drivingSide } from '../../data/driving'
 import { religionOf } from '../../data/religion'
 import {
   hasGeoFinale,
   hasLevels,
   isCodesMode,
-  isDrivingMode,
   isLanguageMode,
   isNameToGov,
   isReligionMode,
@@ -72,7 +70,7 @@ export function extraFitsMode(country: Country, mode: QuizMode): boolean {
     return false
   }
   if (!isExtraIso(country.iso)) return true
-  if (isWaterMode(mode) || isRankingMode(mode) || isLanguageMode(mode) || isDrivingMode(mode) || isReligionMode(mode) || isNameToGov(mode)) return false
+  if (isWaterMode(mode) || isRankingMode(mode) || isLanguageMode(mode) || isReligionMode(mode) || isNameToGov(mode)) return false
   if (mode === 'neighborsToName') return canAskNeighbors(country.iso)
   if (
     mode === 'nameToCapital' ||
@@ -254,19 +252,30 @@ function pickNeighborDistractors(
   uniqueKey: (country: Country) => string,
   avoidKeys: readonly string[],
 ): Country[] {
+  const shown = new Set(landNeighbors(correct.iso))
   return pickFirstFit(3, avoidKeys, (banned) => {
     const correctKey = uniqueKey(correct)
     const eligible = pool.filter((country) => {
-      if (country.iso === correct.iso) return false
+      if (country.iso === correct.iso || shown.has(country.iso)) return false
       const key = uniqueKey(country)
       return key !== correctKey && !banned.has(key)
     })
-    const close = shuffle(eligible.filter((country) => sharedNeighbors(correct.iso, country.iso) > 0)).slice(0, 2)
-    const used = new Set([correct.iso, ...close.map((country) => country.iso)])
-    const rest = shuffle(eligible.filter((country) => !used.has(country.iso)))
-    const sameRegion = rest.filter((country) => country.region === correct.region)
-    const filler = [...sameRegion, ...rest.filter((country) => country.region !== correct.region)]
-    return [...close, ...filler].slice(0, 3)
+    const close = eligible.filter((country) => sharedNeighbors(correct.iso, country.iso) > 0)
+    const closeIds = new Set(close.map((country) => country.iso))
+    const ring = eligible.filter((country) => {
+      if (closeIds.has(country.iso)) return false
+      return landNeighbors(country.iso).some((iso) => shown.has(iso))
+    })
+    const ringIds = new Set(ring.map((country) => country.iso))
+    const sameRegion = eligible.filter(
+      (country) =>
+        country.region === correct.region && !closeIds.has(country.iso) && !ringIds.has(country.iso),
+    )
+    const cluster = [...shuffle(close), ...shuffle(ring), ...shuffle(sameRegion)]
+    if (cluster.length >= 3) return cluster.slice(0, 3)
+    const taken = new Set(cluster.map((country) => country.iso))
+    const filler = shuffle(eligible.filter((country) => !taken.has(country.iso)))
+    return [...cluster, ...filler].slice(0, 3)
   })
 }
 
@@ -288,9 +297,6 @@ export function poolForMode(
   } else if (isLanguageMode(mode)) {
     next = pool.filter((country) => quizLanguageId(country.iso))
     if (next.length < 4) next = COUNTRIES.filter((country) => quizLanguageId(country.iso))
-  } else if (isDrivingMode(mode)) {
-    next = pool
-    if (next.length < 4) next = [...COUNTRIES]
   } else if (isReligionMode(mode)) {
     next = pool.filter((country) => religionOf(country.iso))
     if (next.length < 4) next = COUNTRIES.filter((country) => religionOf(country.iso))
@@ -320,7 +326,6 @@ export function createRound(
   if (mode && isWaterMode(mode)) return createWaterRound(pool, count, mode, pool.length > WATER_LEVEL_SIZE)
   if (mode && isRankingMode(mode)) return createRankingRound(pool, count, mode)
   if (mode && isLanguageMode(mode)) return createLanguageRound(pool, count, mode)
-  if (mode && isDrivingMode(mode)) return createDrivingRound(pool, count, mode)
   if (mode && isReligionMode(mode)) return createReligionRound(pool, count, mode)
   if (mode && isNameToGov(mode)) return createGovRound(pool, count)
   const source = passportUniverse(pool, mode)
@@ -380,14 +385,25 @@ function pickWaterMapOptions(correctId: string, mode: WaterMode, avoidIds: reado
   const blocked = new Set([correctId, ...blockedWaterOptionIds(correctId)])
   const distractors = pickFirstFit(3, avoidIds, (banned) => {
     const skip = (id: string) => banned.has(id) || blocked.has(id)
-    const adjacent = shuffle(neighboringWaters(correctId, mode)).filter((id) => !skip(id))
-    const neighborTake = adjacent.length >= 2 ? (Math.random() < 0.55 ? 2 : 1) : adjacent.length
-    const neighbors = adjacent.slice(0, neighborTake)
-    const taken = new Set([correctId, ...neighbors])
-    const filler = shuffle(
-      waterIdsForMode(mode).filter((id) => !taken.has(id) && !skip(id)),
-    ).slice(0, Math.max(0, 3 - neighbors.length))
-    return [...neighbors, ...filler]
+    const cluster: string[] = []
+    const seen = new Set<string>([correctId])
+    let ring = neighboringWaters(correctId, mode).filter((id) => !seen.has(id))
+    while (ring.length > 0 && cluster.length < 3) {
+      const nextRing: string[] = []
+      for (const id of shuffle(ring)) {
+        if (seen.has(id)) continue
+        seen.add(id)
+        if (!skip(id) && cluster.length < 3) cluster.push(id)
+        for (const next of neighboringWaters(id, mode)) {
+          if (!seen.has(next)) nextRing.push(next)
+        }
+        if (cluster.length >= 3) break
+      }
+      ring = nextRing
+    }
+    if (cluster.length >= 3) return cluster
+    const filler = shuffle(waterIdsForMode(mode).filter((id) => !seen.has(id) && !skip(id)))
+    return [...cluster, ...filler].slice(0, 3)
   })
   return shuffle([correctId, ...distractors])
 }
@@ -530,20 +546,6 @@ function questionForMode(
       options: shuffle([country, ...pickLanguageDistractors(country, modePool, 3, languageIdsFrom(avoid.keys))]),
     }
   }
-  if (mode === 'nameToDriving') {
-    return {
-      country,
-      mode,
-      options: shuffle([country, ...pickDrivingSideDistractors(country, modePool)]),
-    }
-  }
-  if (mode === 'drivingToName') {
-    return {
-      country,
-      mode,
-      options: shuffle([country, ...pickDrivingNameDistractors(country, modePool)]),
-    }
-  }
   if (isReligionMode(mode)) {
     return {
       country,
@@ -624,39 +626,6 @@ function pickGovDistractors(correct: Country, pool: Country[]): Country[] {
   return pickDistractors(correct, pool, 3, (country) => govKindOf(country.iso) ?? country.iso)
 }
 
-function createDrivingRound(pool: Country[], count: number, mode: QuizMode): Question[] {
-  const eligible = pool.length >= 4 ? pool : [...COUNTRIES]
-  const targets = shuffle(eligible).slice(0, Math.min(count, eligible.length))
-  const questions: Question[] = []
-  for (const country of targets) {
-    questions.push({
-      country,
-      mode,
-      options: shuffle([
-        country,
-        ...(mode === 'nameToDriving'
-          ? pickDrivingSideDistractors(country, eligible)
-          : pickDrivingNameDistractors(country, eligible)),
-      ]),
-    })
-  }
-  return questions
-}
-
-function pickDrivingSideDistractors(correct: Country, pool: Country[]): Country[] {
-  const side = drivingSide(correct.iso)
-  const opposite = pool.filter((country) => country.iso !== correct.iso && drivingSide(country.iso) !== side)
-  const source = opposite.length > 0 ? opposite : COUNTRIES.filter((country) => drivingSide(country.iso) !== side)
-  return pickDistractors(correct, source, 1, (country) => country.iso)
-}
-
-function pickDrivingNameDistractors(correct: Country, pool: Country[]): Country[] {
-  const side = drivingSide(correct.iso)
-  const opposite = pool.filter((country) => country.iso !== correct.iso && drivingSide(country.iso) !== side)
-  const source = opposite.length >= 3 ? opposite : COUNTRIES.filter((country) => drivingSide(country.iso) !== side)
-  return pickDistractors(correct, source, 3, (country) => country.iso)
-}
-
 function createReligionRound(pool: Country[], count: number, mode: QuizMode): Question[] {
   const eligible = pool.filter((country) => religionOf(country.iso))
   const targets = shuffle(eligible).slice(0, Math.min(count, eligible.length))
@@ -727,6 +696,7 @@ function pickLanguageDistractors(
   n: number,
   avoidLangIds: readonly string[] = [],
 ): Country[] {
+  const promptId = quizLanguageId(correct.iso)
   const bannedCorrect = new Set(correctLanguageIds(correct.iso))
   return pickFirstFit(n, avoidLangIds, (banned) => {
     const pickedIso = new Set([correct.iso])
@@ -739,6 +709,7 @@ function pickLanguageDistractors(
         if (pickedIso.has(country.iso)) continue
         const key = quizLanguageId(country.iso)
         if (!key || pickedKey.has(key)) continue
+        if (promptId && officialLanguageIds(country.iso).includes(promptId)) continue
         pickedIso.add(country.iso)
         pickedKey.add(key)
         distractors.push(country)

@@ -70,7 +70,6 @@ export const GEO_FAMILIES = [
   'factsToName',
   'water',
   'nameToLanguage',
-  'driving',
   'religion',
   'nameToGov',
   'codes',
@@ -111,7 +110,6 @@ export function modesOfGeoFamily(id: GeoFamilyId): QuizMode[] {
   if (id === 'map') return ['nameToMap', 'mapToName']
   if (id === 'silhouette') return ['silhouetteToName', 'nameToSilhouette']
   if (id === 'nameToLanguage') return ['nameToLanguage', 'languageToName']
-  if (id === 'driving') return ['nameToDriving', 'drivingToName']
   if (id === 'religion') return ['nameToReligion', 'religionToName']
   if (id === 'water') return ['mapToSea', 'seaToName', 'mapToRiver', 'riverToName']
   if (id === 'codes') return [...CODES_MODES]
@@ -137,7 +135,6 @@ export function geoFamilyOf(mode: QuizMode, mix: MixKind | null): GeoFamilyId {
   if (mode === 'nameToMap' || mode === 'mapToName') return 'map'
   if (mode === 'silhouetteToName' || mode === 'nameToSilhouette') return 'silhouette'
   if (mode === 'nameToLanguage' || mode === 'languageToName') return 'nameToLanguage'
-  if (mode === 'nameToDriving' || mode === 'drivingToName') return 'driving'
   if (mode === 'nameToReligion' || mode === 'religionToName') return 'religion'
   if (mode === 'mapToSea' || mode === 'seaToName' || mode === 'mapToRiver' || mode === 'riverToName') return 'water'
   if ((CODES_MODES as readonly string[]).includes(mode)) return 'codes'
@@ -350,7 +347,6 @@ export function geoFamilyLabel(id: GeoFamilyId, lang: Lang): string {
   if (id === 'flags') return t.familyFlags
   if (id === 'map') return t.familyMap
   if (id === 'silhouette') return t.familySilhouette
-  if (id === 'driving') return t.familyDriving
   if (id === 'religion') return t.familyReligion
   if (id === 'water') return t.familyWater
   if (id === 'codes') return t.codes

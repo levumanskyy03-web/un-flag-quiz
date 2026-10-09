@@ -44,6 +44,8 @@ export type PlaySession = {
   livesLeft: number;
   livesLimit: number;
   isPractice: boolean;
+  etest: boolean;
+  etestKicker: string | null;
   answered: boolean;
   currentMode: QuizMode;
   stamps: StampAlbum;

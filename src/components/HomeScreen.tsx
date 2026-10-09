@@ -102,7 +102,6 @@ export function HomeScreen({
     <div className="screen home-screen">
       <header className="home-header">
         <WorldsBack lang={settings.lang} onClick={onWorlds} />
-        <h1>{t.title}</h1>
       </header>
 
       <HubNav lang={settings.lang} active="free" onSelect={onHub} />

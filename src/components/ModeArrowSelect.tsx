@@ -26,6 +26,8 @@ interface ModeArrowSelectProps {
   onMode: (mode: QuizMode) => void
   onHardcore: (on: boolean) => void
   onStart: () => void
+  /** Пункт левого меню без пары и без стрелки. Не режим квиза. */
+  solo?: { id: string; label: string; active: boolean; onPick: () => void }
 }
 
 export function ModeArrowSelect({
@@ -44,6 +46,7 @@ export function ModeArrowSelect({
   onMode,
   onHardcore,
   onStart,
+  solo,
 }: ModeArrowSelectProps) {
   const t = STRINGS[lang]
   const empire = useEmpire()
@@ -71,29 +74,39 @@ export function ModeArrowSelect({
   if (!active) return null
 
   function label(side: 'left' | 'right', id: string) {
+    if (solo && side === 'left' && id === solo.id) return solo.label
     return formatSide?.(side, id) ?? sideText(links, side, id, lang)
   }
 
   function choose(side: 'left' | 'right', id: string) {
+    if (solo && side === 'left' && id === solo.id) {
+      solo.onPick()
+      setOpen(null)
+      return
+    }
     onMode(pickLink(links, mode, side, id))
     setOpen(null)
   }
+
+  const leftIds = sideIds(links, 'left')
+  if (solo && !leftIds.includes(solo.id)) leftIds.unshift(solo.id)
+  const plain = Boolean(solo?.active || active.plain)
 
   return (
     <div className="mode-arrow-card" ref={rootRef}>
       <h2>{t.modeSelector}</h2>
       <p className="mode-arrow-meta">{t.modeSelectorMeta(level, caption ?? modeLabel(mode, lang))}</p>
-      <div className={`mode-arrow${active.plain ? ' is-plain' : ''}`}>
+      <div className={`mode-arrow${plain ? ' is-plain' : ''}`}>
         <SideMenu
           side="left"
           open={open === 'left'}
-          current={active.left}
-          ids={sideIds(links, 'left')}
+          current={solo?.active ? solo.id : active.left}
+          ids={leftIds}
           label={(id) => label('left', id)}
           onToggle={() => setOpen(open === 'left' ? null : 'left')}
           onPick={(id) => choose('left', id)}
         />
-        {active.plain ? null : (
+        {plain ? null : (
           <>
             <span className="mode-arrow-mark" aria-hidden>
               {rtlModeArrows('→', lang)}

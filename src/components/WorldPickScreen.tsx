@@ -17,6 +17,7 @@ interface WorldPickScreenProps {
   settings: QuizSettings
   onPick: (world: World) => void
   onMine: () => void
+  onEtest: () => void
   onDaily: () => void
   onMultiplayer: () => void
   onProfile: () => void
@@ -41,6 +42,7 @@ export function WorldPickScreen({
   settings,
   onPick,
   onMine,
+  onEtest,
   onDaily,
   onMultiplayer,
   onProfile,
@@ -92,6 +94,14 @@ export function WorldPickScreen({
         </span>
         <span className="world-pick-copy">
           <FitText>{t.mine}</FitText>
+        </span>
+      </button>
+      <button type="button" className="world-pick is-etest" onClick={onEtest}>
+        <span className="world-pick-art" aria-hidden="true">
+          <span className="world-mark" />
+        </span>
+        <span className="world-pick-copy">
+          <FitText>{t.etest}</FitText>
         </span>
       </button>
       <FitGroup wrap minPx={8}>

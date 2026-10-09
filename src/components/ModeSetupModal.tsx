@@ -457,7 +457,7 @@ export function ModeSetupModal({ family, settings, onChange, onStart, onClose }:
             {factsMode ? null : (
               <>
                 <h2>{family.world === 'football' ? t.footballRoundSize : t.roundSize}</h2>
-                <div className="choice-grid is-3">
+                <div className="choice-grid is-3 is-round-size">
                   {ROUND_SIZES.map((roundSize) => (
                     <button
                       key={roundSize}

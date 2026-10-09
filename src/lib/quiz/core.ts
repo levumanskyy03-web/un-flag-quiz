@@ -71,8 +71,6 @@ export const QUIZ_MODES = [
   'riverToName',
   'nameToLanguage',
   'languageToName',
-  'nameToDriving',
-  'drivingToName',
   'nameToReligion',
   'religionToName',
   'nameToGov',
@@ -228,8 +226,6 @@ export const HARD_MIX_MODES: QuizMode[] = [
   'riverToName',
   'nameToLanguage',
   'languageToName',
-  'nameToDriving',
-  'drivingToName',
   'nameToReligion',
   'religionToName',
   'nameToGov',
@@ -461,7 +457,6 @@ export function isFactMode(mode: QuizMode): boolean {
     mode === 'nameToPopulation' ||
     mode === 'nameToFounded' ||
     mode === 'nameToLanguage' ||
-    mode === 'nameToDriving' ||
     mode === 'nameToReligion' ||
     mode === 'nameToGov'
   )
@@ -473,10 +468,6 @@ export function isMapMode(mode: QuizMode): boolean {
 
 export function isSilhouetteMode(mode: QuizMode): boolean {
   return mode === 'silhouetteToName' || mode === 'nameToSilhouette'
-}
-
-export function isDrivingMode(mode: QuizMode): boolean {
-  return mode === 'nameToDriving' || mode === 'drivingToName'
 }
 
 export function isReligionMode(mode: QuizMode): boolean {
@@ -578,8 +569,6 @@ export function hasGeoFinale(mode: QuizMode): boolean {
     mode !== 'factsToName' &&
     mode !== 'nameToLanguage' &&
     mode !== 'languageToName' &&
-    mode !== 'nameToDriving' &&
-    mode !== 'drivingToName' &&
     mode !== 'nameToReligion' &&
     mode !== 'religionToName' &&
     mode !== 'nameToGov'

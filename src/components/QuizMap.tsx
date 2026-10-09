@@ -395,8 +395,9 @@ export function QuizMap({
       ? findCountry(selectedIso)
       : null
   const waterLine = waterMode && waterKind === 'river'
-  const waterUnderLand = Boolean(waterMode && !waterLine && waterCutsLand(waterId ?? ''))
-  const waterOverLand = Boolean(waterMode && !waterLine && waterId && !waterCutsLand(waterId))
+  const inlandWater = waterMode && (waterKind === 'river' || waterKind === 'lake')
+  const waterUnderLand = Boolean(waterMode && !inlandWater && waterCutsLand(waterId ?? ''))
+  const waterOverLand = Boolean(waterMode && waterId && !waterLine && (inlandWater || !waterCutsLand(waterId)))
   const waterBoxes = [...coastalIsos].map((iso) => boxes[iso]).filter(Boolean)
   const overlay = (waterLine || waterUnderLand || waterOverLand) && (
     <WaterOverlay
@@ -530,12 +531,23 @@ function WaterOverlay({
   camera: Camera
 }) {
   const line = kind === 'river'
-  const cls = `map-water${line ? ' is-line' : ''}${revealed ? ' is-revealed' : ''}`
+  const cls = `map-water${line ? ' is-line' : ''}${kind === 'lake' ? ' is-lake' : ''}${revealed ? ' is-revealed' : ''}`
   const shape = waterId ? waterShapePath(waterId) : ''
+  const span = Math.max(camera.w, camera.h)
   const stroke = line
-    ? Math.max(10, Math.min(32, Math.max(camera.w, camera.h) * 0.1))
-    : undefined
-  if (shape) return <path className={cls} d={shape} style={stroke ? { strokeWidth: stroke } : undefined} />
+    ? Math.max(14, Math.min(40, span * 0.12))
+    : kind === 'lake'
+      ? Math.max(8, Math.min(22, span * 0.08))
+      : undefined
+  if (shape) {
+    return (
+      <path
+        className={cls}
+        d={shape}
+        style={stroke ? { strokeWidth: stroke } : undefined}
+      />
+    )
+  }
   if (line && boxes.length > 0) {
     const points = [...boxes]
       .map((box) => ({ x: box.x + box.width / 2, y: box.y + box.height / 2 }))

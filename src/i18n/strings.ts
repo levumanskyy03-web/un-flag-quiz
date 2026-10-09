@@ -1163,6 +1163,14 @@ export type Strings = {
   mineBack: string
   mineFinish: string
   minePhase: (phase: number) => string
+  etest: string
+  etestHint: string
+  etestStart: string
+  etestOnward: string
+  etestStation: (n: number, total: number) => string
+  etestCleared: string
+  etestReplay: string
+  etestNumber: string
   playWithFriend: string
   empire: string
   empireHint: string
@@ -1527,7 +1535,7 @@ export type Strings = {
   duelWin: string
   duelLose: string
   duelDraw: string
-  duelScore: (you: number, them: number, total: number) => string
+  duelScore: (you: number, them: number) => string
   duelRematch: string
   duelRematchHint: string
   duelRematchWaiting: string
@@ -2366,6 +2374,14 @@ export const STRINGS: Record<Lang, Strings> = {
     mineNext: 'Следующая станция',
     mineBack: 'К маршруту',
     mineFinish: 'Завершить маршрут',
+    etest: 'ЭтестЭ',
+    etestHint: 'Все режимы подряд. В каждом один уровень на пять вопросов, без таймера. Конец режима сразу открывает следующий.',
+    etestStart: 'Начать',
+    etestOnward: 'Продолжить',
+    etestStation: (n, total) => `Режим ${n} из ${total}`,
+    etestCleared: 'Все режимы пройдены. Можно начать сначала.',
+    etestReplay: 'Сначала',
+    etestNumber: 'Номер режима',
     minePhase: (phase) => {
       if (phase === 1) return 'Выезд. Первая викторина задаёт темп всему маршруту.'
       if (phase === 2) return 'Тема меняется. Правило то же: доиграть раунд до конца.'
@@ -2400,7 +2416,7 @@ export const STRINGS: Record<Lang, Strings> = {
     duelWin: 'Победа',
     duelLose: 'Поражение',
     duelDraw: 'Ничья',
-    duelScore: (you, them, total) => `${you} — ${them} из ${total}`,
+    duelScore: (you, them) => `${you} — ${them}`,
     duelRematch: 'Реванш',
     duelRematchHint: 'Если оба нажмут — сыграете ещё раз в этой комнате.',
     duelRematchWaiting: 'Ждём, пока соперник примет реванш.',
@@ -3212,6 +3228,14 @@ export const STRINGS: Record<Lang, Strings> = {
     mineNext: 'Next station',
     mineBack: 'Back to the route',
     mineFinish: 'Finish the route',
+    etest: 'ЭтестЭ',
+    etestHint: 'Every mode in a row. Each one is a single level of five questions, with no timer. The next mode starts as soon as this one ends.',
+    etestStart: 'Start',
+    etestOnward: 'Continue',
+    etestStation: (n, total) => `Mode ${n} of ${total}`,
+    etestCleared: 'Every mode is done. You can start again.',
+    etestReplay: 'Start over',
+    etestNumber: 'Mode number',
     minePhase: (phase) => {
       if (phase === 1) return 'Departure. The first quiz sets the pace for the whole route.'
       if (phase === 2) return 'The theme changes. Same rule: finish the round.'
@@ -3246,7 +3270,7 @@ export const STRINGS: Record<Lang, Strings> = {
     duelWin: 'You win',
     duelLose: 'You lose',
     duelDraw: 'Draw',
-    duelScore: (you, them, total) => `${you} — ${them} of ${total}`,
+    duelScore: (you, them) => `${you} — ${them}`,
     duelRematch: 'Rematch',
     duelRematchHint: 'If both accept, the same room starts another round.',
     duelRematchWaiting: 'Waiting for your opponent to accept the rematch.',
@@ -3672,7 +3696,6 @@ export function mixAskHint(mode: QuizMode, lang: Lang): string {
   if (mode === 'nameToGov') return t.mixAskGov
   if (mode === 'nameToMap') return t.mixAskMap
   if (mode === 'silhouetteToName' || mode === 'nameToSilhouette') return t.mixAskSilhouette
-  if (mode === 'nameToDriving' || mode === 'drivingToName') return t.mixAskDriving
   if (mode === 'nameToReligion' || mode === 'religionToName') return t.mixAskReligion
   if (mode === 'languageToName') return t.mixAskLanguage
   if (mode === 'mapToSea') return t.mixAskSea

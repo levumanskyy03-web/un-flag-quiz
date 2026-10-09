@@ -91,7 +91,6 @@ export function buildFactsReview(): FactsReview {
       flags.push('after4-unique')
     }
     if (sequence.length < 5) flags.push('short-sequence')
-    if (sequence[4]?.kind !== 'region') flags.push('fact5-not-region')
     minBank = Math.min(minBank, bank.length)
     minSequence = Math.min(minSequence, sequence.length)
     if (flags.length > 0) {

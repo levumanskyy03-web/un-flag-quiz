@@ -41,7 +41,7 @@ export function DuelResults({ lang, room, roundMs, empireReward = null, onRematc
           lang={lang}
           url={shareUrl}
           theme={theme}
-          score={t.duelScore(room.youScore, room.opponentScore ?? 0, room.total)}
+          score={t.duelScore(room.youScore, room.opponentScore ?? 0)}
           headline={headline}
           time={t.totalTime(formatClock(roundMs))}
           success={success}
@@ -49,7 +49,7 @@ export function DuelResults({ lang, room, roundMs, empireReward = null, onRematc
         <div className="results-main">
           <section className={`card score-card ${success ? 'is-success' : 'is-fail'}`}>
             <p className="score-kicker">{room.matchmaking ? t.multiplayer : t.duel}</p>
-            <p className="score-value">{t.duelScore(room.youScore, room.opponentScore ?? 0, room.total)}</p>
+            <p className="score-value">{t.duelScore(room.youScore, room.opponentScore ?? 0)}</p>
             <p className="score-headline">{headline}</p>
             <p className="score-time">{t.totalTime(formatClock(roundMs))}</p>
             <p className="learn-copy">
@@ -67,12 +67,14 @@ export function DuelResults({ lang, room, roundMs, empireReward = null, onRematc
             {empireReward ? <EmpireDuelRewardLine lang={lang} reward={empireReward} /> : null}
           </section>
           <p className="setting-hint">{rematchHint}</p>
-          <button type="button" className="btn-primary" onClick={onRematch} disabled={room.youRematch}>
-            {t.duelRematch}
-          </button>
-          <button type="button" className="btn-ghost" onClick={onWorlds}>
-            {t.worldsBack}
-          </button>
+          <div className="results-actions">
+            <button type="button" className="btn-primary" onClick={onRematch} disabled={room.youRematch}>
+              {t.duelRematch}
+            </button>
+            <button type="button" className="btn-secondary" onClick={onWorlds}>
+              {t.worldsBack}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_ORIGIN}/multiplayer`, lastModified: now },
     { url: `${SITE_ORIGIN}/profile`, lastModified: now },
     { url: `${SITE_ORIGIN}/mine`, lastModified: now },
+    { url: `${SITE_ORIGIN}/etest`, lastModified: now },
     { url: `${SITE_ORIGIN}/studio`, lastModified: now },
     { url: `${SITE_ORIGIN}/empire`, lastModified: now },
     { url: `${SITE_ORIGIN}/about`, lastModified: now },

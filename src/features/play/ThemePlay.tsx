@@ -111,8 +111,10 @@ export function ThemePlay({ world, play }: { world: ThemeWorld; play: PlaySessio
           remainingMs={play.remainingMs}
           roundMs={play.roundMs}
           livesLeft={play.livesLeft}
-          maxLives={play.isPractice ? 0 : play.livesLimit}
+          maxLives={play.isPractice || play.etest ? 0 : play.livesLimit}
           practice={play.isPractice}
+          untimed={play.etest}
+          kicker={play.etestKicker}
           power={play.quizPower}
           onSelect={play.selectAnswer}
           onNext={play.isPractice ? play.handlePracticeNext : undefined}

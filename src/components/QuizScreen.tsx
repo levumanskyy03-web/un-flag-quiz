@@ -1,6 +1,6 @@
 import { useReducedMotion } from 'framer-motion'
 import { motion } from 'framer-motion'
-import { STRINGS, astroQuestionPrompt, themeQuestionPrompt, drivingLabel, footballQuestionPrompt, leaderNumberPrompt, leaderYearsPrompt, mathQuestionPrompt, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
+import { STRINGS, astroQuestionPrompt, themeQuestionPrompt, footballQuestionPrompt, leaderNumberPrompt, leaderYearsPrompt, mathQuestionPrompt, localeTag, mixAskHint, modeLabel, type Lang } from '../i18n/strings'
 import { PiMark } from './PiMark'
 import { QuizClocks } from './QuizClocks'
 import { HelpTip } from './HelpTip'
@@ -44,7 +44,6 @@ import {
   type RegionFilter,
   type RoundAnswer,
 } from '../lib/quiz'
-import { drivingSide } from '../data/driving'
 import { rankingPlaceOf } from '../data/rankings'
 import { optionLabel } from '../lib/quizAnswers'
 import { termById, yearsLabel } from '../data/leaders'
@@ -80,6 +79,8 @@ interface QuizScreenProps {
   livesLeft: number
   maxLives: number
   practice?: boolean
+  untimed?: boolean
+  kicker?: string | null
   mix?: boolean
   includeExtras?: boolean
   includeEraStates?: boolean
@@ -123,6 +124,8 @@ export function QuizScreen({
   livesLeft,
   maxLives,
   practice = false,
+  untimed = false,
+  kicker = null,
   mix = false,
   includeExtras = false,
   includeEraStates = false,
@@ -206,7 +209,7 @@ export function QuizScreen({
           <div className="duel-score" aria-label={t.duel}>
             {duel.youScore}:{duel.opponentScore}
           </div>
-        ) : practice ? (
+        ) : practice || maxLives <= 0 ? (
           <span className="levels-header-spacer" aria-hidden="true" />
         ) : maxLives <= 3 ? (
           <Lives
@@ -227,6 +230,7 @@ export function QuizScreen({
           </span>
         )}
         </div>
+        {kicker ? <p className="quiz-kicker">{kicker}</p> : null}
         <div className="quiz-progress-block">
           <div
             className="progress-track quiz-round-track"
@@ -243,7 +247,7 @@ export function QuizScreen({
       </header>
 
       {duel ? (
-        <p className="duel-status">
+        <p className={`duel-status${answered && !duel.reveal ? ' is-waiting' : ''}`}>
           {t.duelVs(duel.opponentName)}
           {answered && !duel.reveal
             ? ` · ${duel.opponentReady ? t.duelOpponentDone : t.duelWaitingOpponent}`
@@ -251,7 +255,7 @@ export function QuizScreen({
         </p>
       ) : null}
 
-      {!practice && (
+      {!practice && !untimed && (
         <QuizClocks
           questionKey={`${index}-${question.country.iso}-${question.waterId ?? ''}`}
           limitMs={limitMs}
@@ -295,14 +299,20 @@ export function QuizScreen({
           />
         </section>
       ) : (
-        <section className={`card question-card${mixHint ? ' has-mix-ask' : ''}`}>
+        <section
+          className={`card question-card${mixHint ? ' has-mix-ask' : ''}${
+            activeMode === 'symbolToMeaning' && mathItem?.key === 'pi'
+              ? ` is-pi${answered ? ' is-answered' : ''}`
+              : ''
+          }`}
+        >
           {mixHint ? <p className="mix-ask-hint">{mixHint}</p> : null}
           {activeMode === 'playerToClub' || activeMode === 'playerClubToName' ? (
             <HelpTip text={t.playerClubNote} />
           ) : null}
           {mathItem ? (
             <div className="code-prompt-block">
-              {mathAsk ? <p className="neighbors-prompt-label">{mathAsk}</p> : null}
+              {mathAsk && activeMode !== 'symbolToMeaning' ? <p className="neighbors-prompt-label">{mathAsk}</p> : null}
               {activeMode === 'shapeToName' && mathItem.shape ? (
                 <MathShape id={mathItem.shape} size={120} />
               ) : activeMode === 'mathPhotoToName' ? (
@@ -324,7 +334,7 @@ export function QuizScreen({
                   ))}
                 </ul>
               ) : activeMode === 'symbolToMeaning' && mathItem.key === 'pi' ? (
-                <PiMark />
+                <PiMark size={answered ? 220 : 250} />
               ) : (
                 <h2 className={`prompt-name${activeMode === 'symbolToMeaning' || activeMode === 'siPrefixToFactor' ? ' code-prompt' : ''}`}>
                   {mathPrompt}
@@ -486,27 +496,20 @@ export function QuizScreen({
               {mixHint ? null : <p className="neighbors-prompt-label">{t.languageToNamePrompt}</p>}
               <h2 className="prompt-name">{optionLabel(question.country, 'nameToLanguage', lang, question)}</h2>
             </div>
-          ) : activeMode === 'drivingToName' ? (
-            <div className="code-prompt-block">
-              {mixHint ? null : <p className="neighbors-prompt-label">{t.drivingToNamePrompt}</p>}
-              <h2 className="prompt-name">{drivingLabel(drivingSide(question.country.iso), lang)}</h2>
-            </div>
           ) : activeMode === 'religionToName' ? (
             <div className="code-prompt-block">
               {mixHint ? null : <p className="neighbors-prompt-label">{t.religionToNamePrompt}</p>}
               <h2 className="prompt-name">{optionLabel(question.country, 'nameToReligion', lang, question)}</h2>
             </div>
-          ) : activeMode === 'nameToLanguage' || activeMode === 'nameToGov' || activeMode === 'nameToDriving' || activeMode === 'nameToReligion' ? (
+          ) : activeMode === 'nameToLanguage' || activeMode === 'nameToGov' || activeMode === 'nameToReligion' ? (
             <div className="code-prompt-block">
               {mixHint ? null : (
                 <p className="neighbors-prompt-label">
                   {activeMode === 'nameToGov'
                     ? t.nameToGovPrompt
-                    : activeMode === 'nameToDriving'
-                      ? t.nameToDrivingPrompt
-                      : activeMode === 'nameToReligion'
-                        ? t.nameToReligionPrompt
-                        : t.nameToLanguagePrompt}
+                    : activeMode === 'nameToReligion'
+                      ? t.nameToReligionPrompt
+                      : t.nameToLanguagePrompt}
                 </p>
               )}
               <Flag iso={question.country.iso} name={correctName} size="hero" />

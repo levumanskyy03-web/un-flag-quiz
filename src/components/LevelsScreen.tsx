@@ -22,6 +22,7 @@ import { ModeArrowSelect } from './ModeArrowSelect'
 import { useEmpire } from '../lib/empireStore'
 import { access, type GateFeature } from '../lib/empire/gates'
 import { worldOfMode } from '../lib/quiz'
+import { mathFamilyLabel } from '../lib/modeFamilies'
 import {
   astroModeLinks,
   footballModeLinks,
@@ -42,6 +43,7 @@ interface LevelsScreenProps {
   onPlay: (level: number) => void
   onHub: (tab: HubTab) => void
   onWorlds: () => void
+  onDigits?: () => void
 }
 
 export function LevelsScreen({
@@ -54,11 +56,14 @@ export function LevelsScreen({
   onPlay,
   onHub,
   onWorlds,
+  onDigits,
 }: LevelsScreenProps) {
   const t = STRINGS[settings.lang]
   const [worldBests, setWorldBests] = useState<Record<number, LevelBest>>({})
   const [levelsOpen, setLevelsOpen] = useState(false)
   const [picked, setPicked] = useState<number | null>(null)
+  const [digitsOn, setDigitsOn] = useState(false)
+  const showDigits = Boolean(onDigits && isMathCatalog(modes))
   const links = useMemo(() => levelLinks(modes), [modes])
   const activeLink = links.find((link) => link.mode === settings.mode) ?? links[0]
 
@@ -133,14 +138,28 @@ export function LevelsScreen({
             lang={settings.lang}
             level={settings.level}
             hardcore={settings.levelHardcore}
-            startLabel={t.levels}
-            showHardcore={!settings.levelLearn}
+            startLabel={digitsOn ? t.start : t.levels}
+            caption={digitsOn ? mathFamilyLabel('digits', settings.lang) : undefined}
+            showHardcore={!settings.levelLearn && !digitsOn}
             hardcoreGate={{ kind: 'levelHardcore' }}
             hardcoreTitle={t.gateLevelHardcore}
             formatSide={isLeadersMode(activeLink.mode) ? leaderSideLabel(settings.lang) : undefined}
-            onMode={(mode) => onChange({ ...settings, path: 'levels', mix: null, mode })}
+            solo={
+              showDigits
+                ? {
+                    id: 'digits',
+                    label: mathFamilyLabel('digits', settings.lang),
+                    active: digitsOn,
+                    onPick: () => setDigitsOn(true),
+                  }
+                : undefined
+            }
+            onMode={(mode) => {
+              setDigitsOn(false)
+              onChange({ ...settings, path: 'levels', mix: null, mode })
+            }}
             onHardcore={(on) => onChange({ ...settings, path: 'levels', levelHardcore: on })}
-            onStart={openLevels}
+            onStart={digitsOn && onDigits ? onDigits : openLevels}
           />
         ) : null}
 

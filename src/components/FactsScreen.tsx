@@ -23,6 +23,8 @@ interface FactsScreenProps {
   total: number
   roundMs: number
   practice?: boolean
+  untimed?: boolean
+  kicker?: string | null
   selectedIso?: string | null
   finished?: boolean
   duel?: {
@@ -55,6 +57,8 @@ export function FactsScreen({
   total,
   roundMs,
   practice = false,
+  untimed = false,
+  kicker = null,
   selectedIso = null,
   finished = false,
   duel,
@@ -113,7 +117,7 @@ export function FactsScreen({
   }, [question.country.iso])
 
   useEffect(() => {
-    if (duel || practice || locked) return
+    if (duel || practice || untimed || locked) return
     const started = Date.now()
     let cancelled = false
     setRemainingMs(limitMs)
@@ -137,7 +141,7 @@ export function FactsScreen({
       cancelled = true
       window.clearInterval(id)
     }
-  }, [duel, practice, locked, factIndex, limitMs, maxFacts, startedAt])
+  }, [duel, practice, untimed, locked, factIndex, limitMs, maxFacts, startedAt])
 
   function submitIso(iso: string) {
     if (locked) return
@@ -173,6 +177,7 @@ export function FactsScreen({
         ) : (
           <span className="levels-header-spacer" aria-hidden="true" />
         )}
+        {kicker ? <p className="quiz-kicker">{kicker}</p> : null}
         <div className="quiz-progress-block">
           <div
             className="progress-track quiz-round-track"
@@ -225,10 +230,14 @@ export function FactsScreen({
         {` · ${formatClock(roundMs)}`}
       </p>
 
-      <div className={`timer-track${urgent ? ' is-urgent' : ''}`} aria-hidden="true">
-        <div className="timer-fill" style={{ width: timerWidth }} />
-      </div>
-      <p className={`timer-copy${urgent ? ' is-urgent' : ''}`}>{secondsLeft}</p>
+      {untimed ? null : (
+        <>
+          <div className={`timer-track${urgent ? ' is-urgent' : ''}`} aria-hidden="true">
+            <div className="timer-fill" style={{ width: timerWidth }} />
+          </div>
+          <p className={`timer-copy${urgent ? ' is-urgent' : ''}`}>{secondsLeft}</p>
+        </>
+      )}
 
       <motion.section
         key={`${index}-${question.country.iso}`}

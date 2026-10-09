@@ -307,7 +307,6 @@ export function seedFrom(text: string): number {
 
 export function clueSequence(iso: string, count = FACTS_MAX, rng: () => number = Math.random): FactClue[] {
   const all = factsFor(iso)
-  const region = all.find((clue) => clue.kind === 'region')
   const size = Math.max(1, count)
   const early = pickEarlyFacts(iso, all, rng)
   const used = new Set(early.map((clue) => clue.id))
@@ -316,41 +315,60 @@ export function clueSequence(iso: string, count = FACTS_MAX, rng: () => number =
   for (let i = 0; i < Math.min(EARLY_FACT_COUNT, size); i += 1) {
     if (early[i]) slots[i] = early[i]
   }
-  if (size >= 5 && region) {
-    slots[4] = region
-    used.add(region.id)
-  }
 
   const rest = all
     .filter((clue) => !used.has(clue.id) && clue.kind !== 'region')
     .map((clue) => ({ clue, jitter: rng() }))
     .sort((a, b) => a.clue.uniqueness - b.clue.uniqueness || a.jitter - b.jitter)
     .map((row) => row.clue)
-  let restIndex = 0
-  for (let i = 0; i < size; i += 1) {
+  for (let i = 0; i < Math.min(EARLY_FACT_COUNT, size); i += 1) {
     if (slots[i]) continue
-    if (i < EARLY_FACT_COUNT) {
-      const filler = nextThatKeeps(
-        iso,
-        early,
-        rest,
-        used,
-        i === 3 ? FACTS_UNIQUENESS_MIN : EARLY_INTERSECTION_MIN,
-        rng,
-      )
-      if (filler) {
-        slots[i] = filler
-        used.add(filler.id)
-        early.push(filler)
-      }
-      continue
-    }
-    while (restIndex < rest.length && used.has(rest[restIndex].id)) restIndex += 1
-    if (restIndex >= rest.length) break
-    const next = rest[restIndex]
-    slots[i] = next
+    const filler = nextThatKeeps(
+      iso,
+      early,
+      rest,
+      used,
+      i === 3 ? FACTS_UNIQUENESS_MIN : EARLY_INTERSECTION_MIN,
+      rng,
+    )
+    if (!filler) continue
+    slots[i] = filler
+    used.add(filler.id)
+    early.push(filler)
+  }
+
+  const lateIdx: number[] = []
+  for (let i = EARLY_FACT_COUNT; i < size; i += 1) {
+    if (!slots[i]) lateIdx.push(i)
+  }
+  const tailCount = lateIdx.length >= 2 ? 1 : 0
+  const headIdx = lateIdx.slice(0, lateIdx.length - tailCount)
+  const tailIdx = lateIdx.slice(lateIdx.length - tailCount)
+  const specific = rest.filter((clue) => !used.has(clue.id))
+  let specificIndex = 0
+  for (const index of headIdx) {
+    while (specificIndex < specific.length && used.has(specific[specificIndex].id)) specificIndex += 1
+    const next = specific[specificIndex]
+    if (!next) break
+    slots[index] = next
     used.add(next.id)
-    restIndex += 1
+    specificIndex += 1
+  }
+  const headMax = Math.max(
+    FACTS_UNIQUENESS_MIN,
+    ...headIdx.map((index) => slots[index]?.uniqueness ?? 0),
+  )
+  const slightCap = headMax + 4
+  const slight = all
+    .filter((clue) => !used.has(clue.id) && clue.uniqueness > headMax && clue.uniqueness <= slightCap)
+    .map((clue) => ({ clue, jitter: rng() }))
+    .sort((a, b) => a.clue.uniqueness - b.clue.uniqueness || a.jitter - b.jitter)
+    .map((row) => row.clue)
+  for (const index of tailIdx) {
+    const next = slight.find((clue) => !used.has(clue.id)) ?? specific.find((clue) => !used.has(clue.id))
+    if (!next) break
+    slots[index] = next
+    used.add(next.id)
   }
 
   return slots.filter((clue): clue is FactClue => clue !== null)

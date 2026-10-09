@@ -42,27 +42,40 @@ export function HubNav({ lang, active, tabs, onSelect }: HubNavProps) {
     lists: t.legalLists,
   }
   const showMap = hubShowsMap(tabs)
-  const gridTabs = (tabs ?? GEO_HUB_TABS).filter((tab) => tab !== 'map')
-  const columns = gridTabs.length <= 3 ? 3 : gridTabs.length <= 4 ? 4 : 3
+  const gridTabs: HubTab[] = (tabs ?? GEO_HUB_TABS).filter((tab) => tab !== 'map')
+  const primaryOrder: HubTab[] = ['levels', 'free', 'learn', 'mistakes']
+  const primary = primaryOrder.filter((tab) => gridTabs.includes(tab))
+  const secondary = gridTabs.filter((tab) => !primaryOrder.includes(tab))
+
+  function tabButton(tab: HubTab) {
+    return (
+      <button
+        key={tab}
+        type="button"
+        className={`choice hub-choice ${active === tab ? 'is-active' : ''}`}
+        aria-pressed={active === tab}
+        onClick={() => onSelect(tab)}
+      >
+        <GeoIcon name={ICONS[tab]} size={15} />
+        <FitText>{labels[tab]}</FitText>
+      </button>
+    )
+  }
 
   return (
     <nav className={`hub-nav${showMap ? ' has-map' : ''}`} aria-label={t.explore}>
-      <div className={`choice-grid is-hub is-hub-${columns}`}>
+      <div className={`choice-grid is-hub is-hub-${Math.min(primary.length, 4) || 4}`}>
         <FitGroup wrap minPx={8}>
-          {gridTabs.map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              className={`choice hub-choice ${active === tab ? 'is-active' : ''}`}
-              aria-pressed={active === tab}
-              onClick={() => onSelect(tab)}
-            >
-              <GeoIcon name={ICONS[tab]} size={15} />
-              <FitText>{labels[tab]}</FitText>
-            </button>
-          ))}
+          {primary.map(tabButton)}
         </FitGroup>
       </div>
+      {secondary.length > 0 ? (
+        <div className={`choice-grid is-hub is-hub-rest is-hub-${secondary.length}`}>
+          <FitGroup wrap minPx={8}>
+            {secondary.map(tabButton)}
+          </FitGroup>
+        </div>
+      ) : null}
       {showMap ? (
         <button
           type="button"

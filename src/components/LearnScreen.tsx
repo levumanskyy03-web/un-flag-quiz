@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { type Region } from '../data/countries'
 import { findCountry } from '../data/extras'
-import { difficultyLabel, drivingLabel, governmentLabel, religionLabel, REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
+import { difficultyLabel, governmentLabel, religionLabel, REGIONS, STRINGS, modeLabel, regionLabel } from '../i18n/strings'
 import {
   QUIZ_MODES,
   LEVEL_MODES,
@@ -34,7 +34,6 @@ import {
   isManagerFootballMode,
   isNameToGov,
   isLanguageMode,
-  isDrivingMode,
   isReligionMode,
   isSilhouetteMode,
   isPlayerFactsToName,
@@ -57,12 +56,11 @@ import { PlayerCatalogNo } from './PlayerCatalogNo'
 import { playerClueSequence, playerFactLabel } from '../lib/playerFacts'
 import { languageName, quizLanguageId } from '../data/languages'
 import { govKindOf } from '../data/governments'
-import { drivingSide } from '../data/driving'
 import { religionOf } from '../data/religion'
 import { watersFor } from '../data/water'
 import { formatLeaderNumbers, formatTermNumber, leaderShowsNumber, personYearsLabel, splitLearnTerms, termById, yearsLabel } from '../data/leaders'
 import { leaderBio, leaderFeat } from '../data/leaderBios'
-import { getPassport } from '../data/passports'
+import { getPassport, passportCapital } from '../data/passports'
 import { formatRankingValue, rankingCount, rankingPlaceOf } from '../data/rankings'
 import type { QuizSettings } from './HomeScreen'
 import { ExtrasToggle } from './ExtrasToggle'
@@ -515,7 +513,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                     const name = countryName(country, settings.lang)
                     const years = footballLearnYears(mode, country.iso)
                     return (
-                      <div key={`${mode}:${country.iso}`} className="learn-card">
+                      <div key={`${mode}:${country.iso}`} className="learn-card is-row">
                         <TeamFlag iso={country.iso} name={name} size="card" />
                         <p className="learn-card-name">
                           <FitText>{name}</FitText>
@@ -596,7 +594,6 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
             isRankingMode(settings.mode) ? formatRankingValue(settings.mode, country.iso, settings.lang) : null
           const quizLang = isLanguageMode(settings.mode) ? quizLanguageId(country.iso) : null
           const govKind = isNameToGov(settings.mode) ? govKindOf(country.iso) : undefined
-          const drive = isDrivingMode(settings.mode) ? drivingSide(country.iso) : null
           const religion = isReligionMode(settings.mode) ? religionOf(country.iso) : null
           const term = leaders ? termById(country.iso) : undefined
           if (leaders && term) {
@@ -655,7 +652,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
               settings.learnFrom === 'level' ? footballLevelYears(settings.mode, settings.level) : undefined,
             )
             return (
-              <div key={country.iso} className="learn-card">
+              <div key={country.iso} className="learn-card is-row">
                 <TeamFlag iso={country.iso} name={name} size="card" />
                 <p className="learn-card-name">
                   <FitText>{name}</FitText>
@@ -668,7 +665,7 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
             <button
               key={waterId ? `${settings.mode}:${waterId}` : country.iso}
               type="button"
-              className="learn-card is-passport"
+              className="learn-card is-passport is-row"
               onClick={() => {
                 if (getPassport(country.iso)) setOpenIso(country.iso)
               }}
@@ -681,7 +678,9 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
               <p className="learn-card-name">
                 <FitText>{mapWater && waterLabel ? waterLabel : name}</FitText>
               </p>
-              {mapWater ? (
+              {settings.mode === 'nameToCapital' && getPassport(country.iso) ? (
+                <p className="learn-card-meta">{passportCapital(getPassport(country.iso)!, settings.lang, country.iso)}</p>
+              ) : mapWater ? (
                 <p className="learn-card-meta">{name}</p>
               ) : waterLabel ? (
                 <p className="learn-card-meta">{waterLabel}</p>
@@ -696,8 +695,6 @@ export function LearnScreen({ settings, onChange, onBack, onHub, onPractice, onW
                 <p className="learn-card-meta">{languageName(quizLang, settings.lang)}</p>
               ) : govKind ? (
                 <p className="learn-card-meta">{governmentLabel(govKind, settings.lang)}</p>
-              ) : drive ? (
-                <p className="learn-card-meta">{drivingLabel(drive, settings.lang)}</p>
               ) : religion ? (
                 <p className="learn-card-meta">{religionLabel(religion, settings.lang)}</p>
               ) : null}

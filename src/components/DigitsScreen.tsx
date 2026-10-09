@@ -179,62 +179,64 @@ export function DigitsScreen({ lang, onBack, onHub, onWorlds }: DigitsScreenProp
 
       <HubNav lang={lang} active="free" tabs={MATH_HUB_TABS} onSelect={onHub} />
 
-      <div className="choice-grid is-modes">
-        <FitGroup wrap minPx={8}>
-          {MATH_DIGIT_IDS.map((digitId) => {
-            const digit = mathDigitById(digitId);
-            const best = bests[digitId];
-            return (
-              <button
-                key={digitId}
-                type="button"
-                className={`choice ${id === digitId ? "is-active" : ""}`}
-                aria-pressed={id === digitId}
-                onClick={() => chooseConstant(digitId)}
-              >
-                <FitText>{`${digit.symbol}${best > 0 ? ` · ${best}` : ""}`}</FitText>
-              </button>
-            );
-          })}
-        </FitGroup>
-      </div>
+      <div className="digits-controls">
+        <div className="choice-grid is-modes digits-constants">
+          <FitGroup wrap minPx={8}>
+            {MATH_DIGIT_IDS.map((digitId) => {
+              const digit = mathDigitById(digitId);
+              const best = bests[digitId];
+              return (
+                <button
+                  key={digitId}
+                  type="button"
+                  className={`choice ${id === digitId ? "is-active" : ""}`}
+                  aria-pressed={id === digitId}
+                  onClick={() => chooseConstant(digitId)}
+                >
+                  <FitText>{`${digit.symbol}${best > 0 ? ` · ${best}` : ""}`}</FitText>
+                </button>
+              );
+            })}
+          </FitGroup>
+        </div>
 
-      <p className="digits-name">
-        {item.symbol} · {digitLabel(id, lang)}
-        {bests[id] > 0 ? ` · ${t.digitsBest} ${bests[id]}` : ""}
-      </p>
+        <p className="digits-name">
+          {item.symbol} · {digitLabel(id, lang)}
+          {bests[id] > 0 ? ` · ${t.digitsBest} ${bests[id]}` : ""}
+        </p>
 
-      <div className="choice-grid digits-milestones">
-        {MATH_DIGIT_MILESTONES.map((goal) => (
+        <div className="choice-grid digits-milestones">
+          {MATH_DIGIT_MILESTONES.map((goal) => (
+            <button
+              key={goal}
+              type="button"
+              className={`choice ${milestone === goal ? "is-active" : ""}`}
+              aria-pressed={milestone === goal}
+              onClick={() => chooseMilestone(goal)}
+            >
+              {goal}
+            </button>
+          ))}
+        </div>
+
+        <div className="choice-grid is-2 digits-lanes">
           <button
-            key={goal}
             type="button"
-            className={`choice ${milestone === goal ? "is-active" : ""}`}
-            aria-pressed={milestone === goal}
-            onClick={() => chooseMilestone(goal)}
+            className={`choice ${lane === "watch" ? "is-active" : ""}`}
+            aria-pressed={lane === "watch"}
+            onClick={() => setLane("watch")}
           >
-            {goal}
+            {t.digitsWatch}
           </button>
-        ))}
-      </div>
-
-      <div className="choice-grid is-2 digits-lanes">
-        <button
-          type="button"
-          className={`choice ${lane === "watch" ? "is-active" : ""}`}
-          aria-pressed={lane === "watch"}
-          onClick={() => setLane("watch")}
-        >
-          {t.digitsWatch}
-        </button>
-        <button
-          type="button"
-          className={`choice ${lane === "type" ? "is-active" : ""}`}
-          aria-pressed={lane === "type"}
-          onClick={() => setLane("type")}
-        >
-          {t.digitsType}
-        </button>
+          <button
+            type="button"
+            className={`choice ${lane === "type" ? "is-active" : ""}`}
+            aria-pressed={lane === "type"}
+            onClick={() => setLane("type")}
+          >
+            {t.digitsType}
+          </button>
+        </div>
       </div>
 
       {lane === "watch" ? (

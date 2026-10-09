@@ -1,0 +1,22 @@
+---
+description: Match existing quiz chrome; do not redraw screens from Figma
+alwaysApply: true
+---
+
+# Figma vs the live quiz
+
+Do not redraw the site from Figma mockups. Do not change quiz logic.
+
+Colors and layout already live in `src/app/globals.css`. Keep:
+
+- Mode pick: two menus and an arrow
+- Buttons about 48px tall
+- Results: one column of equal-width buttons
+- Question photo centered
+- Marks square
+
+The π glyph in the symbol → meaning mode is drawn by `src/components/PiMark.tsx`. Do not replace it with another mark.
+
+Figma backgrounds are paintings inside the design file, not project assets. Do not invent, export, or add them.
+
+If something looks missing on the site, find that screen in the code and edit it. Do not assemble a new screen.
