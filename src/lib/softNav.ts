@@ -14,7 +14,16 @@ export function softNav(apply: () => void) {
     apply();
     return;
   }
-  document.startViewTransition(() => {
-    flushSync(apply);
-  });
+  const active = (document as Document & { activeViewTransition?: unknown }).activeViewTransition
+  if (active) {
+    apply();
+    return;
+  }
+  try {
+    document.startViewTransition(() => {
+      flushSync(apply);
+    });
+  } catch {
+    apply();
+  }
 }

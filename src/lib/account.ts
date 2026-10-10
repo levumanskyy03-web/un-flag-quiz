@@ -147,8 +147,16 @@ export async function deleteAccount(password: string): Promise<{ ok: true } | { 
   }
 }
 
+export const AUTH_EVENT = 'un-flag-quiz-auth'
+
+function emitAuth() {
+  if (typeof window === 'undefined') return
+  window.dispatchEvent(new Event(AUTH_EVENT))
+}
+
 function forgetLocalSession() {
   savePlayer({ id: crypto.randomUUID(), name: loadProfile().name })
+  emitAuth()
 }
 
 function rememberAccount(user: Account) {
@@ -160,6 +168,7 @@ function rememberAccount(user: Account) {
     photo: profile.photo,
     nameChangedAt: user.nameChangedAt ?? profile.nameChangedAt,
   })
+  emitAuth()
 }
 
 async function sendAuth(url: string, name: string, password: string, countryIso?: string) {

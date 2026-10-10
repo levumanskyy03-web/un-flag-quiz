@@ -1,10 +1,15 @@
 import { readLangCookie, readStoredLang } from '../i18n/persistLang'
 import type { Lang } from '../i18n/lang'
+import { todayDailyDone } from './dailyChallenge'
 import type { SfxName } from './sfx'
 
 const REMIND_KEY = 'un-flag-quiz-daily-remind'
+const REMIND_ASKED_KEY = 'un-flag-quiz-remind-asked'
 const REMIND_EVENT = 'un-flag-quiz-remind'
+const HAPTICS_KEY = 'un-flag-quiz-haptics'
+const HAPTICS_EVENT = 'un-flag-quiz-haptics'
 const REMIND_ID = 418
+const TEST_ID = 419
 const REMIND_HOUR = 18
 
 const REMIND_COPY: Record<Lang, { title: string; body: string }> = {
@@ -55,9 +60,41 @@ function emitRemind() {
   window.dispatchEvent(new Event(REMIND_EVENT))
 }
 
+export function isHapticsOn(): boolean {
+  if (typeof localStorage === 'undefined') return true
+  return localStorage.getItem(HAPTICS_KEY) !== '0'
+}
+
+export function setHapticsOn(on: boolean) {
+  if (typeof localStorage === 'undefined') return
+  localStorage.setItem(HAPTICS_KEY, on ? '1' : '0')
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event(HAPTICS_EVENT))
+  if (on) tap()
+}
+
+export function subscribeHaptics(onChange: () => void) {
+  if (typeof window === 'undefined') return () => {}
+  window.addEventListener(HAPTICS_EVENT, onChange)
+  return () => window.removeEventListener(HAPTICS_EVENT, onChange)
+}
+
 export function feel(name: SfxName) {
-  if (!isNativeApp()) return
+  if (!isNativeApp() || !isHapticsOn()) return
   void buzz(name)
+}
+
+export function tap() {
+  if (!isNativeApp() || !isHapticsOn()) return
+  void click()
+}
+
+async function click() {
+  try {
+    const { Haptics } = await import('@capacitor/haptics')
+    await Haptics.selectionChanged()
+  } catch {
+    // The website in a browser has no haptic engine.
+  }
 }
 
 async function buzz(name: SfxName) {
@@ -77,23 +114,17 @@ async function buzz(name: SfxName) {
   }
 }
 
-export async function setDailyRemind(on: boolean, lang: Lang = appLang()): Promise<boolean> {
-  if (!isNativeApp()) return false
+function nextRemindAt() {
+  const at = new Date()
+  at.setHours(REMIND_HOUR, 0, 0, 0)
+  if (todayDailyDone() || at.getTime() <= Date.now()) {
+    at.setDate(at.getDate() + 1)
+  }
+  return at
+}
+
+async function scheduleDaily(lang: Lang) {
   const { LocalNotifications } = await import('@capacitor/local-notifications')
-  if (!on) {
-    localStorage.setItem(REMIND_KEY, '0')
-    await LocalNotifications.cancel({ notifications: [{ id: REMIND_ID }] }).catch(() => {})
-    emitRemind()
-    return false
-  }
-  const perm = await LocalNotifications.requestPermissions()
-  if (perm.display !== 'granted') {
-    if (perm.display === 'denied') {
-      localStorage.setItem(REMIND_KEY, '0')
-      emitRemind()
-    }
-    return false
-  }
   const copy = REMIND_COPY[lang]
   await LocalNotifications.cancel({ notifications: [{ id: REMIND_ID }] }).catch(() => {})
   let channelId: string | undefined
@@ -108,19 +139,91 @@ export async function setDailyRemind(on: boolean, lang: Lang = appLang()): Promi
       channelId = undefined
     })
   }
+  const skipToday = todayDailyDone()
+  await LocalNotifications.schedule({
+    notifications: [
+      {
+        id: REMIND_ID,
+        title: copy.title,
+        body: copy.body,
+        channelId,
+        extra: { path: '/today' },
+        schedule: skipToday
+          ? { at: nextRemindAt(), allowWhileIdle: true }
+          : { on: { hour: REMIND_HOUR, minute: 0 }, allowWhileIdle: true },
+      },
+    ],
+  })
+}
+
+export async function refreshDailyRemind(lang: Lang = appLang()): Promise<boolean> {
+  if (!isNativeApp() || !isDailyRemindOn()) return false
+  const { LocalNotifications } = await import('@capacitor/local-notifications')
+  const perm = await LocalNotifications.checkPermissions()
+  if (perm.display !== 'granted') return false
   try {
+    await scheduleDaily(lang)
+  } catch {
+    return false
+  }
+  return true
+}
+
+export async function maybeAskDailyRemind(lang: Lang = appLang()): Promise<boolean> {
+  if (!isNativeApp()) return false
+  if (localStorage.getItem(REMIND_KEY) === '0') return false
+  if (localStorage.getItem(REMIND_ASKED_KEY) === '1') {
+    return refreshDailyRemind(lang)
+  }
+  localStorage.setItem(REMIND_ASKED_KEY, '1')
+  return setDailyRemind(true, lang)
+}
+
+export async function sendTestRemind(lang: Lang = appLang()): Promise<boolean> {
+  if (!isNativeApp()) return false
+  const { LocalNotifications } = await import('@capacitor/local-notifications')
+  const perm = await LocalNotifications.requestPermissions()
+  if (perm.display !== 'granted') return false
+  const copy = REMIND_COPY[lang]
+  try {
+    await LocalNotifications.cancel({ notifications: [{ id: TEST_ID }] }).catch(() => {})
     await LocalNotifications.schedule({
       notifications: [
         {
-          id: REMIND_ID,
+          id: TEST_ID,
           title: copy.title,
           body: copy.body,
-          channelId,
           extra: { path: '/today' },
-          schedule: { on: { hour: REMIND_HOUR, minute: 0 }, allowWhileIdle: true },
+          schedule: { at: new Date(Date.now() + 3000), allowWhileIdle: true },
         },
       ],
     })
+  } catch {
+    return false
+  }
+  return true
+}
+
+export async function setDailyRemind(on: boolean, lang: Lang = appLang()): Promise<boolean> {
+  if (!isNativeApp()) return false
+  const { LocalNotifications } = await import('@capacitor/local-notifications')
+  if (!on) {
+    localStorage.setItem(REMIND_KEY, '0')
+    await LocalNotifications.cancel({ notifications: [{ id: REMIND_ID }] }).catch(() => {})
+    emitRemind()
+    return false
+  }
+  localStorage.setItem(REMIND_ASKED_KEY, '1')
+  const perm = await LocalNotifications.requestPermissions()
+  if (perm.display !== 'granted') {
+    if (perm.display === 'denied') {
+      localStorage.setItem(REMIND_KEY, '0')
+      emitRemind()
+    }
+    return false
+  }
+  try {
+    await scheduleDaily(lang)
   } catch {
     return false
   }

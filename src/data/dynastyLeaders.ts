@@ -159,15 +159,15 @@ const BRUNEI: Row[] = [
 ]
 
 const HASHEMITE: Row[] = [
-  ['hussein-hejaz', 1, 1916, 1924, 'Hussein bin Ali of Hejaz', 'Хусейн ибн Али (Хиджаз)', 'Hussein bin Ali, King of Hejaz', 'medium'],
-  ['abdullah1', 2, 1921, 1951, 'Abdullah I of Jordan', 'Абдалла I (Иордания)', 'Abdullah I of Jordan', 'easy'],
-  ['faisal1', 3, 1921, 1933, 'Faisal I of Iraq', 'Фейсал I (Ирак)', 'Faisal I of Iraq', 'easy'],
-  ['ali-hejaz', 4, 1924, 1925, 'Ali of Hejaz', 'Али (Хиджаз)', 'Ali of Hejaz', 'medium'],
-  ['ghazi', 5, 1933, 1939, 'Ghazi of Iraq', 'Гази (Ирак)', 'Ghazi of Iraq', 'medium'],
-  ['faisal2', 6, 1939, 1958, 'Faisal II of Iraq', 'Фейсал II (Ирак)', 'Faisal II of Iraq', 'medium'],
-  ['talal', 7, 1951, 1952, 'Talal of Jordan', 'Талал (Иордания)', 'Talal of Jordan'],
-  ['hussein-jo', 8, 1952, 1999, 'Hussein of Jordan', 'Хусейн (Иордания)', 'Hussein of Jordan', 'easy'],
-  ['abdullah2', 9, 1999, null, 'Abdullah II of Jordan', 'Абдалла II (Иордания)', 'Abdullah II of Jordan', 'easy'],
+  ['hussein-hejaz', 1, 1916, 1924, 'Hussein bin Ali of Hejaz', 'Хусейн ибн Али', 'Hussein bin Ali, King of Hejaz', 'medium'],
+  ['abdullah1', 2, 1921, 1951, 'Abdullah I of Jordan', 'Абдалла I', 'Abdullah I of Jordan', 'easy'],
+  ['faisal1', 3, 1921, 1933, 'Faisal I of Iraq', 'Фейсал I', 'Faisal I of Iraq', 'easy'],
+  ['ali-hejaz', 4, 1924, 1925, 'Ali of Hejaz', 'Али', 'Ali of Hejaz', 'medium'],
+  ['ghazi', 5, 1933, 1939, 'Ghazi of Iraq', 'Гази', 'Ghazi of Iraq', 'medium'],
+  ['faisal2', 6, 1939, 1958, 'Faisal II of Iraq', 'Фейсал II', 'Faisal II of Iraq', 'medium'],
+  ['talal', 7, 1951, 1952, 'Talal of Jordan', 'Талал', 'Talal of Jordan'],
+  ['hussein-jo', 8, 1952, 1999, 'Hussein of Jordan', 'Хусейн', 'Hussein of Jordan', 'easy'],
+  ['abdullah2', 9, 1999, null, 'Abdullah II of Jordan', 'Абдалла II', 'Abdullah II of Jordan', 'easy'],
 ]
 
 const MOROCCO: Row[] = [

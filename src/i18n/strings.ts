@@ -883,6 +883,7 @@ export type Strings = {
   freePlay: string
   modeSelector: string
   modeSelectorMeta: (level: number, mode: string) => string
+  modeFlip: string
   mapHint: string
   mapSearch: string
   mapLoading: string
@@ -1018,6 +1019,9 @@ export type Strings = {
   settings: string
   settingsAccount: string
   settingsAbout: string
+  welcomeTitle: string
+  welcomeBody: string
+  welcomeContinue: string
   tourSkip: string
   tourNext: string
   tourBack: string
@@ -1039,6 +1043,10 @@ export type Strings = {
   audioAllOff: string
   dailyRemind: string
   dailyRemindHint: string
+  haptics: string
+  hapticsHint: string
+  remindTest: string
+  remindTestSent: string
   accountCountry: string
   countrySearch: string
   settingsReport: string
@@ -1145,6 +1153,8 @@ export type Strings = {
   profile: string
   profileHint: string
   mine: string
+  hideTraining: string
+  hideTrainingHint: string
   mineHint: string
   minePick: string
   mineDone: string
@@ -2096,6 +2106,7 @@ export const STRINGS: Record<Lang, Strings> = {
     freePlay: 'Вольное',
     modeSelector: 'Выбор режима',
     modeSelectorMeta: (level, mode) => `Уровень ${level} · ${mode}`,
+    modeFlip: 'Обратный режим',
     mapHint: 'Нажмите страну — откроется паспорт',
     mapSearch: 'Найти страну',
     mapLoading: 'Загрузка карты…',
@@ -2211,7 +2222,11 @@ export const STRINGS: Record<Lang, Strings> = {
     audioAll: 'Всё включено',
     audioAllOff: 'Выключить всё',
     dailyRemind: 'Напоминание',
-    dailyRemindHint: 'Каждый день в 18:00 — челлендж дня.',
+    dailyRemindHint: 'Каждый день в 18:00 — челлендж дня. Если уже играли сегодня, пуш не придёт.',
+    haptics: 'Вибрация',
+    hapticsHint: 'Отклик при выборе режима и ответе.',
+    remindTest: 'Проверить пуш',
+    remindTestSent: 'Придёт через 3 секунды',
     accountCountry: 'Страна',
     countrySearch: 'Найти страну',
     settingsReport: 'Сообщить о проблеме',
@@ -2355,8 +2370,10 @@ export const STRINGS: Record<Lang, Strings> = {
     multiplayerWaiting: 'Ищем соперника',
     multiplayerHint: 'Онлайн-миксы: одна очередь на несколько режимов.',
     profile: 'Профиль',
-    profileHint: 'Настройки аккаунта и игра с другом.',
-    mine: 'Мои',
+    profileHint: 'Настройки аккаунта.',
+    mine: 'Я сейчас тренирую',
+    hideTraining: 'Скрыть «Я сейчас тренирую»',
+    hideTrainingHint: 'Кнопка пропадёт с выбора тем. Вернуть её можно здесь.',
     mineHint: 'Ваш маршрут: минимум пять викторин из трёх тем. Идёте по станциям, список остаётся на этом устройстве.',
     minePick: 'Выбрать викторины',
     mineDone: 'Готово',
@@ -2956,6 +2973,7 @@ export const STRINGS: Record<Lang, Strings> = {
     freePlay: 'Free play',
     modeSelector: 'Mode selector',
     modeSelectorMeta: (level, mode) => `Level ${level} · ${mode}`,
+    modeFlip: 'Reverse mode',
     mapHint: 'Tap a country to open its passport',
     mapSearch: 'Find a country',
     mapLoading: 'Loading the map…',
@@ -3071,7 +3089,11 @@ export const STRINGS: Record<Lang, Strings> = {
     audioAll: 'All on',
     audioAllOff: 'Mute all',
     dailyRemind: 'Reminder',
-    dailyRemindHint: 'Every day at 18:00, the daily challenge.',
+    dailyRemindHint: 'Every day at 18:00, the daily challenge. No ping if you already played today.',
+    haptics: 'Haptics',
+    hapticsHint: 'A tap when you pick a mode or answer.',
+    remindTest: 'Send a test ping',
+    remindTestSent: 'Coming in 3 seconds',
     accountCountry: 'Country',
     countrySearch: 'Find a country',
     settingsReport: 'Report a problem',
@@ -3209,8 +3231,10 @@ export const STRINGS: Record<Lang, Strings> = {
     multiplayerWaiting: 'Looking for an opponent',
     multiplayerHint: 'Online mixes: one queue across several modes.',
     profile: 'Profile',
-    profileHint: 'Account settings and a game with a friend.',
-    mine: 'Mine',
+    profileHint: 'Account settings.',
+    mine: "I'm training now",
+    hideTraining: "Hide “I'm training now”",
+    hideTrainingHint: 'The button leaves the theme picker. Turn it back on here.',
     mineHint: 'Your route: at least 5 quizzes from 3 themes. You move station by station. The list stays on this device.',
     minePick: 'Choose quizzes',
     mineDone: 'Done',

@@ -27,7 +27,17 @@ import { isNameCooldown } from '../lib/nameRules'
 import { statsByMode } from '../lib/modeStats'
 import { loadProfile, saveProfile } from '../lib/profile'
 import { isMusicMuted, isSfxMuted, playSfx, setAllAudioMuted, setMusicMuted, setSfxMuted, subscribeAudio } from '../lib/sfx'
-import { isDailyRemindOn, isNativeApp, setDailyRemind, subscribeDailyRemind } from '../lib/nativeFeel'
+import {
+  isDailyRemindOn,
+  isHapticsOn,
+  isNativeApp,
+  sendTestRemind,
+  setDailyRemind,
+  setHapticsOn,
+  subscribeDailyRemind,
+  subscribeHaptics,
+} from '../lib/nativeFeel'
+import { isTrainingHidden, setTrainingHidden, subscribeTrainingHidden } from '../lib/trainingTheme'
 import {
   footballHasDifficulty,
   formatClock,
@@ -112,6 +122,9 @@ export function SettingsModal({
   const [musicMuted, setMusicMutedState] = useState(isMusicMuted)
   const [nativeApp, setNativeApp] = useState(false)
   const [remindOn, setRemindOn] = useState(false)
+  const [hapticsOn, setHapticsOnState] = useState(true)
+  const [remindQueued, setRemindQueued] = useState(false)
+  const [trainingHidden, setTrainingHiddenState] = useState(false)
 
   useEffect(
     () =>
@@ -124,7 +137,16 @@ export function SettingsModal({
   useEffect(() => {
     setNativeApp(isNativeApp())
     setRemindOn(isDailyRemindOn())
-    return subscribeDailyRemind(() => setRemindOn(isDailyRemindOn()))
+    setHapticsOnState(isHapticsOn())
+    setTrainingHiddenState(isTrainingHidden())
+    const stopRemind = subscribeDailyRemind(() => setRemindOn(isDailyRemindOn()))
+    const stopHaptics = subscribeHaptics(() => setHapticsOnState(isHapticsOn()))
+    const stopTraining = subscribeTrainingHidden(() => setTrainingHiddenState(isTrainingHidden()))
+    return () => {
+      stopRemind()
+      stopHaptics()
+      stopTraining()
+    }
   }, [])
   const authBlockRef = useRef<HTMLDivElement>(null)
   const stats = useMemo(() => statsByMode(history, bests, levelClears), [history, bests, levelClears])
@@ -798,8 +820,48 @@ export function SettingsModal({
                 {t.soundsOff}
               </button>
             </div>
+            <p className="settings-sub">{t.hideTraining}</p>
+            <p className="setting-hint">{t.hideTrainingHint}</p>
+            <div className="choice-grid">
+              <button
+                type="button"
+                className={`choice ${trainingHidden ? 'is-active' : ''}`}
+                aria-pressed={trainingHidden}
+                onClick={() => setTrainingHidden(true)}
+              >
+                {t.soundsOn}
+              </button>
+              <button
+                type="button"
+                className={`choice ${trainingHidden ? '' : 'is-active'}`}
+                aria-pressed={!trainingHidden}
+                onClick={() => setTrainingHidden(false)}
+              >
+                {t.soundsOff}
+              </button>
+            </div>
             {nativeApp ? (
               <>
+                <p className="settings-sub">{t.haptics}</p>
+                <p className="setting-hint">{t.hapticsHint}</p>
+                <div className="choice-grid">
+                  <button
+                    type="button"
+                    className={`choice ${hapticsOn ? 'is-active' : ''}`}
+                    aria-pressed={hapticsOn}
+                    onClick={() => setHapticsOn(true)}
+                  >
+                    {t.soundsOn}
+                  </button>
+                  <button
+                    type="button"
+                    className={`choice ${hapticsOn ? '' : 'is-active'}`}
+                    aria-pressed={!hapticsOn}
+                    onClick={() => setHapticsOn(false)}
+                  >
+                    {t.soundsOff}
+                  </button>
+                </div>
                 <p className="settings-sub">{t.dailyRemind}</p>
                 <p className="setting-hint">{t.dailyRemindHint}</p>
                 <div className="choice-grid">
@@ -820,6 +882,20 @@ export function SettingsModal({
                     {t.soundsOff}
                   </button>
                 </div>
+                <button
+                  type="button"
+                  className="btn-ghost"
+                  onClick={() => {
+                    void sendTestRemind(lang).then((ok) => {
+                      if (ok) {
+                        setRemindQueued(true)
+                        window.setTimeout(() => setRemindQueued(false), 4000)
+                      }
+                    })
+                  }}
+                >
+                  {remindQueued ? t.remindTestSent : t.remindTest}
+                </button>
               </>
             ) : null}
             <CookieConsentControls lang={lang} />
@@ -891,6 +967,9 @@ export function SettingsModal({
             <button type="submit" className="btn-primary" disabled={!reportBody.trim()}>
               {t.reportSend}
             </button>
+            <p className="setting-hint" dir="ltr">
+              {REPORT_EMAIL}
+            </p>
             {reportOpened ? <p className="settings-ok">{t.reportSent}</p> : null}
           </form>
         ) : null}

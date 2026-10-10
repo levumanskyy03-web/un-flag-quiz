@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { appLang, isDailyRemindOn, isNativeApp, setDailyRemind, watchRemindTaps } from '../lib/nativeFeel'
+import { appLang, isNativeApp, refreshDailyRemind, watchRemindTaps } from '../lib/nativeFeel'
 
 export function NativeShell() {
   useEffect(() => {
@@ -11,8 +11,7 @@ export function NativeShell() {
       removeTaps = remove
     })
     const sync = () => {
-      if (!isDailyRemindOn()) return
-      void setDailyRemind(true, appLang())
+      void refreshDailyRemind(appLang())
     }
     sync()
     window.addEventListener('storage', sync)

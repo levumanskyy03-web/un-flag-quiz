@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
 import { rtlModeArrows } from '../i18n/lang'
-import { pickLink, sideIds, sideText, linkForMode, type ModeLink } from '../lib/modePairs'
+import { pickLink, reverseMode, sideIds, sideText, linkForMode, type ModeLink } from '../lib/modePairs'
+import { tap } from '../lib/nativeFeel'
 import { HardcoreToggle } from './DifficultyPicker'
 import { EmpireLock } from './EmpireLock'
 import { useEmpire } from '../lib/empireStore'
@@ -79,6 +80,7 @@ export function ModeArrowSelect({
   }
 
   function choose(side: 'left' | 'right', id: string) {
+    tap()
     if (solo && side === 'left' && id === solo.id) {
       solo.onPick()
       setOpen(null)
@@ -91,6 +93,7 @@ export function ModeArrowSelect({
   const leftIds = sideIds(links, 'left')
   if (solo && !leftIds.includes(solo.id)) leftIds.unshift(solo.id)
   const plain = Boolean(solo?.active || active.plain)
+  const flipped = plain ? null : reverseMode(links, active.mode)
 
   return (
     <div className="mode-arrow-card" ref={rootRef}>
@@ -103,21 +106,43 @@ export function ModeArrowSelect({
           current={solo?.active ? solo.id : active.left}
           ids={leftIds}
           label={(id) => label('left', id)}
-          onToggle={() => setOpen(open === 'left' ? null : 'left')}
+          onToggle={() => {
+            tap()
+            setOpen(open === 'left' ? null : 'left')
+          }}
           onPick={(id) => choose('left', id)}
         />
         {plain ? null : (
           <>
-            <span className="mode-arrow-mark" aria-hidden>
-              {rtlModeArrows('→', lang)}
-            </span>
+            {flipped ? (
+              <button
+                type="button"
+                className="mode-arrow-mark"
+                aria-label={t.modeFlip}
+                title={t.modeFlip}
+                onClick={() => {
+                  tap()
+                  setOpen(null)
+                  onMode(flipped)
+                }}
+              >
+                {rtlModeArrows('→', lang)}
+              </button>
+            ) : (
+              <span className="mode-arrow-mark" aria-hidden>
+                {rtlModeArrows('→', lang)}
+              </span>
+            )}
             <SideMenu
               side="right"
               open={open === 'right'}
               current={active.right}
               ids={sideIds(links, 'right')}
               label={(id) => label('right', id)}
-              onToggle={() => setOpen(open === 'right' ? null : 'right')}
+              onToggle={() => {
+            tap()
+            setOpen(open === 'right' ? null : 'right')
+          }}
               onPick={(id) => choose('right', id)}
             />
           </>
@@ -129,7 +154,15 @@ export function ModeArrowSelect({
         </div>
       ) : null}
       {hardcoreLocked ? <EmpireLock lang={lang} feature={hardcoreGate} title={hardcoreTitle ?? t.gateDifficulty} /> : null}
-      <button type="button" className="btn-primary mode-arrow-start" disabled={startDisabled} onClick={onStart}>
+      <button
+        type="button"
+        className="btn-primary mode-arrow-start"
+        disabled={startDisabled}
+        onClick={() => {
+          tap()
+          onStart()
+        }}
+      >
         {startLabel}
       </button>
     </div>

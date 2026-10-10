@@ -1,4 +1,5 @@
 import { STRINGS, type Lang } from '../i18n/strings'
+import { tap } from '../lib/nativeFeel'
 import { FitGroup, FitText } from './FitText'
 import { GeoIcon } from './GeoIcon'
 
@@ -54,7 +55,10 @@ export function HubNav({ lang, active, tabs, onSelect }: HubNavProps) {
         type="button"
         className={`choice hub-choice ${active === tab ? 'is-active' : ''}`}
         aria-pressed={active === tab}
-        onClick={() => onSelect(tab)}
+        onClick={() => {
+          tap()
+          onSelect(tab)
+        }}
       >
         <GeoIcon name={ICONS[tab]} size={15} />
         <FitText>{labels[tab]}</FitText>
@@ -81,7 +85,10 @@ export function HubNav({ lang, active, tabs, onSelect }: HubNavProps) {
           type="button"
           className={`choice hub-map-aside ${active === 'map' ? 'is-active' : ''}`}
           aria-pressed={active === 'map'}
-          onClick={() => onSelect('map')}
+          onClick={() => {
+            tap()
+            onSelect('map')
+          }}
         >
           <GeoIcon name="pin" size={15} />
           <FitText>{labels.map}</FitText>

@@ -18,6 +18,9 @@ import { termById } from "@/data/leaders";
 import { COUNTRIES } from "@/data/countries";
 import { STRINGS, isLang, langDir, localeTag, type Lang } from "@/i18n/strings";
 import { SITE_LANG_KEY } from "@/i18n/lang";
+import { fetchAccount } from "@/lib/account";
+import { canPlayEtest } from "@/lib/etestAccess";
+import { isTrainingHidden, subscribeTrainingHidden } from "@/lib/trainingTheme";
 import { persistLang } from "@/i18n/persistLang";
 import { clearBests, clearHistory, loadBests, loadHistory, saveRound, type RoundRecord } from "@/lib/history";
 import {
@@ -33,6 +36,8 @@ import {
   ETEST_QUESTIONS,
   clearEtestLeg,
   etestRoute,
+  etestStationTotal,
+  etestStations,
   readEtestLeg,
   saveEtestCleared,
   writeEtestLeg,
@@ -114,6 +119,7 @@ import { bumpTrainerComplete, clearMistakes, loadMistakes, recordMistakes, clear
 import { awardRoundStamps, loadStamps, subscribeStamps, type StampAlbum } from "@/lib/stamps";
 import { unlockedAchievementIds } from "@/lib/achievements";
 import { playSfx } from "@/lib/sfx";
+import { maybeAskDailyRemind, refreshDailyRemind } from "@/lib/nativeFeel";
 import { softNav } from "@/lib/softNav";
 import { prefetchWikiPortraits } from "@/lib/wikiThumb";
 import { collectionById, dailyPlayHref, type Collection } from "@/data/collections";
@@ -125,6 +131,7 @@ import { MathPlay } from "./MathPlay";
 import { AstroPlay } from "./AstroPlay";
 import { ThemePlay } from "./ThemePlay";
 import { MultiplayerPlay } from "./MultiplayerPlay";
+import { FriendPlay } from "./FriendPlay";
 import { ProfilePlay } from "./ProfilePlay";
 import { StudioPlay } from "./StudioPlay";
 import { EmpirePlay } from "./EmpirePlay";
@@ -136,11 +143,12 @@ import { listGateOf } from "@/lib/empire/gates";
 
 type Screen = "home" | "levels" | "level20" | "learn" | "map" | "quiz" | "results" | "mistakes" | "album" | "lists";
 type ResultTone = "success" | "fail" | "gold";
-type Hub = World | "multiplayer" | "studio" | "empire" | "profile" | "mine" | "etest";
+type Hub = World | "multiplayer" | "friend" | "studio" | "empire" | "profile" | "mine" | "etest";
 
-function isMetaHub(hub: Hub | null | undefined): hub is "multiplayer" | "studio" | "empire" | "profile" | "mine" | "etest" {
+function isMetaHub(hub: Hub | null | undefined): hub is "multiplayer" | "friend" | "studio" | "empire" | "profile" | "mine" | "etest" {
   return (
     hub === "multiplayer" ||
+    hub === "friend" ||
     hub === "studio" ||
     hub === "empire" ||
     hub === "profile" ||
@@ -189,6 +197,7 @@ export function worldFromPath(pathname: string): World | null {
 
 export function hubFromPath(pathname: string): Hub | null {
   if (pathname === "/multiplayer" || pathname.startsWith("/multiplayer/")) return "multiplayer";
+  if (pathname === "/friend" || pathname.startsWith("/friend/")) return "friend";
   if (pathname === "/profile" || pathname.startsWith("/profile/")) return "profile";
   if (pathname === "/studio" || pathname.startsWith("/studio/")) return "studio";
   if (pathname === "/empire" || pathname.startsWith("/empire/")) return "empire";
@@ -297,6 +306,7 @@ export default function PlayApp() {
   const pendingEtest = useRef<QuizSettings["mode"] | null>(null);
   const keepEtest = useRef(false);
   const etestLegRef = useRef<number | null>(null);
+  const [etestOk, setEtestOk] = useState(false);
   const advanceEtestRef = useRef<() => void>(() => {});
   const [etestLeg, setEtestLeg] = useState<number | null>(null);
 
@@ -334,6 +344,8 @@ export default function PlayApp() {
     document.title =
       hub === "multiplayer"
         ? STRINGS[quizSettings.lang].multiplayer
+        : hub === "friend"
+          ? STRINGS[quizSettings.lang].playWithFriend
         : hub === "profile"
           ? STRINGS[quizSettings.lang].profile
         : hub === "studio"
@@ -753,6 +765,7 @@ export default function PlayApp() {
                 correct: answers.filter(isCorrect).length,
                 total: answers.length,
               });
+              void refreshDailyRemind(quizSettings.lang);
             }
             rememberRound(answers);
             if (gained > 0) {
@@ -767,6 +780,7 @@ export default function PlayApp() {
               });
             }
             playSfx(saved.isNewBest ? "record" : endedBy === "complete" ? "success" : "fail");
+            void maybeAskDailyRemind(quizSettings.lang);
           }
         }
         if (quizSettings.path === "levels" && endedBy !== "complete") {
@@ -1681,6 +1695,29 @@ export default function PlayApp() {
     playLevel(quizSettings.level + 1);
   }
 
+  useEffect(() => {
+    if (hub === "mine" && isTrainingHidden()) goToWorlds();
+    if (hub !== "etest") {
+      setEtestOk(false);
+      return;
+    }
+    let cancelled = false;
+    void fetchAccount().then((user) => {
+      if (cancelled) return;
+      if (canPlayEtest(user?.name)) setEtestOk(true);
+      else goToWorlds();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [hub]);
+
+  useEffect(() => {
+    return subscribeTrainingHidden(() => {
+      if (hub === "mine" && isTrainingHidden()) goToWorlds();
+    });
+  }, [hub]);
+
   function goToWorlds() {
     if (etestLegRef.current != null) {
       pendingEtest.current = null;
@@ -2021,7 +2058,12 @@ export default function PlayApp() {
     isPractice,
     etest: etestLeg != null,
     etestKicker:
-      etestLeg != null ? STRINGS[quizSettings.lang].etestStation(etestLeg + 1, etestRoute().length) : null,
+      etestLeg != null
+        ? STRINGS[quizSettings.lang].etestStation(
+            etestStations()[etestLeg]?.n ?? etestLeg + 1,
+            etestStationTotal(),
+          )
+        : null,
     answered,
     currentMode,
     stamps,
@@ -2156,6 +2198,15 @@ export default function PlayApp() {
               router.push("/profile");
             });
           }}
+          onFriend={() => {
+            softNav(() => {
+              syncWorldAttr(null);
+              setWorldNav("friend");
+              screenRef.current = "home";
+              setScreenState("home");
+              router.push("/friend");
+            });
+          }}
           onMultiplayer={() => {
             softNav(() => {
               syncWorldAttr(null);
@@ -2233,13 +2284,14 @@ export default function PlayApp() {
         />
       )}
       {hub === "multiplayer" ? <MultiplayerPlay play={play} /> : null}
+      {hub === "friend" ? <FriendPlay play={play} /> : null}
       {hub === "profile" ? <ProfilePlay play={play} /> : null}
       {hub === "studio" ? <StudioPlay play={play} /> : null}
       {hub === "empire" ? <EmpirePlay play={play} /> : null}
       {hub === "mine" ? (
         <MinePlay lang={quizSettings.lang} onWorlds={goToWorlds} onPlay={startMineStation} />
       ) : null}
-      {hub === "etest" ? (
+      {hub === "etest" && etestOk ? (
         <EtestPlay lang={quizSettings.lang} onWorlds={goToWorlds} onStart={startEtestStation} />
       ) : null}
       {world === "football" ? <FootballPlay play={play} /> : null}

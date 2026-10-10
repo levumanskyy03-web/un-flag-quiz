@@ -1,14 +1,20 @@
 'use client'
 
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useState } from 'react'
 import { LANGS, LANG_NATIVE, type Lang } from '../i18n/lang'
 import { persistLang, readLangCookie, readStoredLang } from '../i18n/persistLang'
+import { setLangPromptOpen } from '../lib/siteTour'
 
 const PROMPT_LANGS: Lang[] = ['en', ...LANGS.filter((code) => code !== 'en')]
 
 export function LangPrompt({ ask }: { ask: boolean }) {
   const titleId = useId()
   const [open, setOpen] = useState(ask)
+
+  useLayoutEffect(() => {
+    setLangPromptOpen(open)
+    return () => setLangPromptOpen(false)
+  }, [open])
 
   useEffect(() => {
     const stored = readStoredLang() ?? readLangCookie()

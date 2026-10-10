@@ -5,6 +5,7 @@
   "scripts": {
     "icons": "node scripts/raster-brand.cjs && capacitor-assets generate --ios --android --iconBackgroundColor '#1a6fd4' --splashBackgroundColor '#020617'",
     "sync": "cap sync",
+    "ios:prod": "cap sync ios",
     "ios": "cap open ios",
     "android": "cap open android"
   },

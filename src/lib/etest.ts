@@ -7,8 +7,43 @@ const LEG_KEY = 'un-flag-quiz-etest-leg'
 /** One sitting per mode: five questions, then the next mode. */
 export const ETEST_QUESTIONS = 5 as const
 
+/**
+ * Station numbers that were removed. Later stations keep the numbers they had
+ * before the deletion. 35 was the Rus rulers number mode.
+ */
+const ETEST_HOLES = [35] as const
+
+export type EtestStation = { n: number; mode: QuizMode }
+
+export function etestStations(): EtestStation[] {
+  const holes = new Set<number>(ETEST_HOLES)
+  const stations: EtestStation[] = []
+  let n = 1
+  for (const row of mineCatalog()) {
+    while (holes.has(n)) n += 1
+    stations.push({ n, mode: row.mode })
+    n += 1
+  }
+  return stations
+}
+
 export function etestRoute(): QuizMode[] {
-  return mineCatalog().map((row) => row.mode)
+  return etestStations().map((station) => station.mode)
+}
+
+/** Highest station number, including holes, so labels stay stable. */
+export function etestStationTotal(stations: readonly EtestStation[] = etestStations()): number {
+  return stations.length === 0 ? 0 : stations[stations.length - 1].n
+}
+
+/** Compact route index for a typed station number. A hole snaps forward. */
+export function etestIndexForNumber(n: number, stations: readonly EtestStation[] = etestStations()): number {
+  if (stations.length === 0) return 0
+  const want = Math.floor(n)
+  const exact = stations.findIndex((station) => station.n === want)
+  if (exact >= 0) return exact
+  const next = stations.findIndex((station) => station.n >= want)
+  return next >= 0 ? next : stations.length - 1
 }
 
 function routeSignature(route: readonly QuizMode[]) {

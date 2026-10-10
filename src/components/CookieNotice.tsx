@@ -6,6 +6,7 @@ import { isLang } from '../i18n/lang'
 import { readStoredLang } from '../i18n/persistLang'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { getCookieConsent, subscribeCookieConsent, writeCookieConsent } from '../lib/cookieConsent'
+import { isNativeApp } from '../lib/nativeFeel'
 
 export function CookieNotice({ lang: initialLang, dismissed }: { lang: Lang; dismissed: boolean }) {
   const titleId = useId()
@@ -13,6 +14,7 @@ export function CookieNotice({ lang: initialLang, dismissed }: { lang: Lang; dis
   const [open, setOpen] = useState(!dismissed)
   const [lang, setLang] = useState(initialLang)
   const [pressed, setPressed] = useState<'reject' | 'accept' | null>(null)
+  const [native, setNative] = useState(false)
 
   useEffect(() => {
     const sync = () => {
@@ -32,7 +34,11 @@ export function CookieNotice({ lang: initialLang, dismissed }: { lang: Lang; dis
     return subscribeCookieConsent(hideIfChosen)
   }, [])
 
-  if (!open || pathname === '/cookies') return null
+  useEffect(() => {
+    if (isNativeApp() || document.documentElement.dataset.native === '1') setNative(true)
+  }, [])
+
+  if (native || !open || pathname === '/cookies') return null
 
   const t = STRINGS[isLang(lang) ? lang : initialLang]
 

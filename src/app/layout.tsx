@@ -6,6 +6,7 @@ import { Nunito, Plus_Jakarta_Sans } from "next/font/google";
 import { AdScripts } from "../components/AdScripts";
 import { CookieNotice } from "../components/CookieNotice";
 import { LangPrompt } from "../components/LangPrompt";
+import { WelcomeScreen } from "../components/WelcomeScreen";
 import { NativeShell } from "../components/NativeShell";
 import { SiteAudio } from "../components/SiteAudio";
 import { isLang, langDir, localeTag, SITE_LANG_KEY } from "../i18n/lang";
@@ -45,12 +46,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={localeTag(lang)} dir={langDir(lang)} suppressHydrationWarning>
       <body className={`${plusJakarta.variable} ${plusJakarta.className} ${nunito.variable}`}>
         <Script id="color-theme" strategy="beforeInteractive">
-          {`try{if(localStorage.getItem("un-flag-quiz-theme")==="light")document.documentElement.dataset.theme="light"}catch(e){}`}
+          {`try{if(localStorage.getItem("un-flag-quiz-theme")==="light")document.documentElement.dataset.theme="light";var cap=window.Capacitor;if(cap&&typeof cap.isNativePlatform==="function"&&cap.isNativePlatform())document.documentElement.dataset.native="1"}catch(e){}`}
         </Script>
         <SiteAudio />
         <NativeShell />
         {children}
         <LangPrompt ask={askLang} />
+        <WelcomeScreen />
         <CookieNotice lang={lang} dismissed={cookieNoticeDismissed} />
         <AdScripts />
         <Analytics />

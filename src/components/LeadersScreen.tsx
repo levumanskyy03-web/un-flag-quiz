@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { STRINGS, leaderTopicName, localeTag, modeLabel, type Lang } from '../i18n/strings'
 import { HISTORY_LIMIT, findBest, type RoundRecord } from '../lib/history'
 import {
@@ -8,10 +8,8 @@ import {
   ROUND_SIZES,
   fitRoundSize,
   formatClock,
-  isLeaderPhotoMode,
   leaderKindOf,
   leaderPoolSize,
-  leaderPoolTerms,
   leadersAskOf,
   leadersAsksOf,
   leadersModeOf,
@@ -29,7 +27,6 @@ import { DifficultyPicker, setupDifficultyText } from './DifficultyPicker'
 import { ModeSetupModal, type SetupFamily } from './ModeSetupModal'
 import { WorldsBack } from './WorldsBack'
 import type { QuizSettings } from './HomeScreen'
-import { prefetchWikiPortraits } from '../lib/wikiThumb'
 import { leaderModeLinks } from '../lib/modePairs'
 
 interface LeadersScreenProps {
@@ -59,11 +56,6 @@ export function LeadersScreen({
   const poolSize = leaderPoolSize(mode, settings.difficulty)
 
   const [setupFamily, setSetupFamily] = useState<SetupFamily | null>(null)
-
-  useEffect(() => {
-    if (!isLeaderPhotoMode(mode)) return
-    prefetchWikiPortraits(leaderPoolTerms(mode, settings.difficulty).map((term) => term.wiki).slice(0, 24))
-  }, [mode, settings.difficulty])
 
   function update(patch: Partial<QuizSettings>) {
     const next = { ...settings, ...patch }

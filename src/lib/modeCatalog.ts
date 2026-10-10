@@ -40,13 +40,22 @@ function catalogModesOf(world: QuizWorld): readonly QuizMode[] {
   return []
 }
 
+/** 1-based slots that stay empty so later modes keep their catalog numbers. */
+const CATALOG_HOLES: Partial<Record<QuizWorld, readonly number[]>> = {
+  leaders: [8],
+}
+
 const MODE_CATALOG_NO = new Map<QuizMode, number>()
 
 for (const world of QUIZ_WORLDS) {
   const base = WORLD_CATALOG_NO[world] * 10
-  catalogModesOf(world).forEach((mode, index) => {
-    MODE_CATALOG_NO.set(mode, base + index + 1)
-  })
+  const holes = new Set(CATALOG_HOLES[world] ?? [])
+  let slot = 1
+  for (const mode of catalogModesOf(world)) {
+    while (holes.has(slot)) slot += 1
+    MODE_CATALOG_NO.set(mode, base + slot)
+    slot += 1
+  }
 }
 
 export function worldCatalogNo(world: QuizWorld): number {

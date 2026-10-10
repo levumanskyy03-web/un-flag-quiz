@@ -80,6 +80,9 @@ export function classifyLicense(
   ) {
     return 'pd'
   }
+  if (name === 'ogl' || name.startsWith('ogl ') || name.includes('open government licence') || url.includes('open-government-licence')) {
+    return 'cc-by'
+  }
   if (name.startsWith('cc by sa') || name.includes('attribution share alike')) return 'cc-by-sa'
   if (name.startsWith('cc by') && !name.includes(' sa') && !name.includes('nc') && !name.includes('nd')) {
     return 'cc-by'

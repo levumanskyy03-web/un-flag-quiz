@@ -434,8 +434,16 @@ export function QuizScreen({
               <p className="neighbors-prompt-label">{footballAsk ?? t.leaderPhotoPrompt}</p>
               <LeaderPortrait
                 name={question.promptEntity ? countryName(question.promptEntity, lang) : countryName(question.country, lang)}
-                wiki={player?.wiki ?? manager?.wiki ?? ''}
-                file={player?.wikiFile ?? (leaderTerm ? portraitFileForTerm(leaderTerm.id) : undefined)}
+                wiki={
+                  isLeaderPhotoMode(activeMode)
+                    ? (leaderTerm?.wiki ?? '')
+                    : (player?.wiki ?? manager?.wiki ?? '')
+                }
+                file={
+                  isLeaderPhotoMode(activeMode)
+                    ? (leaderTerm ? portraitFileForTerm(leaderTerm.id) : undefined)
+                    : player?.wikiFile
+                }
                 flagIso={player?.nation}
                 size="hero"
                 compact={!answered}
@@ -538,7 +546,7 @@ export function QuizScreen({
           onPick={onSelect}
         />
       ) : (
-        <div className={`options ${activeMode === 'nameToFlag' || activeMode === 'nameToSilhouette' ? 'options-flags' : 'options-names'}`}>
+        <div className={`options ${activeMode === 'nameToFlag' || activeMode === 'nameToSilhouette' || activeMode === 'playerToNation' ? 'options-flags' : 'options-names'}`}>
           {isWaterMapMode(activeMode)
             ? (question.waterOptions ?? []).filter((id) => !hidden.has(id)).map((id, tone) => {
                 const isCorrectOption = id === question.waterId
@@ -623,7 +631,7 @@ export function QuizScreen({
                 transition={{ duration: 0.12 }}
               >
                 {hotkeyN(option.iso) > 0 ? <AnswerKey n={hotkeyN(option.iso)} label={t.answerKey(hotkeyN(option.iso))} /> : null}
-                {activeMode === 'nameToFlag' ? (
+                {activeMode === 'nameToFlag' || activeMode === 'playerToNation' ? (
                   <>
                     <Flag iso={option.iso} name={name} size="option" />
                     {answered && <span className="option-caption">{name}</span>}
@@ -640,7 +648,7 @@ export function QuizScreen({
                     ) : null}
                     {answered && <span className="option-caption">{optionLabel(option, activeMode, lang, question)}</span>}
                   </>
-                ) : isFootballTeamChoice(activeMode) || activeMode === 'playerToNation' || activeMode === 'playerToClub' ? (
+                ) : isFootballTeamChoice(activeMode) || activeMode === 'playerToClub' ? (
                   <span className="option-team">
                     <TeamFlag iso={option.iso} name={name} size="thumb" />
                     <FitText minPx={8}>{optionLabel(option, activeMode, lang, question)}</FitText>

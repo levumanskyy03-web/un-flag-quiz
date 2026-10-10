@@ -66,6 +66,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Daily challenge reminders on this iPhone.</string>
+#if DEBUG
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
@@ -73,5 +78,6 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+#endif
 </dict>
 </plist>

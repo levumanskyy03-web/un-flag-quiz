@@ -475,8 +475,32 @@ img {
   width: 100%;
 }
 
-.lang-prompt-sheet .btn-secondary {
+.lang-prompt-sheet .btn-secondary,
+.welcome-sheet .btn-primary {
   width: 100%;
+  min-height: 48px;
+}
+
+.welcome-sheet {
+  text-align: center;
+}
+
+.welcome-kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.welcome-body {
+  margin: 0;
+  line-height: 1.45;
+}
+
+html[data-native] .cookie-notice {
+  display: none;
 }
 
 .cookie-notice {
@@ -1811,17 +1835,17 @@ html[dir="rtl"] .coc-level {
 }
 
 .lang-menu {
-  position: absolute;
-  z-index: 40;
-  top: calc(100% + 6px);
-  inset-inline-end: 4px;
+  position: fixed;
+  z-index: 80;
+  top: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
   margin: 0;
   padding: 6px;
   list-style: none;
-  min-width: max(100%, 168px);
+  width: 168px;
   max-height: min(70dvh, 420px);
   overflow: auto;
   background: var(--card);
@@ -1835,7 +1859,7 @@ html[dir="rtl"] .coc-level {
   padding: 0;
 }
 
-.lang-toggle .lang-menu button {
+.lang-menu button {
   width: 100%;
   border: 0;
   border-radius: 10px;
@@ -1848,9 +1872,9 @@ html[dir="rtl"] .coc-level {
   white-space: nowrap;
 }
 
-.lang-toggle .lang-menu button:hover,
-.lang-toggle .lang-menu button:focus-visible,
-.lang-toggle .lang-menu button.is-active {
+.lang-menu button:hover,
+.lang-menu button:focus-visible,
+.lang-menu button.is-active {
   background: color-mix(in srgb, var(--accent) 22%, transparent);
   color: var(--text);
 }
@@ -5627,9 +5651,29 @@ body:has(.club-card-overlay) .state-hud {
 
 .mode-arrow-mark {
   align-self: center;
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  min-height: 2.75rem;
   font-size: 1.4rem;
   line-height: 1;
   color: #d7d2ff;
+}
+
+button.mode-arrow-mark {
+  border: 0;
+  padding: 0 4px;
+  border-radius: 12px;
+  background: transparent;
+  color: #d7d2ff;
+}
+
+button.mode-arrow-mark:hover,
+button.mode-arrow-mark:focus-visible {
+  background: rgba(139, 124, 255, 0.22);
+  outline: none;
 }
 
 .mode-arrow-menu {
@@ -6869,7 +6913,7 @@ button.home-setup-line {
 .world-pick-dock {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin-top: 0;
   padding: 0;
@@ -6911,8 +6955,17 @@ button.home-setup-line {
   color: color-mix(in srgb, var(--text) 82%, var(--paper));
 }
 
-.world-dock-tab.is-closed {
+.world-dock-tab.is-closed,
+.world-pick.is-closed {
   opacity: 0.55;
+}
+
+.world-pick-note {
+  margin: 0;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
 }
 
 .dock-unavailable {

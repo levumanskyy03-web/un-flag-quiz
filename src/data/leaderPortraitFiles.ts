@@ -136,6 +136,9 @@ export const WIKI_PORTRAIT_FILES: Record<string, string> = {
   'Pope Paul II': '211-Paul II.jpg',
   'Pope Innocent VIII': '213-Innocent VIII.jpg',
   'Pope Pius III': '215-Pius III.jpg',
+  'Franz Joseph II, Prince of Liechtenstein': 'Franz Josef II von und zu Liechtenstein.jpg',
+  'Hans-Adam II, Prince of Liechtenstein': 'Hans-Adam II von und zu Liechtenstein.jpg',
+  'Sobhuza II': 'King Sobhuza II, 1945 (cropped).jpg',
 }
 
 /** Same Wikipedia article, different official portraits per term. */

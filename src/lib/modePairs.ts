@@ -123,6 +123,16 @@ export function linkForMode(links: readonly ModeLink[], mode: QuizMode): ModeLin
   return links.find((item) => item.mode === mode) ?? null
 }
 
+/** Режим с теми же сторонами, но стрелка в другую сторону. */
+export function reverseMode(links: readonly ModeLink[], mode: QuizMode): QuizMode | null {
+  const active = linkForMode(links, mode)
+  if (!active || active.plain || active.left === active.right) return null
+  const flipped = links.find(
+    (item) => !item.plain && item.left === active.right && item.right === active.left && item.mode !== mode,
+  )
+  return flipped?.mode ?? null
+}
+
 export function pickLink(
   links: readonly ModeLink[],
   current: QuizMode,

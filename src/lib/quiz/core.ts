@@ -133,7 +133,6 @@ export const LEADERS_MODES = [
   'popeNumberToName',
   'popePhotoToName',
   'rusYearsToName',
-  'rusNumberToName',
   'rusPhotoToName',
   'ukYearsToName',
   'ukNumberToName',
@@ -373,7 +372,7 @@ export function leadersAskOf(mode: QuizMode): LeaderAsk {
 }
 
 export function leadersAsksOf(kind: LeaderKind): LeaderAsk[] {
-  if (kind === 'us' || kind === 'pope' || kind === 'rus' || kind === 'uk') return ['years', 'number', 'photo']
+  if (kind === 'us' || kind === 'pope' || kind === 'uk') return ['years', 'number', 'photo']
   return ['years', 'photo']
 }
 

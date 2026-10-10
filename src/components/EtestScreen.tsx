@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { STRINGS, modeLabel, type Lang } from '../i18n/strings'
-import { etestRoute, loadEtestCleared } from '../lib/etest'
+import { etestIndexForNumber, etestStationTotal, etestStations, loadEtestCleared } from '../lib/etest'
 import { WorldsBack } from './WorldsBack'
 
 interface EtestScreenProps {
@@ -13,7 +13,9 @@ interface EtestScreenProps {
 
 export function EtestScreen({ lang, onWorlds, onStart }: EtestScreenProps) {
   const t = STRINGS[lang]
-  const route = useMemo(() => etestRoute(), [])
+  const stations = useMemo(() => etestStations(), [])
+  const route = useMemo(() => stations.map((station) => station.mode), [stations])
+  const total = etestStationTotal(stations)
   const [cleared, setCleared] = useState(0)
   const [numberText, setNumberText] = useState('1')
   const [ready, setReady] = useState(false)
@@ -21,18 +23,20 @@ export function EtestScreen({ lang, onWorlds, onStart }: EtestScreenProps) {
   useEffect(() => {
     const next = loadEtestCleared(route)
     setCleared(next)
-    setNumberText(String(next >= route.length ? 1 : next + 1))
+    const station = stations[next] ?? stations[0]
+    setNumberText(String(station?.n ?? 1))
     setReady(true)
-  }, [route])
+  }, [route, stations])
 
   function chosenIndex() {
     const parsed = Number(numberText)
     if (!Number.isFinite(parsed)) return 0
-    return Math.max(0, Math.min(route.length - 1, Math.floor(parsed) - 1))
+    return etestIndexForNumber(parsed, stations)
   }
 
   const index = chosenIndex()
-  const mode = route[index]
+  const station = stations[index]
+  const mode = station?.mode
   const finished = cleared >= route.length
   const resumeHere = index === cleared && cleared > 0 && !finished
 
@@ -47,7 +51,7 @@ export function EtestScreen({ lang, onWorlds, onStart }: EtestScreenProps) {
         <section className="mine-board" aria-label={t.etest}>
           <div className="mine-board-head">
             <h2>{modeLabel(mode, lang)}</h2>
-            <p>{t.etestStation(index + 1, route.length)}</p>
+            <p>{t.etestStation(station?.n ?? 1, total)}</p>
           </div>
           <div
             className="mine-meter"
@@ -65,12 +69,12 @@ export function EtestScreen({ lang, onWorlds, onStart }: EtestScreenProps) {
             <input
               type="number"
               min={1}
-              max={route.length}
+              max={total}
               inputMode="numeric"
               value={numberText}
               aria-label={t.etestNumber}
               onChange={(event) => setNumberText(event.target.value)}
-              onBlur={() => setNumberText(String(chosenIndex() + 1))}
+              onBlur={() => setNumberText(String(stations[chosenIndex()]?.n ?? 1))}
             />
           </label>
           <button
@@ -79,7 +83,7 @@ export function EtestScreen({ lang, onWorlds, onStart }: EtestScreenProps) {
             onClick={() => {
               const start = chosenIndex()
               setCleared(start)
-              setNumberText(String(start + 1))
+              setNumberText(String(stations[start]?.n ?? 1))
               onStart(start)
             }}
           >

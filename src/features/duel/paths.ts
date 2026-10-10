@@ -2,6 +2,7 @@ import { isFootballMode, isLeadersMode, isMathMode, isAstroMode, worldOfMode, ty
 import type { DuelView } from "@/lib/duelTypes";
 
 export const MULTIPLAYER_HREF = "/multiplayer";
+export const FRIEND_HREF = "/friend";
 
 export function duelHref(code: string): string {
   return `/duel/${code.trim().toUpperCase()}`;
@@ -12,8 +13,8 @@ export function normalizeDuelCode(value: string): string | null {
   return code.length === 4 ? code : null;
 }
 
-export function duelWorldHref(_room: DuelView | null): string {
-  return MULTIPLAYER_HREF;
+export function duelWorldHref(room: DuelView | null): string {
+  return room?.matchmaking ? MULTIPLAYER_HREF : FRIEND_HREF;
 }
 
 export function duelPlayWorld(room: DuelView | null): QuizWorld {
