@@ -25,6 +25,7 @@ import {
 import { EUROPA_WINNERS } from '../../data/europaLeague'
 import { LIBERTADORES_WINNERS } from '../../data/libertadores'
 import { LEAGUE_TITLES } from '../../data/topLeagues'
+import { FOOTBALL_LEVEL_CHUNK } from '../../data/footballLevels'
 import { FOOTBALL_STADIUMS } from '../../data/footballStadiums'
 import { allFootballClubs } from '../../data/footballClubs'
 import { BALLON_DOR_WINNERS, GOLDEN_BALL_WINNERS } from '../../data/ballonDor'
@@ -368,7 +369,12 @@ export function createFootballRound(
   years?: number[],
   prior?: OptionAvoid,
   playerIds?: string[],
+  level?: number,
 ): Question[] {
+  if (mode === 'ballonDorWinners' || mode === 'goldenBallWinners') {
+    const list = mode === 'ballonDorWinners' ? BALLON_DOR_WINNERS : GOLDEN_BALL_WINNERS
+    return createYearPlayerRound(mode, list, count, years, playerIds)
+  }
   if (isPlayerFootballMode(mode)) return createPlayerRound(mode, count, difficulty, playerIds)
   if (isManagerFootballMode(mode)) return createManagerRound(mode, count, playerIds, years)
   if (mode === 'clubCrestToName') return createClubCrestRound(count, playerIds)
@@ -555,9 +561,7 @@ export function createFootballRound(
       avoid,
     )
   }
-  if (mode === 'leagueWinners') return createLeagueRound(count, difficulty, scoped, avoid)
-  if (mode === 'ballonDorWinners') return createYearPlayerRound('ballonDorWinners', BALLON_DOR_WINNERS, count, scoped)
-  if (mode === 'goldenBallWinners') return createYearPlayerRound('goldenBallWinners', GOLDEN_BALL_WINNERS, count, scoped)
+  if (mode === 'leagueWinners') return createLeagueRound(count, difficulty, scoped, avoid, level)
   return createWcWinnersRound(count, scoped, avoid)
 }
 
@@ -892,17 +896,15 @@ function createPlayerRound(
   difficulty: QuizDifficulty,
   playerIds?: string[],
 ): Question[] {
-  if (mode === 'ballonDorWinners') return createYearPlayerRound('ballonDorWinners', BALLON_DOR_WINNERS, count)
-  if (mode === 'goldenBallWinners') return createYearPlayerRound('goldenBallWinners', GOLDEN_BALL_WINNERS, count)
-  const full = footballPlayerPool(difficulty)
-  let pool = playerIds?.length ? full.filter((player) => playerIds.includes(player.id)) : full
+  const scoped = playerIds?.length
+    ? FOOTBALL_PLAYERS.filter((player) => playerIds.includes(player.id))
+    : null
+  const full = scoped ?? footballPlayerPool(difficulty)
+  let pool = full
   if (mode === 'playerShirtToName') {
-    const numbered = (playerIds?.length ? full.filter((player) => playerIds.includes(player.id)) : full).filter(
-      (player) => player.number !== undefined,
-    )
-    pool = numbered.length >= 4 ? numbered : pool.filter((player) => player.number !== undefined)
+    pool = full.filter((player) => player.number !== undefined)
   }
-  const distractors = playerIds?.length ? FOOTBALL_PLAYERS : full
+  const distractors = scoped ? FOOTBALL_PLAYERS : full
   const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
   const questions: Question[] = []
   const avoidIds = new Set<string>()
@@ -1047,7 +1049,9 @@ function createClubCrestRound(count: number, ids?: string[]): Question[] {
   const questions: Question[] = []
   for (const club of picked) {
     const country = footballTeamCountry(club.id)
-    const others = shuffle(clubs.filter((item) => item.id !== club.id)).slice(0, 3).map((item) => footballTeamCountry(item.id))
+    const others = shuffle(allFootballClubs().filter((item) => item.id !== club.id))
+      .slice(0, 3)
+      .map((item) => footballTeamCountry(item.id))
     questions.push({
       country,
       mode: 'clubCrestToName',
@@ -1105,11 +1109,16 @@ function createLeagueRound(
   difficulty: QuizDifficulty,
   years: number[] | undefined,
   avoid: OptionAvoid,
+  level?: number,
 ): Question[] {
-  const pool = years?.length
-    ? LEAGUE_TITLES.filter((item) => years.includes(item.year))
-    : tournamentYearPool(LEAGUE_TITLES, difficulty, LEAGUE_EASY_FROM)
-  const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
+  const chunk = level
+    ? LEAGUE_TITLES.slice((level - 1) * FOOTBALL_LEVEL_CHUNK, level * FOOTBALL_LEVEL_CHUNK)
+    : null
+  const pool = chunk
+    ?? (years?.length
+      ? LEAGUE_TITLES.filter((item) => years.includes(item.year))
+      : tournamentYearPool(LEAGUE_TITLES, difficulty, LEAGUE_EASY_FROM))
+  const picked = chunk ? shuffle(chunk) : shuffle(pool).slice(0, Math.min(count, pool.length))
   const fillers = [...new Set(LEAGUE_TITLES.map((item) => item.clubId))].map(footballTeamCountry)
   const questions: Question[] = []
   for (const item of picked) {
@@ -1132,9 +1141,11 @@ function createYearPlayerRound(
   list: typeof BALLON_DOR_WINNERS,
   count: number,
   years?: number[],
+  playerIds?: string[],
 ): Question[] {
-  const available = list.filter((item) => playerById(item.playerId))
-  const pool = years?.length ? available.filter((item) => years.includes(item.year)) : available
+  let pool = list.filter((item) => playerById(item.playerId))
+  if (years?.length) pool = pool.filter((item) => years.includes(item.year))
+  if (playerIds?.length) pool = pool.filter((item) => playerIds.includes(item.playerId))
   const picked = shuffle(pool).slice(0, Math.min(count, pool.length))
   const questions: Question[] = []
   const avoid = new Set<string>()

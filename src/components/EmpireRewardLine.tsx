@@ -1,11 +1,13 @@
 import { EMPIRE_RESOURCE_BY_WORLD } from '../data/empire'
 import { STRINGS, type Lang } from '../i18n/strings'
 import type { DuelReward, EmpireRoundReward } from '../lib/empire/rules'
+import { EMPIRE_VISIBLE } from '../lib/empire/visible'
 import type { QuizWorld } from '../lib/quiz'
 import { resourceTitle } from './EmpireScreen'
 
 /** Одна строка на экране результатов: что раунд принёс Империи. */
 export function EmpireRewardLine({ lang, reward, world }: { lang: Lang; reward: EmpireRoundReward; world: QuizWorld }) {
+  if (!EMPIRE_VISIBLE) return null
   const t = STRINGS[lang]
   const parts: string[] = []
   if (reward.specialists > 0) parts.push(t.empireRewardSpecialists(reward.specialists))
@@ -31,6 +33,7 @@ export function EmpireRewardLine({ lang, reward, world }: { lang: Lang; reward: 
 }
 
 export function EmpireDuelRewardLine({ lang, reward }: { lang: Lang; reward: DuelReward }) {
+  if (!EMPIRE_VISIBLE) return null
   const t = STRINGS[lang]
   const parts = [t.empireRewardCoins(reward.coins)]
   if (reward.gems > 0) parts.push(t.empireRewardGem(reward.gems))

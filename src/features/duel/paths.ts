@@ -1,11 +1,14 @@
 import { isFootballMode, isLeadersMode, isMathMode, isAstroMode, worldOfMode, type QuizMode, type QuizWorld } from "@/lib/quiz";
+import { isNativeApp } from "@/lib/nativeFeel";
 import type { DuelView } from "@/lib/duelTypes";
 
 export const MULTIPLAYER_HREF = "/multiplayer";
 export const FRIEND_HREF = "/friend";
 
 export function duelHref(code: string): string {
-  return `/duel/${code.trim().toUpperCase()}`;
+  const clean = code.trim().toUpperCase();
+  if (isNativeApp()) return `/duel?code=${encodeURIComponent(clean)}`;
+  return `/duel/${clean}`;
 }
 
 export function normalizeDuelCode(value: string): string | null {

@@ -9,6 +9,7 @@ import { footballTeamCountry, isNamedFootballTeam } from '../data/worldCup'
 import { penaltyTakerCountry } from '../data/wcPenalties'
 import type { DuelQuestionWire, DuelView } from './duelTypes'
 import type { FactsDuelConfig } from './factsRules'
+import { apiFetch } from './apiFetch'
 import { isPlayerId, loadPlayer } from './leaderboard'
 import { isFactsToName, isFootballMode, isFootballYearChoice, isQuizMode, type Question, type QuizWorld } from './quiz'
 
@@ -143,9 +144,7 @@ export async function joinDuel(
 
 export async function fetchDuel(code: string): Promise<{ ok: true; room: DuelView } | { ok: false; error: string }> {
   try {
-    const response = await fetch(`/api/duel/${code}?playerId=${encodeURIComponent(duelPlayerId())}`, {
-      cache: 'no-store',
-    })
+    const response = await apiFetch(`/api/duel/${code}?playerId=${encodeURIComponent(duelPlayerId())}`)
     return parseResponse(response)
   } catch {
     return { ok: false, error: 'offline' }
@@ -173,7 +172,7 @@ export async function advanceDuelFact(
 
 export async function leaveDuel(code: string): Promise<void> {
   try {
-    await fetch(`/api/duel/${code}`, {
+    await apiFetch(`/api/duel/${code}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ playerId: duelPlayerId(), action: 'leave' }),
@@ -188,7 +187,7 @@ async function post(
   body: unknown,
 ): Promise<{ ok: true; room: DuelView } | { ok: false; error: string }> {
   try {
-    const response = await fetch(url, {
+    const response = await apiFetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -228,7 +227,7 @@ export async function fetchDuelRatings(
 }>; configured: boolean }> {
   try {
     const params = new URLSearchParams({ world, me: playerId })
-    const response = await fetch(`/api/duel/ratings?${params}`, { credentials: 'include', cache: 'no-store' })
+    const response = await apiFetch(`/api/duel/ratings?${params}`)
     if (!response.ok) return { entries: [], configured: false }
     const body: unknown = await response.json()
     if (!body || typeof body !== 'object') return { entries: [], configured: false }

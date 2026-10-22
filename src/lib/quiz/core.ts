@@ -403,6 +403,51 @@ export function isCodeOptionMode(mode: QuizMode): boolean {
   return mode === 'nameToTld' || mode === 'nameToCalling' || mode === 'nameToCar'
 }
 
+/** Pictured answers: the tile is the picture, the name appears after the pick. */
+export function isKahootPicture(mode: QuizMode): boolean {
+  return mode === 'nameToFlag' || mode === 'nameToSilhouette' || mode === 'playerToNation' || mode === 'nameToShape'
+}
+
+/**
+ * Four answers that read as a Kahoot board: a picture, or a short token
+ * (code, year, number, formula, shape name). Longer names stay a list.
+ */
+const KAHOOT_TEXT_MODES: readonly QuizMode[] = [
+  'nameToTld',
+  'nameToCalling',
+  'nameToCar',
+  'wcTitleYears',
+  'euroTitleYears',
+  'uclTitleYears',
+  'exprToValue',
+  'valueToExpr',
+  'fractionDecimal',
+  'percentToValue',
+  'powerToValue',
+  'orderOfOps',
+  'constantToValue',
+  'siPrefixToFactor',
+  'angleToKind',
+  'unitsConvert',
+  'shapeToName',
+  'planetToOrder',
+  'planetToKind',
+  'qtyToSymbol',
+  'constToValue',
+  'lawToFormula',
+  'nameToNoc',
+  'binaryToDec',
+  'decToBinary',
+  'codeToLang',
+  'sportToDebut',
+  'olyHostToYear',
+  'winterHostToYear',
+]
+
+export function isKahootChoice(mode: QuizMode): boolean {
+  return isKahootPicture(mode) || (KAHOOT_TEXT_MODES as readonly string[]).includes(mode)
+}
+
 export function footballHasDifficulty(mode: QuizMode): boolean {
   return isFootballMode(mode)
 }

@@ -48,6 +48,7 @@ import {
 import { formatXp, accountProgress } from '../lib/xp'
 import { countLifetimeSeed, loadLifetime } from '../lib/lifetime'
 import { useEmpire } from '../lib/empireStore'
+import { EMPIRE_VISIBLE } from '../lib/empire/visible'
 import { AchievementGallery } from './AchievementGallery'
 import { CookieConsentControls } from './CookieConsentControls'
 import { AvatarMark } from './AvatarMark'
@@ -434,7 +435,7 @@ export function SettingsModal({
             <div className="settings-profile-row">
               <button
                 type="button"
-                className={`avatar-open${empire.cosmetics.frame ? ` avatar-frame is-${empire.cosmetics.frame}` : ''}`}
+                className={`avatar-open${EMPIRE_VISIBLE && empire.cosmetics.frame ? ` avatar-frame is-${empire.cosmetics.frame}` : ''}`}
                 onClick={() => setPickerOpen(true)}
                 aria-label={t.avatarChange}
               >
@@ -442,10 +443,8 @@ export function SettingsModal({
               </button>
               <div>
                 <p className="account-signed-in">{account ? account.name : t.guestName}</p>
-                {authReady ? (
-                  <p className={`account-status ${account ? 'is-on' : ''}`}>
-                    {account ? t.accountSignedIn : t.accountNeeded}
-                  </p>
+                {authReady && account ? (
+                  <p className="account-status is-on">{t.accountSignedIn}</p>
                 ) : null}
                 {account?.createdAt ? (
                   <p className="account-registered">
@@ -458,9 +457,11 @@ export function SettingsModal({
                 <p className="profile-xp">
                   {t.xpTotal(formatXp(xp, lang))} · {t.accountLevelNext(formatXp(rank.remain, lang))}
                 </p>
-                <p className="profile-xp">
-                  {t.empireWallet(empire.coins, empire.gems)}
-                </p>
+                {EMPIRE_VISIBLE ? (
+                  <p className="profile-xp">
+                    {t.empireWallet(empire.coins, empire.gems)}
+                  </p>
+                ) : null}
                 <button type="button" className="btn-ghost avatar-change-btn" onClick={() => setPickerOpen(true)}>
                   {t.avatarChange}
                 </button>
@@ -475,10 +476,7 @@ export function SettingsModal({
 
             {authReady && !account ? (
               <div ref={authBlockRef} className="settings-auth">
-                <h3 className="settings-sub">
-                  {t.account}
-                  <HelpTip text={t.guestHint} />
-                </h3>
+                <h3 className="settings-sub">{t.account}</h3>
                 <div className="choice-grid">
                   <button
                     type="button"
@@ -750,8 +748,12 @@ export function SettingsModal({
             <p>{t.xpHowLevels}</p>
             <p>{t.xpHowRecord}</p>
             <p>{t.xpHowRank}</p>
-            <h3 className="settings-sub">{t.empire}</h3>
-            <p>{t.empireHowToEarn}</p>
+            {EMPIRE_VISIBLE ? (
+              <>
+                <h3 className="settings-sub">{t.empire}</h3>
+                <p>{t.empireHowToEarn}</p>
+              </>
+            ) : null}
           </div>
         ) : null}
 

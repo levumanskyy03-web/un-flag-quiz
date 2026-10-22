@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       const status = result.error === 'taken' ? 409 : result.error === 'invalid' ? 400 : 503
       return authResponse({ error: result.error }, undefined, status)
     }
-    return authResponse({ user: result.user }, result.token)
+    return authResponse({ user: result.user }, result.token, 200, request)
   } catch {
     return authResponse({ error: 'offline' }, undefined, 503)
   }

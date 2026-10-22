@@ -94,6 +94,7 @@ import {
   isManagerFootballMode,
   isPlayerFactsToName,
   isPlayerFootballMode,
+  footballLevelUsesIds,
   isPlayerPhotoMode,
   isRankingMode,
   isWaterMode,
@@ -138,6 +139,7 @@ import { EmpirePlay } from "./EmpirePlay";
 import { MinePlay } from "./MinePlay";
 import { EtestPlay } from "./EtestPlay";
 import { empireAccess, empireBuyPower, empireClaimAchievements, empireOnRound, empireStartMistakes, empireSyncAlbum, empireTimeBonusMs, empireXpMultiplier, startEmpireLoop, stopEmpireLoop } from "@/lib/empireStore";
+import { EMPIRE_VISIBLE } from "@/lib/empire/visible";
 import type { EmpireRoundReward } from "@/lib/empire/rules";
 import { listGateOf } from "@/lib/empire/gates";
 
@@ -372,6 +374,7 @@ export default function PlayApp() {
   }, [pathname]);
 
   useEffect(() => {
+    if (!EMPIRE_VISIBLE) return;
     startEmpireLoop();
     return () => {
       stopEmpireLoop();
@@ -1069,7 +1072,15 @@ export default function PlayApp() {
             : facts && (path === "learn" || path === "mistakes")
               ? footballPoolSize(mode, difficulty)
               : quizSettings.roundSize;
-    const round = createFootballRound(mode, count, difficulty, years, undefined, playerIds);
+    const round = createFootballRound(
+      mode,
+      count,
+      difficulty,
+      years,
+      undefined,
+      playerIds,
+      (path === "levels" || path === "learn") && years?.length ? level : undefined,
+    );
     if (round.length === 0) return;
     beginPreparedRound(round, path, level, {
       mode,
@@ -1296,18 +1307,7 @@ export default function PlayApp() {
     if (empireAccess({ kind: "levels", world: worldOfMode(quizSettings.mode), level }) === "locked") return;
     if (!isLevelUnlocked(levelClears, level, quizSettings.mode)) return;
     if (isFootballMode(quizSettings.mode)) {
-      if (
-        isPlayerFootballMode(quizSettings.mode) ||
-        isManagerFootballMode(quizSettings.mode) ||
-        quizSettings.mode === "clubCrestToName" ||
-        quizSettings.mode === "stadiumToClub"
-      ) {
-        const ids = footballLevelPlayerIds(quizSettings.mode, level);
-        startFootballRound("levels", level, undefined, ids);
-        return;
-      }
-      const years = footballLevelYears(quizSettings.mode, level);
-      startFootballRound("levels", level, years);
+      startFootballLevel("levels", level);
       return;
     }
     if (isLeadersMode(quizSettings.mode)) {
@@ -1473,8 +1473,23 @@ export default function PlayApp() {
     setScreen("home");
   }
 
+  function startFootballLevel(path: PlayPath, level: number) {
+    const mode = quizSettings.mode;
+    if (!isFootballMode(mode)) return;
+    if (footballLevelUsesIds(mode)) {
+      const ids = footballLevelPlayerIds(mode, level);
+      startFootballRound(path, level, undefined, ids);
+      return;
+    }
+    startFootballRound(path, level, footballLevelYears(mode, level));
+  }
+
   function startPractice(isos?: string[]) {
     if (isFootballMode(quizSettings.mode)) {
+      if (quizSettings.learnFrom === "level") {
+        startFootballLevel("learn", quizSettings.level);
+        return;
+      }
       startFootballRound("learn", quizSettings.level);
       return;
     }
@@ -1696,6 +1711,7 @@ export default function PlayApp() {
   }
 
   useEffect(() => {
+    if (hub === "empire" && !EMPIRE_VISIBLE) goToWorlds();
     if (hub === "mine" && isTrainingHidden()) goToWorlds();
     if (hub !== "etest") {
       setEtestOk(false);
@@ -2153,13 +2169,13 @@ export default function PlayApp() {
             const col = dailyCollection();
             router.push(dailyPlayHref(col.world));
           }}
-          onStudio={() => {
+          onMine={() => {
             softNav(() => {
               syncWorldAttr(null);
-              setWorldNav("studio");
+              setWorldNav("mine");
               screenRef.current = "home";
               setScreenState("home");
-              router.push("/studio");
+              router.push("/mine");
             });
           }}
           onEmpire={() => {
@@ -2169,15 +2185,6 @@ export default function PlayApp() {
               screenRef.current = "home";
               setScreenState("home");
               router.push("/empire");
-            });
-          }}
-          onMine={() => {
-            softNav(() => {
-              syncWorldAttr(null);
-              setWorldNav("mine");
-              screenRef.current = "home";
-              setScreenState("home");
-              router.push("/mine");
             });
           }}
           onEtest={() => {

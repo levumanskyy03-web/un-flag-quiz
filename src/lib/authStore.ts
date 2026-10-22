@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { NextResponse } from 'next/server'
+import { isNativeAppOrigin } from './nativeOrigin'
 import { isAchievementId, type AchievementId } from '../data/achievements'
 import {
   NAME_MAX,
@@ -323,8 +324,16 @@ export async function applyRatedRound(
   })
 }
 
+export function readSessionToken(request: Request): string | undefined {
+  const header = request.headers.get('authorization') ?? ''
+  const match = /^Bearer\s+(\S+)$/i.exec(header.trim())
+  const bearer = match?.[1]
+  if (bearer && bearer.length <= 200) return bearer
+  return readCookie(request, SESSION_COOKIE)
+}
+
 export async function accountFromRequest(request: Request): Promise<PublicAccount | null> {
-  const token = readCookie(request, SESSION_COOKIE)
+  const token = readSessionToken(request)
   if (!token) return null
   return accountFromToken(token)
 }
@@ -380,8 +389,12 @@ function noStore(response: NextResponse) {
   return response
 }
 
-export function authResponse(body: unknown, token?: string, status = 200) {
-  const response = NextResponse.json(body, { status })
+export function authResponse(body: unknown, token?: string, status = 200, request?: Request) {
+  const payload =
+    token && request && isNativeAppOrigin(request) && body && typeof body === 'object' && !Array.isArray(body)
+      ? { ...(body as Record<string, unknown>), token }
+      : body
+  const response = NextResponse.json(payload, { status })
   if (token) {
     response.cookies.set(
       SESSION_COOKIE,

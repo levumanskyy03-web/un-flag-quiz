@@ -1,7 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { cookies } from "next/headers";
 import { Nunito, Plus_Jakarta_Sans } from "next/font/google";
 import { AdScripts } from "../components/AdScripts";
 import { CookieNotice } from "../components/CookieNotice";
@@ -39,14 +38,21 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await requestLang();
-  const jar = await cookies();
-  const cookieNoticeDismissed = cookieNoticeSeen(jar.get(COOKIE_NOTICE_KEY)?.value);
-  const askLang = !isLang(jar.get(SITE_LANG_KEY)?.value);
+  let cookieNoticeDismissed = false;
+  let askLang = true;
+  if (process.env.NEXT_PUBLIC_CAP_EXPORT === "1") {
+    cookieNoticeDismissed = true;
+  } else {
+    const { cookies } = await import("next/headers");
+    const jar = await cookies();
+    cookieNoticeDismissed = cookieNoticeSeen(jar.get(COOKIE_NOTICE_KEY)?.value);
+    askLang = !isLang(jar.get(SITE_LANG_KEY)?.value);
+  }
   return (
     <html lang={localeTag(lang)} dir={langDir(lang)} suppressHydrationWarning>
       <body className={`${plusJakarta.variable} ${plusJakarta.className} ${nunito.variable}`}>
         <Script id="color-theme" strategy="beforeInteractive">
-          {`try{if(localStorage.getItem("un-flag-quiz-theme")==="light")document.documentElement.dataset.theme="light";var cap=window.Capacitor;if(cap&&typeof cap.isNativePlatform==="function"&&cap.isNativePlatform())document.documentElement.dataset.native="1"}catch(e){}`}
+          {`try{var k=localStorage.getItem("un-flag-quiz-lang");var ok={ru:1,en:1,de:1,zh:1,es:1,hi:1,ar:1,bn:1,pt:1,ja:1,he:1};if(ok[k]){document.documentElement.lang=k;document.documentElement.dir=(k==="ar"||k==="he")?"rtl":"ltr"}if(localStorage.getItem("un-flag-quiz-theme")==="light")document.documentElement.dataset.theme="light";var cap=window.Capacitor;if(cap&&typeof cap.isNativePlatform==="function"&&cap.isNativePlatform())document.documentElement.dataset.native="1"}catch(e){}`}
         </Script>
         <SiteAudio />
         <NativeShell />

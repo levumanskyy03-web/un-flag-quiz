@@ -974,7 +974,6 @@ export type Strings = {
   passwordChanged: string
   nameChangeHint: string
   accountSignedIn: string
-  accountNeeded: string
   accountRegistered: (date: string) => string
   playerProfile: string
   playerProfileMissing: string
@@ -1078,7 +1077,6 @@ export type Strings = {
   colorThemeLight: string
   guestName: string
   duelAnonName: string
-  guestHint: string
   saveProfile: string
   profileSaved: string
   xpTotal: (amount: string) => string
@@ -2198,7 +2196,6 @@ export const STRINGS: Record<Lang, Strings> = {
     passwordChanged: 'Пароль обновлён',
     nameChangeHint: 'Ник можно сменить не чаще чем раз в месяц.',
     accountSignedIn: 'Вы вошли в аккаунт',
-    accountNeeded: 'Войдите, чтобы попасть в таблицу лидеров',
     accountRegistered: (date) => `Регистрация: ${date}`,
     playerProfile: 'Профиль',
     playerProfileMissing: 'Игрок не найден',
@@ -2261,7 +2258,6 @@ export const STRINGS: Record<Lang, Strings> = {
     colorThemeLight: 'Светлая',
     guestName: 'Гость',
     duelAnonName: 'Игрок',
-    guestHint: 'Чтобы попасть в рейтинг, войдите по имени и паролю.',
     saveProfile: 'Сохранить',
     profileSaved: 'Сохранено',
     xpTotal: (amount) => `${amount} опыта`,
@@ -3065,7 +3061,6 @@ export const STRINGS: Record<Lang, Strings> = {
     passwordChanged: 'Password updated',
     nameChangeHint: 'You can change your name once a month.',
     accountSignedIn: 'You are signed in',
-    accountNeeded: 'Sign in to appear on the leaderboard',
     accountRegistered: (date) => `Registered: ${date}`,
     playerProfile: 'Profile',
     playerProfileMissing: 'Player not found',
@@ -3128,7 +3123,6 @@ export const STRINGS: Record<Lang, Strings> = {
     colorThemeLight: 'Light',
     guestName: 'Guest',
     duelAnonName: 'Player',
-    guestHint: 'Sign in with your name and password to appear on the leaderboard.',
     saveProfile: 'Save',
     profileSaved: 'Saved',
     xpTotal: (amount) => `${amount} XP`,

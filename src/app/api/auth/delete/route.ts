@@ -3,8 +3,7 @@ import {
   clearSessionResponse,
   deleteAccount,
   parsePassword,
-  readCookie,
-  SESSION_COOKIE,
+  readSessionToken,
 } from '../../../../lib/authStore'
 import { clientIp, consumeRateLimit } from '../../../../lib/rateLimit'
 
@@ -30,7 +29,7 @@ export async function POST(request: Request) {
     return authResponse({ error: 'invalid' }, undefined, 400)
   }
   try {
-    const result = await deleteAccount(readCookie(request, SESSION_COOKIE), password)
+    const result = await deleteAccount(readSessionToken(request), password)
     if (!result.ok) {
       const status = result.error === 'auth' ? 401 : result.error === 'offline' ? 503 : 400
       return authResponse({ error: result.error }, undefined, status)

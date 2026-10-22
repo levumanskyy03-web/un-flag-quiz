@@ -19,6 +19,7 @@ import {
   type PackOrigin,
   type PackUpload,
 } from '../data/pack'
+import { apiFetch } from './apiFetch'
 
 const PAIR = /^(.{2,80}?)\s*(?:—+|–+|-+|:|·|\t)\s+(.{2,})$/
 const YEAR = /\b((?:1[0-9]{3}|20[0-9]{2}))\b/
@@ -624,7 +625,7 @@ export async function enrichPackWithModel(pack: Pack): Promise<Pack> {
   const photos = photosNeedingVision(pack).slice(0, PACK_MAX_VISION)
   const prose = leftoverProse(pack).slice(0, PACK_MODEL_TEXT_CHARS)
   if (photos.length === 0 && prose.length < 80) return pack
-  const probe = await fetch('/api/pack/analyze')
+  const probe = await apiFetch('/api/pack/analyze')
   if (probe.status === 503) throw new Error('no_key')
   let next = pack
   const rounds = photos.length === 0 ? 1 : Math.ceil(photos.length / PACK_VISION_BATCH)
@@ -639,7 +640,7 @@ export async function enrichPackWithModel(pack: Pack): Promise<Pack> {
       if (!parts) continue
       payloadPhotos.push({ id: item.id, mime: parts.mime, data: parts.data })
     }
-    const res = await fetch('/api/pack/analyze', {
+    const res = await apiFetch('/api/pack/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: i === 0 ? prose : undefined, photos: payloadPhotos, scan }),

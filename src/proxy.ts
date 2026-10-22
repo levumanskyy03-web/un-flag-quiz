@@ -1,8 +1,25 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { isNativeAppOrigin, nativeCorsHeaders } from './lib/nativeOrigin'
 
 const CANONICAL_HOST = 'www.geoguiz.online'
 
+function nativeCors(request: NextRequest): NextResponse | null {
+  if (!request.nextUrl.pathname.startsWith('/api/')) return null
+  const origin = request.headers.get('origin')
+  if (!origin || !isNativeAppOrigin(request)) return null
+  if (request.method === 'OPTIONS') {
+    return new NextResponse(null, { status: 204, headers: nativeCorsHeaders(origin) })
+  }
+  const response = NextResponse.next()
+  for (const [key, value] of Object.entries(nativeCorsHeaders(origin))) {
+    response.headers.set(key, value)
+  }
+  return response
+}
+
 export function proxy(request: NextRequest) {
+  const cors = nativeCors(request)
+  if (cors) return cors
   const host = request.headers.get('host')?.split(':')[0] ?? ''
   if (host === 'localhost' || host === '127.0.0.1' || host.endsWith('.localhost')) {
     return NextResponse.next()

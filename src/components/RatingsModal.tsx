@@ -49,7 +49,6 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
   const [period, setPeriod] = useState<RatingPeriod>('all')
   const [mode, setMode] = useState<ModeFilter>('all')
   const [hardcore, setHardcore] = useState(false)
-  const [signedIn, setSignedIn] = useState(false)
   const [posted, setPosted] = useState(false)
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [duelEntries, setDuelEntries] = useState<Array<{
@@ -99,9 +98,7 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
   useEffect(() => {
     let cancelled = false
     fetchAccount()
-      .then(async (user) => {
-        if (cancelled) return
-        setSignedIn(Boolean(user))
+      .then(() => {
         if (!cancelled) setPosted(true)
       })
       .catch(() => {
@@ -323,7 +320,6 @@ export function RatingsModal({ lang, history, bests, levelClears, xp, onClose }:
         <p className="ratings-hint">
           <HelpTip text={hint} />
         </p>
-        {!signedIn && !showDuel ? <p className="setting-hint">{t.accountNeeded}</p> : null}
 
         {!boardReady ? (
           <p className="leaderboard-empty">{t.leaderboardOffline}</p>

@@ -1,13 +1,12 @@
 import { isAvatarId } from '../../../../data/avatars'
 import {
-  SESSION_COOKIE,
   accountFromRequest,
   authResponse,
   changePassword,
   parseCountryIso,
   parsePassword,
   publicAccountName,
-  readCookie,
+  readSessionToken,
   updateAccount,
 } from '../../../../lib/authStore'
 
@@ -34,7 +33,7 @@ export async function PATCH(request: Request) {
     return authResponse({ error: 'invalid' }, undefined, 400)
   }
   const record = body as Record<string, unknown>
-  const token = readCookie(request, SESSION_COOKIE)
+  const token = readSessionToken(request)
 
   if (record.currentPassword !== undefined || record.newPassword !== undefined) {
     const current = parsePassword(record.currentPassword)

@@ -1,7 +1,8 @@
-import { cookies, headers } from 'next/headers'
 import { SITE_LANG_KEY, isLang, type Lang } from './lang'
 
 export async function requestLang(): Promise<Lang> {
+  if (process.env.NEXT_PUBLIC_CAP_EXPORT === '1') return 'ru'
+  const { cookies, headers } = await import('next/headers')
   const jar = await cookies()
   const fromCookie = jar.get(SITE_LANG_KEY)?.value
   if (isLang(fromCookie)) return fromCookie

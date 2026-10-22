@@ -12,6 +12,8 @@ import {
   countryName,
   isClubCrestMode,
   isCodeOptionMode,
+  isKahootChoice,
+  isKahootPicture,
   isCodePromptMode,
   isFootballTeamChoice,
   isFootballYearChoice,
@@ -59,6 +61,7 @@ import { QuizMap } from './QuizMap'
 import { QuizSilhouette } from './QuizSilhouette'
 import { RankingFootnote } from './GeoModeGrids'
 import { useEmpire } from '../lib/empireStore'
+import { EMPIRE_VISIBLE } from '../lib/empire/visible'
 import { powerPrice } from '../lib/empire/rules'
 import { ChoiceLabel, FitText } from './FitText'
 import { WorldsBack } from './WorldsBack'
@@ -546,7 +549,7 @@ export function QuizScreen({
           onPick={onSelect}
         />
       ) : (
-        <div className={`options ${activeMode === 'nameToFlag' || activeMode === 'nameToSilhouette' || activeMode === 'playerToNation' ? 'options-flags' : 'options-names'}`}>
+        <div className={`options ${isKahootChoice(activeMode) ? 'options-flags' : 'options-names'}${isKahootChoice(activeMode) && !isKahootPicture(activeMode) ? ' options-tiles' : ''}`}>
           {isWaterMapMode(activeMode)
             ? (question.waterOptions ?? []).filter((id) => !hidden.has(id)).map((id, tone) => {
                 const isCorrectOption = id === question.waterId
@@ -644,7 +647,7 @@ export function QuizScreen({
                 ) : activeMode === 'nameToShape' ? (
                   <>
                     {isMathMode(activeMode) && mathItemFromCountry(option, activeMode).shape ? (
-                      <MathShape id={mathItemFromCountry(option, activeMode).shape!} size={52} />
+                      <MathShape id={mathItemFromCountry(option, activeMode).shape!} size={104} />
                     ) : null}
                     {answered && <span className="option-caption">{optionLabel(option, activeMode, lang, question)}</span>}
                   </>
@@ -653,6 +656,8 @@ export function QuizScreen({
                     <TeamFlag iso={option.iso} name={name} size="thumb" />
                     <FitText minPx={8}>{optionLabel(option, activeMode, lang, question)}</FitText>
                   </span>
+                ) : isKahootChoice(activeMode) ? (
+                  <FitText wrap minPx={18}>{optionLabel(option, activeMode, lang, question)}</FitText>
                 ) : (
                   <ChoiceLabel>{optionLabel(option, activeMode, lang, question)}</ChoiceLabel>
                 )}
@@ -664,7 +669,7 @@ export function QuizScreen({
       )}
       </motion.div>
 
-      {power?.enabled && !duel ? (
+      {EMPIRE_VISIBLE && power?.enabled && !duel ? (
         <div className="quiz-power">
           <button
             type="button"

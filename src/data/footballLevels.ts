@@ -22,7 +22,7 @@ import { LIBERTADORES_WINNERS } from './libertadores'
 import { LEAGUE_TITLES } from './topLeagues'
 import { BALLON_DOR_WINNERS, GOLDEN_BALL_WINNERS } from './ballonDor'
 
-export const FOOTBALL_LEVEL_CHUNK = 4
+export const FOOTBALL_LEVEL_CHUNK = 10
 
 export function footballYearsForMode(mode: string): number[] {
   if (mode === 'euroWinners' || mode === 'euroFinalists' || mode === 'euroTitleYears') {
@@ -64,12 +64,16 @@ export function footballLevelChunks(mode: string): number[][] {
 }
 
 export function footballPlayerChunks(): string[][] {
-  const ids = FOOTBALL_PLAYERS.map((player) => player.id)
-  const chunks: string[][] = []
-  for (let index = 0; index < ids.length; index += FOOTBALL_LEVEL_CHUNK) {
-    chunks.push(ids.slice(index, index + FOOTBALL_LEVEL_CHUNK))
-  }
-  return chunks
+  return chunksOf(FOOTBALL_PLAYERS.map((player) => player.id))
+}
+
+/** Shirt levels only include players who have a number, so a chunk can still be asked. */
+function shirtPlayerChunks(): string[][] {
+  return chunksOf(FOOTBALL_PLAYERS.filter((player) => player.number !== undefined).map((player) => player.id))
+}
+
+function rosterChunks(mode: string): string[][] {
+  return mode === 'playerShirtToName' ? shirtPlayerChunks() : footballPlayerChunks()
 }
 
 export function footballCampaignLevels(mode: string): number {
@@ -84,7 +88,7 @@ export function footballCampaignLevels(mode: string): number {
     mode === 'playerClubToName' ||
     mode === 'playerShirtToName'
   ) {
-    return footballPlayerChunks().length
+    return rosterChunks(mode).length
   }
   return footballLevelChunks(mode).length
 }
@@ -105,7 +109,7 @@ export function footballLevelPlayerIds(mode: string, level: number): string[] {
     mode === 'playerClubToName' ||
     mode === 'playerShirtToName'
   ) {
-    return footballPlayerChunks()[level - 1] ?? []
+    return rosterChunks(mode)[level - 1] ?? []
   }
   if (mode === 'managerPhotoToName' || mode === 'managerToNation') {
     return chunksOf(FOOTBALL_MANAGERS.map((item) => item.id))[level - 1] ?? []

@@ -1,4 +1,5 @@
 import { isAchievementId, type AchievementId } from '../data/achievements'
+import { apiFetch, clearNativeToken, rememberNativeToken } from './apiFetch'
 import { isAvatarId, type AvatarId } from '../data/avatars'
 import { localeTag, type Lang } from '../i18n/lang'
 import { countryByIso } from './countryCatalog'
@@ -36,7 +37,7 @@ export function formatRegisteredAt(at: number, lang: Lang): string {
 }
 
 function authFetch(url: string, init?: RequestInit) {
-  return fetch(url, { credentials: 'include', cache: 'no-store', ...init })
+  return apiFetch(url, init)
 }
 
 export async function fetchAccount(): Promise<Account | null> {
@@ -155,6 +156,7 @@ function emitAuth() {
 }
 
 function forgetLocalSession() {
+  clearNativeToken()
   savePlayer({ id: crypto.randomUUID(), name: loadProfile().name })
   emitAuth()
 }
@@ -185,6 +187,7 @@ async function sendAuth(url: string, name: string, password: string, countryIso?
     }
     const user = parseAccount(body)
     if (!user) return { ok: false as const, error: 'offline' as const }
+    rememberNativeToken(body)
     rememberAccount(user)
     return { ok: true as const, user }
   } catch {

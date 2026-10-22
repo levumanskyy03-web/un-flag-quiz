@@ -3,7 +3,10 @@ import { COUNTRIES } from '../data/countries'
 import { allFoodDishes } from '../data/food/rows'
 import { languagesIndex } from '../data/languages'
 import { COLLECTIONS } from '../data/collections'
+import { EMPIRE_VISIBLE } from '../lib/empire/visible'
 import { SITE_ORIGIN } from '../lib/site'
+
+export const dynamic = 'force-static'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date()
@@ -24,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_ORIGIN}/profile`, lastModified: now },
     { url: `${SITE_ORIGIN}/mine`, lastModified: now },
     { url: `${SITE_ORIGIN}/studio`, lastModified: now },
-    { url: `${SITE_ORIGIN}/empire`, lastModified: now },
+    ...(EMPIRE_VISIBLE ? [{ url: `${SITE_ORIGIN}/empire`, lastModified: now }] : []),
     { url: `${SITE_ORIGIN}/about`, lastModified: now },
     { url: `${SITE_ORIGIN}/privacy`, lastModified: now },
     { url: `${SITE_ORIGIN}/cookies`, lastModified: now },

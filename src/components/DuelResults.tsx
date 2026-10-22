@@ -8,6 +8,7 @@ import { EmpireDuelRewardLine } from './EmpireRewardLine'
 import { ResultsShareShot } from './ResultsShareShot'
 import { WorldsBack } from './WorldsBack'
 import { useEmpire } from '../lib/empireStore'
+import { EMPIRE_VISIBLE } from '../lib/empire/visible'
 
 interface DuelResultsProps {
   lang: Lang
@@ -21,7 +22,8 @@ interface DuelResultsProps {
 
 export function DuelResults({ lang, room, roundMs, empireReward = null, onRematch, onMenu, onWorlds }: DuelResultsProps) {
   const t = STRINGS[lang]
-  const title = useEmpire().title
+  const storedTitle = useEmpire().title
+  const title = EMPIRE_VISIBLE ? storedTitle : null
   const mode = room.modes[0] ?? room.mode
   const theme = `${quizWorldTitle(worldOfMode(mode), lang)} · ${modesLabel(room.modes.length > 0 ? room.modes : [mode], lang)}`
   const shareUrl = playShareUrl(mode)

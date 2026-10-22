@@ -3,6 +3,7 @@
 import { STRINGS, type Lang } from '../i18n/strings'
 import { shareResultFile } from '../lib/shareCard'
 import { useEmpire } from '../lib/empireStore'
+import { EMPIRE_VISIBLE } from '../lib/empire/visible'
 import { ShareButton } from './ShareButton'
 
 interface ResultsShareShotProps {
@@ -28,7 +29,8 @@ export function ResultsShareShot({
 }: ResultsShareShotProps) {
   const t = STRINGS[lang]
   const empire = useEmpire()
-  const share = empire.cosmetics.share
+  const share = EMPIRE_VISIBLE ? empire.cosmetics.share : null
+  const empireTitle = EMPIRE_VISIBLE ? empire.title : null
   const message = `${t.shareBetter}\n${url}`
   return (
     <ShareButton
@@ -56,7 +58,7 @@ export function ResultsShareShot({
               {percent ? <span className="score-percent">{percent}</span> : null}
               {time ? <span className="score-time">{time}</span> : null}
               <span className="score-headline">{headline}</span>
-              {empire.title ? <span className="results-shot-title">{t[`empireTitle_${empire.title}`]}</span> : null}
+              {empireTitle ? <span className="results-shot-title">{t[`empireTitle_${empireTitle}`]}</span> : null}
             </span>
             <span className="results-shot-prompt">{copied ? t.shareCopied : t.shareTap}</span>
           </span>

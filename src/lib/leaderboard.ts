@@ -1,4 +1,5 @@
 import type { AchievementId } from '../data/achievements'
+import { apiFetch } from './apiFetch'
 import { LEVEL_COUNT } from '../data/levels'
 import type { LevelClear } from './levelProgress'
 import type { RatedRoundInput } from './ratingRound'
@@ -210,7 +211,7 @@ export async function fetchRating(
   } else {
     return { entries: [], configured: false }
   }
-  const response = await fetch(`/api/leaderboard?${params}`, { credentials: 'include', cache: 'no-store' })
+  const response = await apiFetch(`/api/leaderboard?${params}`)
   if (!response.ok) return { entries: [], configured: false }
   const body: unknown = await response.json()
   if (!body || typeof body !== 'object') return { entries: [], configured: false }
@@ -222,10 +223,8 @@ export async function fetchRating(
 export async function submitAchievements(achievements: AchievementId[]): Promise<void> {
   const player = loadPlayer()
   if (player.name.length < NAME_MIN) return
-  await fetch('/api/leaderboard', {
+  await apiFetch('/api/leaderboard', {
     method: 'POST',
-    credentials: 'include',
-    cache: 'no-store',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ achievements }),
   })
@@ -235,7 +234,7 @@ export async function submitRound(
   input: RatedRoundInput,
 ): Promise<{ beat: boolean; previousName: string | null; xpGain: number }> {
   try {
-    const response = await fetch('/api/leaderboard', {
+    const response = await apiFetch('/api/leaderboard', {
       method: 'POST',
       credentials: 'include',
       cache: 'no-store',
@@ -275,7 +274,7 @@ export async function fetchLevelBests(
     me: player.id,
   })
   try {
-    const response = await fetch(`/api/leaderboard?${params}`, { credentials: 'include', cache: 'no-store' })
+    const response = await apiFetch(`/api/leaderboard?${params}`)
     if (!response.ok) return {}
     const body: unknown = await response.json()
     if (!body || typeof body !== 'object') return {}

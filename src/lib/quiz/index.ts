@@ -8,13 +8,12 @@ import {
   FOOTBALL_MODES,
   isFootballMode,
   isLeadersMode,
-  isManagerFootballMode,
   isMathMode,
   isAstroMode,
   isLanguageMode,
   isNameToGov,
   isReligionMode,
-  isPlayerFootballMode,
+  isFootballRosterMode,
   isRankingMode,
   isThemeMode,
   isThemeWorld,
@@ -73,14 +72,20 @@ export function campaignMaxForWorld(world: QuizWorld): number {
   return campaignModesForWorld(world).reduce((sum, mode) => sum + campaignLevelCount(mode), 0)
 }
 
+/** Campaign rows keyed by a person or club id. Year lists (cups, Ballon d'Or, manager World Cups) are not. */
+export function footballLevelUsesIds(mode: QuizMode): boolean {
+  return (
+    isFootballRosterMode(mode) ||
+    mode === 'managerPhotoToName' ||
+    mode === 'managerToNation' ||
+    mode === 'clubCrestToName' ||
+    mode === 'stadiumToClub'
+  )
+}
+
 export function getLevelPool(level: number, mode: QuizMode = 'flagToName'): Country[] {
   if (isFootballMode(mode)) {
-    if (
-      isPlayerFootballMode(mode) ||
-      isManagerFootballMode(mode) ||
-      mode === 'clubCrestToName' ||
-      mode === 'stadiumToClub'
-    ) {
+    if (footballLevelUsesIds(mode)) {
       return footballLearnCountries(mode, undefined, footballLevelPlayerIds(mode, level))
     }
     const years = footballLevelYears(mode, level)
@@ -102,12 +107,7 @@ export function getLevelPool(level: number, mode: QuizMode = 'flagToName'): Coun
 }
 
 export function levelQuestionCount(level: number, mode: QuizMode): number {
-  if (
-    isPlayerFootballMode(mode) ||
-    isManagerFootballMode(mode) ||
-    mode === 'clubCrestToName' ||
-    mode === 'stadiumToClub'
-  ) {
+  if (footballLevelUsesIds(mode)) {
     return footballLevelPlayerIds(mode, level).length
   }
   if (isFootballMode(mode)) return footballLevelYears(mode, level).length
@@ -122,12 +122,8 @@ export function getLearnPool(
   includeExtras = false,
 ): Country[] {
   if (isFootballMode(mode)) {
-    if (isPlayerFootballMode(mode) || isManagerFootballMode(mode) || mode === 'clubCrestToName' || mode === 'stadiumToClub') {
-      const ids = learnFrom === 'level' ? footballLevelPlayerIds(mode, level) : undefined
-      return footballLearnCountries(mode, undefined, ids)
-    }
-    const years = learnFrom === 'level' ? footballLevelYears(mode, level) : undefined
-    return footballLearnCountries(mode, years)
+    if (learnFrom === 'level') return getLevelPool(level, mode)
+    return footballLearnCountries(mode)
   }
   if (isLeadersMode(mode)) {
     return learnFrom === 'level' ? getLevelPool(level, mode) : leaderLearnCountries(mode)

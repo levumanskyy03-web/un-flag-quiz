@@ -43,7 +43,7 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepEmpireTitle: 'Империя',
     tourStepEmpireBody: 'Ваша страна. Девять зданий по темам растут от зачётных раундов, монеты и ресурсы капают сами, эпохи открывают сложность, уровни и подборки.',
     tourStepDockTitle: 'Ещё',
-    tourStepDockBody: 'Свои материалы собирают колоды. Мультиплеер — онлайн-миксы. Играть с другом — комната или код. Профиль — аккаунт. Казна Империи — рамки, темы и ускорения.',
+    tourStepDockBody: 'Профиль — аккаунт. Мультиплеер — онлайн-миксы. Играть с другом — комната или код. Казна Империи — рамки, темы и ускорения.',
   }),
   en: row({
     welcomeTitle: 'Welcome',
@@ -62,7 +62,7 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepEmpireTitle: 'Empire',
     tourStepEmpireBody: 'Your country. Nine buildings by subject grow from scored rounds, coins and resources trickle in on their own, eras unlock difficulty, levels and collections.',
     tourStepDockTitle: 'More',
-    tourStepDockBody: 'Your materials build decks. Multiplayer is online mixes. Play with a friend is a room or a code. Profile is the account. The Empire treasury sells frames, themes and boosts.',
+    tourStepDockBody: 'Profile is the account. Multiplayer is online mixes. Play with a friend is a room or a code. The Empire treasury sells frames, themes and boosts.',
   }),
   de: row({
     welcomeTitle: 'Willkommen',
@@ -81,7 +81,7 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepEmpireTitle: 'Imperium',
     tourStepEmpireBody: 'Dein Land. Neun Gebäude nach Fach wachsen durch gewertete Runden, Münzen und Ressourcen tropfen von selbst, Epochen öffnen Schwierigkeit, Level und Sammlungen.',
     tourStepDockTitle: 'Mehr',
-    tourStepDockBody: 'Eigene Materialien bauen Decks. Multiplayer sind Online-Mixe. Mit einem Freund spielen ist ein Raum oder ein Code. Profil ist das Konto. Die Schatzkammer des Imperiums verkauft Rahmen, Designs und Schübe.',
+    tourStepDockBody: 'Profil ist das Konto. Multiplayer sind Online-Mixe. Mit einem Freund spielen ist ein Raum oder ein Code. Die Schatzkammer des Imperiums verkauft Rahmen, Designs und Schübe.',
   }),
   zh: row({
     welcomeTitle: '欢迎',
@@ -100,7 +100,7 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepEmpireTitle: '帝国',
     tourStepEmpireBody: '你的国家。九座按学科的建筑随计分回合成长，金币和资源自动累积，时代解锁难度、关卡和合集。',
     tourStepDockTitle: '更多',
-    tourStepDockBody: '自己的材料做牌组。多人是在线混合。和朋友玩是房间或代码。个人资料是账号。帝国国库出售边框、主题和加速。',
+    tourStepDockBody: '个人资料是账号。多人是在线混合。和朋友玩是房间或代码。帝国国库出售边框、主题和加速。',
   }),
   es: row({
     welcomeTitle: 'Bienvenido',
@@ -119,7 +119,7 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepEmpireTitle: 'Imperio',
     tourStepEmpireBody: 'Tu país. Nueve edificios por materia crecen con rondas puntuadas, las monedas y recursos gotean solos, las eras abren dificultad, niveles y colecciones.',
     tourStepDockTitle: 'Más',
-    tourStepDockBody: 'Tus materiales arman barajas. El multijugador son mixes en línea. Jugar con un amigo es una sala o un código. El perfil es la cuenta. El tesoro del Imperio vende marcos, temas e impulsos.',
+    tourStepDockBody: 'El perfil es la cuenta. El multijugador son mixes en línea. Jugar con un amigo es una sala o un código. El tesoro del Imperio vende marcos, temas e impulsos.',
   }),
   hi: row({
     welcomeTitle: 'स्वागत है',
@@ -138,7 +138,7 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepEmpireTitle: 'साम्राज्य',
     tourStepEmpireBody: 'आपका देश। विषय के अनुसार नौ भवन स्कोर वाले राउंड से बढ़ते हैं, सिक्के और संसाधन अपने आप आते हैं, युग कठिनाई, स्तर और संग्रह खोलते हैं।',
     tourStepDockTitle: 'और',
-    tourStepDockBody: 'अपनी सामग्री डेक बनाती है। मल्टीप्लेयर ऑनलाइन मिक्स है। दोस्त के साथ खेल कमरा या कोड है। प्रोफ़ाइल खाता है। साम्राज्य का कोष फ्रेम, थीम और बूस्ट बेचता है।',
+    tourStepDockBody: 'प्रोफ़ाइल खाता है। मल्टीप्लेयर ऑनलाइन मिक्स है। दोस्त के साथ खेल कमरा या कोड है। साम्राज्य का कोष फ्रेम, थीम और बूस्ट बेचता है।',
   }),
   ar: row({
     welcomeTitle: 'أهلاً بك',
@@ -157,7 +157,7 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepEmpireTitle: 'الإمبراطورية',
     tourStepEmpireBody: 'بلدك. تسعة مبانٍ حسب المادة تنمو من الجولات المحتسبة، والعملات والموارد تتراكم وحدها، والعصور تفتح الصعوبة والمستويات والمجموعات.',
     tourStepDockTitle: 'المزيد',
-    tourStepDockBody: 'موادك تبني المجموعات. اللعب الجماعي خلطات عبر الإنترنت. العب مع صديق غرفة أو رمز. الملف هو الحساب. خزانة الإمبراطورية تبيع الإطارات والسِمات والتعزيزات.',
+    tourStepDockBody: 'الملف هو الحساب. اللعب الجماعي خلطات عبر الإنترنت. العب مع صديق غرفة أو رمز. خزانة الإمبراطورية تبيع الإطارات والسِمات والتعزيزات.',
   }),
   bn: row({
     welcomeTitle: 'স্বাগতম',
@@ -176,7 +176,7 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepEmpireTitle: 'সাম্রাজ্য',
     tourStepEmpireBody: 'আপনার দেশ। বিষয় অনুযায়ী নয়টি ভবন স্কোরযুক্ত রাউন্ডে বাড়ে, মুদ্রা ও সম্পদ নিজে থেকে জমে, যুগ খোলে কঠিনতা, স্তর ও সংগ্রহ।',
     tourStepDockTitle: 'আরও',
-    tourStepDockBody: 'নিজের উপাদান ডেক বানায়। মাল্টিপ্লেয়ার অনলাইন মিক্স। বন্ধুর সঙ্গে খেলা ঘর বা কোড। প্রোফাইল অ্যাকাউন্ট। সাম্রাজ্যের কোষাগার বিক্রি করে ফ্রেম, থিম ও বুস্ট।',
+    tourStepDockBody: 'প্রোফাইল অ্যাকাউন্ট। মাল্টিপ্লেয়ার অনলাইন মিক্স। বন্ধুর সঙ্গে খেলা ঘর বা কোড। সাম্রাজ্যের কোষাগার বিক্রি করে ফ্রেম, থিম ও বুস্ট।',
   }),
   pt: row({
     welcomeTitle: 'Bem-vindo',
@@ -195,7 +195,7 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepEmpireTitle: 'Império',
     tourStepEmpireBody: 'Seu país. Nove prédios por matéria crescem com rodadas pontuadas, moedas e recursos pingam sozinhos, eras abrem dificuldade, níveis e coleções.',
     tourStepDockTitle: 'Mais',
-    tourStepDockBody: 'Os teus materiais montam baralhos. O multijogador são mixes online. Jogar com um amigo é uma sala ou um código. O perfil é a conta. O tesouro do Império vende molduras, temas e impulsos.',
+    tourStepDockBody: 'O perfil é a conta. O multijogador são mixes online. Jogar com um amigo é uma sala ou um código. O tesouro do Império vende molduras, temas e impulsos.',
   }),
   ja: row({
     welcomeTitle: 'ようこそ',
@@ -214,7 +214,7 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepEmpireTitle: '帝国',
     tourStepEmpireBody: 'あなたの国。教科別の 9 つの建物がスコア対象ラウンドで育ち、コインと資源は自動で貯まり、時代が難易度・レベル・コレクションを解放します。',
     tourStepDockTitle: 'そのほか',
-    tourStepDockBody: '自分の教材でデッキを作る。マルチプレイはオンラインのミックス。友だちと遊ぶは部屋かコード。プロフィールはアカウント。帝国の宝物庫ではフレーム、テーマ、ブーストを販売。',
+    tourStepDockBody: 'プロフィールはアカウント。マルチプレイはオンラインのミックス。友だちと遊ぶは部屋かコード。帝国の宝物庫ではフレーム、テーマ、ブーストを販売。',
   }),
   he: row({
     welcomeTitle: 'ברוכים הבאים',
@@ -233,6 +233,6 @@ export const TOUR_COPY: Record<Lang, TourCopy> = {
     tourStepEmpireTitle: 'אימפריה',
     tourStepEmpireBody: 'המדינה שלך. תשעה בניינים לפי נושא צומחים מסבבים מדורגים, מטבעות ומשאבים נצברים לבד, ותקופות פותחות רמת קושי, שלבים ואוספים.',
     tourStepDockTitle: 'עוד',
-    tourStepDockBody: 'החומרים שלך בונים חפיסות. מרובה משתתפים הוא מיקסים מקוונים. שחק עם חבר הוא חדר או קוד. הפרופיל הוא החשבון. אוצר האימפריה מוכר מסגרות, ערכות נושא והאצות.',
+    tourStepDockBody: 'הפרופיל הוא החשבון. מרובה משתתפים הוא מיקסים מקוונים. שחק עם חבר הוא חדר או קוד. אוצר האימפריה מוכר מסגרות, ערכות נושא והאצות.',
   }),
 }

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { STRINGS, type Lang } from '../i18n/strings'
 import { PACK_FAMILY_FORMATS, PACK_FAMILIES, type Pack, type PackFamilyId, type PackFormatId, type PackItem } from '../data/pack'
 import { applyModelPatch, applyScriptedFix, type FixKind, type ModelItemPatch } from '../lib/packFix'
+import { apiFetch } from '../lib/apiFetch'
 import type { PackQuestion } from '../lib/quiz/pack'
 
 const KINDS: FixKind[] = [
@@ -55,7 +56,7 @@ export function PackFixWizard({ lang, pack, item, question, onClose, onPack }: P
     setBusy(true)
     setError(null)
     try {
-      const res = await fetch('/api/pack/fix', {
+      const res = await apiFetch('/api/pack/fix', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

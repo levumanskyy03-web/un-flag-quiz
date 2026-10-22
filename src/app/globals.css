@@ -6315,13 +6315,6 @@ button.home-setup-line {
   height: 28px;
 }
 
-.world-pick-grid .world-pick-no {
-  position: static;
-  display: block;
-  font-size: 0.6875rem;
-  opacity: 0.72;
-}
-
 .world-pick-grid .world-pick-copy {
   height: auto;
   min-height: 0;
@@ -6437,20 +6430,6 @@ button.home-setup-line {
 .world-pick:hover,
 .world-pick:focus-visible {
   transform: translateY(-2px);
-}
-
-.world-pick-no {
-  position: absolute;
-  top: 6px;
-  left: 8px;
-  z-index: 1;
-  font-size: 0.68rem;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  opacity: 0.62;
-  pointer-events: none;
 }
 
 .world-pick-art {
@@ -6913,7 +6892,7 @@ button.home-setup-line {
 .world-pick-dock {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-top: 0;
   padding: 0;
@@ -6960,12 +6939,8 @@ button.home-setup-line {
   opacity: 0.55;
 }
 
-.world-pick-note {
-  margin: 0;
-  text-align: center;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--muted);
+.world-pick-slot {
+  position: relative;
 }
 
 .dock-unavailable {
@@ -7578,6 +7553,29 @@ a.worlds-back {
   border-radius: 16px;
   border-bottom-width: 4px;
   font-size: 0.92rem;
+}
+
+.quiz-screen .options-tiles .option {
+  min-height: 112px;
+  padding: 18px 14px;
+  border-radius: 22px;
+  border-bottom-width: 6px;
+  font-size: 1.65rem;
+  line-height: 1.15;
+}
+
+.quiz-screen .options-tiles .fit-text {
+  width: 100%;
+  font-size: inherit;
+  font-weight: 800;
+}
+
+.quiz-screen .options-tiles .option-code {
+  font-size: 1.9rem;
+}
+
+.quiz-screen .options-tiles .option-year {
+  font-size: 1.85rem;
 }
 
 .quiz-screen.is-map-find {

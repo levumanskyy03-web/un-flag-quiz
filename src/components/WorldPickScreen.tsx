@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { STRINGS, type Lang } from '../i18n/strings'
-import { worldCatalogNo } from '../lib/modeCatalog'
 import { QUIZ_WORLDS, type QuizWorld } from '../lib/quiz'
 import { useEmpire } from '../lib/empireStore'
+import { EMPIRE_VISIBLE } from '../lib/empire/visible'
 import { eraTitle } from './EmpireScreen'
 import type { QuizSettings } from './HomeScreen'
 import { FitGroup, FitText } from './FitText'
@@ -26,7 +26,6 @@ interface WorldPickScreenProps {
   onMultiplayer: () => void
   onFriend: () => void
   onProfile: () => void
-  onStudio: () => void
   onEmpire: () => void
 }
 
@@ -54,11 +53,9 @@ export function WorldPickScreen({
   onProfile,
 }: WorldPickScreenProps) {
   const t = STRINGS[settings.lang]
-  const [closedNote, setClosedNote] = useState(false)
   const [empireNote, setEmpireNote] = useState(false)
   const [etestOk, setEtestOk] = useState(false)
   const [hideTraining, setHideTraining] = useState(false)
-  const noteTimer = useRef<number | null>(null)
   const empireTimer = useRef<number | null>(null)
   const empire = useEmpire()
   const empireLabel = empire.name || t.empire
@@ -80,17 +77,9 @@ export function WorldPickScreen({
     return () => {
       window.removeEventListener(AUTH_EVENT, sync)
       stopTraining()
-      if (noteTimer.current !== null) window.clearTimeout(noteTimer.current)
       if (empireTimer.current !== null) window.clearTimeout(empireTimer.current)
     }
   }, [])
-
-  function showStudioClosed() {
-    tap()
-    setClosedNote(true)
-    if (noteTimer.current !== null) window.clearTimeout(noteTimer.current)
-    noteTimer.current = window.setTimeout(() => setClosedNote(false), 2200)
-  }
 
   function showEmpireClosed() {
     tap()
@@ -150,9 +139,6 @@ export function WorldPickScreen({
               data-tour={world === 'geo' ? 'geo' : undefined}
               onClick={() => pick(() => onPick(world))}
             >
-              <span className="world-pick-no" aria-hidden="true">
-                {worldCatalogNo(world)}
-              </span>
               <span className="world-pick-art" aria-hidden="true">
                 <span className="world-mark" />
               </span>
@@ -164,41 +150,35 @@ export function WorldPickScreen({
         </div>
       </FitGroup>
 
-      <button type="button" className="world-pick is-state is-empire is-closed" onClick={showEmpireClosed} data-tour="empire">
-        <span className="world-pick-art" aria-hidden="true">
-          <span className="world-mark" />
-        </span>
-        <span className="world-pick-copy">
-          <FitText>{empireLabel}</FitText>
-          <small className="world-pick-sub">
-            {t.empireEraOf(empire.era)} · {eraTitle(empire.era, t)}
-          </small>
-        </span>
-      </button>
-      {empireNote ? (
-        <p className="world-pick-note" role="status">
-          {t.studioUnavailable}
-        </p>
-      ) : null}
+      {EMPIRE_VISIBLE ? <div className="world-pick-slot">
+        <button type="button" className="world-pick is-state is-empire is-closed" onClick={showEmpireClosed} data-tour="empire">
+          <span className="world-pick-art" aria-hidden="true">
+            <span className="world-mark" />
+          </span>
+          <span className="world-pick-copy">
+            <FitText>{empireLabel}</FitText>
+            <small className="world-pick-sub">
+              {t.empireEraOf(empire.era)} · {eraTitle(empire.era, t)}
+            </small>
+          </span>
+        </button>
+        {empireNote ? (
+          <p className="dock-unavailable" role="status">
+            {t.studioUnavailable}
+          </p>
+        ) : null}
+      </div> : null}
 
       <nav className="world-pick-dock" aria-label={t.explore} data-tour="dock">
         <FitGroup wrap={false} minPx={7}>
-          <button type="button" className="world-dock-tab is-closed" onClick={showStudioClosed}>
-            <FitText>{t.studio}</FitText>
+          <button type="button" className="world-dock-tab" onClick={() => pick(onProfile)}>
+            <FitText>{t.profile}</FitText>
           </button>
-          {closedNote ? (
-            <p className="dock-unavailable" role="status">
-              {t.studioUnavailable}
-            </p>
-          ) : null}
           <button type="button" className="world-dock-tab" onClick={() => pick(onMultiplayer)}>
             <FitText>{t.multiplayer}</FitText>
           </button>
           <button type="button" className="world-dock-tab" onClick={() => pick(onFriend)}>
             <FitText>{t.playWithFriend}</FitText>
-          </button>
-          <button type="button" className="world-dock-tab" onClick={() => pick(onProfile)}>
-            <FitText>{t.profile}</FitText>
           </button>
         </FitGroup>
       </nav>

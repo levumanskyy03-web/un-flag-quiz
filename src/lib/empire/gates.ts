@@ -3,6 +3,7 @@ import { EMPIRE_RESOURCE_BY_WORLD, type EmpireBuilding, type EmpireResource } fr
 import { dailyCollection, dailyCollectionOf } from '../dailyChallenge'
 import { isQuizWorld, type QuizWorld } from '../quiz/core'
 import { buildingLevel, plusActive, withScore, type EmpireState } from './rules'
+import { EMPIRE_VISIBLE } from './visible'
 
 /**
  * Гейты контента (docs/economy.md, 4.8). Любой гейт открыт подпиской «Империя+»
@@ -128,6 +129,7 @@ export function progressMet(state: EmpireState, progress: GateProgress | null) {
 export type Access = 'open' | 'locked'
 
 export function access(state: EmpireState, f: GateFeature, now = Date.now()): Access {
+  if (!EMPIRE_VISIBLE) return 'open'
   const info = gateInfo(f)
   if (info.free) return 'open'
   if (plusActive(state, now)) return 'open'

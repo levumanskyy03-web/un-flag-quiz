@@ -1,4 +1,5 @@
 import type { WikiPortrait } from './wikiPortrait'
+import { apiFetch } from './apiFetch'
 
 export type { WikiPortrait }
 
@@ -119,7 +120,7 @@ export async function fetchWikiPortrait(title: string, file?: string): Promise<W
       if (file?.trim()) params.set('file', file.trim().replace(/_/g, ' '))
       let response: Response | null = null
       for (let attempt = 0; attempt < 2; attempt += 1) {
-        response = await fetch(`/api/wiki-portrait?${params}`)
+        response = await apiFetch(`/api/wiki-portrait?${params}`)
         if (response.ok || (response.status !== 503 && response.status !== 429 && response.status !== 502)) break
         await new Promise((resolve) => {
           setTimeout(resolve, 500 * (attempt + 1))

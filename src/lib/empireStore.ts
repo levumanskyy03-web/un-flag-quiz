@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react'
+import { apiFetch } from './apiFetch'
 import { EMPIRE_BUILDINGS, type EmpireBuilding, type EmpirePerk, type EmpirePowerKind, type EmpireResource } from '../data/empire'
 import {
   advanceEra as advanceEraRule,
@@ -40,6 +41,7 @@ import {
   type SkipResult,
 } from './empire/rules'
 import { access, noteMistakesRun, unlock as unlockRule, type Access, type GateFeature, type UnlockResult } from './empire/gates'
+import { EMPIRE_VISIBLE } from './empire/visible'
 import { applyLegacyGrant, hasLegacyValue, legacyGrant, type LegacyGrant } from './empire/migrate'
 import { loadLevelClears } from './levelProgress'
 import { worldOfMode } from './quiz'
@@ -208,10 +210,8 @@ type ServerReply = { state?: unknown; reward?: EmpireRoundReward; rank?: number 
 
 async function post(body: Record<string, unknown>): Promise<ServerReply | null> {
   try {
-    const response = await fetch('/api/empire', {
+    const response = await apiFetch('/api/empire', {
       method: 'POST',
-      credentials: 'include',
-      cache: 'no-store',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
@@ -251,7 +251,7 @@ export function empireConnect(): Promise<void> {
   connecting = (async () => {
     const local = loadEmpire()
     try {
-      const response = await fetch('/api/empire', { credentials: 'include', cache: 'no-store' })
+      const response = await apiFetch('/api/empire')
       if (response.status === 401) {
         sync = 'local'
         emit()
@@ -452,15 +452,18 @@ export function empireSetTitle(title: LegacyTitleId | null): boolean {
 }
 
 export function empireXpMultiplier(now = Date.now()) {
+  if (!EMPIRE_VISIBLE) return 1
   return xpMultiplier(loadEmpire(), now)
 }
 
 export function empireTimeBonusMs(world: QuizWorld) {
+  if (!EMPIRE_VISIBLE) return 0
   return timeBonusMs(loadEmpire(), world)
 }
 
 /** Итог дуэли. `code` + `playerId` нужны серверу, чтобы проверить комнату. */
 export function empireOnDuel(youWon: boolean | null, proof?: { code: string; playerId: string }): DuelReward {
+  if (!EMPIRE_VISIBLE) return { coins: 0, gems: 0, streak: 0 }
   const { state, reward } = applyDuelReward(loadEmpire(), youWon)
   commit(state)
   if (isServer() && proof) {
@@ -510,7 +513,16 @@ export type RoundProof = {
   listId?: string
 }
 
+const HIDDEN_ROUND_REWARD: EmpireRoundReward = {
+  specialists: 0,
+  coins: 0,
+  resource: 0,
+  gems: 0,
+  capped: false,
+}
+
 export function empireOnRound(ctx: RoundContext, proof?: RoundProof): EmpireRoundReward {
+  if (!EMPIRE_VISIBLE) return HIDDEN_ROUND_REWARD
   const { state, reward } = applyRoundReward(loadEmpire(), proof?.listId ? { ...ctx, listId: proof.listId } : ctx)
   commit(state)
   if (isServer() && proof) {

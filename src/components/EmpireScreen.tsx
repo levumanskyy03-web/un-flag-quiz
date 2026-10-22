@@ -2,6 +2,7 @@
 
 import './empireTown.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { apiFetch } from '../lib/apiFetch'
 import {
   EMPIRE_RESOURCE_BY_WORLD,
   EMPIRE_RESOURCES,
@@ -621,7 +622,7 @@ function WorldTab({ lang, state }: { lang: Lang; state: EmpireState }) {
 
   useEffect(() => {
     let alive = true
-    fetch('/api/empire/board?limit=25', { credentials: 'include', cache: 'no-store' })
+    apiFetch('/api/empire/board?limit=25')
       .then((r) => (r.ok ? r.json() : { entries: [], rank: null }))
       .then((body: { entries?: BoardEntry[]; rank?: number | null }) => {
         if (!alive) return

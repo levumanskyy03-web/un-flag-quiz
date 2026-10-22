@@ -11,18 +11,22 @@ if (devUrl) {
 const config: CapacitorConfig = {
   appId: 'online.geoguiz.app',
   appName: 'Country Passport',
-  webDir: 'www',
+  webDir: '../out',
   backgroundColor: '#020617',
-  server: {
-    url: devUrl || 'https://www.geoguiz.online',
-    cleartext: !!devUrl?.startsWith('http://'),
-    allowNavigation: [
-      'www.geoguiz.online',
-      'geoguiz.online',
-      ...(devHost ? [devHost] : []),
-    ],
-    errorPath: 'index.html',
-  },
+  server: devUrl
+    ? {
+        url: devUrl,
+        cleartext: devUrl.startsWith('http://'),
+        allowNavigation: [
+          'www.geoguiz.online',
+          'geoguiz.online',
+          ...(devHost ? [devHost] : []),
+        ],
+        errorPath: 'index.html',
+      }
+    : {
+        errorPath: 'index.html',
+      },
   plugins: {
     SplashScreen: {
       backgroundColor: '#020617',
